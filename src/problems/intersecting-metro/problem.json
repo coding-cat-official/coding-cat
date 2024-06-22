@@ -1,0 +1,49 @@
+{
+  "starter": "def intersecting_metro(station_name: str) -> bool:\n    return True",
+  "description": "You need to write a program that identifies whether a metro stop on the STM is an interchange\nstation or not. We consider a metro stop an \"interchange station\" if two or more metro lines\nintersect there, such as Lionel-Groulx.",
+  "meta": {
+    "title": "Intersecting metro?",
+    "name": "intersecting_metro",
+    "difficulty": 1,
+    "author": "Eric Mayhew",
+    "category": "String-1"
+  },
+  "io": [
+    {
+      "input": [
+        "Lionel-Groulx"
+      ],
+      "output": true
+    },
+    {
+      "input": [
+        "Snowden"
+      ],
+      "output": true
+    },
+    {
+      "input": [
+        "Berri-UQAM"
+      ],
+      "output": true
+    },
+    {
+      "input": [
+        "Atwater"
+      ],
+      "output": false
+    },
+    {
+      "input": [
+        "Verdun"
+      ],
+      "output": false
+    },
+    {
+      "input": [
+        "Villa-Maria"
+      ],
+      "output": false
+    }
+  ]
+}

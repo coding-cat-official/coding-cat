@@ -1,0 +1,5 @@
+[
+    { "input": [true, true], "output": false },
+    { "input": [true, false], "output": false },
+    { "input": [false, true], "output": true }
+]

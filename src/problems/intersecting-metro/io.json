@@ -1,0 +1,8 @@
+[
+    { "input": ["Lionel-Groulx"], "output": true },
+    { "input": ["Snowden"], "output": true },
+    { "input": ["Berri-UQAM"], "output": true },
+    { "input": ["Atwater"], "output": false },
+    { "input": ["Verdun"], "output": false },
+    { "input": ["Villa-Maria"], "output": false }
+]

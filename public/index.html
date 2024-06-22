@@ -2,19 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <!-- <link rel="icon" href="%PUBLIC_URL%/favicon.ico" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="in-browser Python Monaco editor demo"
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!-- <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" /> -->
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json" /> -->
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -24,7 +24,45 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Coding Cat</title>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js">
+    </script>
+    <script type="text/python">
+    from browser import document, window
+
+    def load_student_function(code, name):
+        HARNESS_CODE = f'box["fn"] = {name}'
+        box = {}
+        exec(code + '\n' + HARNESS_CODE, { 'box': box })
+        return box['fn']
+
+    def test_student_function(student_function, tests):
+        report = []
+        for test in tests:
+            actual_output = student_function(*test['input'])
+            report.append({
+                "input": test['input'],
+                "expected": test['output'],
+                "actual": actual_output,
+            })
+        return report
+
+    def send_report(report):
+        e = window.CustomEvent.new('report_ready', { "detail": report })
+        document.dispatchEvent(e)
+
+    def load_and_test_student_function(e):
+        student_function = load_student_function(e.detail.code, e.detail.name)
+        report = test_student_function(student_function, e.detail.tests)
+        send_report(report)
+
+    def run_student_function():
+      print(student_function['fn'](5, 7))
+
+    document.bind("eval", load_and_test_student_function)
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
