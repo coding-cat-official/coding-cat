@@ -1,0 +1,3 @@
+[submodule "src/public-problems"]
+	path = src/public-problems
+	url = git@github.com:tsani/coding-cat-public.git
