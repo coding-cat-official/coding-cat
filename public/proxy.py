@@ -14,6 +14,8 @@ def onready(w):
     WORKER = w
 
 def onmessage(msg):
+    """Runs when the worker sends a message back to us, to say whether the code
+    ran correctly and which test cases it passed."""
     global WORKER, RUNNING, TIMEOUT_ID
     print('worker finished! clearing timeout', TIMEOUT_ID)
     window.clearTimeout(TIMEOUT_ID)
