@@ -1,16 +1,23 @@
 #!/bin/bash
 
+set -e
+
+die () {
+    echo "$@" >&2
+    exit 1
+}
+
 cd "$1"
 
 jq -n \
     --arg description "$(cat description.md)" \
     --arg starter "$(cat starter.py)" \
-    --argfile meta meta.json \
-    --argfile io io.json \
+    --slurpfile meta meta.json \
+    --slurpfile io io.json \
     '{
         starter: $starter,
         description: $description,
-        meta: $meta,
-        io: $io,
+        meta: $meta[0],
+        io: $io[0],
     }' \
-    > problem.json
+    > problem.json || die "Failed to build problem $1"
