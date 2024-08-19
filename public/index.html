@@ -29,40 +29,8 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js">
     </script>
-    <script type="text/python">
-    from browser import document, window
-
-    def load_student_function(code, name):
-        HARNESS_CODE = f'box["fn"] = {name}'
-        box = {}
-        exec(code + '\n' + HARNESS_CODE, { 'box': box })
-        return box['fn']
-
-    def test_student_function(student_function, tests):
-        report = []
-        for test in tests:
-            actual_output = student_function(*test['input'])
-            report.append({
-                "input": test['input'],
-                "expected": test['output'],
-                "actual": actual_output,
-            })
-        return report
-
-    def send_report(report):
-        e = window.CustomEvent.new('report_ready', { "detail": report })
-        document.dispatchEvent(e)
-
-    def load_and_test_student_function(e):
-        student_function = load_student_function(e.detail.code, e.detail.name)
-        report = test_student_function(student_function, e.detail.tests)
-        send_report(report)
-
-    def run_student_function():
-      print(student_function['fn'](5, 7))
-
-    document.bind("eval", load_and_test_student_function)
-    </script>
+    <script id="code-runner" class="webworker" type="text/python" src="/worker.py"></script>
+    <script type="text/python" src="/proxy.py"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
