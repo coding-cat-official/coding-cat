@@ -15,7 +15,6 @@ export async function problemLoader({params}: any): Promise<Problem> {
 export default function ProblemView() {
     const problem = useLoaderData() as Problem;
     return <>
-        <Link to="/"> Back </Link>
         <ProblemIDE problem={problem} />
     </>;
 }

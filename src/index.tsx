@@ -9,17 +9,31 @@ import {
 
 import App, { problemListLoader } from './routes/root';
 import ProblemView, { problemLoader } from './routes/ProblemView';
+import ErrorPage from './error';
+
+function EmptyChild() {
+  return <div>
+    <p> Select a problem on the left to begin! </p>
+  </div>;
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     loader: problemListLoader,
-  },
-  {
-    path: "/problems/:problemName",
-    element: <ProblemView />,
-    loader: problemLoader,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <EmptyChild />,
+      },
+      {
+        path: "/problems/:problemName",
+        element: <ProblemView />,
+        loader: problemLoader,
+      },
+    ],
   },
 ]);
 

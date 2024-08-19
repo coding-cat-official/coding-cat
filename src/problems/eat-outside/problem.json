@@ -1,5 +1,5 @@
 {
-  "starter": "def eat_outside(raining: bool, summer: bool) -> bool:",
+  "starter": "def eat_outside(raining: bool, summer: bool) -> bool:\n    return False",
   "description": "Dawson is lucky in that we have a lot of greenspace in downtown Montreal. However, just because we\nhave a nice campus doesn't mean it's always the best to go outside. \n\nWrite a function that determines is it's a good idea to eat outside. Return true if it is summer\nand not raining, otherwise return false.",
   "meta": {
     "title": "Eat outside?",

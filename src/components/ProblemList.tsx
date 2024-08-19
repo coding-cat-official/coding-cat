@@ -8,13 +8,16 @@ export interface ProblemListProps {
 }
 
 export default function ProblemList({ problems }: ProblemListProps) {
-    return <ul>
+    return <nav>
+      <h1> Coding Cat </h1>
+      <ul>
         { (problems as Problem[]).map(
             (p) => <li key={p.meta.name}>
                 <Link to={`/problems/${p.meta.name}`}> {p.meta.title} </Link>
             </li>,
         )
         }
-    </ul>;
+      </ul>
+    </nav>;
 }
 

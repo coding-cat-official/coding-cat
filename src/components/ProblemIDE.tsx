@@ -2,15 +2,26 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import { useLoaderData } from 'react-router-dom';
 
 import { Report, Problem } from '../types';
-import problems from '../problems/problems';
+
+import './ProblemIDE.css';
 
 export interface ProblemIDEProps {
     problem: Problem
 }
 
 export default function ProblemIDE({ problem }: ProblemIDEProps) {
+  console.log(problem);
+
+  const [name, setName] = useState(problem.meta.name);
   const [code, setCode] = useState(problem.starter);
+
   const [report, setReport] = useState<Report[] | null>(null);
+
+  // TODO think about how to store the user's edits to problems
+  useEffect(() => {
+    setCode(problem.starter);
+    setReport(null);
+  }, [problem]);
 
   useEffect(() => {
       document.addEventListener(
@@ -42,9 +53,11 @@ export default function ProblemIDE({ problem }: ProblemIDEProps) {
   }
 
   return (
-    <>
-      <textarea value={code} onChange={changeCode}></textarea>
-      <button onClick={runCode}>Run</button>
+    <div className="problem-ide">
+      <h3 className="problem-ide-title"> { problem.meta.title } </h3>
+      <p className="problem-ide-description"> { problem.description } </p>
+      <textarea className="problem-ide-editor" value={code} onChange={changeCode}></textarea>
+      <button className="problem-ide-run" onClick={runCode}>Run</button>
       {
         report != null
           ? <>
@@ -69,6 +82,6 @@ export default function ProblemIDE({ problem }: ProblemIDEProps) {
           </>
           : ""
       }
-    </>
+    </div>
   );
 }
