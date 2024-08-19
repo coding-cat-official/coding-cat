@@ -1,3 +1,0 @@
-#!/bin/bash
-
-rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/
