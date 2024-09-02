@@ -25,3 +25,7 @@ code {
 #root {
   height: 100%;
 }
+
+.mono {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}

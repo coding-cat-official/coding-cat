@@ -18,6 +18,10 @@ import Table from '@mui/joy/Table';
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
 const TEST_CASE_FAILED = '❌';
+const ALL_TESTS_PASSED = '🎉';
+
+const PASS_COLOR = '#caffc5';
+const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
     const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
@@ -55,11 +59,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-        <Sheet sx={{ m: 3, p: 2, height: "100%" }}>
-            <Typography level="title-lg"> { problem.meta.title } </Typography>
-            <Typography level="body-md">
-                <Markdown children={problem.description} />
-            </Typography>
+        <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, height: "100%" }}>
+          <Stack direction="column" spacing={2} alignItems="center" >
+            <Box sx={{ width: "100%" }}>
+              <Typography level="title-lg"> { problem.meta.title } </Typography>
+              <Typography level="body-md">
+                  <Markdown children={problem.description} />
+              </Typography>
+            </Box>
             <Editor
                 height="10em"
                 className="problem-ide-editor"
@@ -67,8 +74,11 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 value={code}
                 options={{ minimap: { enabled: false }}}
                 onChange={changeCode} />
-            <Button onClick={() => runCode(code)}>Run</Button>
-            <Report evalResponse={evalResponse} />
+            <Box>
+              <Button onClick={() => runCode(code)}>Run</Button>
+            </Box>
+            { evalResponse ? <Report evalResponse={evalResponse} /> : null }
+          </Stack>
         </Sheet>
     );
 }
@@ -85,28 +95,36 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
       <Typography> {evalResponse.message} </Typography>
     </Stack>;
   if ('success' === evalResponse.status)
-    return <Stack direction="column">
-      <Typography> The results are in: </Typography>
-      <Table>
-        <thead>
-        <tr>
-          <th> Input </th>
-          <th> Expected output </th>
-          <th> Your output </th>
-          <th> Passed? </th>
-        </tr>
-        </thead>
-        <tbody>
-        { evalResponse.report.map((r, i) => <tr key={i}>
-                     <td> {r.input} </td>
-                     <td> {r.expected} </td>
-                     <td> {r.actual} </td>
-                     <td> {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED} </td>
-                   </tr>)
-        }
-        </tbody>
-      </Table>
-    </Stack>;
+    return <Box sx={{ width: "66%", border: 1, borderRadius: 3 }} >
+      <Stack direction="column">
+        <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
+        <Table>
+          <thead>
+          <tr>
+            <th> Input </th>
+            <th> Expected output </th>
+            <th> Your output </th>
+          </tr>
+          </thead>
+          <tbody>
+          { evalResponse.report.map((r, i) =>
+              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                <td className="mono"> {r.input} </td>
+                <td className="mono"> {r.expected} </td>
+                <td className="mono"> {r.actual} </td>
+              </tr>)
+          }
+          </tbody>
+        </Table>
+        { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
+          ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
+              <Typography sx={{ p: 2 }} level='body-lg'>
+                Bravo {ALL_TESTS_PASSED} You completed this problem!
+              </Typography>
+            </Box>
+          : null }
+      </Stack>
+    </Box>;
 
   return <p> If this text appears, it's a bug :^) </p>;
 };
