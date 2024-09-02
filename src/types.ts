@@ -20,7 +20,7 @@ export interface Problem {
     meta: {
         name: string;
         title: string;
-        difficulty: number;
+        difficulty: string;
         author: string;
         category: string;
     };
