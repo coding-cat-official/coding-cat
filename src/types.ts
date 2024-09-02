@@ -4,9 +4,9 @@ export interface IOPair {
 }
 
 export interface Report {
-  input: any[];
-  expected: any;
-  actual: any;
+  input: string;
+  expected: string;
+  actual: string;
   equal: boolean;
 }
 

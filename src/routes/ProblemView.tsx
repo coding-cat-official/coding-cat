@@ -1,12 +1,14 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useOutletContext } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
+import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
 import problems from '../problems/problems';
 import useEval from '../hooks/useEval';
 
+import Button from '@mui/joy/Button';
 import Stack from '@mui/joy/Stack';
 import Sheet from '@mui/joy/Sheet';
 import Box from '@mui/joy/Box';
@@ -34,9 +36,15 @@ interface ProblemIDEProps {
     problem: Problem
 }
 
+interface ProblemIDEOutletContext {
+    setActiveProblem: (name: string | null) => void;
+}
+
 function ProblemIDE({ problem }: ProblemIDEProps) {
-    const [name, setName] = useState(problem.meta.name);
     const [code, setCode] = useState(problem.starter);
+
+    const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    setActiveProblem(problem.meta.name);
 
     const [evalResponse, runCode] = useEval(problem);
 
@@ -47,19 +55,21 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-        <div className="problem-ide">
-            <h3 className="problem-ide-title"> { problem.meta.title } </h3>
-            <p className="problem-ide-description"> { problem.description } </p>
+        <Sheet sx={{ m: 3, p: 2, height: "100%" }}>
+            <Typography level="title-lg"> { problem.meta.title } </Typography>
+            <Typography level="body-md">
+                <Markdown children={problem.description} />
+            </Typography>
             <Editor
-                height="30%"
+                height="10em"
                 className="problem-ide-editor"
                 defaultLanguage="python"
                 value={code}
                 options={{ minimap: { enabled: false }}}
                 onChange={changeCode} />
-            <button className="problem-ide-run" onClick={() => runCode(code)}>Run</button>
+            <Button onClick={() => runCode(code)}>Run</Button>
             <Report evalResponse={evalResponse} />
-        </div>
+        </Sheet>
     );
 }
 

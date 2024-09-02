@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom';
 import problems from '../problems/problems';
 import { Problem } from '../types';
 
+import List from '@mui/joy/List';
+import ListItem from '@mui/joy/ListItem';
+import ListSubheader from '@mui/joy/ListSubheader';
+import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
@@ -18,8 +22,10 @@ import logo from './coding-cat.png';
 
 export default function App() {
   const [open, setOpen] = useState(false);
+  const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
-  return <Box>
+
+  return <Box height={{ height: "100%" }}>
     <Drawer open={open} onClose={() => setOpen(false)}>
       <ModalClose />
       <DialogTitle>
@@ -28,17 +34,18 @@ export default function App() {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <ProblemList problems={problems} />
+        <ProblemList
+            problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
       </DialogContent>
     </Drawer>
-    <Stack direction="column">
+    <Stack direction="column" sx={{ height: "100%" }} >
       <Stack direction="row" alignItems="center">
         <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
         <Typography level="h1">
           Coding Cat
         </Typography>
       </Stack>
-      <Outlet />
+      <Outlet context={{ setActiveProblem }} />
     </Stack>
   </Box>;
 };
@@ -48,32 +55,34 @@ export async function problemListLoader(): Promise<Problem[]> {
 }
 
 interface ProblemListProps {
-    problems: Problem[]
+    problems: Problem[];
+    activeProblem: string | null;
+    closeDrawer: () => void;
 }
 
-function ProblemList({ problems }: ProblemListProps) {
+function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
     const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
         const category = problem.meta.category;
-        if (!acc[category]) {
-            acc[category] = [];
-        }
+        if (!acc[category]) acc[category] = [];
         acc[category].push(problem);
         return acc;
     }, {});
 
     return (
-    <nav>
+    <List component="nav">
       {Object.keys(groupedProblems).map((category) => (
-          <div key={category}>
-          <Typography level="h3">{category}</Typography>
-            <ul>
-        { (groupedProblems[category] as Problem[]).map(
-            (p) => <li key={p.meta.name}>
-                <Link to={`/problems/${p.meta.name}`}> {p.meta.title} </Link>
-            </li>,
-        )}
-      </ul>
-      </div>
+          <ListItem nested key={category}>
+          <ListSubheader>{category}</ListSubheader>
+            <List>
+            { groupedProblems[category].map(
+                (p) =>
+                <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
+                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+                    {p.meta.title}
+                </ListItemButton>,
+            )}
+          </List>
+          </ListItem>
       ))}
-    </nav>);
+    </List>);
 }
