@@ -11,9 +11,9 @@ def test_student_function(student_function, tests):
     for test in tests:
         actual_output = student_function(*test['input'])
         report.append({
-            "input": test['input'],
-            "expected": test['output'],
-            "actual": actual_output,
+            "input": ", ".join(str(x) for x in test['input']),
+            "expected": str(test['output']),
+            "actual": str(actual_output),
             "equal": actual_output == test['output'],
         })
     return report

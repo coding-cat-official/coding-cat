@@ -88,9 +88,9 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
         </thead>
         <tbody>
         { evalResponse.report.map((r, i) => <tr key={i}>
-                     <td> {String(r.input)} </td>
-                     <td> {String(r.expected)} </td>
-                     <td> {String(r.actual)} </td>
+                     <td> {r.input} </td>
+                     <td> {r.expected} </td>
+                     <td> {r.actual} </td>
                      <td> {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED} </td>
                    </tr>)
         }
