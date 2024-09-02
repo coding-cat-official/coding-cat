@@ -64,7 +64,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             <Box sx={{ width: "100%" }}>
               <Typography level="title-lg"> { problem.meta.title } </Typography>
               <Typography level="body-md">
-                  <Markdown children={problem.description} />
+                  <Markdown >
+                    {problem.description}
+                  </Markdown >
               </Typography>
             </Box>
             <Editor
@@ -126,5 +128,5 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
       </Stack>
     </Box>;
 
-  return <p> If this text appears, it's a bug :^) </p>;
+  return <p> If this text appears, it&apos;s a bug :^) </p>;
 };
