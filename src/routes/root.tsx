@@ -25,7 +25,33 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
 
-  return <Box height={{ height: "100%" }}>
+  return <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'row' }}>
+      <Box
+        sx={{
+          width: '10%',
+          height: '100vh',
+          backgroundColor: '#c8cada',
+          cursor: 'pointer',
+          left: 0,
+          top: 0,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',  // Center the arrow vertically
+          '&::after': {
+            content: '""',
+            display: 'block',
+            width: 0,
+            height: 0,
+            borderTop: '30px solid transparent',
+            borderBottom: '30px solid transparent',
+            borderLeft: '50px solid white', // Arrow color
+            marginLeft: '30px', // Position the arrow
+            paddingRight: '1em',
+          },
+        }}
+        onClick={() => setOpen(true)}
+      />
+  <Box height={{ height: "100%" }}>
     <Drawer open={open} onClose={() => setOpen(false)}>
       <ModalClose />
       <DialogTitle>
@@ -38,15 +64,22 @@ export default function App() {
             problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
       </DialogContent>
     </Drawer>
-    <Stack direction="column" sx={{ height: "100%" }} >
+    <Stack 
+      direction="column" 
+      sx={{ 
+        height: "100%",
+        justifyContent: "center", 
+        alignItems: "center", 
+      }} >
       <Stack direction="row" alignItems="center">
         <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
-        <Typography level="h1">
-          Coding Cat
+        <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+          Coding Cat!
         </Typography>
       </Stack>
       <Outlet context={{ setActiveProblem }} />
     </Stack>
+  </Box>;
   </Box>;
 };
 
