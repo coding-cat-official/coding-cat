@@ -58,29 +58,33 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-        <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, height: "100%" }}>
-          <Stack direction="column" spacing={2} alignItems="center" >
-            <Box sx={{ width: "100%" }}>
-              <Typography level="title-lg"> { problem.meta.title } </Typography>
-              <Typography level="body-md">
-                  <Markdown >
-                    {problem.description}
-                  </Markdown >
-              </Typography>
-            </Box>
-            <Editor
-                height="10em"
-                className="problem-ide-editor"
-                defaultLanguage="python"
-                value={code}
-                options={{ minimap: { enabled: false }}}
-                onChange={changeCode} />
-            <Box>
-              <Button onClick={() => runCode(code)}>Run</Button>
-            </Box>
-            { evalResponse ? <Report evalResponse={evalResponse} /> : null }
+        <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
+          <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
+            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2 }}>
+                <Box sx={{ width: "100%" }}>
+                  <Typography level="title-lg"> { problem.meta.title } </Typography>
+                  <Typography level="body-md">
+                      <Markdown >
+                        {problem.description}
+                      </Markdown >
+                  </Typography>
+                </Box>
+                <Editor
+                    height="10em"
+                    className="problem-ide-editor"
+                    defaultLanguage="python"
+                    value={code}
+                    options={{ minimap: { enabled: false }}}
+                    onChange={changeCode} />
+                <Box>
+                  <Button onClick={() => runCode(code)}>Run</Button>
+                </Box>
+            </Sheet>
           </Stack>
-        </Sheet>
+          <Box sx={{ width: "39%" }}>
+            { evalResponse ? <Report evalResponse={evalResponse} /> : null }
+          </Box>
+        </Stack>
     );
 }
 
@@ -96,7 +100,7 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
       <Typography> {evalResponse.message} </Typography>
     </Stack>;
   if ('success' === evalResponse.status)
-    return <Box sx={{ width: "66%", border: 1, borderRadius: 3 }} >
+    return <Box sx={{ border: 1, borderRadius: 3 }} >
       <Stack direction="column">
         <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
         <Table>

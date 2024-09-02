@@ -25,61 +25,62 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
 
-  return <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'row' }}>
-      <Box
+  return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
+    <Box
+      sx={{
+        width: '6em',
+        height: '100vh',
+        backgroundColor: '#c8cada',
+        cursor: 'pointer',
+        left: 0,
+        top: 0,
+        zIndex: 10,
+        display: 'flex',
+        alignItems: 'center',  // Center the arrow vertically
+        '&::after': {
+          content: '""',
+          display: 'block',
+          width: 0,
+          height: 0,
+          borderTop: '30px solid transparent',
+          borderBottom: '30px solid transparent',
+          borderLeft: '50px solid white', // Arrow color
+          marginLeft: '30px', // Position the arrow
+          paddingRight: '1em',
+        },
+      }}
+      onClick={() => setOpen(true)}
+    />
+    <Box style={{ minHeight: "100%", flex: 1 }}>
+      <Drawer open={open} onClose={() => setOpen(false)}>
+        <ModalClose />
+        <DialogTitle>
+          <Typography level="h2">
+            Problem List
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <ProblemList
+              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+        </DialogContent>
+      </Drawer>
+      <Stack
+        direction="column"
         sx={{
-          width: '10%',
-          height: '100vh',
-          backgroundColor: '#c8cada',
-          cursor: 'pointer',
-          left: 0,
-          top: 0,
-          zIndex: 10,
-          display: 'flex',
-          alignItems: 'center',  // Center the arrow vertically
-          '&::after': {
-            content: '""',
-            display: 'block',
-            width: 0,
-            height: 0,
-            borderTop: '30px solid transparent',
-            borderBottom: '30px solid transparent',
-            borderLeft: '50px solid white', // Arrow color
-            marginLeft: '30px', // Position the arrow
-            paddingRight: '1em',
-          },
-        }}
-        onClick={() => setOpen(true)}
-      />
-  <Box height={{ height: "100%" }}>
-    <Drawer open={open} onClose={() => setOpen(false)}>
-      <ModalClose />
-      <DialogTitle>
-        <Typography level="h2">
-          Problem List
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <ProblemList
-            problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
-      </DialogContent>
-    </Drawer>
-    <Stack 
-      direction="column" 
-      sx={{ 
-        height: "100%",
-        justifyContent: "center", 
-        alignItems: "center", 
-      }} >
-      <Stack direction="row" alignItems="center">
-        <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
-        <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
-          Coding Cat!
-        </Typography>
+          width: '100%',
+          minHeight: "100%",
+          justifyContent: "start",
+          alignItems: "center",
+        }} >
+        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center">
+          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
+          <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+            Coding Cat!
+          </Typography>
+        </Stack>
+        <Outlet context={{ setActiveProblem }} />
       </Stack>
-      <Outlet context={{ setActiveProblem }} />
-    </Stack>
-  </Box>;
+    </Box>;
   </Box>;
 };
 
