@@ -7,6 +7,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { CssVarsProvider } from '@mui/joy/styles';
+import CssBaseline from '@mui/joy/CssBaseline';
+
 import App, { problemListLoader } from './routes/root';
 import ProblemView, { problemLoader } from './routes/ProblemView';
 import ErrorPage from './error';
@@ -42,11 +45,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <CssVarsProvider>
+      <CssBaseline />
+      <RouterProvider router={router} />
+    </CssVarsProvider>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
