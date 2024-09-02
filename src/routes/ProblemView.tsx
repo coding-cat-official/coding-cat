@@ -7,6 +7,7 @@ import Markdown from 'markdown-to-jsx';
 import { Problem, EvalResponse } from '../types';
 import problems from '../problems/problems';
 import useEval from '../hooks/useEval';
+import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
 import Button from '@mui/joy/Button';
 import Stack from '@mui/joy/Stack';
@@ -45,14 +46,12 @@ interface ProblemIDEOutletContext {
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
-    const [code, setCode] = useState(problem.starter);
+    const [code, setCode] = usePersistentProblemCode(problem);
 
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     setActiveProblem(problem.meta.name);
 
     const [evalResponse, runCode] = useEval(problem);
-
-    useEffect(() => { setCode(problem.starter); }, [problem]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
