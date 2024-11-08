@@ -31,6 +31,7 @@
     "build": "npm run build-problems && react-scripts build",
     "test": "react-scripts test",
     "deploy": "rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/",
+    "deploy-exam": "rsync -r build/ codingcat@jerrington.me:/srv/http/exam-coding-cat/",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
