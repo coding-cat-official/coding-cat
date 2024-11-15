@@ -104,7 +104,7 @@ function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps)
 
     return (
     <List component="nav">
-      {Object.keys(groupedProblems).map((category) => (
+      {Object.keys(groupedProblems).sort().map((category) => (
           <ListItem nested key={category}>
           <ListSubheader>{category}</ListSubheader>
             <List>
