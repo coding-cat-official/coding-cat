@@ -2,7 +2,7 @@ import React, { useEffect, useState, ChangeEvent } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import problems from '../problems/problems';
+import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
 import List from '@mui/joy/List';

@@ -28,7 +28,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build-problems": "cd src/problems && ./build-all && ./build-problem-list",
+    "build-problems-windows": "cd src/public-problems && bash build-all && bash build-problem-list",
     "build": "npm run build-problems && react-scripts build",
+    "build-windows": "npm run build-problems-windows && react-scripts build",
     "test": "react-scripts test",
     "deploy": "rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/",
     "deploy-exam": "rsync -r build/ codingcat@jerrington.me:/srv/http/exam-coding-cat/",
