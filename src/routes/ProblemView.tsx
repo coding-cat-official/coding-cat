@@ -5,7 +5,7 @@ import Editor from '@monaco-editor/react';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
-import problems from '../problems/problems';
+import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
