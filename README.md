@@ -8,11 +8,11 @@ The site can be found at [coding-cat.club](https://coding-cat.club).
 
 To run a local instance of Coding Cat, follow these steps.
 
-First, you will need to install [jq](https://jqlang.org/). Once you have the binary installed, place in the in the usr/bin/ directory in your Git installation folder.
+First, you will need to install [jq](https://jqlang.org/). It is recommended to install it using a package manager, like apt for Linux or scoop for Windows. If you simply install the binary, you might have to place it in the usr/bin/ directory in your Git installation folder for it to work.
 
-Then, clone the repo and run `git -c submodule.src/private-problems.update=none submodule update --init --recursive`. This will clone the public-problems submodule, while ignoring private-problems.
+Then, clone the repo, switch to the staging branch, and run `git submodule sync` and `git -c submodule.src/private-problems.update=none submodule update --init --recursive`. This will clone the public-problems submodule, while ignoring private-problems.
 
-Run `npm install` to install the dependencies, then run `npm run build` in the project root to set up the list of problems (`npm run build-windows` if you're on windows).
+Run `npm install` to install the dependencies, then run `npm run build` in the project root to set up the list of problems (`npm run build-windows` if you're on Windows).
 
 Finally, run `npm run start` to run the app locally.
 
