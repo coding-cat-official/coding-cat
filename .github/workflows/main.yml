@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build problem list and static files
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - run: git submodule sync
       - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
       - run: npm ci
