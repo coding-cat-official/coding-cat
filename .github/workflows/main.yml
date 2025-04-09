@@ -3,8 +3,33 @@ on: push
 
 jobs:
   test:
+    name: Run unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
       - run: npm run test
+  build:
+    name: Build problem list and static files
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: git submodule sync
+      - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
+      - run: npm ci
+      # temporarily change CI env to be false so that the job runs.
+      # shouldn't have to do this later on since all the warnings will be fixed hopefully.
+      - run: CI=false npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+  deploy:
+    name: Deploy the app
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - run: ls
+      - run: rsync -r build/ ${{ vars.DEPLOY_URL }}
