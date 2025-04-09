@@ -16,6 +16,10 @@ Run `npm install` to install the dependencies, then run `npm run build` in the p
 
 Finally, run `npm run start` to run the app locally.
 
+### Run Unit Tests
+
+To run the tests, use the `npm run test` command in the project root.
+
 ### TO DO
 
 Future features we'd like to add:
