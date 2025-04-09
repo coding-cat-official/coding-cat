@@ -6,4 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd src/problems && ls
+      - run: npm ci
+      - run: npm run test
