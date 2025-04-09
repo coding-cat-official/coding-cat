@@ -20,6 +20,8 @@ function EmptyChild() {
   </div>;
 }
 
+const userId = window.location.pathname.split('/')[1];
+const basename = userId ? `/${userId}` : '/';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,7 +40,11 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+],
+{
+  basename: basename,
+}
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
