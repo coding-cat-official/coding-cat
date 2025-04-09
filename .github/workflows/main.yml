@@ -18,7 +18,8 @@ jobs:
       - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
       - run: npm ci
       - run: npm run build
-      - with:
+      - uses: actions/upload-artifact@v4
+        with:
           name: build
           path: build/
     
