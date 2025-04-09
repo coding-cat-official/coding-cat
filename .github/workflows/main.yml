@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run unit tests
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
       - run: npm ci
       - run: npm run test
   build:
