@@ -22,8 +22,6 @@ function EmptyChild() {
 
 const userId = window.location.pathname.split('/')[1];
 const basename = userId ? `/${userId}` : '/';
-console.log(userId);
-console.log(basename);
 const router = createBrowserRouter([
   {
     path: "/",
