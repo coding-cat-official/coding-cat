@@ -5,4 +5,4 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: cd src/problems && ls
+      - run: cd src/public-problems && ls
