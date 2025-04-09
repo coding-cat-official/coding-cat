@@ -5,6 +5,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Run unit tests
       - uses: actions/checkout@v4
       - run: npm ci
       - run: npm run test
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Build problem list and static files
+      - uses: actions/checkout@v4
+      - run: git submodule sync
+      - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
+      - run: npm ci
+      - run: npm run build
+      - with:
+          name: build
+          path: build/
+    
