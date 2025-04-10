@@ -32,14 +32,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
+          # Upload the artifacts
           path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
