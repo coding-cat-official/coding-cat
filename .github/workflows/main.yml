@@ -1,5 +1,9 @@
 name: Coding Cat CI
-on: push
+on:
+  push:
+
+  # Allows the workflow to be callable
+  workflow_call:
 
 jobs:
   test:
