@@ -29,11 +29,11 @@ jobs:
         with:
           name: build
           path: build/
-  deploy:
-    name: Deploy the app
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-      - run: ls
-      - run: rsync -r build/ ${{ vars.DEPLOY_URL }}
+  # deploy:
+  #   name: Deploy the app
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #     - run: ls
+  #     - run: rsync -r build/ ${{ vars.DEPLOY_URL }}
