@@ -1,6 +1,13 @@
 name: Coding Cat CI
 on:
   push:
+    branches: [main, staging]
+  
+  pull_request:
+    types:
+      - opened
+      - edited
+    branches: [main, staging]
 
   # Allows the workflow to be callable
   workflow_call:
