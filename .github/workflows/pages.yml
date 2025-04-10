@@ -8,6 +8,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+  # Allows the workflow to be callable
+  workflow_call:
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -21,8 +24,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  main:
+    uses: ./.github/workflows/main.yml
   # Single deploy job since we're just deploying
   deploy:
+    # Depends on the main Coding Cat CI workflow
+    needs: main
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
