@@ -47,6 +47,7 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [fontSize, setFontSize] = useState(14);
 
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     setActiveProblem(problem.meta.name);
@@ -55,6 +56,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
+    }
+
+    function increaseFontSize() {
+      if (fontSize !== 30) setFontSize(fontSize + 4);
+    }
+
+    function decreaseFontSize() {
+      if (fontSize !== 10) setFontSize(fontSize - 4);
     }
 
     return (
@@ -69,12 +78,15 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                       </Markdown >
                   </Typography>
                 </Box>
+                {/* fix button styling */}
+                <Button onClick={increaseFontSize}>+</Button>
+                <Button onClick={decreaseFontSize}>-</Button>
                 <Editor
                     height="10em"
                     className="problem-ide-editor"
                     defaultLanguage="python"
                     value={code}
-                    options={{ minimap: { enabled: false }}}
+                    options={{ minimap: { enabled: false }, fontSize: fontSize}}
                     onChange={changeCode} />
                 <Box sx={{
                   display: "flex",
