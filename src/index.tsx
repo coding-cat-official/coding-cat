@@ -14,6 +14,9 @@ import App, { problemListLoader } from './routes/root';
 import ProblemView, { problemLoader } from './routes/ProblemView';
 import ErrorPage from './error';
 
+import Auth from './routes/Auth'
+import AccountWrapper from './routes/AccountWrapper';
+
 function EmptyChild() {
   return <div>
     <p> Select a problem on the left to begin! </p>
@@ -38,6 +41,14 @@ const router = createBrowserRouter([
         element: <ProblemView />,
         loader: problemLoader,
       },
+      {
+        path: "signin",
+        element: <Auth />
+      },
+      {
+        path: "profile",
+        element: <AccountWrapper />
+      }
     ],
   },
 ],
