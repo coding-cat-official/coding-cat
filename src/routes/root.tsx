@@ -96,37 +96,21 @@ export default function App() {
             Coding Cat!
           </Typography>
         </Stack>
+        <Outlet context={{ setActiveProblem, session }} />
         <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
           {session ? (
             <>
-              <button onClick={() => setShowProfile(true)}>Profile</button>
+              <Link to="/profile">
+                <button>Profile</button>
+              </Link>
               <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
             </>
           ) : (
-            <button onClick={() => setShowLogin(true)}>Login</button>
+            <Link to="/signin">
+              <button>Login</button>
+            </Link>
           )}
         </Box>
-        <Outlet context={{ setActiveProblem, session }} />
-        {showLogin && (
-          <div className="auth-overlay">
-            <Auth />
-            <button onClick={() => setShowLogin(false)}>Close</button>
-          </div>
-        )}
-        {showProfile && session && (
-          <Box
-            onClick={() => setShowProfile(false)}
-          >
-            <Box
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Account session={session} />
-              <Box mt={2}>
-                <button onClick={() => setShowProfile(false)}>Close</button>
-              </Box>
-            </Box>
-          </Box>
-        )}
       </Stack>
     </Box>;
   </Box>;
