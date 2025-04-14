@@ -60,7 +60,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     return (
         <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
           <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2 }}>
+            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "10px" }}>
                 <Box sx={{ width: "100%" }}>
                   <Typography level="title-lg"> { problem.meta.title } </Typography>
                   <Typography level="body-md">
@@ -76,8 +76,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                     value={code}
                     options={{ minimap: { enabled: false }}}
                     onChange={changeCode} />
-                <Box>
-                  <Button onClick={() => runCode(code)}>Run</Button>
+                <Box sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "10px"
+                  }}>
+                  <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
+                  <Button sx={{ flex: 1 }} variant="outlined" onClick={() => changeCode(problem.starter)}
+                    disabled={code === problem.starter}>Reset</Button>
                 </Box>
             </Sheet>
           </Stack>
