@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 export default function Account({ session }) {
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState(null)
+  const [studentId, setStudentId] = useState(null)
 
   useEffect(() => {
     let ignore = false
@@ -13,7 +14,7 @@ export default function Account({ session }) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`username`)
+        .select(`username, student_id`)
         .eq('profile_id', user.id)
         .single()
 
@@ -22,6 +23,7 @@ export default function Account({ session }) {
           console.warn(error)
         } else if (data) {
           setUsername(data.username)
+          setStudentId(data.student_id)
         }
       }
       setLoading(false)
@@ -43,6 +45,7 @@ export default function Account({ session }) {
     const updates = {
       profile_id: user.id,
       username,
+      student_id: studentId,
       updated_at: new Date(),
     }
 
@@ -69,6 +72,17 @@ export default function Account({ session }) {
           required
           value={username || ''}
           onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="studentId">Sudent Id</label>
+        <input
+          id="studentId"
+          type="Number"
+          required
+          value={studentId || ''}
+          onChange={(e) => setStudentId(e.target.value)}
         />
       </div>
 
