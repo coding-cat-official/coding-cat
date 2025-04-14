@@ -6,8 +6,8 @@ import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
 import { supabase } from '../supabaseClient'
-import Auth from '../Auth'
-import Account from '../Account'
+import Auth from './Auth'
+import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
 import List from '@mui/joy/List';
