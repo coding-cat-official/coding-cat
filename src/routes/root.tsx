@@ -5,6 +5,11 @@ import { Link } from 'react-router-dom';
 import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
+import { supabase } from '../supabaseClient'
+import Auth from '../Auth'
+import Account from '../Account'
+import type { Session } from '@supabase/supabase-js'
+
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListSubheader from '@mui/joy/ListSubheader';
@@ -21,9 +26,22 @@ import DialogContent from '@mui/joy/DialogContent';
 import logo from './coding-cat.png';
 
 export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+  const [showLogin, setShowLogin] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
     <Box
@@ -78,7 +96,37 @@ export default function App() {
             Coding Cat!
           </Typography>
         </Stack>
-        <Outlet context={{ setActiveProblem }} />
+        <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
+          {session ? (
+            <>
+              <button onClick={() => setShowProfile(true)}>Profile</button>
+              <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
+            </>
+          ) : (
+            <button onClick={() => setShowLogin(true)}>Login</button>
+          )}
+        </Box>
+        <Outlet context={{ setActiveProblem, session }} />
+        {showLogin && (
+          <div className="auth-overlay">
+            <Auth />
+            <button onClick={() => setShowLogin(false)}>Close</button>
+          </div>
+        )}
+        {showProfile && session && (
+          <Box
+            onClick={() => setShowProfile(false)}
+          >
+            <Box
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Account session={session} />
+              <Box mt={2}>
+                <button onClick={() => setShowProfile(false)}>Close</button>
+              </Box>
+            </Box>
+          </Box>
+        )}
       </Stack>
     </Box>;
   </Box>;
