@@ -20,7 +20,7 @@ export default function Account({ session }) {
 
       if (!ignore) {
         if (error) {
-          alert(error)
+          alert(error.message)
           console.warn(error)
         } else if (data) {
           setUsername(data.username)
