@@ -20,6 +20,7 @@ export default function Account({ session }) {
 
       if (!ignore) {
         if (error) {
+          alert(error)
           console.warn(error)
         } else if (data) {
           setUsername(data.username)
@@ -76,7 +77,7 @@ export default function Account({ session }) {
       </div>
 
       <div>
-        <label htmlFor="studentId">Sudent Id</label>
+        <label htmlFor="studentId">Student Id</label>
         <input
           id="studentId"
           type="Number"
