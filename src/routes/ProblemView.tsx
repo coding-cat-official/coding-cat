@@ -47,6 +47,7 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [fontSize, setFontSize] = useState(14);
 
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     setActiveProblem(problem.meta.name);
@@ -57,10 +58,18 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+    function increaseFontSize() {
+      if (fontSize !== 30) setFontSize(fontSize + 4);
+    }
+
+    function decreaseFontSize() {
+      if (fontSize !== 10) setFontSize(fontSize - 4);
+    }
+
     return (
         <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
           <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2 }}>
+            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "5px" }}>
                 <Box sx={{ width: "100%" }}>
                   <Typography level="title-lg"> { problem.meta.title } </Typography>
                   <Typography level="body-md">
@@ -69,15 +78,25 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                       </Markdown >
                   </Typography>
                 </Box>
+                <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                  <Button onClick={decreaseFontSize}>A-</Button>
+                  <Button onClick={increaseFontSize}>A+</Button>
+                </Box>
                 <Editor
                     height="10em"
                     className="problem-ide-editor"
                     defaultLanguage="python"
                     value={code}
-                    options={{ minimap: { enabled: false }}}
+                    options={{ minimap: { enabled: false }, fontSize: fontSize}}
                     onChange={changeCode} />
-                <Box>
-                  <Button onClick={() => runCode(code)}>Run</Button>
+                <Box sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "10px"
+                  }}>
+                  <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
+                  <Button sx={{ flex: 1 }} variant="outlined" onClick={() => changeCode(problem.starter)}
+                    disabled={code === problem.starter}>Reset</Button>
                 </Box>
             </Sheet>
           </Stack>
