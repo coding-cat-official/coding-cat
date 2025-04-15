@@ -5,6 +5,11 @@ import { Link } from 'react-router-dom';
 import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
+import { supabase } from '../supabaseClient'
+import Auth from './Auth'
+import Account from './Account'
+import type { Session } from '@supabase/supabase-js'
+
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListSubheader from '@mui/joy/ListSubheader';
@@ -21,9 +26,20 @@ import DialogContent from '@mui/joy/DialogContent';
 import logo from './coding-cat.png';
 
 export default function App() {
+  const [session, setSession] = useState<Session | null>(null);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
     <Box
@@ -78,7 +94,21 @@ export default function App() {
             Coding Cat!
           </Typography>
         </Stack>
-        <Outlet context={{ setActiveProblem }} />
+        <Outlet context={{ setActiveProblem, session }} />
+        <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
+          {session ? (
+            <>
+              <Link to="/profile">
+                <button>Profile</button>
+              </Link>
+              <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
+            </>
+          ) : (
+            <Link to="/signin">
+              <button>Login</button>
+            </Link>
+          )}
+        </Box>
       </Stack>
     </Box>;
   </Box>;
