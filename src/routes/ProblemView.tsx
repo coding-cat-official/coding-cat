@@ -69,7 +69,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     return (
         <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
           <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "5px" }}>
                 <Box sx={{ width: "100%" }}>
                   <Typography level="title-lg"> { problem.meta.title } </Typography>
                   <Typography level="body-md">
@@ -78,9 +78,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                       </Markdown >
                   </Typography>
                 </Box>
-                {/* fix button styling */}
-                <Button onClick={increaseFontSize}>+</Button>
-                <Button onClick={decreaseFontSize}>-</Button>
+                <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                  <Button onClick={decreaseFontSize}>A-</Button>
+                  <Button onClick={increaseFontSize}>A+</Button>
+                </Box>
                 <Editor
                     height="10em"
                     className="problem-ide-editor"
