@@ -13,6 +13,8 @@ export default function useEval(problem: Problem, session: Session | null): Eval
         const response = (e as CustomEvent).detail;
         setEvalResponse(response);
         console.log(response);
+
+        
     };
 
     useEffect(() => { setEvalResponse(null); }, [problem]);

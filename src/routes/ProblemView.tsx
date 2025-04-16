@@ -16,6 +16,8 @@ import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
 import Table from '@mui/joy/Table';
 
+import type { Session } from '@supabase/supabase-js'
+
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
 const TEST_CASE_FAILED = '❌';
@@ -49,10 +51,11 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [fontSize, setFontSize] = useState(14);
 
+    const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     setActiveProblem(problem.meta.name);
 
-    const [evalResponse, runCode] = useEval(problem);
+    const [evalResponse, runCode] = useEval(problem, session);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
