@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { Problem, EvalResponse } from '../types';
 
@@ -9,20 +9,21 @@ export type Eval = [EvalResponse | null, (code: string) => void];
 
 export default function useEval(problem: Problem, session: Session | null): Eval {
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
+    const currentCodeRef = useRef<string>('');
 
     const onEvalFinished: EventListener = async (e) => {
         const response = (e as CustomEvent).detail;
         setEvalResponse(response);
         console.log(response);
 
-        if(response.status =='success' && session?.user){
+        if(response.status === 'success' && session?.user){
             const numPassed = response.report.filter((r: any) => r.equal).length;
             const totalTests = response.report.length;
 
             const submission = {
                 problem_title: problem.meta.title,
                 problem_category: problem.meta.category,
-                code: currentCode,
+                code: currentCodeRef.current,
                 passed_tests: numPassed,
                 submitted_at: new Date().toISOString(),
                 profile_id: session.user.id,
@@ -47,10 +48,8 @@ export default function useEval(problem: Problem, session: Session | null): Eval
         };
     }, []);
 
-    let currentCode = '';
-
     function runCode(code: string) {
-        currentCode = code;
+        currentCodeRef.current = code;
         document.dispatchEvent(
           new CustomEvent(
               'eval', {
