@@ -1,22 +1,22 @@
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
 export default function Auth() {
-  const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (event: FormEvent) => {
+    event.preventDefault();
 
-    setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({ email })
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({ email });
 
     if (error) {
-      alert(error.error_description || error.message)
+      alert(error.message);
     } else {
-      alert('Check your email for the login link!')
+      alert('Check your email for the login link!');
     }
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
