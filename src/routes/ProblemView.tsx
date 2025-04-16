@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
@@ -17,6 +17,7 @@ import Typography from '@mui/joy/Typography';
 import Table from '@mui/joy/Table';
 
 import type { Session } from '@supabase/supabase-js'
+import { supabase } from '../supabaseClient';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -56,6 +57,37 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     setActiveProblem(problem.meta.name);
 
     const [evalResponse, runCode] = useEval(problem, session);
+    const hasLoadedLatestSubmission = useRef(false);
+    
+    useEffect(() => {
+      async function fetchLatestSubmission() {
+        if (!session?.user) return;
+
+        const { data, error } = await supabase
+        .from('submissions')
+        .select('code')
+        .eq('profile_id', session.user.id)
+        .eq('problem_title', problem.meta.title)
+        .order('submitted_at', { ascending: false})
+        .limit(1)
+        .single();
+
+        if (error) {
+          console.warn('Could not load latest submission: ', error.message);
+          alert(error.message);
+          return;
+        }
+
+        if (data && data.code) {
+          setCode(data.code);
+        }
+      }
+
+      if (!hasLoadedLatestSubmission.current){
+        fetchLatestSubmission();
+        hasLoadedLatestSubmission.current = true;
+      }
+    }, [problem.meta.title, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
