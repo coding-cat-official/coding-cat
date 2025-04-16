@@ -26,7 +26,7 @@ export default function Auth() {
   }
 
   return (
-    <Stack sx={{ width: "100%" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
+    <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
       <Typography level="h2">Login</Typography>
       <form style={{ width: "25%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }} onSubmit={handleLogin}>
         <Box sx={{ width: "100%" }}>
