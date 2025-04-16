@@ -57,7 +57,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     setActiveProblem(problem.meta.name);
 
     const [evalResponse, runCode] = useEval(problem, session);
-    const hasLoadedLatestSubmission = useRef(false);
     
     useEffect(() => {
       async function fetchLatestSubmission() {
@@ -83,10 +82,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         }
       }
 
-      if (!hasLoadedLatestSubmission.current){
-        fetchLatestSubmission();
-        hasLoadedLatestSubmission.current = true;
-      }
+      fetchLatestSubmission();
+
     }, [problem.meta.title, session, setCode]);
 
     function changeCode(e: string | undefined) {
