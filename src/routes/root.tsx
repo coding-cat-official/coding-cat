@@ -24,6 +24,7 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
 
 import logo from './coding-cat.png';
+import { Button } from '@mui/joy';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -99,19 +100,19 @@ export default function App() {
           {session ? (
             <>
               <Link to="/profile">
-                <button>Profile</button>
+                <Button>Profile</Button>
               </Link>
-              <button onClick={() => supabase.auth.signOut()}>Sign Out</button>
+              <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
             </>
           ) : (
             <Link to="/signin">
-              <button>Login</button>
+              <Button>Login</Button>
             </Link>
           )}
         </Box>
       </Stack>
-    </Box>;
-  </Box>;
+    </Box>
+  </Box>
 };
 
 export async function problemListLoader(): Promise<Problem[]> {

@@ -1,62 +1,63 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { supabase } from '../supabaseClient'
+import { Session } from '@supabase/supabase-js'
 
-export default function Account({ session }) {
-  const [loading, setLoading] = useState(true)
-  const [username, setUsername] = useState(null)
-  const [studentId, setStudentId] = useState(null)
+export default function Account({ session }: { session: Session }) {
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [studentId, setStudentId] = useState("");
 
   useEffect(() => {
-    let ignore = false
+    let ignore = false;
     async function getProfile() {
-      setLoading(true)
-      const { user } = session
+      setLoading(true);
+      const { user } = session;
 
       const { data, error } = await supabase
         .from('profiles')
         .select(`username, student_id`)
         .eq('profile_id', user.id)
-        .single()
+        .single();
 
       if (!ignore) {
         if (error) {
-          alert(error.message)
-          console.warn(error)
+          alert(error.message);
+          console.warn(error);
         } else if (data) {
-          setUsername(data.username)
-          setStudentId(data.student_id)
+          setUsername(data.username);
+          setStudentId(data.student_id);
         }
       }
-      setLoading(false)
+      setLoading(false);
     }
 
-    getProfile()
+    getProfile();
 
     return () => {
-      ignore = true
+      ignore = true;
     }
   }, [session])
 
-  async function updateProfile(event, avatarUrl) {
-    event.preventDefault()
+  async function updateProfile(event: FormEvent) {
+    event.preventDefault();
 
-    setLoading(true)
-    const { user } = session
+    setLoading(true);
+    const { user } = session;
 
     const updates = {
       profile_id: user.id,
       username,
       student_id: studentId,
       updated_at: new Date(),
-    }
+    };
 
-    const { error } = await supabase.from('profiles').upsert(updates)
+    const { error } = await supabase.from('profiles').upsert(updates);
 
     if (error) {
-      alert(error.message)
+      alert(error.message);
     } 
     
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
