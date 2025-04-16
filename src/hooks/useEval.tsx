@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 
 import { Problem, EvalResponse } from '../types';
 
+import type { Session } from '@supabase/supabase-js'
+
 export type Eval = [EvalResponse | null, (code: string) => void];
 
-export default function useEval(problem: Problem): Eval {
+export default function useEval(problem: Problem, session: Session | null): Eval {
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
 
     const onEvalFinished: EventListener = (e) => {
