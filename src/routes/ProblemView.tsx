@@ -104,9 +104,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-        <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
-          <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "5px" }}>
+        <Stack sx={{ p: 1, width: "80%", display: "flex"}} direction="row" spacing={2} alignItems="start" >
+          <Stack sx={{ }} direction="column" spacing={2} alignItems="center">
+            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "5px"}}>
                 <Box sx={{ width: "100%" }}>
                   <Typography level="title-lg"> { problem.meta.title } </Typography>
                   <Typography level="body-md">
