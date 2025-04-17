@@ -42,11 +42,11 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
+  return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
     <Box
       sx={{
         width: '6em',
-        height: '100vh',
+        height: '100%',
         backgroundColor: '#c8cada',
         cursor: 'pointer',
         left: 0,
