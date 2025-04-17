@@ -58,9 +58,12 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const [evalResponse, runCode] = useEval(problem, session);
     
+    const hasFetchedProblems = useRef<Set<string>>(new Set());
+
     useEffect(() => {
       async function fetchLatestSubmission() {
         if (!session?.user) return;
+        if (hasFetchedProblems.current.has(problem.meta.name)) return;
 
         const { data, error } = await supabase
         .from('submissions')
@@ -73,18 +76,20 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
         if (error) {
           console.warn('Could not load latest submission: ', error.message);
-          alert(error.message);
           return;
         }
-
-        if (data && data.code) {
+        
+        if (data?.code){
           setCode(data.code);
+        } else {
+          setCode(problem.starter);
         }
+        hasFetchedProblems.current.add(problem.meta.name);
       }
 
       fetchLatestSubmission();
 
-    }, [problem.meta.title, session, setCode]);
+    }, [problem.meta.name, problem.meta.title, problem.starter, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
