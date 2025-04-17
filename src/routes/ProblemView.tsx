@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
@@ -15,6 +15,9 @@ import Sheet from '@mui/joy/Sheet';
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
 import Table from '@mui/joy/Table';
+
+import type { Session } from '@supabase/supabase-js'
+import { supabase } from '../supabaseClient';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -49,10 +52,44 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [fontSize, setFontSize] = useState(14);
 
+    const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     setActiveProblem(problem.meta.name);
 
-    const [evalResponse, runCode] = useEval(problem);
+    const [evalResponse, runCode] = useEval(problem, session);
+    
+    const hasFetchedProblems = useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+      async function fetchLatestSubmission() {
+        if (!session?.user) return;
+        if (hasFetchedProblems.current.has(problem.meta.name)) return;
+
+        const { data, error } = await supabase
+        .from('submissions')
+        .select('code')
+        .eq('profile_id', session.user.id)
+        .eq('problem_title', problem.meta.title)
+        .order('submitted_at', { ascending: false})
+        .limit(1)
+        .single();
+
+        if (error) {
+          console.warn('Could not load latest submission: ', error.message);
+          return;
+        }
+        
+        if (data?.code){
+          setCode(data.code);
+        } else {
+          setCode(problem.starter);
+        }
+        hasFetchedProblems.current.add(problem.meta.name);
+      }
+
+      fetchLatestSubmission();
+
+    }, [problem.meta.name, problem.meta.title, problem.starter, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
