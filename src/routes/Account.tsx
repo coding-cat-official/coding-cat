@@ -157,7 +157,8 @@ export default function Account({ session }: { session: Session }) {
         <ul>
           {progress.map((item) => (
             <li key={item.category}>
-              {item.completed} / {item.total} problems completed in <strong>{item.category}</strong>
+              {item.completed} / {item.total} problems completed in <strong>{item.category} </strong>
+              ({Math.round((item.completed / item.total) * 100)}%)
             </li>
           ))}
         </ul>
