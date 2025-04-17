@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
+import { Stack, Typography } from '@mui/joy';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -93,12 +94,25 @@ export default function Account({ session }: { session: Session }) {
           {loading ? 'Loading ...' : 'Update'}
         </button>
       </div>
-
-      <div>
-        <button className="button block" type="button" onClick={() => supabase.auth.signOut()}>
-          Sign Out
-        </button>
-      </div>
     </form>
+  )
+}
+
+interface UserProps {
+  username: string
+  email: string
+  studentId: string
+}
+
+function UserInfo({username, email, studentId}: UserProps) {
+  const [update, setUpdate] = useState(false);
+
+  return (
+    <Stack alignItems="center">
+      <img src="" alt="pfp"></img>
+      <Typography level="h2">{username}</Typography>
+      <Typography>{email}</Typography>
+      <Typography>#{studentId}</Typography>
+    </Stack>
   )
 }
