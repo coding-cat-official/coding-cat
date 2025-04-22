@@ -28,7 +28,7 @@ export interface Problem {
 }
 
 export type Progress = {
-    category:string;
-    completed:number;
-    total:number ;
+    category: string;
+    completed: number;
+    total: number;
 }
