@@ -1,7 +1,19 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { Button, FormLabel, IconButton, Input, Stack, Typography } from '@mui/joy';
+import { Accordion,
+  AccordionDetails,
+  AccordionGroup, 
+  AccordionSummary, 
+  accordionSummaryClasses, 
+  Button, 
+  FormLabel, 
+  IconButton, 
+  Input, 
+  LinearProgress, 
+  Stack, 
+  Typography 
+} from '@mui/joy';
 import problems from '../public-problems/problems';
 import { Progress } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
@@ -208,17 +220,48 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack>
+    <Stack sx={{ maxHeight: "100%" }} gap={2}>
       <Typography level="h2">Your Progress</Typography>
-      <ul>
-        {progress.map((item) => (
-          <li key={item.category}>
-            {item.completed} / {item.total} problems completed in <strong>{item.category} </strong>
-            ({Math.round((item.completed / item.total) * 100)}%)
-          </li>
-        ))}
-      </ul>
+      {progress.map((item) => (
+        <ProgressCard item={item} />
+      ))}
     </Stack>
+  )
+}
+
+function ProgressCard({ item }: { item: Progress }) {
+  const percentageCompleted = Math.round((item.completed / item.total) * 100);
+  // capitalize first letter of each category
+  const categoryName = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+
+  // TODO:
+  // - fix height changing when accordion is expanded
+  // - fix border radius on hover
+
+  return (
+    <AccordionGroup sx={{
+      borderRadius: "lg",
+      maxWidth: "90%",
+      [`& .${accordionSummaryClasses.button}`]: {
+        paddingBlock: '1rem',
+      }
+      }} size="lg" variant="soft">
+      <Accordion>
+        <AccordionSummary>
+          <Stack sx={{ width: "100%" }} direction="column" gap={1}>
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" gap={2}>
+                <Typography level="h3">{categoryName}</Typography>
+                <Typography>{item.completed} / {item.total}</Typography>
+              </Stack>
+              <Typography level="h4">{percentageCompleted}%</Typography>
+            </Stack>
+            <LinearProgress sx={{ backgroundColor: "#D5D5D5" }} color="success" determinate value={percentageCompleted} size="lg" />
+          </Stack>
+        </AccordionSummary>
+        <AccordionDetails>This is where all the types of problems and their completion rates will go.</AccordionDetails>
+      </Accordion>
+    </AccordionGroup>
   )
 }
 
