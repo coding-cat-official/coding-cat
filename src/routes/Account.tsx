@@ -126,8 +126,8 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 
     const updates = {
       profile_id: user.id,
-      username,
-      student_id: studentId,
+      username: name,
+      student_id: id,
       updated_at: new Date(),
     };
 
@@ -200,7 +200,7 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack flex={2} alignItems="center">
+    <Stack flex={2}>
       <Typography level="h2">Your Progress</Typography>
       <ul>
         {progress.map((item) => (
