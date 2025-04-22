@@ -29,3 +29,21 @@ code {
 .mono {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+@media (max-width: 1000px){
+  .problem-ide-editor div{
+    width: 900px;
+  }
+
+  .MuiStack-root .css-tjqeos-JoyStack-root{
+    flex-direction: column;
+  }
+
+  .MuiBox-root .css-f2qu9d{
+    margin-left: 0px;
+  }
+
+  .MuiBox-root .css-t0w1d9{
+    margin-top: 10px;
+  }
+}
