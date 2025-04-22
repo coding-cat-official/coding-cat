@@ -3,12 +3,14 @@ import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Stack, Typography } from '@mui/joy';
 import problems from '../public-problems/problems';
+import { Progress } from '../types';
+import { NotePencil } from '@phosphor-icons/react';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [studentId, setStudentId] = useState("");
-  const [progress, setProgress] = useState<{ category:string, completed:number, total:number }[]>([]);
+  const [progress, setProgress] = useState<Progress[]>([]);
 
   useEffect(() => {
     let ignore = false;
@@ -112,8 +114,10 @@ export default function Account({ session }: { session: Session }) {
   }
 
   return (
-    <div>
-      <form onSubmit={updateProfile} className="form-widget">
+    <Stack width="100%" height="100%" direction="row">
+      <UserInfo username={username} email={session.user.email || ""} studentId={studentId} />
+      <ProgressList progress={progress} />
+      {/* <form onSubmit={updateProfile} className="form-widget">
         <div>
           <label htmlFor="email">Email</label>
           <input id="email" type="text" value={session.user.email} disabled />
@@ -145,26 +149,10 @@ export default function Account({ session }: { session: Session }) {
             {loading ? 'Loading ...' : 'Update'}
           </button>
         </div>
+      </form> */}
 
-        <div>
-          <button className="button block" type="button" onClick={() => supabase.auth.signOut()}>
-            Sign Out
-          </button>
-        </div>
-      </form>
-
-      <div>
-        <h1>Your Progress</h1>
-        <ul>
-          {progress.map((item) => (
-            <li key={item.category}>
-              {item.completed} / {item.total} problems completed in <strong>{item.category} </strong>
-              ({Math.round((item.completed / item.total) * 100)}%)
-            </li>
-          ))}
-        </ul>
-      </div>   
-    </div> 
+        
+    </Stack> 
   )
 }
 
@@ -174,15 +162,34 @@ interface UserProps {
   studentId: string
 }
 
-function UserInfo({username, email, studentId}: UserProps) {
+function UserInfo({ username, email, studentId }: UserProps) {
   const [update, setUpdate] = useState(false);
 
   return (
-    <Stack alignItems="center">
+    <Stack flex={1} alignItems="center" justifyContent="center">
       <img src="" alt="pfp"></img>
-      <Typography level="h2">{username}</Typography>
+      <Stack direction="row" alignItems="center" gap={1}>
+        <Typography level="h2">{username}</Typography>
+        <NotePencil size={23} />
+      </Stack>
       <Typography>{email}</Typography>
       <Typography>#{studentId}</Typography>
+    </Stack>
+  )
+}
+
+function ProgressList({ progress }: { progress: Progress[] }) {
+  return (
+    <Stack flex={2} alignItems="center">
+      <Typography level="h2">Your Progress</Typography>
+      <ul>
+        {progress.map((item) => (
+          <li key={item.category}>
+            {item.completed} / {item.total} problems completed in <strong>{item.category} </strong>
+            ({Math.round((item.completed / item.total) * 100)}%)
+          </li>
+        ))}
+      </ul>
     </Stack>
   )
 }
