@@ -11,6 +11,7 @@ export default function Account({ session }: { session: Session }) {
   const [username, setUsername] = useState("");
   const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [view, setView] = useState<"progress" | "reflections">("progress");
 
   useEffect(() => {
     let ignore = false;
@@ -96,7 +97,14 @@ export default function Account({ session }: { session: Session }) {
   return (
     <Stack width="100%" height="100%" direction="row">
       <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
-      <ProgressList progress={progress} />
+      <Stack marginTop={5} flex={2} gap={2}>
+        <Stack direction="row" gap={1}>
+          <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
+          <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
+        </Stack>
+
+        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections /> }
+      </Stack>
     </Stack> 
   )
 }
@@ -200,7 +208,7 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack flex={2}>
+    <Stack>
       <Typography level="h2">Your Progress</Typography>
       <ul>
         {progress.map((item) => (
@@ -210,6 +218,15 @@ function ProgressList({ progress }: { progress: Progress[] }) {
           </li>
         ))}
       </ul>
+    </Stack>
+  )
+}
+
+function Reflections() {
+  return (
+    <Stack>
+      <Typography level="h2">Your Reflections</Typography>
+      <Typography>Reflections haven't been implemented yet!</Typography>
     </Stack>
   )
 }
