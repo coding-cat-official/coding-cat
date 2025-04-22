@@ -86,6 +86,7 @@ export default function App() {
         sx={{
           width: '100%',
           minHeight: "100%",
+          height: "100%",
           justifyContent: "start",
           alignItems: "center",
         }} >
