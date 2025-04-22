@@ -17,7 +17,7 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
+import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
@@ -43,31 +43,12 @@ export default function App() {
   }, []);
 
   return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
-    <Box
-      sx={{
-        width: '6em',
-        height: '100%',
-        backgroundColor: '#c8cada',
-        cursor: 'pointer',
-        left: 0,
-        top: 0,
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',  // Center the arrow vertically
-        '&::after': {
-          content: '""',
-          display: 'block',
-          width: 0,
-          height: 0,
-          borderTop: '30px solid transparent',
-          borderBottom: '30px solid transparent',
-          borderLeft: '50px solid white', // Arrow color
-          marginLeft: '30px', // Position the arrow
-          paddingRight: '1em',
-        },
-      }}
+    <Box sx={{ margin: '10px', cursor: 'pointer'}}
       onClick={() => setOpen(true)}
-    />
+    >
+      <MenuIcon sx={{ fontSize: 40 }}/>
+    </Box>
+
     <Box style={{ minHeight: "100%", flex: 1 }}>
       <Drawer open={open} onClose={() => setOpen(false)}>
         <ModalClose />
