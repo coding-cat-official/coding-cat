@@ -42,12 +42,8 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
-    <Box sx={{ margin: '10px', cursor: 'pointer'}}
-      onClick={() => setOpen(true)}
-    >
-      <MenuIcon sx={{ fontSize: 40 }}/>
-    </Box>
+  return <Box sx={{ height: '100%'}}>
+    
 
     <Box style={{ minHeight: "100%", flex: 1 }}>
       <Drawer open={open} onClose={() => setOpen(false)}>
@@ -70,6 +66,9 @@ export default function App() {
           justifyContent: "start",
           alignItems: "center",
         }} >
+        <Button sx={{ position: 'absolute', left: 0, top: 0, margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
+          <MenuIcon sx={{ fontSize: 40 }}/>
+        </Button>
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center">
           <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
           <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
