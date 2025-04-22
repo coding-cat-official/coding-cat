@@ -1,7 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { Stack, Typography } from '@mui/joy';
+import { Button, FormLabel, IconButton, Input, Stack, Typography } from '@mui/joy';
 import problems from '../public-problems/problems';
 import { Progress } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
@@ -91,9 +91,36 @@ export default function Account({ session }: { session: Session }) {
     fetchProgress();
   }, [session]);
 
+  
+
+  return (
+    <Stack width="100%" height="100%" direction="row">
+      <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
+      <ProgressList progress={progress} />
+    </Stack> 
+  )
+}
+
+interface UserProps {
+  username: string
+  email: string
+  studentId: string
+  session: Session
+}
+
+function UserInfo({ username, email, studentId, session }: UserProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [name, setName] = useState(username);
+  const [id, setId] = useState(studentId);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
 
+    setError("");
+    setSuccess("");
     setLoading(true);
     const { user } = session;
 
@@ -107,73 +134,66 @@ export default function Account({ session }: { session: Session }) {
     const { error } = await supabase.from('profiles').upsert(updates);
 
     if (error) {
-      alert(error.message);
-    } 
+      setError(error.message);
+    } else {
+      setIsUpdating(false);
+    }
     
+    setSuccess("Profile updated successfully!");
     setLoading(false);
   }
 
   return (
-    <Stack width="100%" height="100%" direction="row">
-      <UserInfo username={username} email={session.user.email || ""} studentId={studentId} />
-      <ProgressList progress={progress} />
-      {/* <form onSubmit={updateProfile} className="form-widget">
-        <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="text" value={session.user.email} disabled />
-        </div>
-        <div>
-          <label htmlFor="username">Name</label>
-          <input
-            id="username"
-            type="text"
-            required
-            value={username || ''}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="studentId">Student Id</label>
-          <input
-            id="studentId"
-            type="Number"
-            required
-            value={studentId || ''}
-            onChange={(e) => setStudentId(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <button className="button block primary" type="submit" disabled={loading}>
-            {loading ? 'Loading ...' : 'Update'}
-          </button>
-        </div>
-      </form> */}
-
-        
-    </Stack> 
-  )
-}
-
-interface UserProps {
-  username: string
-  email: string
-  studentId: string
-}
-
-function UserInfo({ username, email, studentId }: UserProps) {
-  const [update, setUpdate] = useState(false);
-
-  return (
     <Stack flex={1} alignItems="center" justifyContent="center">
-      <img src="" alt="pfp"></img>
-      <Stack direction="row" alignItems="center" gap={1}>
-        <Typography level="h2">{username}</Typography>
-        <NotePencil size={23} />
-      </Stack>
-      <Typography>{email}</Typography>
-      <Typography>#{studentId}</Typography>
+      {
+        isUpdating ? 
+        <form onSubmit={updateProfile} className="form-widget">
+          <Stack direction="column" gap={1} alignItems="center">
+            <Typography level="h2">Edit Profile</Typography>
+            <FormLabel>Name</FormLabel>
+            <Input
+              placeholder="Enter your name..."
+              value={name}
+              required
+              onChange={(e) => setName(e.target.value)}
+            />
+            <FormLabel>Email</FormLabel>
+            <Input
+              value={email}
+              required
+              disabled
+            />
+            <FormLabel>Student ID</FormLabel>
+            <Input
+              placeholder="Enter your student ID..."
+              value={id}
+              required
+              onChange={(e) => setId(e.target.value)}
+            />
+
+            <Stack direction="row" gap={1}>
+              <Button disabled={loading} type="submit">
+                { loading ? 'Loading ...' : 'Update' }
+              </Button>
+              <Button onClick={() => setIsUpdating(false)}>Cancel</Button>
+            </Stack>
+
+            <Typography color="danger">{error}</Typography>
+          </Stack>
+        </form> :
+        <>
+          <img src="" alt="pfp"></img>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography level="h2">{username}</Typography>
+            <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
+              <NotePencil size={23} />
+            </IconButton>
+          </Stack>
+          <Typography>{email}</Typography>
+          <Typography>#{studentId}</Typography>
+          <Typography color="success">{success}</Typography>
+        </>
+      }
     </Stack>
   )
 }
