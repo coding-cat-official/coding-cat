@@ -26,3 +26,9 @@ export interface Problem {
     };
     io: Array<IOPair>;
 }
+
+export type Progress = {
+    category: string;
+    completed: number;
+    total: number;
+}
