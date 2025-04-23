@@ -38,9 +38,12 @@ code {
   display: flex;
 }
 
-.MuiStack-root.upper-nav{
-  justify-content: flex-end;
+.MuiBox-root.account-btns{
+  position: absolute;
+  top: 0;
+  right: 0;
 }
+
 
 @media (max-width: 1024px){
   .problem-ide-editor div{
