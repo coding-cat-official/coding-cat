@@ -108,7 +108,10 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <Stack width="100%" height="100%" direction="row">
-      <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
+      <Stack flex={1} alignItems="center" justifyContent="center" gap={5}>
+        <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
+        <Contract />
+      </Stack>
       <Stack marginTop={5} flex={2} gap={2}>
         <Stack direction="row" gap={1}>
           <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
@@ -164,7 +167,7 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
   }
 
   return (
-    <Stack flex={1} alignItems="center" justifyContent="center">
+    <Stack alignItems="center">
       {
         isUpdating ? 
         <form onSubmit={updateProfile} className="form-widget">
@@ -214,6 +217,20 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
           <Typography color="success">{success}</Typography>
         </>
       }
+    </Stack>
+  )
+}
+
+function Contract() {
+  return (
+    <Stack alignItems="center">
+      <Stack direction="row" alignItems="center" gap={1}>
+        <Typography level="h2">Contract</Typography>
+        <IconButton onClick={() => {}}>
+          <NotePencil size={23} />
+        </IconButton>
+      </Stack>
+      <Typography>contract here</Typography>
     </Stack>
   )
 }
