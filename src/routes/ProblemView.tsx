@@ -150,7 +150,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         </Stack>
       
         <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }}>
-          {evalResponse ? <Report evalResponse={evalResponse} /> : null}
+          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
         </Box>
       </Stack>
     
