@@ -17,7 +17,6 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
-import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
@@ -82,7 +81,7 @@ export default function App() {
               )}
             </Box>
             <Button sx={{ position: 'absolute', left: 0, top: 0, margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
-              <MenuIcon sx={{ fontSize: 40 }} className='menu-icon'/>
+              Menu
             </Button>
           </Stack>
         
