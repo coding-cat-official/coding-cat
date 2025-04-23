@@ -66,8 +66,11 @@ export default function App() {
           justifyContent: "start",
           alignItems: "center",
         }} >
-          <Stack>
-            <Box sx={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 1 }} className="account-btns">
+          <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
+            <Button sx={{ margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
+              Menu
+            </Button>
+            <Box sx={{ margin: '10px', display: 'flex', gap: 1 }} className="account-btns">
               {session ? (
                 <>
                   <Link to="/profile">
@@ -81,9 +84,6 @@ export default function App() {
                 </Link>
               )}
             </Box>
-            <Button sx={{ position: 'absolute', left: 0, top: 0, margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
-              Menu
-            </Button>
           </Stack>
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">

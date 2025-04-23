@@ -52,7 +52,6 @@ code {
   }
 
   .MuiStack-root .logo img, h1{
-    background-color: blue;
     max-height: 50px;
   }
   
