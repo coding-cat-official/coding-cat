@@ -220,11 +220,14 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack sx={{ maxHeight: "100%" }} gap={2}>
+    <Stack gap={2}>
       <Typography level="h2">Your Progress</Typography>
-      {progress.map((item) => (
-        <ProgressCard item={item} />
-      ))}
+      {/* looking for a better solution for the height */}
+      <Stack sx={{ height: "59vh", overflowY: "scroll" }} direction="column" gap={2}>
+        {progress.map((item) => (
+          <ProgressCard item={item} />
+        ))}
+      </Stack>
     </Stack>
   )
 }
@@ -235,7 +238,6 @@ function ProgressCard({ item }: { item: Progress }) {
   const categoryName = item.category.charAt(0).toUpperCase() + item.category.slice(1);
 
   // TODO:
-  // - fix height changing when accordion is expanded
   // - fix border radius on hover
 
   return (
