@@ -35,15 +35,12 @@ code {
     width: 900px;
   }
 
-  .MuiStack-root .css-tjqeos-JoyStack-root{
+  .MuiBox-root .problem-container{
     flex-direction: column;
   }
 
-  .MuiBox-root .css-f2qu9d{
+  .MuiBox-root .results-container{
     margin-left: 0px;
-  }
-
-  .MuiBox-root .css-t0w1d9{
     margin-top: 10px;
   }
 }
