@@ -54,6 +54,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      REACT_APP_SUPABASE_URL: ${{ secrets.REACT_APP_SUPABASE_URL }}
+      REACT_APP_SUPABASE_ANON_KEY: ${{ REACT_APP_SUPABASE_ANON_KEY }}
+
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
