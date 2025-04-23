@@ -30,18 +30,20 @@ jobs:
     name: Build problem list and static files
     needs: test
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_URL: '/coding-cat'
-      REACT_APP_SUPABASE_URL:   ${{ secrets.REACT_APP_SUPABASE_URL }}
-      REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
       - run: git submodule sync
       - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
-      - run: npm ci
+      - name: Install & build
+        env:
+          PUBLIC_URL: '/coding-cat'
+          REACT_APP_SUPABASE_URL:   ${{ secrets.REACT_APP_SUPABASE_URL }}
+          REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
+        run: |
+          npm ci
+          CI=false npm run build
       # temporarily change CI env to be false so that the job runs.
       # shouldn't have to do this later on since all the warnings will be fixed hopefully.
-      - run: CI=false npm run build
       - uses: actions/upload-artifact@v4
         with:
           name: build
