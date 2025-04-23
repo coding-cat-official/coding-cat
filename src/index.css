@@ -43,4 +43,17 @@ code {
     margin-left: 0px;
     margin-top: 10px;
   }
+
+}
+
+@media (max-width: 500px){
+  .MuiSvgIcon-root.menu-icon{
+    font-size: 20px;
+  }
+
+  .MuiStack-root .logo img, h1{
+    background-color: blue;
+    max-height: 50px;
+  }
+  
 }

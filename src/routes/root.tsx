@@ -66,30 +66,34 @@ export default function App() {
           justifyContent: "start",
           alignItems: "center",
         }} >
-        <Button sx={{ position: 'absolute', left: 0, top: 0, margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
-          <MenuIcon sx={{ fontSize: 40 }}/>
-        </Button>
-        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center">
-          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
+          <Stack>
+            <Box sx={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 1 }} className="account-btns">
+              {session ? (
+                <>
+                  <Link to="/profile">
+                    <Button>Profile</Button>
+                  </Link>
+                  <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+                </>
+              ) : (
+                <Link to="/signin">
+                  <Button>Login</Button>
+                </Link>
+              )}
+            </Box>
+            <Button sx={{ position: 'absolute', left: 0, top: 0, margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
+              <MenuIcon sx={{ fontSize: 40 }} className='menu-icon'/>
+            </Button>
+          </Stack>
+        
+        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
+          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)}/>
           <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
             Coding Cat!
           </Typography>
         </Stack>
         <Outlet context={{ setActiveProblem, session }} />
-        <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
-          {session ? (
-            <>
-              <Link to="/profile">
-                <Button>Profile</Button>
-              </Link>
-              <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
-            </>
-          ) : (
-            <Link to="/signin">
-              <Button>Login</Button>
-            </Link>
-          )}
-        </Box>
+        
       </Stack>
     </Box>
   </Box>
