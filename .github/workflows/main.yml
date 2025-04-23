@@ -31,6 +31,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     env:
+      PUBLIC_URL: '/coding-cat'
       REACT_APP_SUPABASE_URL:   ${{ secrets.REACT_APP_SUPABASE_URL }}
       REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
     steps:
