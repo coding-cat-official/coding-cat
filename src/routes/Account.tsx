@@ -1,13 +1,29 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
+import { Accordion,
+  AccordionDetails,
+  AccordionGroup, 
+  AccordionSummary, 
+  accordionSummaryClasses, 
+  Button, 
+  FormLabel, 
+  IconButton, 
+  Input, 
+  LinearProgress, 
+  Stack, 
+  Typography 
+} from '@mui/joy';
 import problems from '../public-problems/problems';
+import { Progress } from '../types';
+import { NotePencil } from '@phosphor-icons/react';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [studentId, setStudentId] = useState("");
-  const [progress, setProgress] = useState<{ category:string, completed:number, total:number }[]>([]);
+  const [progress, setProgress] = useState<Progress[]>([]);
+  const [view, setView] = useState<"progress" | "reflections">("progress");
 
   useEffect(() => {
     let ignore = false;
@@ -88,81 +104,191 @@ export default function Account({ session }: { session: Session }) {
     fetchProgress();
   }, [session]);
 
+  
+
+  return (
+    <Stack width="100%" height="100%" direction="row">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap={5}>
+        <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
+        <Contract />
+      </Stack>
+      <Stack marginTop={5} flex={2} gap={2}>
+        <Stack direction="row" gap={1}>
+          <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
+          <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
+        </Stack>
+
+        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections /> }
+      </Stack>
+    </Stack> 
+  )
+}
+
+interface UserProps {
+  username: string
+  email: string
+  studentId: string
+  session: Session
+}
+
+function UserInfo({ username, email, studentId, session }: UserProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [name, setName] = useState(username);
+  const [id, setId] = useState(studentId);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
 
+    setError("");
+    setSuccess("");
     setLoading(true);
     const { user } = session;
 
     const updates = {
       profile_id: user.id,
-      username,
-      student_id: studentId,
+      username: name,
+      student_id: id,
       updated_at: new Date(),
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
 
     if (error) {
-      alert(error.message);
-    } 
+      setError(error.message);
+    } else {
+      setIsUpdating(false);
+    }
     
+    setSuccess("Profile updated successfully!");
     setLoading(false);
   }
 
   return (
-    <div>
-      <form onSubmit={updateProfile} className="form-widget">
-        <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="text" value={session.user.email} disabled />
-        </div>
-        <div>
-          <label htmlFor="username">Name</label>
-          <input
-            id="username"
-            type="text"
-            required
-            value={username || ''}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
+    <Stack alignItems="center">
+      {
+        isUpdating ? 
+        <form onSubmit={updateProfile} className="form-widget">
+          <Stack direction="column" gap={1} alignItems="center">
+            <Typography level="h2">Edit Profile</Typography>
+            <FormLabel>Name</FormLabel>
+            <Input
+              placeholder="Enter your name..."
+              value={name}
+              required
+              onChange={(e) => setName(e.target.value)}
+            />
+            <FormLabel>Email</FormLabel>
+            <Input
+              value={email}
+              required
+              disabled
+            />
+            <FormLabel>Student ID</FormLabel>
+            <Input
+              placeholder="Enter your student ID..."
+              value={id}
+              required
+              onChange={(e) => setId(e.target.value)}
+            />
 
-        <div>
-          <label htmlFor="studentId">Student Id</label>
-          <input
-            id="studentId"
-            type="Number"
-            required
-            value={studentId || ''}
-            onChange={(e) => setStudentId(e.target.value)}
-          />
-        </div>
+            <Stack direction="row" gap={1}>
+              <Button disabled={loading} type="submit">
+                { loading ? 'Loading ...' : 'Update' }
+              </Button>
+              <Button onClick={() => setIsUpdating(false)}>Cancel</Button>
+            </Stack>
 
-        <div>
-          <button className="button block primary" type="submit" disabled={loading}>
-            {loading ? 'Loading ...' : 'Update'}
-          </button>
-        </div>
+            <Typography color="danger">{error}</Typography>
+          </Stack>
+        </form> :
+        <>
+          <img src="" alt="pfp"></img>
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Typography level="h2">{username}</Typography>
+            <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
+              <NotePencil size={23} />
+            </IconButton>
+          </Stack>
+          <Typography>{email}</Typography>
+          <Typography>#{studentId}</Typography>
+          <Typography color="success">{success}</Typography>
+        </>
+      }
+    </Stack>
+  )
+}
 
-        <div>
-          <button className="button block" type="button" onClick={() => supabase.auth.signOut()}>
-            Sign Out
-          </button>
-        </div>
-      </form>
+function Contract() {
+  return (
+    <Stack alignItems="center">
+      <Stack direction="row" alignItems="center" gap={1}>
+        <Typography level="h2">Contract</Typography>
+        <IconButton onClick={() => {}}>
+          <NotePencil size={23} />
+        </IconButton>
+      </Stack>
+      <Typography>contract here</Typography>
+    </Stack>
+  )
+}
 
-      <div>
-        <h1>Your Progress</h1>
-        <ul>
-          {progress.map((item) => (
-            <li key={item.category}>
-              {item.completed} / {item.total} problems completed in <strong>{item.category} </strong>
-              ({Math.round((item.completed / item.total) * 100)}%)
-            </li>
-          ))}
-        </ul>
-      </div>   
-    </div> 
+function ProgressList({ progress }: { progress: Progress[] }) {
+  return (
+    <Stack gap={2}>
+      <Typography level="h2">Your Progress</Typography>
+      {/* looking for a better solution for the height */}
+      <Stack sx={{ height: "59vh", overflowY: "scroll" }} direction="column" gap={2}>
+        {progress.map((item) => (
+          <ProgressCard item={item} />
+        ))}
+      </Stack>
+    </Stack>
+  )
+}
+
+function ProgressCard({ item }: { item: Progress }) {
+  const percentageCompleted = Math.round((item.completed / item.total) * 100);
+  // capitalize first letter of each category
+  const categoryName = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+
+  // TODO:
+  // - fix border radius on hover
+
+  return (
+    <AccordionGroup sx={{
+      borderRadius: "lg",
+      maxWidth: "90%",
+      [`& .${accordionSummaryClasses.button}`]: {
+        paddingBlock: '1rem',
+      }
+      }} size="lg" variant="soft">
+      <Accordion>
+        <AccordionSummary>
+          <Stack sx={{ width: "100%" }} direction="column" gap={1}>
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" gap={2}>
+                <Typography level="h3">{categoryName}</Typography>
+                <Typography>{item.completed} / {item.total}</Typography>
+              </Stack>
+              <Typography level="h4">{percentageCompleted}%</Typography>
+            </Stack>
+            <LinearProgress sx={{ backgroundColor: "#D5D5D5" }} color="success" determinate value={percentageCompleted} size="lg" />
+          </Stack>
+        </AccordionSummary>
+        <AccordionDetails>This is where all the types of problems and their completion rates will go.</AccordionDetails>
+      </Accordion>
+    </AccordionGroup>
+  )
+}
+
+function Reflections() {
+  return (
+    <Stack>
+      <Typography level="h2">Your Reflections</Typography>
+      <Typography>Reflections haven't been implemented yet!</Typography>
+    </Stack>
   )
 }
