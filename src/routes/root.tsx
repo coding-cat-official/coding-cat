@@ -11,6 +11,7 @@ import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
 import List from '@mui/joy/List';
+import {List as ListIcon} from '@phosphor-icons/react';
 import ListItem from '@mui/joy/ListItem';
 import ListSubheader from '@mui/joy/ListSubheader';
 import ListItemButton from '@mui/joy/ListItemButton';
@@ -68,7 +69,7 @@ export default function App() {
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
             <Button sx={{ margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
-              Menu
+              <ListIcon size={20} />
             </Button>
             <Box sx={{ margin: '10px', display: 'flex', gap: 1 }} className="account-btns">
               {session ? (
