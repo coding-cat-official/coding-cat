@@ -1,0 +1,49 @@
+import { Editor } from "@monaco-editor/react";
+import { useEffect, useRef } from "react";
+import * as monaco from 'monaco-editor';
+
+export default function ResizableEditor({code, fontSize, changeCode}: any){
+
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  function handleEditorDidMount(editor: monaco.editor.IStandaloneCodeEditor) {
+    editorRef.current = editor;
+  }
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      if (editorRef.current) {
+        requestAnimationFrame(() => {
+          editorRef.current?.layout();
+        });
+      }
+    });
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return(
+    <div ref={containerRef} style={{height: "200px"}}>
+      <Editor
+        height="100%"
+        className="problem-ide-editor"
+        defaultLanguage="python"
+        value={code}
+        options={{
+          minimap: { enabled: false },
+          fontSize: fontSize,
+          automaticLayout: false
+        }}
+        onChange={changeCode}
+        onMount={handleEditorDidMount}
+      />
+    </div>
+  );
+}

@@ -18,6 +18,7 @@ import Table from '@mui/joy/Table';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
+import ResizableEditor from '../components/ResizableEditor';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -104,7 +105,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-      <Stack sx={{ width: "80%",p: 1, display:"flex"}} direction="row" spacing={2} alignItems="flex-start">
+      <Stack sx={{ width: "80%",p: 1, display:"flex"}} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
         <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
           <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
@@ -121,19 +122,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               <Button onClick={increaseFontSize}>A+</Button>
             </Box>
       
-            <Editor
-              height="10em"
-              width="100%"
-              className="problem-ide-editor"
-              defaultLanguage="python"
-              value={code}
-              options={{
-                minimap: { enabled: false },
-                fontSize: fontSize,
-                automaticLayout: true
-              }}
-              onChange={changeCode}
-            />
+            <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
       
             <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
               <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
@@ -149,7 +138,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           </Sheet>
         </Stack>
       
-        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }}>
+        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
           {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
         </Box>
       </Stack>
