@@ -71,6 +71,28 @@ code {
     justify-content: space-between;
   }
 
+  /* Profile related */
+  .MuiStack-root.profile-wrapper{
+    flex-direction: column;
+    margin: 20px;
+  }
+
+  .MuiStack-root.account-wrapper{
+    border: 1px solid black;
+    padding: 20px;
+    margin: 10px 40px 30px;
+    flex-direction: row;
+    border-radius: 10px;
+  }
+
+  .MuiStack-root.progress-wrapper{
+    margin: 0 40px;
+  }
+
+  .MuiStack-root.account{
+    flex-direction: row;
+    gap: 10px;
+  }
 }
 
 @media (max-width: 500px){
@@ -84,5 +106,13 @@ code {
 
   .MuiStack-root.upper-nav{
     justify-content: space-between;
+  }
+
+  .MuiStack-root.account-wrapper{
+    flex-direction: column;
+  }
+
+  .MuiStack-root.account{
+    flex-direction: column;
   }
 }

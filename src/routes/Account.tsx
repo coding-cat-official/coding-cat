@@ -107,12 +107,12 @@ export default function Account({ session }: { session: Session }) {
   
 
   return (
-    <Stack width="100%" height="100%" direction="row">
-      <Stack flex={1} alignItems="center" justifyContent="center" gap={5}>
+    <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+      <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
         <Contract />
       </Stack>
-      <Stack marginTop={5} flex={2} gap={2}>
+      <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
           <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
@@ -167,7 +167,7 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
   }
 
   return (
-    <Stack alignItems="center">
+    <Stack alignItems="center" className="account">
       {
         isUpdating ? 
         <form onSubmit={updateProfile} className="form-widget">
@@ -206,15 +206,17 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
         </form> :
         <>
           <img src="" alt="pfp"></img>
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Typography level="h2">{username}</Typography>
-            <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
-              <NotePencil size={23} />
-            </IconButton>
+          <Stack>
+            <Stack direction="row" justifyContent="center" gap={1}>
+              <Typography level="h2">{username}</Typography>
+              <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
+                <NotePencil size={23} />
+              </IconButton>
+            </Stack>
+            <Typography>{email}</Typography>
+            <Typography>#{studentId}</Typography>
+            <Typography color="success">{success}</Typography>
           </Stack>
-          <Typography>{email}</Typography>
-          <Typography>#{studentId}</Typography>
-          <Typography color="success">{success}</Typography>
         </>
       }
     </Stack>
