@@ -44,8 +44,35 @@ export default function App() {
 
   return <Box sx={{ height: '100%'}}>
     
-
-    <Box style={{ minHeight: "100%", flex: 1 }}>
+    
+    <Box sx={{ display:'flex', minHeight: "100%", flex: 1}}>
+    <Box
+      sx={{
+        className: 'desktop-bar',
+        width: '6em',
+        height: '100vh',
+        backgroundColor: '#c8cada',
+        cursor: 'pointer',
+        left: 0,
+        top: 0,
+        zIndex: 10,
+        display: 'flex',
+        alignItems: 'center',  // Center the arrow vertically
+        '&::after': {
+          content: '""',
+          display: 'block',
+          width: 0,
+          height: 0,
+          borderTop: '30px solid transparent',
+          borderBottom: '30px solid transparent',
+          borderLeft: '50px solid white', // Arrow color
+          marginLeft: '30px', // Position the arrow
+          paddingRight: '1em',
+        },
+      }}
+      className="desktop-bar"
+      onClick={() => setOpen(true)}
+    />
       <Drawer open={open} onClose={() => setOpen(false)}>
         <ModalClose />
         <DialogTitle>
@@ -67,11 +94,11 @@ export default function App() {
           justifyContent: "start",
           alignItems: "center",
         }} >
-          <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: "space-between"}}>
-            <Button sx={{ margin: '10px', cursor: 'pointer'}} onClick={() => setOpen(true)}>
+          <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
+            <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
               <ListIcon size={20} />
             </Button>
-            <Box sx={{ margin: '10px', display: 'flex', gap: 1 }} className="account-btns">
+            <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
               {session ? (
                 <>
                   <Link to="/profile">
@@ -88,7 +115,7 @@ export default function App() {
           </Stack>
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
-          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)}/>
+          <Box component="img" src={logo} sx={{ maxHeight: "80px" }} onClick={() => setOpen(true)}/>
           <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
             Coding Cat!
           </Typography>

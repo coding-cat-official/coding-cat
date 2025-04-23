@@ -30,6 +30,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+.MuiButton-root.mobile-bar{
+  display: none;
+}
+
+.MuiBox-root.desktop-bar{
+  display: flex;
+}
+
+.MuiStack-root.upper-nav{
+  justify-content: flex-end;
+}
+
 @media (max-width: 1024px){
   .problem-ide-editor div{
     width: 900px;
@@ -44,6 +56,18 @@ code {
     margin-top: 10px;
   }
 
+  .MuiBox-root.desktop-bar{
+    display: none;
+  }
+
+  .MuiButton-root.mobile-bar{
+    display: flex;
+  }
+
+  .MuiStack-root.upper-nav{
+    justify-content: space-between;
+  }
+
 }
 
 @media (max-width: 500px){
@@ -54,5 +78,8 @@ code {
   .MuiStack-root .logo img, h1{
     max-height: 50px;
   }
-  
+
+  .MuiStack-root.upper-nav{
+    justify-content: space-between;
+  }
 }
