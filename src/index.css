@@ -29,3 +29,90 @@ code {
 .mono {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+.MuiButton-root.mobile-bar{
+  display: none;
+}
+
+.MuiBox-root.desktop-bar{
+  display: flex;
+}
+
+.MuiBox-root.account-btns{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+
+@media (max-width: 1024px){
+  .problem-ide-editor div{
+    width: 900px;
+  }
+
+  .MuiBox-root .problem-container{
+    flex-direction: column;
+  }
+
+  .MuiBox-root .results-container{
+    margin-left: 0px;
+    margin-top: 10px;
+  }
+
+  .MuiBox-root.desktop-bar{
+    display: none;
+  }
+
+  .MuiButton-root.mobile-bar{
+    display: flex;
+  }
+
+  .MuiStack-root.upper-nav{
+    justify-content: space-between;
+  }
+
+  /* Profile related */
+  .MuiStack-root.profile-wrapper{
+    flex-direction: column;
+    margin: 20px;
+  }
+
+  .MuiStack-root.account-wrapper{
+    border: 1px solid black;
+    padding: 20px;
+    margin: 10px 40px 30px;
+    flex-direction: row;
+    border-radius: 10px;
+  }
+
+  .MuiStack-root.progress-wrapper{
+    margin: 0 40px;
+  }
+
+  .MuiStack-root.account{
+    flex-direction: row;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 500px){
+  .MuiSvgIcon-root.menu-icon{
+    font-size: 20px;
+  }
+
+  .MuiStack-root .logo img, h1{
+    max-height: 50px;
+  }
+
+  .MuiStack-root.upper-nav{
+    justify-content: space-between;
+  }
+
+  .MuiStack-root.account-wrapper{
+    flex-direction: column;
+  }
+
+  .MuiStack-root.account{
+    flex-direction: column;
+  }
+}

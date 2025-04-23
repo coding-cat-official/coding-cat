@@ -11,13 +11,13 @@ import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
 import List from '@mui/joy/List';
+import {List as ListIcon} from '@phosphor-icons/react';
 import ListItem from '@mui/joy/ListItem';
 import ListSubheader from '@mui/joy/ListSubheader';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
@@ -42,9 +42,13 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
+  return <Box sx={{ height: '100%'}}>
+    
+    
+    <Box sx={{ display:'flex', minHeight: "100%", flex: 1}}>
     <Box
       sx={{
+        className: 'desktop-bar',
         width: '6em',
         height: '100vh',
         backgroundColor: '#c8cada',
@@ -66,9 +70,9 @@ export default function App() {
           paddingRight: '1em',
         },
       }}
+      className="desktop-bar"
       onClick={() => setOpen(true)}
     />
-    <Box style={{ minHeight: "100%", flex: 1 }}>
       <Drawer open={open} onClose={() => setOpen(false)}>
         <ModalClose />
         <DialogTitle>
@@ -90,27 +94,34 @@ export default function App() {
           justifyContent: "start",
           alignItems: "center",
         }} >
-        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center">
-          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
+          <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
+            <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
+              <ListIcon size={20} />
+            </Button>
+            <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
+              {session ? (
+                <>
+                  <Link to="/profile">
+                    <Button>Profile</Button>
+                  </Link>
+                  <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+                </>
+              ) : (
+                <Link to="/signin">
+                  <Button>Login</Button>
+                </Link>
+              )}
+            </Box>
+          </Stack>
+        
+        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
+          <Box component="img" src={logo} sx={{ maxHeight: "80px" }} onClick={() => setOpen(true)}/>
           <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
             Coding Cat!
           </Typography>
         </Stack>
         <Outlet context={{ setActiveProblem, session }} />
-        <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
-          {session ? (
-            <>
-              <Link to="/profile">
-                <Button>Profile</Button>
-              </Link>
-              <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
-            </>
-          ) : (
-            <Link to="/signin">
-              <Button>Login</Button>
-            </Link>
-          )}
-        </Box>
+        
       </Stack>
     </Box>
   </Box>
