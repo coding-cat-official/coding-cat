@@ -77,7 +77,7 @@ export default function App() {
     />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-          <Stack width="100%" direction="row" justifyContent="space-between">
+          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
             <DialogTitle level='h2'>
               Problem List
             </DialogTitle>
