@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemButton, Typography } from '@mui/joy';
+import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
 import { Problem } from '../types';
 import { Link } from 'react-router-dom';
 
@@ -39,11 +39,13 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
           <ListItem nested key={question_type}>
           <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
             <List>
-            { problemsByType[question_type].map(
-                (p) =>
-                <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
+            { problemsByType[question_type].map((p) =>
+                <ListItemButton sx={{ width: "30%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    {p.meta.title}
+                    <Stack width="100%" direction="row" justifyContent="space-between">
+                      <Typography>{p.meta.title}</Typography>
+                      <DifficultyChip difficulty={p.meta.difficulty} />
+                    </Stack>
                 </ListItemButton>,
             )}
           </List>
@@ -52,4 +54,18 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
     </List>
     </>
   );
+}
+
+function DifficultyChip({ difficulty }: { difficulty: string }) {
+  let color: "neutral" | "success" | "warning" | "danger" = "neutral";
+
+  if (difficulty === "easy") color = "success";
+  if (difficulty === "medium") color = "warning";
+  if (difficulty === "hard") color = "danger";
+
+  return (
+    <Chip variant="soft" color={color}>
+      {difficulty}
+    </Chip>
+  )
 }
