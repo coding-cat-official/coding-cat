@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react' ;
+import React, { useEffect, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -6,15 +6,9 @@ import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
 import { supabase } from '../supabaseClient'
-import Auth from './Auth'
-import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
-import List from '@mui/joy/List';
 import {List as ListIcon} from '@phosphor-icons/react';
-import ListItem from '@mui/joy/ListItem';
-import ListSubheader from '@mui/joy/ListSubheader';
-import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
@@ -22,6 +16,7 @@ import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
+import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
@@ -32,7 +27,17 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+  const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
 
+  function handleSelectedCategory(category: string){
+    setActiveCategory(category)
+    setActiveProblem(null)
+  }
+
+  function handleSelectedProblem(name: string){
+    setActiveProblem(name)
+    setOpen(false)
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -82,9 +87,24 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <ProblemList problems={problems} selectedTopic={"Logic"} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
-          {/* <ProblemList
-              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
+          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+              <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
+                <CategoryList
+                  problems={problems}
+                  activeCategory={activeCategory}
+                  onSelectCategory={handleSelectedCategory}
+                />
+              </Box>
+              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+                <ProblemList
+                  problems={problems}
+                  selectedTopic={activeCategory}
+                  activeProblem={activeProblem}
+                  onSelectProblem={handleSelectedProblem}
+                  closeDrawer={() => setOpen(false)}
+                />
+              </Box>
+            </Box>
         </DialogContent>
       </Drawer>
       <Stack
@@ -133,35 +153,3 @@ export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
 }
 
-interface ProblemListProps {
-    problems: Problem[];
-    activeProblem: string | null;
-    closeDrawer: () => void;
-}
-
-// function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
-//     const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-//         const category = problem.meta.category;
-//         if (!acc[category]) acc[category] = [];
-//         acc[category].push(problem);
-//         return acc;
-//     }, {});
-
-//     return (
-//     <List component="nav">
-//       {Object.keys(groupedProblems).sort().map((category) => (
-//           <ListItem nested key={category}>
-//           <ListSubheader>{category}</ListSubheader>
-//             <List>
-//             { groupedProblems[category].map(
-//                 (p) =>
-//                 <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
-//                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-//                     {p.meta.title}
-//                 </ListItemButton>,
-//             )}
-//           </List>
-//           </ListItem>
-//       ))}
-//     </List>);
-// }
