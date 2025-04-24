@@ -82,7 +82,7 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <ProblemList problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+          <ProblemList problems={problems} selectedTopic={"Logic"} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
           {/* <ProblemList
               problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
         </DialogContent>

@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemButton, ListSubheader, Typography } from '@mui/joy';
+import { List, ListItem, ListItemButton, Typography } from '@mui/joy';
 import { Problem } from '../types';
 import { Link } from 'react-router-dom';
 
