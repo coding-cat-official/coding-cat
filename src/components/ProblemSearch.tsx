@@ -1,10 +1,13 @@
 import { Input } from "@mui/joy";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 
-export default function ExerciseSearch() {
-  const [query, setQuery] = useState("");
+interface SearchProps {
+  query: string;
+  setQuery: Dispatch<SetStateAction<string>>
+}
 
+export default function ProblemSearch({ query, setQuery }: SearchProps) {
   return (
     <Input
       sx={{
@@ -23,7 +26,8 @@ export default function ExerciseSearch() {
         '&:focus-within::before': {
           transform: 'scaleX(1)',
         },
-        fontWeight: "normal"
+        fontWeight: "normal",
+        marginRight: "5em"
       }}
       value={query}
       onChange={(e) => setQuery(e.target.value)}

@@ -21,6 +21,7 @@ import CategoryList from '../components/CategoryList';
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
 import ProblemList from '../components/ProblemList';
+import ProblemSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -28,6 +29,7 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
+  const [query, setQuery] = useState("");
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -82,9 +84,12 @@ export default function App() {
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
         <DialogTitle>
-          <Typography level="h2">
-            Problem List
-          </Typography>
+          <Stack width="100%" direction="row" justifyContent="space-between">
+            <Typography level="h2">
+              Problem List
+            </Typography>
+            <ProblemSearch query={query} setQuery={setQuery} />
+          </Stack>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', }}>
@@ -102,6 +107,7 @@ export default function App() {
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
+                  searchQuery={query}
                 />
               </Box>
             </Box>

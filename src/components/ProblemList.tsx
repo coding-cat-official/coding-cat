@@ -8,11 +8,14 @@ interface ProblemListProps {
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
+  searchQuery: string
 }
 
-export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer}: ProblemListProps) {
-
-  const problemsByTopic = problems.filter(problem => problem.meta.category === selectedTopic);
+export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery}: ProblemListProps) {
+  const problemsByTopic = problems.filter(problem => {
+    return problem.meta.category === selectedTopic && 
+      problem.meta.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
+  });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
     const problemsByType = problem.meta.question_type;
@@ -22,6 +25,12 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
     } )
     return acc;
   }, {});
+
+  if (Object.keys(problemsByType).length === 0) {
+    return (
+      <Typography>No problems found</Typography>
+    )
+  }
 
   return(
     <>
