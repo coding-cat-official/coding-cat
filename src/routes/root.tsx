@@ -25,6 +25,7 @@ import DialogContent from '@mui/joy/DialogContent';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
+import ProblemList from '../components/ProblemList';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -81,8 +82,9 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <ProblemList
-              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+          <ProblemList problems={problems} selectedTopic={"Logic"} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+          {/* <ProblemList
+              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
         </DialogContent>
       </Drawer>
       <Stack
@@ -137,29 +139,29 @@ interface ProblemListProps {
     closeDrawer: () => void;
 }
 
-function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
-    const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-        const category = problem.meta.category;
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(problem);
-        return acc;
-    }, {});
+// function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
+//     const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
+//         const category = problem.meta.category;
+//         if (!acc[category]) acc[category] = [];
+//         acc[category].push(problem);
+//         return acc;
+//     }, {});
 
-    return (
-    <List component="nav">
-      {Object.keys(groupedProblems).sort().map((category) => (
-          <ListItem nested key={category}>
-          <ListSubheader>{category}</ListSubheader>
-            <List>
-            { groupedProblems[category].map(
-                (p) =>
-                <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
-                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    {p.meta.title}
-                </ListItemButton>,
-            )}
-          </List>
-          </ListItem>
-      ))}
-    </List>);
-}
+//     return (
+//     <List component="nav">
+//       {Object.keys(groupedProblems).sort().map((category) => (
+//           <ListItem nested key={category}>
+//           <ListSubheader>{category}</ListSubheader>
+//             <List>
+//             { groupedProblems[category].map(
+//                 (p) =>
+//                 <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
+//                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+//                     {p.meta.title}
+//                 </ListItemButton>,
+//             )}
+//           </List>
+//           </ListItem>
+//       ))}
+//     </List>);
+// }
