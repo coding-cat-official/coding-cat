@@ -73,7 +73,7 @@ export default function App() {
       className="desktop-bar"
       onClick={() => setOpen(true)}
     />
-      <Drawer open={open} onClose={() => setOpen(false)}>
+      <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
         <DialogTitle>
           <Typography level="h2">

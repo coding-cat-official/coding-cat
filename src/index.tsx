@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import { CssVarsProvider } from '@mui/joy/styles';
+import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 
 import App, { problemListLoader } from './routes/root';
@@ -16,6 +16,29 @@ import ErrorPage from './error';
 
 import Auth from './routes/Auth'
 import AccountWrapper from './routes/AccountWrapper';
+
+const theme = extendTheme({
+  components: {
+    JoyDrawer: {
+      styleOverrides: {
+        root: ({ ownerState, theme }) => ({
+          ...(ownerState.size === "xl" && {
+            "--ModalClose-inset": "1rem",
+            "--Drawer-verticalSize": "clamp(500px, 60%, 100%)",
+            "--Drawer-horizontalSize": "100vw",
+            "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)",
+          })
+        })
+      }
+    }
+  }
+})
+
+declare module "@mui/joy/Drawer" {
+  interface DrawerPropsSizeOverrides {
+    xl: true
+  }
+} 
 
 function EmptyChild() {
   return <div>
@@ -62,7 +85,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <CssVarsProvider>
+    <CssVarsProvider theme={theme}>
       <CssBaseline />
       <RouterProvider router={router} />
     </CssVarsProvider>
