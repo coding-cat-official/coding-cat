@@ -17,6 +17,7 @@ export default function CategoryList({
     ).sort()
 
     return (
+        <>
         <List component="nav" sx={{ py: 2}}>
             {categories.map((cat) => (
             <ListItemButton
@@ -26,7 +27,7 @@ export default function CategoryList({
                     onSelectCategory(cat)
                 }}
                 sx = {{
-                    borderRadius: 'md', my: 1, py: 2, px: 2,
+                    borderRadius: 'md', my: 1, py: 2, px: 2, ml: 2, mr: 2,
                     justifyContent: 'center',
                     alignItems: 'center',
                     bgcolor: cat === activeCategory ? 'primary.softBg' : 'background.surface',
@@ -36,5 +37,6 @@ export default function CategoryList({
             </ListItemButton>
             ))}
         </List>
+        </>
     )
 }
