@@ -55,7 +55,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
-    setActiveProblem(problem.meta.name);
+    
+    useEffect(() => {
+      setActiveProblem(problem.meta.name);
+    }, [setActiveProblem, problem.meta.name]);
 
     const [evalResponse, runCode] = useEval(problem, session);
     
