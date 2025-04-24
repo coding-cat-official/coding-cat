@@ -1,7 +1,5 @@
-import React, { useEffect, useState, ChangeEvent, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
-import Editor from '@monaco-editor/react';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -9,16 +7,11 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import Button from '@mui/joy/Button';
-import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Table from '@mui/joy/Table';
+import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
+import ResizableEditor from '../components/ResizableEditor';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
-import ResizableEditor from '../components/ResizableEditor';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -55,7 +48,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
-    setActiveProblem(problem.meta.name);
+
+    useEffect(() => {
+      setActiveProblem(problem.meta.name);
+    }, [setActiveProblem, problem.meta.name]);
 
     const [evalResponse, runCode] = useEval(problem, session);
     
@@ -72,16 +68,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         .eq('profile_id', session.user.id)
         .eq('problem_title', problem.meta.title)
         .order('submitted_at', { ascending: false})
-        .limit(1)
-        .single();
+        .limit(1);
+
+        const json = data?.[0] || null;
 
         if (error) {
           console.warn('Could not load latest submission: ', error.message);
           return;
         }
         
-        if (data?.code){
-          setCode(data.code);
+        if (json){
+          setCode(json.code);
         } else {
           setCode(problem.starter);
         }
@@ -110,11 +107,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
               <Typography level="title-lg">{problem.meta.title}</Typography>
-              <Typography level="body-md">
-                <Markdown>
-                  {problem.description}
-                </Markdown>
-              </Typography>
+              <Markdown>
+                {problem.description}
+              </Markdown>
             </Box>
       
             <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>

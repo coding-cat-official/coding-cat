@@ -244,7 +244,7 @@ function ProgressList({ progress }: { progress: Progress[] }) {
       {/* looking for a better solution for the height */}
       <Stack sx={{ height: "59vh", overflowY: "scroll" }} direction="column" gap={2}>
         {progress.map((item) => (
-          <ProgressCard item={item} />
+          <ProgressCard item={item} key={item.category} />
         ))}
       </Stack>
     </Stack>

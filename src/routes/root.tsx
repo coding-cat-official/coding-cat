@@ -9,17 +9,10 @@ import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 
 import {List as ListIcon} from '@phosphor-icons/react';
-import Typography from '@mui/joy/Typography';
-import Box from '@mui/joy/Box';
-import Stack from '@mui/joy/Stack';
-import Drawer from '@mui/joy/Drawer';
-import ModalClose from '@mui/joy/ModalClose';
-import DialogTitle from '@mui/joy/DialogTitle';
-import DialogContent from '@mui/joy/DialogContent';
+import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
-import { Button, Option, Select } from '@mui/joy';
 import ProblemList from '../components/ProblemList';
 import ProblemSearch from '../components/ProblemSearch';
 
@@ -84,11 +77,10 @@ export default function App() {
     />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-        <DialogTitle>
-          <Stack width="100%" direction="row" justifyContent="space-between">
-            <Typography level="h2">
+          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
+            <DialogTitle level='h2'>
               Problem List
-            </Typography>
+            </DialogTitle>
             <Stack marginRight="5em" direction="row" gap={3}>
               <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
                 <Option value="all">All</Option>
@@ -99,7 +91,6 @@ export default function App() {
               <ProblemSearch query={query} setQuery={setQuery} />
             </Stack>
           </Stack>
-        </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>

@@ -1,5 +1,4 @@
-import List from '@mui/joy/List'
-import ListItemButton from '@mui/joy/ListItemButton'
+import {List, ListItemButton} from '@mui/joy'
 
 export interface CategoryListProps {
     problems: import('../types').Problem[]
