@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react' ;
+import React, { useEffect, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -6,15 +6,9 @@ import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
 import { supabase } from '../supabaseClient'
-import Auth from './Auth'
-import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
-import List from '@mui/joy/List';
 import {List as ListIcon} from '@phosphor-icons/react';
-import ListItem from '@mui/joy/ListItem';
-import ListSubheader from '@mui/joy/ListSubheader';
-import ListItemButton from '@mui/joy/ListItemButton';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
@@ -159,35 +153,3 @@ export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
 }
 
-interface ProblemListProps {
-    problems: Problem[];
-    activeProblem: string | null;
-    closeDrawer: () => void;
-}
-
-// function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
-//     const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-//         const category = problem.meta.category;
-//         if (!acc[category]) acc[category] = [];
-//         acc[category].push(problem);
-//         return acc;
-//     }, {});
-
-//     return (
-//     <List component="nav">
-//       {Object.keys(groupedProblems).sort().map((category) => (
-//           <ListItem nested key={category}>
-//           <ListSubheader>{category}</ListSubheader>
-//             <List>
-//             { groupedProblems[category].map(
-//                 (p) =>
-//                 <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
-//                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-//                     {p.meta.title}
-//                 </ListItemButton>,
-//             )}
-//           </List>
-//           </ListItem>
-//       ))}
-//     </List>);
-// }
