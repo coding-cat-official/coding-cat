@@ -56,7 +56,7 @@ def load_and_test_student_function(e):
         hint = hints.get(err_type)
 
         return respond_failure(
-            f"{err_type} while running your code: {e}\n"
+            f"{err_type} while running your code: {e}\n\n"
             f"Tip: {hint}"        
         )
 
