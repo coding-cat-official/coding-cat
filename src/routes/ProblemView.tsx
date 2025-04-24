@@ -18,6 +18,7 @@ import Table from '@mui/joy/Table';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
+import ResizableEditor from '../components/ResizableEditor';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -104,43 +105,44 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-        <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
-          <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: "5px" }}>
-                <Box sx={{ width: "100%" }}>
-                  <Typography level="title-lg"> { problem.meta.title } </Typography>
-                  <Typography level="body-md">
-                      <Markdown >
-                        {problem.description}
-                      </Markdown >
-                  </Typography>
-                </Box>
-                <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                  <Button onClick={decreaseFontSize}>A-</Button>
-                  <Button onClick={increaseFontSize}>A+</Button>
-                </Box>
-                <Editor
-                    height="10em"
-                    className="problem-ide-editor"
-                    defaultLanguage="python"
-                    value={code}
-                    options={{ minimap: { enabled: false }, fontSize: fontSize}}
-                    onChange={changeCode} />
-                <Box sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "10px"
-                  }}>
-                  <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
-                  <Button sx={{ flex: 1 }} variant="outlined" onClick={() => changeCode(problem.starter)}
-                    disabled={code === problem.starter}>Reset</Button>
-                </Box>
-            </Sheet>
-          </Stack>
-          <Box sx={{ width: "39%" }}>
-            { evalResponse ? <Report evalResponse={evalResponse} /> : null }
-          </Box>
+      <Stack sx={{ width: "80%",p: 1, display:"flex"}} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
+        <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
+            <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
+              <Typography level="title-lg">{problem.meta.title}</Typography>
+              <Typography level="body-md">
+                <Markdown>
+                  {problem.description}
+                </Markdown>
+              </Typography>
+            </Box>
+      
+            <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
+              <Button onClick={decreaseFontSize}>A-</Button>
+              <Button onClick={increaseFontSize}>A+</Button>
+            </Box>
+      
+            <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
+      
+            <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
+              <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
+              <Button
+                sx={{ flex: 1 }}
+                variant="outlined"
+                onClick={() => changeCode(problem.starter)}
+                disabled={code === problem.starter}
+              >
+                Reset
+              </Button>
+            </Box>
+          </Sheet>
         </Stack>
+      
+        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
+          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+        </Box>
+      </Stack>
+    
     );
 }
 

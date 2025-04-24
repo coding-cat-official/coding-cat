@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react' ;
+import React, { useEffect, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -6,32 +6,38 @@ import problems from '../public-problems/problems';
 import { Problem } from '../types';
 
 import { supabase } from '../supabaseClient'
-import Auth from './Auth'
-import Account from './Account'
 import type { Session } from '@supabase/supabase-js'
 
-import List from '@mui/joy/List';
-import ListItem from '@mui/joy/ListItem';
-import ListSubheader from '@mui/joy/ListSubheader';
-import ListItemButton from '@mui/joy/ListItemButton';
+import {List as ListIcon} from '@phosphor-icons/react';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
+import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
+import ProblemList from '../components/ProblemList';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+  const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
 
+  function handleSelectedCategory(category: string){
+    setActiveCategory(category)
+    setActiveProblem(null)
+  }
+
+  function handleSelectedProblem(name: string){
+    setActiveProblem(name)
+    setOpen(false)
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -42,9 +48,13 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
+  return <Box sx={{ height: '100%'}}>
+    
+    
+    <Box sx={{ display:'flex', minHeight: "100%", flex: 1}}>
     <Box
       sx={{
+        className: 'desktop-bar',
         width: '6em',
         height: '100vh',
         backgroundColor: '#c8cada',
@@ -66,10 +76,10 @@ export default function App() {
           paddingRight: '1em',
         },
       }}
+      className="desktop-bar"
       onClick={() => setOpen(true)}
     />
-    <Box style={{ minHeight: "100%", flex: 1 }}>
-      <Drawer open={open} onClose={() => setOpen(false)}>
+      <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
         <DialogTitle>
           <Typography level="h2">
@@ -77,8 +87,24 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <ProblemList
-              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+              <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
+                <CategoryList
+                  problems={problems}
+                  activeCategory={activeCategory}
+                  onSelectCategory={handleSelectedCategory}
+                />
+              </Box>
+              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+                <ProblemList
+                  problems={problems}
+                  selectedTopic={activeCategory}
+                  activeProblem={activeProblem}
+                  onSelectProblem={handleSelectedProblem}
+                  closeDrawer={() => setOpen(false)}
+                />
+              </Box>
+            </Box>
         </DialogContent>
       </Drawer>
       <Stack
@@ -86,30 +112,38 @@ export default function App() {
         sx={{
           width: '100%',
           minHeight: "100%",
+          height: "100%",
           justifyContent: "start",
           alignItems: "center",
         }} >
-        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center">
-          <Box component="img" src={logo} sx={{ maxHeight: "15vh" }} onClick={() => setOpen(true)} />
+          <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
+            <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
+              <ListIcon size={20} />
+            </Button>
+            <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
+              {session ? (
+                <>
+                  <Link to="/profile">
+                    <Button>Profile</Button>
+                  </Link>
+                  <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+                </>
+              ) : (
+                <Link to="/signin">
+                  <Button>Login</Button>
+                </Link>
+              )}
+            </Box>
+          </Stack>
+        
+        <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
+          <Box component="img" src={logo} sx={{ maxHeight: "80px" }} onClick={() => setOpen(true)}/>
           <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
             Coding Cat!
           </Typography>
         </Stack>
         <Outlet context={{ setActiveProblem, session }} />
-        <Box sx={{ position: 'absolute', top: 20, right: 20, display: 'flex', gap: 1 }}>
-          {session ? (
-            <>
-              <Link to="/profile">
-                <Button>Profile</Button>
-              </Link>
-              <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
-            </>
-          ) : (
-            <Link to="/signin">
-              <Button>Login</Button>
-            </Link>
-          )}
-        </Box>
+        
       </Stack>
     </Box>
   </Box>
@@ -119,35 +153,3 @@ export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
 }
 
-interface ProblemListProps {
-    problems: Problem[];
-    activeProblem: string | null;
-    closeDrawer: () => void;
-}
-
-function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
-    const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-        const category = problem.meta.category;
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(problem);
-        return acc;
-    }, {});
-
-    return (
-    <List component="nav">
-      {Object.keys(groupedProblems).sort().map((category) => (
-          <ListItem nested key={category}>
-          <ListSubheader>{category}</ListSubheader>
-            <List>
-            { groupedProblems[category].map(
-                (p) =>
-                <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
-                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    {p.meta.title}
-                </ListItemButton>,
-            )}
-          </List>
-          </ListItem>
-      ))}
-    </List>);
-}
