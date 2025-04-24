@@ -150,7 +150,7 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
   if ('failure' === evalResponse.status)
     return <Stack direction="column">
       <Typography> Uh-oh... There was a problem with your submission. </Typography>
-      <Typography> {evalResponse.message} </Typography>
+      <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
     </Stack>;
   if ('success' === evalResponse.status)
     return <Box sx={{ border: 1, borderRadius: 3 }} >
