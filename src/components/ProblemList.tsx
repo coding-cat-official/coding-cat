@@ -2,24 +2,22 @@ import { List, ListItem, ListItemButton, ListSubheader, Typography } from '@mui/
 import { Problem } from '../types';
 import { Link } from 'react-router-dom';
 
-export default function ProblemList() {
-
-}
-
-
 interface ProblemListProps {
   problems: Problem[];
+  selectedTopic: string | null;
   activeProblem: string | null;
   closeDrawer: () => void;
 }
 
-export default function ProblemCategory({ problems, activeProblem, closeDrawer }: ProblemListProps){
+export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer}: ProblemListProps) {
 
-  const categorized = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const categories = problem.meta.question_type;
-    categories.forEach(c => {
-      if (!acc[c]) acc[c] = [];
-      acc[c].push(problem);
+  const problemsByTopic = problems.filter(problem => problem.meta.category === selectedTopic);
+
+  const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+    const problemsByType = problem.meta.question_type;
+    problemsByType.forEach(type => {
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(problem);
     } )
     return acc;
   }, {});
@@ -27,11 +25,11 @@ export default function ProblemCategory({ problems, activeProblem, closeDrawer }
   return(
     <>
     <List component="nav">
-    {Object.keys(categorized).sort().map((question_type) => (
+    {Object.keys(problemsByType).sort().map((question_type) => (
           <ListItem nested key={question_type}>
           <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
             <List>
-            { categorized[question_type].map(
+            { problemsByType[question_type].map(
                 (p) =>
                 <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>

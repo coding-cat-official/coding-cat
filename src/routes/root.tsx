@@ -25,6 +25,7 @@ import DialogContent from '@mui/joy/DialogContent';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
+import ProblemList from '../components/ProblemList';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -81,6 +82,7 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
+          <ProblemList problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
           {/* <ProblemList
               problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
         </DialogContent>
