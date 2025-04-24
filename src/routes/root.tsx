@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react' ;
+import { useEffect, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -19,8 +19,9 @@ import DialogContent from '@mui/joy/DialogContent';
 import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
-import { Button } from '@mui/joy';
+import { Button, Option, Select } from '@mui/joy';
 import ProblemList from '../components/ProblemList';
+import ProblemSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -28,6 +29,8 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
+  const [query, setQuery] = useState("");
+  const [difficulty, setDifficulty] = useState("");
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -82,9 +85,20 @@ export default function App() {
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
         <DialogTitle>
-          <Typography level="h2">
-            Problem List
-          </Typography>
+          <Stack width="100%" direction="row" justifyContent="space-between">
+            <Typography level="h2">
+              Problem List
+            </Typography>
+            <Stack marginRight="5em" direction="row" gap={3}>
+              <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
+                <Option value="all">All</Option>
+                <Option value="easy">Easy</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="hard">Hard</Option>
+              </Select>
+              <ProblemSearch query={query} setQuery={setQuery} />
+            </Stack>
+          </Stack>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', }}>
@@ -102,6 +116,8 @@ export default function App() {
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
+                  searchQuery={query}
+                  difficulty={difficulty}
                 />
               </Box>
             </Box>
@@ -152,4 +168,3 @@ export default function App() {
 export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
 }
-
