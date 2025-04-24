@@ -1,7 +1,5 @@
-import React, { useEffect, useState, ChangeEvent, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
-import Editor from '@monaco-editor/react';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -9,16 +7,11 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import Button from '@mui/joy/Button';
-import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Table from '@mui/joy/Table';
+import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
+import ResizableEditor from '../components/ResizableEditor';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
-import ResizableEditor from '../components/ResizableEditor';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -55,7 +48,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
-    
+
     useEffect(() => {
       setActiveProblem(problem.meta.name);
     }, [setActiveProblem, problem.meta.name]);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react' ;
+import { useEffect, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -9,18 +9,11 @@ import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 
 import {List as ListIcon} from '@phosphor-icons/react';
-import Typography from '@mui/joy/Typography';
-import Box from '@mui/joy/Box';
-import Stack from '@mui/joy/Stack';
-import Drawer from '@mui/joy/Drawer';
-import ModalClose from '@mui/joy/ModalClose';
-import DialogTitle from '@mui/joy/DialogTitle';
-import DialogContent from '@mui/joy/DialogContent';
+import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button} from '@mui/joy';
 import CategoryList from '../components/CategoryList';
+import ProblemList from '../components/ProblemList';
 
 import logo from './coding-cat.png';
-import { Button } from '@mui/joy';
-import ProblemList from '../components/ProblemList';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
