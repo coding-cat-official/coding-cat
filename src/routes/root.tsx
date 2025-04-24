@@ -81,10 +81,8 @@ export default function App() {
     />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-        <DialogTitle>
-          <Typography level="h2">
+        <DialogTitle level='h2'>
             Problem List
-          </Typography>
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', }}>
