@@ -9,11 +9,12 @@ import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 
 import {List as ListIcon} from '@phosphor-icons/react';
-import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button} from '@mui/joy';
+import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
-import ProblemList from '../components/ProblemList';
 
 import logo from './coding-cat.png';
+import ProblemList from '../components/ProblemList';
+import ProblemSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -21,6 +22,8 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
+  const [query, setQuery] = useState("");
+  const [difficulty, setDifficulty] = useState("");
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -74,9 +77,20 @@ export default function App() {
     />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-        <DialogTitle level='h2'>
-            Problem List
-        </DialogTitle>
+          <Stack width="100%" direction="row" justifyContent="space-between">
+            <DialogTitle level='h2'>
+              Problem List
+            </DialogTitle>
+            <Stack marginRight="5em" direction="row" gap={3}>
+              <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
+                <Option value="all">All</Option>
+                <Option value="easy">Easy</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="hard">Hard</Option>
+              </Select>
+              <ProblemSearch query={query} setQuery={setQuery} />
+            </Stack>
+          </Stack>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
@@ -93,6 +107,8 @@ export default function App() {
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
+                  searchQuery={query}
+                  difficulty={difficulty}
                 />
               </Box>
             </Box>
@@ -143,4 +159,3 @@ export default function App() {
 export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
 }
-
