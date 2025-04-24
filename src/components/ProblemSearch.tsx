@@ -26,8 +26,7 @@ export default function ProblemSearch({ query, setQuery }: SearchProps) {
         '&:focus-within::before': {
           transform: 'scaleX(1)',
         },
-        fontWeight: "normal",
-        marginRight: "5em"
+        fontWeight: "normal"
       }}
       value={query}
       onChange={(e) => setQuery(e.target.value)}
