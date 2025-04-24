@@ -22,6 +22,7 @@ import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
 import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
+import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
@@ -31,6 +32,8 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
 
 
   useEffect(() => {
@@ -81,8 +84,13 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          <ProblemList
-              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/>
+          {/* <ProblemList
+              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
+          <CategoryList
+            problems={problems}
+            activeCategory={activeCategory}
+            closeDrawer={() => setOpen(false)}
+          />
         </DialogContent>
       </Drawer>
       <Stack
