@@ -6,6 +6,7 @@ interface ProblemListProps {
   problems: Problem[];
   selectedTopic: string | null;
   activeProblem: string | null;
+  onSelectProblem: (name: string) => void
   closeDrawer: () => void;
 }
 
