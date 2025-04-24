@@ -19,7 +19,7 @@ export default function CategoryList({
     ).sort()
 
     return (
-        <List component="nav">
+        <List component="nav" sx={{ py: 2}}>
             {categories.map((cat) => (
             <ListItemButton
                 key={cat}
@@ -27,6 +27,18 @@ export default function CategoryList({
                 to={`/category/${encodeURIComponent(cat)}`}
                 selected={cat === activeCategory}
                 onClick={closeDrawer}
+                sx = {{
+                    width: '100%',
+                    borderRadius: 'md',
+                    my: 1,
+                    py: 2,
+                    px: 2,
+                    textTransform: 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    bgcolor: cat === activeCategory ? 'primary.softBg' : 'background.surface',
+                    '&:hover': { bgcolor: 'primary.softBgHover' },
+                }}
             >
                 {cat}
             </ListItemButton>
