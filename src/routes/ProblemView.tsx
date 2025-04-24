@@ -68,16 +68,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         .eq('profile_id', session.user.id)
         .eq('problem_title', problem.meta.title)
         .order('submitted_at', { ascending: false})
-        .limit(1)
-        .single();
+        .limit(1);
+
+        const json = data?.[0] || null;
 
         if (error) {
           console.warn('Could not load latest submission: ', error.message);
           return;
         }
         
-        if (data?.code){
-          setCode(data.code);
+        if (json){
+          setCode(json.code);
         } else {
           setCode(problem.starter);
         }
