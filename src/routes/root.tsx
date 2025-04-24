@@ -26,6 +26,7 @@ import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import { Button } from '@mui/joy';
+import ProblemList from '../components/ProblemList';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -34,7 +35,15 @@ export default function App() {
   const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  function handleSelectedCategory(category: string){
+    setActiveCategory(category)
+    setActiveProblem(null)
+  }
 
+  function handleSelectedProblem(name: string){
+    setActiveProblem(name)
+    setOpen(false)
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -76,7 +85,7 @@ export default function App() {
       className="desktop-bar"
       onClick={() => setOpen(true)}
     />
-      <Drawer open={open} onClose={() => setOpen(false)}>
+      <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
         <DialogTitle>
           <Typography level="h2">
@@ -84,13 +93,24 @@ export default function App() {
           </Typography>
         </DialogTitle>
         <DialogContent>
-          {/* <ProblemList
-              problems={problems} activeProblem={activeProblem} closeDrawer={() => setOpen(false)}/> */}
-          <CategoryList
-            problems={problems}
-            activeCategory={activeCategory}
-            closeDrawer={() => setOpen(false)}
-          />
+          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+              <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
+                <CategoryList
+                  problems={problems}
+                  activeCategory={activeCategory}
+                  onSelectCategory={handleSelectedCategory}
+                />
+              </Box>
+              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+                <ProblemList
+                  problems={problems}
+                  selectedTopic={activeCategory}
+                  activeProblem={activeProblem}
+                  onSelectProblem={handleSelectedProblem}
+                  closeDrawer={() => setOpen(false)}
+                />
+              </Box>
+            </Box>
         </DialogContent>
       </Drawer>
       <Stack
@@ -145,29 +165,29 @@ interface ProblemListProps {
     closeDrawer: () => void;
 }
 
-function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
-    const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
-        const category = problem.meta.category;
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(problem);
-        return acc;
-    }, {});
+// function ProblemList({ problems, activeProblem, closeDrawer }: ProblemListProps) {
+//     const groupedProblems = problems.reduce<Record<string, Problem[]>>((acc, problem) => {
+//         const category = problem.meta.category;
+//         if (!acc[category]) acc[category] = [];
+//         acc[category].push(problem);
+//         return acc;
+//     }, {});
 
-    return (
-    <List component="nav">
-      {Object.keys(groupedProblems).sort().map((category) => (
-          <ListItem nested key={category}>
-          <ListSubheader>{category}</ListSubheader>
-            <List>
-            { groupedProblems[category].map(
-                (p) =>
-                <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
-                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    {p.meta.title}
-                </ListItemButton>,
-            )}
-          </List>
-          </ListItem>
-      ))}
-    </List>);
-}
+//     return (
+//     <List component="nav">
+//       {Object.keys(groupedProblems).sort().map((category) => (
+//           <ListItem nested key={category}>
+//           <ListSubheader>{category}</ListSubheader>
+//             <List>
+//             { groupedProblems[category].map(
+//                 (p) =>
+//                 <ListItemButton key={p.meta.name} selected={p.meta.name === activeProblem}
+//                     component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+//                     {p.meta.title}
+//                 </ListItemButton>,
+//             )}
+//           </List>
+//           </ListItem>
+//       ))}
+//     </List>);
+// }

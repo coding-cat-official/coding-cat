@@ -23,6 +23,7 @@ export interface Problem {
         difficulty: string;
         author: string;
         category: string;
+        question_type: Array<string>;
     };
     io: Array<IOPair>;
 }
