@@ -16,6 +16,8 @@ export default function CategoryList({
       new Set(problems.map((p) => p.meta.category)),
     ).sort()
 
+    // TODO: hide categories that don't have any search results
+
     return (
         <List component="nav" sx={{ py: 2}}>
             {categories.map((cat) => (

@@ -13,6 +13,10 @@ interface ProblemListProps {
 }
 
 export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty}: ProblemListProps) {
+  // TODO:
+  // - add number of completed problems next to the category title
+  // - indicate whether an individual exercise has been completed
+
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
 
