@@ -8,13 +8,18 @@ interface ProblemListProps {
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
-  searchQuery: string
+  searchQuery: string;
+  difficulty: string;
 }
 
-export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery}: ProblemListProps) {
+export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty}: ProblemListProps) {
+  let newDifficulty = difficulty;
+  if (newDifficulty === "all") newDifficulty = "";
+
   const problemsByTopic = problems.filter(problem => {
     return problem.meta.category === selectedTopic && 
-      problem.meta.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
+      problem.meta.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) &&
+      problem.meta.difficulty.includes(newDifficulty);
   });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
