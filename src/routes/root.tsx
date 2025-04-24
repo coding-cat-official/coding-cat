@@ -27,7 +27,7 @@ export default function App() {
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
