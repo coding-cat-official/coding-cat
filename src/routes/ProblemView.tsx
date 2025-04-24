@@ -110,11 +110,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
             <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
               <Typography level="title-lg">{problem.meta.title}</Typography>
-              <Typography level="body-md">
-                <Markdown>
-                  {problem.description}
-                </Markdown>
-              </Typography>
+              <Markdown>
+                {problem.description}
+              </Markdown>
             </Box>
       
             <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
