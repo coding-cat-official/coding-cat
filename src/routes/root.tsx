@@ -52,7 +52,7 @@ export default function App() {
       sx={{
         className: 'desktop-bar',
         width: '6em',
-        height: '100vh',
+        flex: 1,
         backgroundColor: '#c8cada',
         cursor: 'pointer',
         left: 0,

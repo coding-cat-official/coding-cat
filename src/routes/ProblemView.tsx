@@ -102,10 +102,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     return (
-      <Stack sx={{ width: "80%",p: 1, display:"flex"}} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
+      <Stack sx={{ width: "80%",p: 1, display:"flex", }} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
         <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
-            <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 1 }}>
+          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%", height:"610px", overflowY: "scroll" }} className="hello">
+            <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
               <Typography level="title-lg">{problem.meta.title}</Typography>
               <Markdown>
                 {problem.description}
@@ -153,7 +153,7 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
       <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
     </Stack>;
   if ('success' === evalResponse.status)
-    return <Box sx={{ border: 1, borderRadius: 3 }} >
+    return <Box sx={{ border: 1, borderRadius: 3}} >
       <Stack direction="column">
         <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
         <Table>
