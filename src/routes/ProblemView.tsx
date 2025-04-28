@@ -114,7 +114,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           </Sheet>
         </Stack>
       
-        { problem.meta.question_type[1] === 'coding' ? (
+        { problem.meta.question_type[0] === 'coding' ? (
           <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
             {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
           </Box>
