@@ -42,26 +42,27 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
   }
 
   return(
-    <>
-    <List component="nav">
-    {Object.keys(problemsByType).sort().map((question_type) => (
-          <ListItem nested key={question_type}>
-          <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
-            <List>
-            { problemsByType[question_type].map((p) =>
-                <ListItemButton sx={{ width: "30%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
-                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    <Stack width="100%" direction="row" justifyContent="space-between">
-                      <Typography>{p.meta.title}</Typography>
-                      <DifficultyChip difficulty={p.meta.difficulty} />
-                    </Stack>
-                </ListItemButton>,
-            )}
-          </List>
-          </ListItem>
-      ))}
-    </List>
-    </>
+    <Stack gap={1}>
+      <Typography level="h2">{selectedTopic}</Typography>
+      <List component="nav">
+      {Object.keys(problemsByType).sort().map((question_type) => (
+            <ListItem nested key={question_type}>
+            <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
+              <List>
+              { problemsByType[question_type].map((p) =>
+                  <ListItemButton sx={{ width: "30%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
+                      component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+                      <Stack width="100%" direction="row" justifyContent="space-between">
+                        <Typography>{p.meta.title}</Typography>
+                        <DifficultyChip difficulty={p.meta.difficulty} />
+                      </Stack>
+                  </ListItemButton>,
+              )}
+            </List>
+            </ListItem>
+        ))}
+      </List>
+    </Stack>
   );
 }
 

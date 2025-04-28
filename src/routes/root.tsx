@@ -92,7 +92,7 @@ export default function App() {
             </Stack>
           </Stack>
         <DialogContent>
-          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+          <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
                 <CategoryList
                   problems={problems}
