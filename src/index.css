@@ -70,10 +70,11 @@ table tr:nth-child(odd) td{
   margin-bottom: 10px;
 }
 
-input{
+table input{
   max-width: 100px;
   height: 30px;
   font-size: 14pt;
+  text-align: center;
 }
 
 .MuiButton-root.add-mutation-button{
