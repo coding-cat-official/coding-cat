@@ -7,17 +7,15 @@ import { supabase } from '../supabaseClient';
 import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 
 interface ProblemListProps {
-  problems: Problem[];
+  searchedProblems: Problem[];
   selectedTopic: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
-  searchQuery: string;
-  difficulty: string;
   session: Session | null;
 }
 
-export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty, session}: ProblemListProps) {
+export default function ProblemList({searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
 
@@ -41,13 +39,8 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
     fetchProgress();
   }, [session]);
 
-  let newDifficulty = difficulty;
-  if (newDifficulty === "all") newDifficulty = "";
-
-  const problemsByTopic = problems.filter(problem => {
-    return problem.meta.category === selectedTopic && 
-      problem.meta.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) &&
-      problem.meta.difficulty.includes(newDifficulty);
+  const problemsByTopic = searchedProblems.filter(problem => {
+    return problem.meta.category === selectedTopic;
   });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
@@ -72,10 +65,6 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
       <Typography>No problems found</Typography>
     )
   }
-
-  // TODO:
-  // - add number of completed problems next to the category title
-  // - indicate whether an individual exercise has been completed
 
   return(
     <Stack gap={1}>
