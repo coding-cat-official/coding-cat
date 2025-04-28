@@ -114,9 +114,16 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           </Sheet>
         </Stack>
       
-        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
-          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-        </Box>
+        { problem.meta.question_type[1] === 'coding' ? (
+          <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
+            {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+          </Box>
+        ) : (
+          <Box>
+            teehee
+          </Box>
+        ) }
+        
       </Stack>
     
     );
