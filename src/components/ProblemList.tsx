@@ -1,29 +1,46 @@
 import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
-import { Problem } from '../types';
+import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
+import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 
 interface ProblemListProps {
-  problems: Problem[];
+  searchedProblems: Problem[];
   selectedTopic: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
-  searchQuery: string;
-  difficulty: string;
+  session: Session | null;
 }
 
-export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty}: ProblemListProps) {
-  // TODO:
-  // - add number of completed problems next to the category title
-  // - indicate whether an individual exercise has been completed
+export default function ProblemList({searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
+  const [error, setError] = useState("");
+  const [progress, setProgress] = useState<Submission[]>([]);
 
-  let newDifficulty = difficulty;
-  if (newDifficulty === "all") newDifficulty = "";
+  useEffect(() => {
+    async function fetchProgress() {
+      if (!session) return;
+      const { user } = session;
+      
+      const {data: submissions, error } = await supabase
+      .from('submissions')
+      .select('problem_title, passed_tests, total_tests')
+      .eq('profile_id', user.id);
 
-  const problemsByTopic = problems.filter(problem => {
-    return problem.meta.category === selectedTopic && 
-      problem.meta.title.toLowerCase().includes(searchQuery.toLowerCase().trim()) &&
-      problem.meta.difficulty.includes(newDifficulty);
+      if(error) {
+        setError(error.message);
+      }
+
+      setProgress(submissions || []);
+    }
+
+    fetchProgress();
+  }, [session]);
+
+  const problemsByTopic = searchedProblems.filter(problem => {
+    return problem.meta.category === selectedTopic;
   });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
@@ -35,6 +52,14 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
     return acc;
   }, {});
 
+  const solvedProblems = progress.filter((p) => {
+    return p.passed_tests === p.total_tests;
+  }).map((p) => p.problem_title);
+
+  const uncompletedProblems = progress.filter((p) => {
+    return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
+  }).map((p) => p.problem_title);
+
   if (Object.keys(problemsByType).length === 0) {
     return (
       <Typography>No problems found</Typography>
@@ -42,26 +67,35 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
   }
 
   return(
-    <>
-    <List component="nav">
-    {Object.keys(problemsByType).sort().map((question_type) => (
-          <ListItem nested key={question_type}>
-          <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
-            <List>
-            { problemsByType[question_type].map((p) =>
-                <ListItemButton sx={{ width: "30%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
-                    component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                    <Stack width="100%" direction="row" justifyContent="space-between">
-                      <Typography>{p.meta.title}</Typography>
-                      <DifficultyChip difficulty={p.meta.difficulty} />
-                    </Stack>
-                </ListItemButton>,
-            )}
-          </List>
-          </ListItem>
-      ))}
-    </List>
-    </>
+    <Stack gap={1}>
+      <Typography level="h2">{selectedTopic}</Typography>
+      <List component="nav">
+      {Object.keys(problemsByType).sort().map((question_type) => (
+            <ListItem nested key={question_type}>
+            <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
+              <List>
+              { problemsByType[question_type].map((p) =>
+                  <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
+                      component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+                      <Stack width="100%" direction="row" justifyContent="space-between">
+                        <Typography>{p.meta.title}</Typography>
+                        <Stack direction="row" gap={1}>
+                          {
+                            solvedProblems.includes(p.meta.title) && <CheckCircle size={24} color="#47f22f" />
+                          }
+                          {
+                            uncompletedProblems.includes(p.meta.title) && <MinusCircle size={24} color="#939393" />
+                          }
+                          <DifficultyChip difficulty={p.meta.difficulty} />
+                        </Stack>
+                      </Stack>
+                  </ListItemButton>,
+              )}
+            </List>
+            </ListItem>
+        ))}
+      </List>
+    </Stack>
   );
 }
 
