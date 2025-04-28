@@ -33,3 +33,9 @@ export type Progress = {
     completed: number;
     total: number;
 }
+
+export type Submission = {
+    problem_title: string;
+    passed_tests: number;
+    total_tests: number;
+}
