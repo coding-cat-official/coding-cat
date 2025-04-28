@@ -1,3 +1,4 @@
+import {Box, Table} from '@mui/joy';
 
 export default function MutationQuestion(){
 
@@ -5,7 +6,7 @@ export default function MutationQuestion(){
 
   return(
     <> 
-      <table>
+      <table className='mutation-table'>
         <thead>
           <tr>
             <th>Input</th>
@@ -19,8 +20,9 @@ export default function MutationQuestion(){
         <tbody>
           <tr>
             <td>
-              <input type="text" id="p1" name="p1"/>
-              <input type="text" id="p2" name="p2"/>
+            <input type="text" width="20px" id="p1" name="p1"/>
+            ,
+            <input type="text" width="20px" id="p2" name="p2"/>
             </td>
             <td>✅</td>
             <td>❌</td>
@@ -33,9 +35,9 @@ export default function MutationQuestion(){
         </tbody>
       </table>
 
-      <section>
+      <Box className="mutation-results">
         You have found 1/4 mutations.
-      </section>
+      </Box>
     </>
   )
 }

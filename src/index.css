@@ -44,6 +44,21 @@ code {
   right: 0;
 }
 
+.mutation-table tr{
+  border: 1px solid black;
+}
+
+.mutation-table td{
+  text-align: center;
+}
+
+.mutation-results{
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 10px;
+}
+
 
 @media (max-width: 1024px){
   .problem-ide-editor div{
