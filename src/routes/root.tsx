@@ -95,9 +95,9 @@ export default function App() {
           <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
                 <CategoryList
-                  problems={problems}
                   activeCategory={activeCategory}
                   onSelectCategory={handleSelectedCategory}
+                  session={session}
                 />
               </Box>
               <Box sx={{ flex: 3, overflowY: 'auto' }}>
