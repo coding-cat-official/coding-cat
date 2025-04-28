@@ -23,6 +23,13 @@ export interface Problem {
         difficulty: string;
         author: string;
         category: string;
+        question_type: Array<string>;
     };
     io: Array<IOPair>;
+}
+
+export type Progress = {
+    category: string;
+    completed: number;
+    total: number;
 }

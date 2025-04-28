@@ -1,20 +1,17 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
-import Editor from '@monaco-editor/react';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
-import problems from '../problems/problems';
+import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import Button from '@mui/joy/Button';
-import Stack from '@mui/joy/Stack';
-import Sheet from '@mui/joy/Sheet';
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import Table from '@mui/joy/Table';
+import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
+import ResizableEditor from '../components/ResizableEditor';
+
+import type { Session } from '@supabase/supabase-js'
+import { supabase } from '../supabaseClient';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -47,44 +44,100 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [fontSize, setFontSize] = useState(14);
 
+    const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
-    setActiveProblem(problem.meta.name);
 
-    const [evalResponse, runCode] = useEval(problem);
+    useEffect(() => {
+      setActiveProblem(problem.meta.name);
+    }, [setActiveProblem, problem.meta.name]);
+
+    const [evalResponse, runCode] = useEval(problem, session);
+    
+    const hasFetchedProblems = useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+      async function fetchLatestSubmission() {
+        if (!session?.user) return;
+        if (hasFetchedProblems.current.has(problem.meta.name)) return;
+
+        const { data, error } = await supabase
+        .from('submissions')
+        .select('code')
+        .eq('profile_id', session.user.id)
+        .eq('problem_title', problem.meta.title)
+        .order('submitted_at', { ascending: false})
+        .limit(1);
+
+        const json = data?.[0] || null;
+
+        if (error) {
+          console.warn('Could not load latest submission: ', error.message);
+          return;
+        }
+        
+        if (json){
+          setCode(json.code);
+        } else {
+          setCode(problem.starter);
+        }
+        hasFetchedProblems.current.add(problem.meta.name);
+      }
+
+      fetchLatestSubmission();
+
+    }, [problem.meta.name, problem.meta.title, problem.starter, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
     }
 
+    function increaseFontSize() {
+      if (fontSize < 30) setFontSize(fontSize + 4);
+    }
+
+    function decreaseFontSize() {
+      if (fontSize > 10) setFontSize(fontSize - 4);
+    }
+
     return (
-        <Stack sx={{ p: 1, width: "100%" }} direction="row" spacing={2} alignItems="start" >
-          <Stack sx={{ width: "60%" }} direction="column" spacing={2} alignItems="center">
-            <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2 }}>
-                <Box sx={{ width: "100%" }}>
-                  <Typography level="title-lg"> { problem.meta.title } </Typography>
-                  <Typography level="body-md">
-                      <Markdown >
-                        {problem.description}
-                      </Markdown >
-                  </Typography>
-                </Box>
-                <Editor
-                    height="10em"
-                    className="problem-ide-editor"
-                    defaultLanguage="python"
-                    value={code}
-                    options={{ minimap: { enabled: false }}}
-                    onChange={changeCode} />
-                <Box>
-                  <Button onClick={() => runCode(code)}>Run</Button>
-                </Box>
-            </Sheet>
-          </Stack>
-          <Box sx={{ width: "39%" }}>
-            { evalResponse ? <Report evalResponse={evalResponse} /> : null }
-          </Box>
+      <Stack sx={{ width: "80%",p: 1, display:"flex", }} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
+        <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%", height:"610px", overflowY: "scroll" }} className="hello">
+            <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
+              <Typography level="title-lg">{problem.meta.title}</Typography>
+              <Markdown>
+                {problem.description}
+              </Markdown>
+            </Box>
+      
+            <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
+              <Button onClick={decreaseFontSize}>A-</Button>
+              <Button onClick={increaseFontSize}>A+</Button>
+            </Box>
+      
+            <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
+      
+            <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
+              <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
+              <Button
+                sx={{ flex: 1 }}
+                variant="outlined"
+                onClick={() => changeCode(problem.starter)}
+                disabled={code === problem.starter}
+              >
+                Reset
+              </Button>
+            </Box>
+          </Sheet>
         </Stack>
+      
+        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
+          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+        </Box>
+      </Stack>
+    
     );
 }
 
@@ -97,10 +150,10 @@ const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
   if ('failure' === evalResponse.status)
     return <Stack direction="column">
       <Typography> Uh-oh... There was a problem with your submission. </Typography>
-      <Typography> {evalResponse.message} </Typography>
+      <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
     </Stack>;
   if ('success' === evalResponse.status)
-    return <Box sx={{ border: 1, borderRadius: 3 }} >
+    return <Box sx={{ border: 1, borderRadius: 3}} >
       <Stack direction="column">
         <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
         <Table>

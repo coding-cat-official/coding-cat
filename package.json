@@ -1,12 +1,15 @@
 {
   "name": "coding-cat",
   "version": "0.1.0",
+  "homepage": ".",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@monaco-editor/react": "^4.6.0",
     "@mui/joy": "^5.0.0-beta.48",
+    "@phosphor-icons/react": "^2.1.7",
+    "@supabase/supabase-js": "^2.49.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -28,7 +31,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build-problems": "cd src/problems && ./build-all && ./build-problem-list",
+    "build-problems-windows": "cd src/public-problems && bash build-all && bash build-problem-list",
     "build": "npm run build-problems && react-scripts build",
+    "build-windows": "npm run build-problems-windows && react-scripts build",
     "test": "react-scripts test",
     "deploy": "rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/",
     "deploy-exam": "rsync -r build/ codingcat@jerrington.me:/srv/http/exam-coding-cat/",
