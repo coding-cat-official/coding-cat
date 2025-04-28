@@ -50,7 +50,7 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
             <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
               <List>
               { problemsByType[question_type].map((p) =>
-                  <ListItemButton sx={{ width: "30%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
+                  <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
                       component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                       <Stack width="100%" direction="row" justifyContent="space-between">
                         <Typography>{p.meta.title}</Typography>
