@@ -1,6 +1,10 @@
 import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
-import { Problem } from '../types';
+import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
+import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 
 interface ProblemListProps {
   problems: Problem[];
@@ -10,12 +14,32 @@ interface ProblemListProps {
   closeDrawer: () => void;
   searchQuery: string;
   difficulty: string;
+  session: Session | null;
 }
 
-export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty}: ProblemListProps) {
-  // TODO:
-  // - add number of completed problems next to the category title
-  // - indicate whether an individual exercise has been completed
+export default function ProblemList({problems, selectedTopic, activeProblem, closeDrawer, searchQuery, difficulty, session}: ProblemListProps) {
+  const [error, setError] = useState("");
+  const [progress, setProgress] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    async function fetchProgress() {
+      if (!session) return;
+      const { user } = session;
+      
+      const {data: submissions, error } = await supabase
+      .from('submissions')
+      .select('problem_title, passed_tests, total_tests')
+      .eq('profile_id', user.id);
+
+      if(error) {
+        setError(error.message);
+      }
+
+      setProgress(submissions || []);
+    }
+
+    fetchProgress();
+  }, [session]);
 
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
@@ -35,11 +59,23 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
     return acc;
   }, {});
 
+  const solvedProblems = progress.filter((p) => {
+    return p.passed_tests === p.total_tests;
+  }).map((p) => p.problem_title);
+
+  const uncompletedProblems = progress.filter((p) => {
+    return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
+  }).map((p) => p.problem_title);
+
   if (Object.keys(problemsByType).length === 0) {
     return (
       <Typography>No problems found</Typography>
     )
   }
+
+  // TODO:
+  // - add number of completed problems next to the category title
+  // - indicate whether an individual exercise has been completed
 
   return(
     <Stack gap={1}>
@@ -54,7 +90,15 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
                       component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                       <Stack width="100%" direction="row" justifyContent="space-between">
                         <Typography>{p.meta.title}</Typography>
-                        <DifficultyChip difficulty={p.meta.difficulty} />
+                        <Stack direction="row" gap={1}>
+                          {
+                            solvedProblems.includes(p.meta.title) && <CheckCircle size={24} color="#47f22f" />
+                          }
+                          {
+                            uncompletedProblems.includes(p.meta.title) && <MinusCircle size={24} color="#939393" />
+                          }
+                          <DifficultyChip difficulty={p.meta.difficulty} />
+                        </Stack>
                       </Stack>
                   </ListItemButton>,
               )}

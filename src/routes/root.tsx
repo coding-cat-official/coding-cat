@@ -109,6 +109,7 @@ export default function App() {
                   closeDrawer={() => setOpen(false)}
                   searchQuery={query}
                   difficulty={difficulty}
+                  session={session}
                 />
               </Box>
             </Box>
