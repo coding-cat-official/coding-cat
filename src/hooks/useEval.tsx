@@ -78,21 +78,20 @@ export default function useEval(problem: Problem, session: Session | null): Eval
 
     function runCode(code: string) {
         currentCodeRef.current = code;
-        document.dispatchEvent(
-          new CustomEvent(
-              'eval', {
-                  detail: {
-                      code: code,
-                      tests: problem.io,
-                      name: problem.meta.name,
-                      mutations: problem.mutations,
-                      solution: problem.solution
-                  }
-              },
-          ),
-      );
-    }
+        const detail: any = {
+            code,
+            tests: problem.io,
+            name: problem.meta.name,
+            question_type: problem.meta.question_type,
+        };
+        if (problem.meta.question_type[0] === 'mutation') {
+            if (problem.solution)  detail.solution  = problem.solution;
+            if (problem.mutations) detail.mutations = problem.mutations;
+        }
 
-    return [evalResponse, runCode];
+    document.dispatchEvent(new CustomEvent('eval', { detail }));
+  }
+
+  return [evalResponse, runCode];
 }
 
