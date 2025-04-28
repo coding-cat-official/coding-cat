@@ -1,6 +1,6 @@
 # Welcome to Coding Cat
 
-In browser IDE and tester for python. For educational purposes, inspired by [Codingbat](https://www.codingbat.com).
+In browser IDE with auto-tested problems in Python. Problems are organized around categories that denote their difficulty. This project is inspired by [Coding Bat](https://www.codingbat.com).
 
 The site can be found at [coding-cat.club](https://coding-cat.club).
 
@@ -20,16 +20,14 @@ Finally, run `npm run start` to run the app locally.
 
 To run the tests, use the `npm run test` command in the project root.
 
-### TO DO
 
-Future features we'd like to add:
+### Project History and Timeline
 
-- User accounts with log ins, persistent solutions, tracks progress
-- Debugger? Ability to test code in a REPL?
-- Choose your own inputs to the functions
-- Partially hidden tests
-- Print statements
+#### Summer 2024
+A bare, front-end only version of this application was developed by Eric Mayhew and Jacob Errington in Summer of 2024. 
 
-### BUGS
+#### Fall 2024
+During the school year, dozens of students in Eric's introduction to Python course at Dawson added dozens of problems to the problem set. Thank you to these students for enhancing the application.
 
-- In `intersecting_metro`, if you do `return None` this somehow triggers the timeout.
+#### Spring 2025 
+During April to May of 2025, 3 student interns (Emmanuelle Lin, Ahmed Sobh, and Kristian Garkov) implemented a number of key features that make Coding Cat what it is today, such as: a backend with persistent user accounts, the ability for users to set individualized goals for number of problems completed, new problem types (like mutation testing problems), and reflections.  Thank you to these students for implementing these key features. 
