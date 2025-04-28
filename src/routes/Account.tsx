@@ -14,9 +14,9 @@ import { Accordion,
   Stack, 
   Typography 
 } from '@mui/joy';
-import problems from '../public-problems/problems';
 import { Progress } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
+import { getCompletedProblems } from '../utils/getCompletedProblems';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,7 @@ export default function Account({ session }: { session: Session }) {
   const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
   const [view, setView] = useState<"progress" | "reflections">("progress");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -66,37 +67,10 @@ export default function Account({ session }: { session: Session }) {
       .eq('profile_id', user.id);
 
       if(error) {
-        alert(error.message)
-        return;
+        setError(error.message);
       }
 
-      const totalByCategory: Record<string, number> = {};
-      const completedByCategory: Record<string, number> = {};
-      const completedTitles = new Set<string>();
-
-      for(const p of problems) {
-        const category = p.meta.category;
-        totalByCategory[category] = (totalByCategory[category] || 0) +1;
-      }
-
-      for (const s of submissions || []) {
-        if (s.passed_tests === s.total_tests) {
-          completedTitles.add(s.problem_title);
-        }
-      }
-
-      for (const p of problems) {
-        const category = p.meta.category;
-        if (completedTitles.has(p.meta.title)) {
-          completedByCategory[category] = (completedByCategory[category] || 0) + 1;
-        }
-      }
-
-      const summary = Object.keys(totalByCategory).map(category => ({
-        category: category,
-        completed: completedByCategory[category] || 0,
-        total: totalByCategory[category]
-      }));
+      const summary = getCompletedProblems(submissions || []);
 
       setProgress(summary);
     }
