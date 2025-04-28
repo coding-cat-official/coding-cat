@@ -1,12 +1,26 @@
 from browser import bind, self
 
-def load_student_function(code, name):
-    HARNESS_CODE = f'box["fn"] = {name}'
-    box = {}
-    exec(code + '\n' + HARNESS_CODE, { 'box': box })
-    return box['fn']
+"""
+this function transform the string of the student code into an executable python program
+Here's what the code we exec looks like:
 
-def test_student_function(student_function, tests):
+```
+def foobar(input1, input2): <- student written code
+  return input1 and input2
+  
+box['fn'] = foobar <- the "harness"
+```
+We edit what code the student wrote, adding just one line to put it inside the box.
+
+Notice the 3rd arg to exec is 'box': box. This is how we connect box['fn'] from the student code to the worker.
+"""
+def load_student_function(code, name):
+    HARNESS_CODE = f'box["fn"] = {name}' # stores student code in a box
+    box = {}
+    exec(code + '\n' + HARNESS_CODE, { 'box': box }) # this call to exec stores the student func in the box
+    return box['fn'] # return the function from the box
+
+def test_student_function(student_function, tests): 
     report = []
     for test in tests:
         actual_output = student_function(*test['input'])

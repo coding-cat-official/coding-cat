@@ -94,11 +94,11 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     function increaseFontSize() {
-      if (fontSize !== 30) setFontSize(fontSize + 4);
+      if (fontSize < 30) setFontSize(fontSize + 4);
     }
 
     function decreaseFontSize() {
-      if (fontSize !== 10) setFontSize(fontSize - 4);
+      if (fontSize > 10) setFontSize(fontSize - 4);
     }
 
     return (
