@@ -1,40 +1,72 @@
-import {List, ListItemButton} from '@mui/joy'
+import { List, ListItemButton, Typography } from '@mui/joy'
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
+import { Session } from '@supabase/supabase-js';
+import { getCompletedProblems } from '../utils/getCompletedProblems';
+import { Problem, Progress } from '../types';
 
 export interface CategoryListProps {
-    problems: import('../types').CodingProblem[]
-    activeCategory: string | null
+    searchedProblems: Problem[];
+    activeCategory: string | null;
     onSelectCategory: (cat: string) => void;
+    session: Session | null;
 }
 
 export default function CategoryList({
-    problems,
+    searchedProblems,
     activeCategory,
     onSelectCategory,
+    session
   }: CategoryListProps) {
-    const categories = Array.from(
-      new Set(problems.map((p) => p.meta.category)),
-    ).sort()
+    const [error, setError] = useState("");
+    const [progress, setProgress] = useState<Progress[]>([]);
 
-    // TODO: hide categories that don't have any search results
+    // List of categories that show up in search results.
+    const categories = searchedProblems.map((c) => {
+        return c.meta.category;
+    }).filter((c, index, array) => array.indexOf(c) === index);
+
+    useEffect(() => {
+        async function fetchProgress() {
+            if (!session) return;
+            const { user } = session;
+            
+            const {data: submissions, error } = await supabase
+            .from('submissions')
+            .select('problem_title, passed_tests, total_tests')
+            .eq('profile_id', user.id);
+
+            if(error) {
+                setError(error.message);
+            }
+
+            const summary = getCompletedProblems(submissions || []);
+
+            setProgress(summary);
+        }
+
+        fetchProgress();
+    }, [session])
 
     return (
         <List component="nav" sx={{ py: 2}}>
-            {categories.map((cat) => (
-            <ListItemButton
-                key={cat}
-                selected={cat === activeCategory}
-                onClick={()=> {
-                    onSelectCategory(cat)
-                }}
-                sx = {{
-                    borderRadius: 'md', my: 1, py: 2, px: 2,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    bgcolor: cat === activeCategory ? 'primary.softBg' : 'background.surface',
-                    '&:hover': { bgcolor: 'primary.softBgHover' },
-                }} >
-                {cat}
-            </ListItemButton>
+            {progress.map((p) => (
+                categories.includes(p.category) &&
+                <ListItemButton
+                    key={p.category}
+                    selected={p.category === activeCategory}
+                    onClick={()=> {
+                        onSelectCategory(p.category)
+                    }}
+                    sx = {{
+                        borderRadius: 'md', my: 1, py: 2, px: 2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        bgcolor: p.category === activeCategory ? 'primary.softBg' : 'background.surface',
+                        '&:hover': { bgcolor: 'primary.softBgHover' },
+                    }} >
+                    <Typography>{p.category} - <strong>{p.completed}/{p.total}</strong></Typography>
+                </ListItemButton>
             ))}
         </List>
     )

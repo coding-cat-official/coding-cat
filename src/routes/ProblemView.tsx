@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
-import { CodingProblem, EvalResponse } from '../types';
+import { Problem, EvalResponse } from '../types';
 import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
@@ -21,21 +21,21 @@ const ALL_TESTS_PASSED = '🎉';
 const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
-export async function problemLoader({params}: any): Promise<CodingProblem> {
-    const selected = (problems as CodingProblem[]).filter((p) => p.meta.name === params.problemName);
+export async function problemLoader({params}: any): Promise<Problem> {
+    const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
     if (selected.length !== 1) throw new Error('fuck');
     return selected[0];
 }
 
 export default function ProblemView() {
-    const problem = useLoaderData() as CodingProblem;
+    const problem = useLoaderData() as Problem;
     return <>
         <ProblemIDE problem={problem} />
     </>;
 }
 
 interface ProblemIDEProps {
-    problem: CodingProblem
+    problem: Problem
 }
 
 interface ProblemIDEOutletContext {
@@ -80,7 +80,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         if (json){
           setCode(json.code);
         } else {
-          setCode(problem.starter);
+          setCode(problem.starter || '');
         }
         hasFetchedProblems.current.add(problem.meta.name);
       }

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react' ;
+import { useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import problems from '../public-problems/problems';
-import { CodingProblem } from '../types';
+import { Problem } from '../types';
 
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
@@ -20,10 +20,25 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
-  const problems = useLoaderData() as CodingProblem[];
+  const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
+  const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
+
+  let newDifficulty = difficulty;
+  if (newDifficulty === "all") newDifficulty = "";
+
+  const filteredProblems = useMemo(() => {
+    return problems.filter(problem => {
+      return problem.meta.title.toLowerCase().includes(query.toLowerCase().trim()) &&
+        problem.meta.difficulty.includes(newDifficulty);
+    });
+  }, [problems, query, newDifficulty])
+
+  useEffect(() => {
+    setSearchedProblems(filteredProblems);
+  }, [filteredProblems])
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -92,23 +107,23 @@ export default function App() {
             </Stack>
           </Stack>
         <DialogContent>
-          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+          <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
                 <CategoryList
-                  problems={problems}
+                  searchedProblems={searchedProblems}
                   activeCategory={activeCategory}
                   onSelectCategory={handleSelectedCategory}
+                  session={session}
                 />
               </Box>
               <Box sx={{ flex: 3, overflowY: 'auto' }}>
                 <ProblemList
-                  problems={problems}
+                  searchedProblems={searchedProblems}
                   selectedTopic={activeCategory}
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
-                  searchQuery={query}
-                  difficulty={difficulty}
+                  session={session}
                 />
               </Box>
             </Box>
@@ -156,6 +171,6 @@ export default function App() {
   </Box>
 };
 
-export async function problemListLoader(): Promise<CodingProblem[]> {
-    return problems as CodingProblem[];
+export async function problemListLoader(): Promise<Problem[]> {
+    return problems as Problem[];
 }

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 
-import { CodingProblem, MutationProblem, EvalResponse } from '../types';
+import { Problem, EvalResponse } from '../types';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
 
 export type Eval = [EvalResponse | null, (code: string) => void];
 
-export default function useEval(problem: CodingProblem | MutationProblem, session: Session | null): Eval {
+export default function useEval(problem: Problem, session: Session | null): Eval {
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
     const currentCodeRef = useRef<string>('');
 
@@ -78,19 +78,19 @@ export default function useEval(problem: CodingProblem | MutationProblem, sessio
 
     function runCode(code: string) {
         currentCodeRef.current = code;
-        const detail: Record<string, any> = {
-            code: code,
-            tests: problem.io,
-            name: problem.meta.name,
-          };
-      
-          if (problem.meta.question_type[0] === 'mutation') {
-            const mutation = problem as MutationProblem;
-            detail.solution = mutation.solution;
-            detail.mutations = mutation.mutation;
-          }
-      
-          document.dispatchEvent(new CustomEvent('eval', { detail }));
+        document.dispatchEvent(
+          new CustomEvent(
+              'eval', {
+                  detail: {
+                      code: code,
+                      tests: problem.io,
+                      name: problem.meta.name,
+                      mutations: problem.mutations,
+                      solution: problem.solution
+                  }
+              },
+          ),
+      );
     }
 
     return [evalResponse, runCode];
