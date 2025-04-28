@@ -14,18 +14,30 @@ export type EvalResponse
     = { status: 'success'; report: Report[] }
     | { status: 'failure'; message: string }
 
-export interface Problem {
+export interface ProblemMeta {
+    name: string;
+    title: string;
+    difficulty: string;
+    author: string;
+    category: string;
+    question_type: Array<'coding' | 'mutation'>;
+}
+
+interface BaseProblem{
     description: string;
-    starter: string;
-    meta: {
-        name: string;
-        title: string;
-        difficulty: string;
-        author: string;
-        category: string;
-        question_type: Array<string>;
-    };
-    io: Array<IOPair>;
+    meta: ProblemMeta;
+    io: IOPair[];
+}
+
+export interface CodingProblem extends BaseProblem{
+    meta: { question_type: ['coding']; } & Omit<ProblemMeta, 'question_type'>;
+    starter: string; 
+}
+
+export interface MutationProblem extends BaseProblem{
+    meta: {question_type: ['mutation']; } & Omit<ProblemMeta, 'question_type'>;
+    solution: string;
+    mutation: string[];
 }
 
 export type Progress = {

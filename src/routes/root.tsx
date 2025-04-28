@@ -3,7 +3,7 @@ import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import problems from '../public-problems/problems';
-import { Problem } from '../types';
+import { CodingProblem } from '../types';
 
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
@@ -20,7 +20,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
-  const problems = useLoaderData() as Problem[];
+  const problems = useLoaderData() as CodingProblem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -156,6 +156,6 @@ export default function App() {
   </Box>
 };
 
-export async function problemListLoader(): Promise<Problem[]> {
-    return problems as Problem[];
+export async function problemListLoader(): Promise<CodingProblem[]> {
+    return problems as CodingProblem[];
 }

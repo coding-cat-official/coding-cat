@@ -1,7 +1,7 @@
 import {List, ListItemButton} from '@mui/joy'
 
 export interface CategoryListProps {
-    problems: import('../types').Problem[]
+    problems: import('../types').CodingProblem[]
     activeCategory: string | null
     onSelectCategory: (cat: string) => void;
 }

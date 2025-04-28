@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Problem } from '../types';
+import { CodingProblem } from '../types';
 
 type PersistentProblemCode = [string, (code: string) => void];
 
-export default function usePersistentProblemCode(problem: Problem): PersistentProblemCode {
+export default function usePersistentProblemCode(problem: CodingProblem): PersistentProblemCode {
   const [code, setCode] = useState(localStorage.getItem(problem.meta.name) ?? problem.starter);
 
   useEffect(() => {

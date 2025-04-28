@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 
-import { Problem, EvalResponse } from '../types';
+import { CodingProblem, EvalResponse } from '../types';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
 
 export type Eval = [EvalResponse | null, (code: string) => void];
 
-export default function useEval(problem: Problem, session: Session | null): Eval {
+export default function useEval(problem: CodingProblem, session: Session | null): Eval {
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
     const currentCodeRef = useRef<string>('');
 

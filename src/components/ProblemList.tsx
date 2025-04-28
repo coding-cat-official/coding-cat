@@ -1,9 +1,9 @@
 import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
-import { Problem } from '../types';
+import { CodingProblem } from '../types';
 import { Link } from 'react-router-dom';
 
 interface ProblemListProps {
-  problems: Problem[];
+  problems: CodingProblem[];
   selectedTopic: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
@@ -26,7 +26,7 @@ export default function ProblemList({problems, selectedTopic, activeProblem, clo
       problem.meta.difficulty.includes(newDifficulty);
   });
 
-  const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+  const problemsByType = problemsByTopic.reduce<Record<string, CodingProblem[]>>((acc, problem) => {
     const problemsByType = problem.meta.question_type;
     problemsByType.forEach(type => {
       if (!acc[type]) acc[type] = [];
