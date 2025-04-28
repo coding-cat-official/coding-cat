@@ -7,11 +7,11 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
-import ResizableEditor from '../components/ResizableEditor';
+import {Stack, Sheet, Box, Typography, Table} from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
+import CodingQuestion from '../components/CodingQuestion';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -44,7 +44,6 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
-    const [fontSize, setFontSize] = useState(14);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
@@ -93,13 +92,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
-    function increaseFontSize() {
-      if (fontSize < 30) setFontSize(fontSize + 4);
-    }
-
-    function decreaseFontSize() {
-      if (fontSize > 10) setFontSize(fontSize - 4);
-    }
 
     return (
       <Stack sx={{ width: "80%",p: 1, display:"flex", }} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
@@ -111,25 +103,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 {problem.description}
               </Markdown>
             </Box>
-      
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
-              <Button onClick={decreaseFontSize}>A-</Button>
-              <Button onClick={increaseFontSize}>A+</Button>
-            </Box>
-      
-            <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
-      
-            <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
-              <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
-              <Button
-                sx={{ flex: 1 }}
-                variant="outlined"
-                onClick={() => changeCode(problem.starter)}
-                disabled={code === problem.starter}
-              >
-                Reset
-              </Button>
-            </Box>
+            <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
           </Sheet>
         </Stack>
       
