@@ -12,6 +12,7 @@ import {Stack, Sheet, Box, Typography, Table} from '@mui/joy';
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
 import CodingQuestion from '../components/CodingQuestion';
+import MutationQuestion from '../components/MutationQuestion';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -103,7 +104,13 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 {problem.description}
               </Markdown>
             </Box>
-            <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
+            { problem.meta.question_type[1] === 'coding' ?
+              (
+                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
+              ) : ( 
+                <MutationQuestion/>
+              )
+            }
           </Sheet>
         </Stack>
       
