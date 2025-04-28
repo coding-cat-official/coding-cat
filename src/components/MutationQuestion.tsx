@@ -19,6 +19,7 @@ export default function MutationQuestion(){
       <table className='mutation-table'>
         <thead>
           <tr>
+            <th>N°</th>
             <th>Input</th>
             {teehee.map((mutant:any, index:any) => {
               return(
@@ -33,10 +34,11 @@ export default function MutationQuestion(){
         <tbody>
         { Array.from({length:numOfTableRows}).map((_, rowIndex) =>
           <tr key={rowIndex}>
+            <td>{rowIndex+1}</td>
             <td>
-            <input type="text" id="p1" name="p1"/>
-            ,
-            <input type="text" id="p2" name="p2"/>
+              <input type="text" id="p1" name="p1"/>
+              ,
+              <input type="text" id="p2" name="p2"/>
             </td>
             {teehee.map((mutant:any, index:any) => {
               return(
