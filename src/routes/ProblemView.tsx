@@ -104,7 +104,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 {problem.description}
               </Markdown>
             </Box>
-            { problem.meta.question_type[1] === 'coding' ?
+            { problem.meta.question_type[0] === 'coding' ?
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
               ) : ( 
@@ -119,9 +119,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
           </Box>
         ) : (
-          <Box>
-            teehee
-          </Box>
+          <></>
         ) }
         
       </Stack>
