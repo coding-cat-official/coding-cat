@@ -133,9 +133,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           </Sheet>
         </Stack>
       
-        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
+        <Stack flex={2} alignItems="flex-start" className="results-container">
           {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-        </Box>
+        </Stack>
       </Stack>
     
     );
@@ -145,44 +145,52 @@ interface ReportProps {
   evalResponse: EvalResponse | null;
 }
 
-const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
+function Report({ evalResponse }: ReportProps) {
   if (null === evalResponse) return null;
-  if ('failure' === evalResponse.status)
-    return <Stack direction="column">
-      <Typography> Uh-oh... There was a problem with your submission. </Typography>
-      <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
-    </Stack>;
-  if ('success' === evalResponse.status)
-    return <Box sx={{ border: 1, borderRadius: 3}} >
+
+  if ('failure' === evalResponse.status) {
+    return (
       <Stack direction="column">
-        <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
-        <Table>
-          <thead>
-          <tr>
-            <th> Input </th>
-            <th> Expected output </th>
-            <th> Your output </th>
-          </tr>
-          </thead>
-          <tbody>
-          { evalResponse.report.map((r, i) =>
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono"> {r.input} </td>
-                <td className="mono"> {r.expected} </td>
-                <td className="mono"> {r.actual} </td>
-              </tr>)
-          }
-          </tbody>
-        </Table>
-        { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
-          ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
-              <Typography sx={{ p: 2 }} level='body-lg'>
-                Bravo {ALL_TESTS_PASSED} You completed this problem!
-              </Typography>
-            </Box>
-          : null }
+        <Typography> Uh-oh... There was a problem with your submission. </Typography>
+        <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
       </Stack>
-    </Box>;
+    )
+  }
+
+  if ('success' === evalResponse.status) {
+    return (
+      <Box sx={{ border: 1, borderRadius: 3}} >
+        <Stack direction="column">
+          <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
+          <Table>
+            <thead>
+            <tr>
+              <th> Input </th>
+              <th> Expected output </th>
+              <th> Your output </th>
+            </tr>
+            </thead>
+            <tbody>
+            { evalResponse.report.map((r, i) =>
+                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                  <td className="mono"> {r.input} </td>
+                  <td className="mono"> {r.expected} </td>
+                  <td className="mono"> {r.actual} </td>
+                </tr>)
+            }
+            </tbody>
+          </Table>
+          { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
+            ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
+                <Typography sx={{ p: 2 }} level='body-lg'>
+                  Bravo {ALL_TESTS_PASSED} You completed this problem!
+                </Typography>
+              </Box>
+            : null }
+        </Stack>
+      </Box>
+    ) 
+  }
 
   return <p> If this text appears, it&apos;s a bug :^) </p>;
 };
