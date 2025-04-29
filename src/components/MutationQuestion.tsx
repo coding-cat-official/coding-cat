@@ -48,6 +48,11 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     }
   };
 
+  const countPassedMutants = () => {
+    return hardCodedPassFail.report.reduce((total, row) => {
+      return total + row.mutations.filter((m) => m.equal).length;
+    }, 0);
+  };
 
   return(
     <> 
@@ -56,9 +61,9 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           <tr>
             <th>N°</th>
             <th>Input</th>
-            {numOfMutationFiles.map((mutant:any, index:any) => {
+            {numOfMutationFiles.map((_, index:any) => {
               return(
-                <th key={mutant}>M{index+1}</th>
+                <th key={index}>M{index+1}</th>
               )
             })
             }
@@ -67,19 +72,19 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           </tr>
         </thead>
         <tbody>
-        { Array.from({length:numOfTableRows}).map((_, rowIndex) =>
-          <tr key={rowIndex}>
-            <td>{rowIndex+1}</td>
-            <td>
-              <input type="text" id="p1" name="p1"/>
-              ,
-              <input type="text" id="p2" name="p2"/>
-            </td>
-            {(hardCodedPassFail.report[rowIndex].mutations !== null
-              ? hardCodedPassFail.report[rowIndex].mutations
-              : Array(5).fill(null)
-            ).map((passOrFail:any, index:number) => {
-              return(
+        { Array.from({length:numOfTableRows}).map((_, rowIndex) => {
+          const row = hardCodedPassFail.report[rowIndex];
+          const mutations = row?.mutations ?? Array(numOfMutationFiles.length).fill(null);
+
+          return(
+            <tr key={rowIndex}>
+              <td>{rowIndex+1}</td>
+              <td>
+                <input type="text" id="p1" name="p1"/>
+                ,
+                <input type="text" id="p2" name="p2"/>
+              </td>
+              {mutations.map((passOrFail:any, index:number) => (
                 <td key={index}>
                   {passOrFail
                     ? passOrFail.equal
@@ -87,14 +92,15 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
                       : '❌'
                     : ''}
                 </td>
-              )
-            })}
-            <td>{hardCodedPassFail.report[rowIndex].solution.actual} </td>
-            <td>
-              <input></input>
-              <input></input>
-            </td>
-          </tr>
+              ))}
+              <td>{row?.solution?.actual || ''} </td>
+              <td>
+                <input></input>
+                <input></input>
+              </td>
+            </tr>
+            )
+          }
         )}
         </tbody>
       </table>
