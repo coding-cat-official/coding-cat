@@ -1,12 +1,46 @@
 import {Box, Button} from '@mui/joy';
 import { useState } from 'react';
 
-export default function MutationQuestion({json, runCode, inputs, setInput}: any){
+export default function MutationQuestion({runCode, inputs, setInput, evalResponse}: any){
 
-  const [numOfTableRows, setNumRows] = useState(1);
+  const hardCodedPassFail = {
+    status: "success",
+    report: [
+      {
+        expected: "2,4",
+        input: "1,2,4",
+        mutations: [
+          { index: 0, actual: "<error: TypeError>", equal: false },
+          { index: 1, actual: "<error: TypeError>", equal: true },
+          { index: 2, actual: "<error: TypeError>", equal: false },
+          { index: 3, actual: "<error: TypeError>", equal: false }
+        ],
+        solution: {
+          actual: "<error: TypeError>",
+          equal: false
+        }
+      },
+      {
+        expected: "2,6",
+        input: "2,6",
+        mutations: [
+          { index: 0, actual: "<error: TypeError>", equal: false },
+          { index: 1, actual: "<error: TypeError>", equal: false },
+          { index: 2, actual: "<error: TypeError>", equal: true },
+          { index: 3, actual: "<error: TypeError>", equal: false }
+        ],
+        solution: {
+          actual: "<error: TypeError>",
+          equal: false
+        }
+      }
+    ]
+  };
+
+  const [numOfTableRows, setNumRows] = useState(hardCodedPassFail.report.length);
   const maxNumberOfRows = 15;
-  const numOfMutationFiles = [1, 2, 3, 4, 5];
-  const hardCodedPassFail = [true, false, true, true, false];
+  const numOfMutationFiles = [1, 2, 3, 4];
+  
 
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
@@ -41,15 +75,25 @@ export default function MutationQuestion({json, runCode, inputs, setInput}: any)
               ,
               <input type="text" id="p2" name="p2"/>
             </td>
-            {hardCodedPassFail.map((passOrFail:any, index:any) => {
+            {(hardCodedPassFail.report[rowIndex].mutations !== null
+              ? hardCodedPassFail.report[rowIndex].mutations
+              : Array(5).fill(null)
+            ).map((passOrFail:any, index:number) => {
               return(
                 <td key={index}>
-                {passOrFail ? '✅' : '❌'}
+                  {passOrFail
+                    ? passOrFail.equal
+                      ? '✅'
+                      : '❌'
+                    : ''}
                 </td>
               )
             })}
-            <td>hallooo</td>
-            <td>hiii</td>
+            <td>{hardCodedPassFail.report[rowIndex].solution.actual} </td>
+            <td>
+              <input></input>
+              <input></input>
+            </td>
           </tr>
         )}
         </tbody>
