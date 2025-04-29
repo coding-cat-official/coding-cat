@@ -45,6 +45,7 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [inputs, setInputs] = useState([]);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
@@ -108,7 +109,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
               ) : ( 
-                <MutationQuestion/>
+                <MutationQuestion inputs={inputs} runCode={runCode}/>
               )
             }
           </Sheet>

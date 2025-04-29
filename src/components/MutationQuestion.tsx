@@ -1,11 +1,12 @@
 import {Box, Button} from '@mui/joy';
 import { useState } from 'react';
 
-export default function MutationQuestion({json}: any){
+export default function MutationQuestion({json, runCode, inputs, setInput}: any){
 
   const [numOfTableRows, setNumRows] = useState(1);
   const maxNumberOfRows = 15;
   const numOfMutationFiles = [1, 2, 3, 4, 5];
+  const hardCodedPassFail = [true, false, true, true, false];
 
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
@@ -40,9 +41,11 @@ export default function MutationQuestion({json}: any){
               ,
               <input type="text" id="p2" name="p2"/>
             </td>
-            {numOfMutationFiles.map((mutant:any, index:any) => {
+            {hardCodedPassFail.map((passOrFail:any, index:any) => {
               return(
-                <td key={index}>👻</td>
+                <td key={index}>
+                {passOrFail ? '✅' : '❌'}
+                </td>
               )
             })}
             <td>hallooo</td>
@@ -51,6 +54,7 @@ export default function MutationQuestion({json}: any){
         )}
         </tbody>
       </table>
+      <Button onClick={() => runCode(inputs)}>Run</Button>
       <Button onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
 
       <Box className="mutation-results">
