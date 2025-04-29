@@ -40,7 +40,7 @@ export default function ResizableEditor({code, fontSize, changeCode}: any){
     <div ref={containerRef} style={{height: "100%"}}>
        {mounted && (
         <Editor
-          height="100%"
+          height="300px"
           className="problem-ide-editor"
           defaultLanguage="python"
           value={code}
