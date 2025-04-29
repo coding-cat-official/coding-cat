@@ -7,7 +7,7 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
+import {Button, Stack, Sheet, Box, Typography, Table, Textarea} from '@mui/joy';
 import ResizableEditor from '../components/ResizableEditor';
 
 import type { Session } from '@supabase/supabase-js'
@@ -133,8 +133,13 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           </Sheet>
         </Stack>
       
-        <Stack flex={2} alignItems="flex-start" className="results-container">
-          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+        <Stack height="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+          <Box flex={1} width="100%">
+            {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+          </Box>
+          <Box flex={1} width="100%">
+            <ReflectionInput />
+          </Box>
         </Stack>
       </Stack>
     
@@ -159,10 +164,10 @@ function Report({ evalResponse }: ReportProps) {
 
   if ('success' === evalResponse.status) {
     return (
-      <Box sx={{ border: 1, borderRadius: 3}} >
+      <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
-          <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
-          <Table>
+          <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
+          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
             <thead>
             <tr>
               <th> Input </th>
@@ -194,3 +199,14 @@ function Report({ evalResponse }: ReportProps) {
 
   return <p> If this text appears, it&apos;s a bug :^) </p>;
 };
+
+function ReflectionInput() {
+  const [text, setText] = useState("");
+
+  return (
+    <Stack direction="column" width="100%" height="100%">
+      <Typography level="title-lg">Reflection Prompt</Typography>
+      <Textarea sx={{ width: "100%", height: "100%" }} />
+    </Stack>
+  )
+}
