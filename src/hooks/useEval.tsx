@@ -82,7 +82,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
             code,
             tests: problem.io,
             name: problem.meta.name,
-            question_type: problem.meta.question_type,
+            question_type: problem.meta.question_type[0],
         };
         if (problem.meta.question_type[0] === 'mutation') {
             if (problem.solution)  detail.solution  = problem.solution;
