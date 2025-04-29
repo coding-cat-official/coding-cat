@@ -59,37 +59,35 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ height: '100%'}}>
-    
-    
-    <Box sx={{ display:'flex', minHeight: "100%", flex: 1}}>
-    <Box
-      sx={{
-        className: 'desktop-bar',
-        width: '6em',
-        flex: 1,
-        backgroundColor: '#c8cada',
-        cursor: 'pointer',
-        left: 0,
-        top: 0,
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',  // Center the arrow vertically
-        '&::after': {
-          content: '""',
-          display: 'block',
-          width: 0,
-          height: 0,
-          borderTop: '30px solid transparent',
-          borderBottom: '30px solid transparent',
-          borderLeft: '50px solid white', // Arrow color
-          marginLeft: '30px', // Position the arrow
-          paddingRight: '1em',
-        },
-      }}
-      className="desktop-bar"
-      onClick={() => setOpen(true)}
-    />
+  return (
+    <Box sx={{ display:'flex', height: "100%", flex: 1}}>
+      <Box
+        sx={{
+          className: 'desktop-bar',
+          width: '6em',
+          flex: 1,
+          backgroundColor: '#c8cada',
+          cursor: 'pointer',
+          left: 0,
+          top: 0,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',  // Center the arrow vertically
+          '&::after': {
+            content: '""',
+            display: 'block',
+            width: 0,
+            height: 0,
+            borderTop: '30px solid transparent',
+            borderBottom: '30px solid transparent',
+            borderLeft: '50px solid white', // Arrow color
+            marginLeft: '30px', // Position the arrow
+            paddingRight: '1em',
+          },
+        }}
+        className="desktop-bar"
+        onClick={() => setOpen(true)}
+      />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
@@ -164,12 +162,14 @@ export default function App() {
             Coding Cat!
           </Typography>
         </Stack>
-        <Outlet context={{ setActiveProblem, session }} />
+        
+        <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
+          <Outlet context={{ setActiveProblem, session }} />
+        </Box>
         
       </Stack>
     </Box>
-  </Box>
-};
+)};
 
 export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];
