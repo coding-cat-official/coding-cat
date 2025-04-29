@@ -16,7 +16,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           { index: 3, actual: "<error: TypeError>", equal: false }
         ],
         solution: {
-          actual: "<error: TypeError>",
+          actual: "2, 2",
           equal: false
         }
       },
@@ -30,7 +30,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           { index: 3, actual: "<error: TypeError>", equal: false }
         ],
         solution: {
-          actual: "<error: TypeError>",
+          actual: "3, 3",
           equal: false
         }
       }
@@ -111,8 +111,14 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
               ))}
               <td>{row?.solution?.actual || ''} </td>
               <td>
-                <input></input>
-                <input></input>
+                {
+                  (() => {
+                    const outputNum = row?.solution?.actual.split(",").length || 0;
+                    return Array.from({length:outputNum}).map((_, index) => (
+                      <input key={index}/>
+                    ));
+                  })()
+                }
               </td>
             </tr>
             )
