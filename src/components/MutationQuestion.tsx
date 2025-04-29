@@ -26,7 +26,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
         mutations: [
           { index: 0, actual: "<error: TypeError>", equal: false },
           { index: 1, actual: "<error: TypeError>", equal: false },
-          { index: 2, actual: "<error: TypeError>", equal: true },
+          { index: 2, actual: "<error: TypeError>", equal: false },
           { index: 3, actual: "<error: TypeError>", equal: false }
         ],
         solution: {
@@ -49,9 +49,25 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   };
 
   const countPassedMutants = () => {
-    return hardCodedPassFail.report.reduce((total, row) => {
-      return total + row.mutations.filter((m) => m.equal).length;
-    }, 0);
+    const mutantResults = new Map<number, Set<boolean>>();
+
+    hardCodedPassFail.report.forEach(row => {
+      row.mutations.forEach((mutation, index) => {
+        if (!mutantResults.has(index)) {
+          mutantResults.set(index, new Set());
+        }
+        mutantResults.get(index)!.add(mutation.equal);
+      });
+    });
+
+    let count = 0;
+    mutantResults.forEach(resultSet => {
+      if (resultSet.has(true) && resultSet.has(false)) {
+        count++;
+      }
+    });
+
+    return count;
   };
 
   return(
@@ -108,7 +124,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
       <Button onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
 
       <Box className="mutation-results">
-        You have found 1/{numOfMutationFiles.length} mutations.
+        You have found {countPassedMutants()}/{numOfMutationFiles.length} mutations.
       </Box>
     </>
   )
