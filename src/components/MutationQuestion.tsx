@@ -118,10 +118,14 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
             )
           }
         )}
+          <tr>
+            <td colSpan={4+numOfMutationFiles.length}>
+              <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
+            </td>
+          </tr>
         </tbody>
       </table>
       <Button onClick={() => runCode(inputs)}>Run</Button>
-      <Button onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
 
       <Box className="mutation-results">
         You have found {countPassedMutants()}/{numOfMutationFiles.length} mutations.
