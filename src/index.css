@@ -71,7 +71,7 @@ thead tr{
   background-color: rgb(18, 148, 160);
 }
 
-table tr:nth-child(odd) td{
+.mutation-table table tr:nth-child(odd) td{
   background-color: rgb(131, 218, 225);
 }
 
