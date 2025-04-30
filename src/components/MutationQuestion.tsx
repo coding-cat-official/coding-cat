@@ -1,7 +1,7 @@
 import {Box, Button} from '@mui/joy';
 import { useState } from 'react';
 
-export default function MutationQuestion({runCode, inputs, setInput, evalResponse}: any){
+export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
 
   const hardCodedPassFail = {
     status: "success",
@@ -40,6 +40,10 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   const [numOfTableRows, setNumRows] = useState(hardCodedPassFail.report.length);
   const maxNumberOfRows = 15;
   const numOfMutationFiles = [1, 2, 3, 4];
+  const inputCount = (problem.io[0].input).toString().includes("[[") ? 1: problem.io[0].input.length;
+  const outputCount = 1;
+  console.log('AWAWWAWAW', (problem.io[0].input).includes("[["));
+  console.log('RRRRMIMIJIMI', problem.io[0].output);
   
 
   const handleNewRowClick = () => {
@@ -96,9 +100,13 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
             <tr key={rowIndex}>
               <td>{rowIndex+1}</td>
               <td>
-                <input type="text" id="p1" name="p1"/>
-                ,
-                <input type="text" id="p2" name="p2"/>
+              {
+                (() => {
+                  return Array.from({length:inputCount}).map((_, index) => (
+                    <input key={index}/>
+                  ));
+                })()
+              }
               </td>
               {mutations.map((passOrFail:any, index:number) => (
                 <td key={index}>
@@ -113,8 +121,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
               <td>
                 {
                   (() => {
-                    const outputNum = row?.solution?.actual.split(",").length || 0;
-                    return Array.from({length:outputNum}).map((_, index) => (
+                    return Array.from({length:outputCount}).map((_, index) => (
                       <input key={index}/>
                     ));
                   })()

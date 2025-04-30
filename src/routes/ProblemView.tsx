@@ -109,7 +109,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
               ) : ( 
-                <MutationQuestion inputs={inputs} runCode={runCode} evalResponse={evalResponse}/>
+                <MutationQuestion inputs={inputs} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
               )
             }
           </Sheet>
