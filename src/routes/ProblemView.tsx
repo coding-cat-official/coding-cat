@@ -78,7 +78,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         .from('submissions')
         .select('code')
         .eq('profile_id', session.user.id)
-        .eq('problem_title', problem.meta.title)
+        .eq('problem_title', problem.meta.name)
         .order('submitted_at', { ascending: false})
         .limit(1);
 
