@@ -40,26 +40,25 @@ def test_mutation_function(solution, mutations, tests, function_name):
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
     tests = load_tests(tests)
     report = []
-    for inputs, outputs, raw in tests:
+    for inputs, expected, raw in tests:
         entry = {
-            "input": "" if outputs is None else "|".join(map(str, inputs)),
-            "expected": "" if outputs is None else "|".join(map(str, outputs))
+            "input": inputs if inputs is not None else raw,
+            "expected": expected,
         }
         try:
             solution_output = solution_function(*(inputs or []))
-            solution_string = "|".join(map(str, solution_output))
-            solution_ok = (outputs is not None and solution_output == outputs)
+            solution_string = solution_output if isinstance(solution_output, (list, tuple)) else [solution_output]
+            solution_ok = (len(expected)==1 and solution_output==expected[0]) or (solution_string==expected)
         except Exception as e:
             solution_string = f"<error: {type(e).__name__}>"
             solution_ok = False
-        entry["solution"] = {"actual": solution_string, "equal": solution_ok}
-
+        entry["solution"] = {"inputs": inputs, "actual": solution_string, "equal": solution_ok}
         mutants = []
         for index, mutation_function in enumerate(mutation_functions):
             try:
                 mutant_output = mutation_function(*(inputs or []))
-                mutant_string = "|".join(map(str, mutant_output))
-                mutant_ok = (outputs is not None and mutant_output == outputs)
+                mutant_string =mutant_output if isinstance(mutant_output, (list, tuple)) else [mutant_output]
+                mutant_ok = (len(expected)==1 and mutant_output==expected[0]) or (mutant_string==expected)
             except Exception as e:
                 mutant_string = f"<error: {type(e).__name__}>"
                 mutant_ok = False
