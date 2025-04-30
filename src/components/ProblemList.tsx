@@ -1,4 +1,4 @@
-import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
+import { Chip, List, ListItem, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -70,30 +70,41 @@ export default function ProblemList({searchedProblems, selectedTopic, activeProb
     <Stack gap={1}>
       <Typography level="h2">{selectedTopic}</Typography>
       <List component="nav">
+        <Tabs>
+          <TabList>
+            {Object.keys(problemsByType).sort().map((question_type) => (
+                  <Tab
+                    variant="plain"
+                    color="neutral">{question_type}</Tab>
+            ))}
+          </TabList>
+          
       {Object.keys(problemsByType).sort().map((question_type) => (
+        <TabPanel>
             <ListItem nested key={question_type}>
-            <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
-              <List>
-              { problemsByType[question_type].map((p) =>
-                  <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
-                      component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                      <Stack width="100%" direction="row" justifyContent="space-between">
-                        <Typography>{p.meta.title}</Typography>
-                        <Stack direction="row" gap={1}>
-                          {
-                            solvedProblems.includes(p.meta.title) && <CheckCircle size={24} color="#47f22f" />
-                          }
-                          {
-                            uncompletedProblems.includes(p.meta.title) && <MinusCircle size={24} color="#939393" />
-                          }
-                          <DifficultyChip difficulty={p.meta.difficulty} />
+                <List>
+                { problemsByType[question_type].map((p) =>
+                    <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
+                        component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+                        <Stack width="100%" direction="row" justifyContent="space-between">
+                          <Typography>{p.meta.title}</Typography>
+                          <Stack direction="row" gap={1}>
+                            {
+                              solvedProblems.includes(p.meta.title) && <CheckCircle size={24} color="#47f22f" />
+                            }
+                            {
+                              uncompletedProblems.includes(p.meta.title) && <MinusCircle size={24} color="#939393" />
+                            }
+                            <DifficultyChip difficulty={p.meta.difficulty} />
+                          </Stack>
                         </Stack>
-                      </Stack>
-                  </ListItemButton>,
-              )}
-            </List>
+                    </ListItemButton>,
+                )}
+              </List>
             </ListItem>
+        </TabPanel>
         ))}
+        </Tabs>
       </List>
     </Stack>
   );
