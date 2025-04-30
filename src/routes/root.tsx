@@ -25,6 +25,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
+    const [selectedTab, setSelectedTab] = useState("coding");
 
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
@@ -43,6 +44,7 @@ export default function App() {
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
+    setSelectedTab("coding");
   }
 
   function handleSelectedProblem(name: string){
@@ -114,8 +116,10 @@ export default function App() {
                   session={session}
                 />
               </Box>
-              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+              <Box sx={{ flex: 3}}>
                 <ProblemList
+                  selectedTab={selectedTab}
+                  setSelectedTab={setSelectedTab}
                   searchedProblems={searchedProblems}
                   selectedTopic={activeCategory}
                   activeProblem={activeProblem}

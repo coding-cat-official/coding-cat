@@ -1,4 +1,4 @@
-import { Chip, List, ListItem, ListItemButton, Stack, Typography } from '@mui/joy';
+import { Chip, List, ListItem, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,8 @@ import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
+  selectedTab: string;
+  setSelectedTab: (peep: string) => void;
   selectedTopic: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
@@ -15,7 +17,7 @@ interface ProblemListProps {
   session: Session | null;
 }
 
-export default function ProblemList({searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
 
@@ -66,34 +68,47 @@ export default function ProblemList({searchedProblems, selectedTopic, activeProb
     )
   }
 
+  const handleTabChange = (_: any, newValue: any) => {
+    if(newValue != null){
+      setSelectedTab(newValue);
+    }
+  }
+
   return(
     <Stack gap={1}>
       <Typography level="h2">{selectedTopic}</Typography>
       <List component="nav">
-      {Object.keys(problemsByType).sort().map((question_type) => (
-            <ListItem nested key={question_type}>
-            <Typography sx={{ fontSize: "20pt"}}>{question_type}</Typography>
+        <Tabs value={selectedTab} onChange={handleTabChange}>
+          <TabList>
+            {Object.keys(problemsByType).sort().map((type) => (
+              <Tab key={type} value={type} variant="plain" color="neutral">
+                {type}
+              </Tab>
+            ))}
+          </TabList>
+          
+          <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
               <List>
-              { problemsByType[question_type].map((p) =>
-                  <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
-                      component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                      <Stack width="100%" direction="row" justifyContent="space-between">
-                        <Typography>{p.meta.title}</Typography>
-                        <Stack direction="row" gap={1}>
-                          {
-                            solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
-                          }
-                          {
-                            uncompletedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
-                          }
-                          <DifficultyChip difficulty={p.meta.difficulty} />
+                { problemsByType[selectedTab].map((p) => 
+                    <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
+                        component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
+                        <Stack width="100%" direction="row" justifyContent="space-between">
+                          <Typography>{p.meta.title}</Typography>
+                          <Stack direction="row" gap={1}>
+                            {
+                              solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
+                            }
+                            {
+                              uncompletedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
+                            }
+                            <DifficultyChip difficulty={p.meta.difficulty} />
+                          </Stack>
                         </Stack>
-                      </Stack>
-                  </ListItemButton>,
-              )}
-            </List>
-            </ListItem>
-        ))}
+                    </ListItemButton>,
+                )}
+              </List>
+          </TabPanel>
+        </Tabs>
       </List>
     </Stack>
   );
