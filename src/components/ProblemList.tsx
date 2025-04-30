@@ -8,6 +8,8 @@ import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
+  selectedTab: string;
+  setSelectedTab: (peep: string) => void;
   selectedTopic: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
@@ -15,10 +17,9 @@ interface ProblemListProps {
   session: Session | null;
 }
 
-export default function ProblemList({searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
-  const [selectedTab, setSelectedTab] = useState("coding");
 
   useEffect(() => {
     async function fetchProgress() {
