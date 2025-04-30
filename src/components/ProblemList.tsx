@@ -18,6 +18,7 @@ interface ProblemListProps {
 export default function ProblemList({searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
+  const [selectedTab, setSelectedTab] = useState("coding");
 
   useEffect(() => {
     async function fetchProgress() {
@@ -66,24 +67,28 @@ export default function ProblemList({searchedProblems, selectedTopic, activeProb
     )
   }
 
+  const handleTabChange = (_: any, newValue: any) => {
+    if(newValue != null){
+      setSelectedTab(newValue);
+    }
+  }
+
   return(
     <Stack gap={1}>
       <Typography level="h2">{selectedTopic}</Typography>
       <List component="nav">
-        <Tabs>
+        <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
-            {Object.keys(problemsByType).sort().map((question_type) => (
-                  <Tab
-                    variant="plain"
-                    color="neutral">{question_type}</Tab>
+            {Object.keys(problemsByType).sort().map((type) => (
+              <Tab key={type} value={type} variant="plain" color="neutral">
+                {type}
+              </Tab>
             ))}
           </TabList>
           
-      {Object.keys(problemsByType).sort().map((question_type) => (
-        <TabPanel>
-            <ListItem nested key={question_type}>
-                <List>
-                { problemsByType[question_type].map((p) =>
+          <TabPanel value={selectedTab}>
+              <List>
+                { problemsByType[selectedTab].map((p) => 
                     <ListItemButton sx={{ width: "40%" }} key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
@@ -101,9 +106,7 @@ export default function ProblemList({searchedProblems, selectedTopic, activeProb
                     </ListItemButton>,
                 )}
               </List>
-            </ListItem>
-        </TabPanel>
-        ))}
+          </TabPanel>
         </Tabs>
       </List>
     </Stack>
