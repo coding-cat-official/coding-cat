@@ -46,6 +46,7 @@ interface ProblemIDEOutletContext {
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [fontSize, setFontSize] = useState(14);
+    const [hidePrompt, setHidePrompt] = useState(true);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
@@ -55,7 +56,15 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [setActiveProblem, problem.meta.name]);
 
     const [evalResponse, runCode] = useEval(problem, session);
-    
+
+    useEffect(() => {
+      if (evalResponse?.status === "success") {
+        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
+  
+        if (result) setHidePrompt(false);
+      }
+    }, [evalResponse]);
+
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
     useEffect(() => {
@@ -139,7 +148,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
           </Box>
           <Box flex={1} width="100%">
-            <ReflectionInput problemName={problem.meta.title} />
+            <ReflectionInput hide={hidePrompt} problemName={problem.meta.title} />
           </Box>
         </Stack>
       </Stack>
