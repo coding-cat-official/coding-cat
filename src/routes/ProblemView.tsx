@@ -7,7 +7,7 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import {Button, Stack, Sheet, Box, Typography, Table, Textarea} from '@mui/joy';
+import { Button, Stack, Sheet, Box, Typography, Table } from '@mui/joy';
 import ResizableEditor from '../components/ResizableEditor';
 
 import type { Session } from '@supabase/supabase-js'
@@ -139,7 +139,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
           </Box>
           <Box flex={1} width="100%">
-            <ReflectionInput />
+            <ReflectionInput problemName={problem.meta.title} />
           </Box>
         </Stack>
       </Stack>
