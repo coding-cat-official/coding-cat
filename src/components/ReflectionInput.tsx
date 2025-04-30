@@ -67,6 +67,7 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
         maxRows={10}
         value={text}
         onChange={(e) => setText(e.target.value)}
+        className="backgroundAnimated"
         endDecorator={
           <Stack
             width="100%" 

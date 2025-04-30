@@ -47,6 +47,24 @@ code {
   right: 0;
 }
 
+/* Animation CSS from https://stackoverflow.com/a/26937037 */
+
+@-o-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffffac; }
+  100% { background-color: #FFFFFF; }
+}
+@keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffffac; }
+  100% { background-color: #FFFFFF; }
+}
+
+.backgroundAnimated{    
+    background-image:none !important; 
+         -o-animation: fadeIt 1.2s ease-in-out; 
+            animation: fadeIt 1.2s ease-in-out; 
+}
 
 @media (max-width: 1024px){
   .problem-ide-editor div{
