@@ -3,44 +3,9 @@ import { useState } from 'react';
 
 export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
 
-  const hardCodedPassFail = {
-    status: "success",
-    report: [
-      {
-        expected: "2,4",
-        input: "1,2,4",
-        mutations: [
-          { index: 0, actual: "<error: TypeError>", equal: false },
-          { index: 1, actual: "<error: TypeError>", equal: true },
-          { index: 2, actual: "<error: TypeError>", equal: false },
-          { index: 3, actual: "<error: TypeError>", equal: false }
-        ],
-        solution: {
-          actual: "2, 2",
-          equal: false
-        }
-      },
-      {
-        expected: "2,6",
-        input: "2,6",
-        mutations: [
-          { index: 0, actual: "<error: TypeError>", equal: false },
-          { index: 1, actual: "<error: TypeError>", equal: false },
-          { index: 2, actual: "<error: TypeError>", equal: false },
-          { index: 3, actual: "<error: TypeError>", equal: false }
-        ],
-        solution: {
-          actual: "3, 3",
-          equal: false
-        }
-      }
-    ]
-  };
-
-  const [numOfTableRows, setNumRows] = useState(hardCodedPassFail.report.length);
+  const [numOfTableRows, setNumRows] = useState(1);
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
-  console.log('MUTATIONS', problem.mutations.length)
   const inputCount = (problem.io[0].input).toString().includes("[[") ? 1: problem.io[0].input.length;
   const outputCount = 1;
   
@@ -54,8 +19,10 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
 
-    hardCodedPassFail.report.forEach(row => {
-      row.mutations.forEach((mutation, index) => {
+    if(evalResponse == null) return 0
+
+    evalResponse?.report?.forEach((row:any) => {
+      row.mutations.forEach((mutation:any, index:number) => {
         if (!mutantResults.has(index)) {
           mutantResults.set(index, new Set());
         }
@@ -92,7 +59,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
         </thead>
         <tbody>
         { Array.from({length:numOfTableRows}).map((_, rowIndex) => {
-          const row = hardCodedPassFail.report[rowIndex];
+          const row = evalResponse?.report[rowIndex] ?? null;
           const mutations = row?.mutations ?? Array(numOfMutations).fill(null);
 
           return(
