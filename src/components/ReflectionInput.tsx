@@ -1,4 +1,4 @@
-import { Button, IconButton, Stack, Textarea, Tooltip, Typography } from "@mui/joy";
+import { Button, FormLabel, IconButton, Stack, Textarea, Tooltip, Typography } from "@mui/joy";
 import { Info } from "@phosphor-icons/react";
 import { Session } from "@supabase/supabase-js";
 import { useState } from "react";
@@ -60,6 +60,8 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
           </IconButton>
         </Tooltip>
       </Stack>
+      {/* Placeholder question for now, will have a list of rotating questions later. */}
+      <FormLabel>How did you end up solving the problem?</FormLabel>
       <Textarea
         sx={{ width: "100%", height: "100%", border: 2, borderRadius: 10 }}
         placeholder="Enter your reflection..."
