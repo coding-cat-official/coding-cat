@@ -18,5 +18,5 @@ export default function usePersistentProblemCode(problem: Problem): PersistentPr
     console.log('saved code');
   }
 
-  return [code, setCodeInDB];
+  return [code || '', setCodeInDB];
 }

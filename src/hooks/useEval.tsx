@@ -11,34 +11,6 @@ export default function useEval(problem: Problem, session: Session | null): Eval
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
     const currentCodeRef = useRef<string>('');
 
-    const onEvalFinished: EventListener = async (e) => {
-        const response = (e as CustomEvent).detail;
-        setEvalResponse(response);
-        console.log(response);
-
-        if(response.status === 'success' && session?.user){
-            const numPassed = response.report.filter((r: any) => r.equal).length;
-            const totalTests = response.report.length;
-
-            const submission = {
-                problem_title: problem.meta.title,
-                problem_category: problem.meta.category,
-                code: currentCodeRef.current,
-                passed_tests: numPassed,
-                submitted_at: new Date().toISOString(),
-                profile_id: session.user.id,
-                total_tests: totalTests,
-            };
-
-            const { error } = await supabase.from('submissions').insert([submission]);
-
-            if (error) {
-                console.error('Error saving submission: ' , error.message);
-                alert(error.message)
-            }
-        }
-    };
-
     useEffect(() => { setEvalResponse(null); }, [problem]);
 
     useEffect(() => {
@@ -52,7 +24,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                 const totalTests = response.report.length;
     
                 const submission = {
-                    problem_title: problem.meta.title,
+                    problem_title: problem.meta.name,
                     problem_category: problem.meta.category,
                     code: currentCodeRef.current,
                     passed_tests: numPassed,
@@ -78,19 +50,20 @@ export default function useEval(problem: Problem, session: Session | null): Eval
 
     function runCode(code: string) {
         currentCodeRef.current = code;
-        document.dispatchEvent(
-          new CustomEvent(
-              'eval', {
-                  detail: {
-                      code: code,
-                      tests: problem.io,
-                      name: problem.meta.name,
-                  }
-              },
-          ),
-      );
-    }
+        const detail: any = {
+            code,
+            tests: problem.io,
+            name: problem.meta.name,
+            question_type: problem.meta.question_type[0],
+        };
+        if (problem.meta.question_type[0] === 'mutation') {
+            if (problem.solution)  detail.solution  = problem.solution;
+            if (problem.mutations) detail.mutations = problem.mutations;
+        }
 
-    return [evalResponse, runCode];
+    document.dispatchEvent(new CustomEvent('eval', { detail }));
+  }
+
+  return [evalResponse, runCode];
 }
 

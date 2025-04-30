@@ -16,7 +16,7 @@ export type EvalResponse
 
 export interface Problem {
     description: string;
-    starter: string;
+    starter?: string;
     meta: {
         name: string;
         title: string;
@@ -26,6 +26,8 @@ export interface Problem {
         question_type: Array<string>;
     };
     io: Array<IOPair>;
+    mutations?: Array<string>;
+    solution?: string;
 }
 
 export type Progress = {

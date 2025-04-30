@@ -1,5 +1,5 @@
 import {Box, Button} from '@mui/joy';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
 
@@ -8,13 +8,30 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
   const outputCount = 1;
+
+  //The inputRows are 2D arrays since each row is a test and each test contains 
+  //an array of inputs
+  const [inputRows, setInputRows] = useState<string[][]>(
+    [ Array(inputCount).fill('') ]
+  );
   
+  const [expectedRows, setExpectedRows] = useState<string[]>(
+    [ '' ]
+  );
 
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
+      setInputRows(rows => [...rows, Array(inputCount).fill('')]);
+      setExpectedRows(rows => [...rows, '']);
     }
   };
+
+  useEffect(() => {
+    setNumRows(1)
+    setInputRows([ Array(inputCount).fill('') ])
+    setExpectedRows([''])
+  }, [inputCount, problem.meta.name])
 
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
@@ -38,6 +55,16 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     });
 
     return count;
+  };
+
+  //Formatting the inputs and output so that the runCode is able to use them
+  const handleRun = () => {
+    const payload = inputRows
+    .slice(0, numOfTableRows)
+    .map((rowInputs, i) =>
+      `${rowInputs.join('|')};${expectedRows[i]}`)
+    .join('\n');
+    runCode(payload);
   };
 
   return(
@@ -66,17 +93,19 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
             <tr key={rowIndex}>
               <td>{rowIndex+1}</td>
               <td>
-              {
-                (() => {
-                  return Array.from({length:inputCount}).map((_, index) => (
-                    <>
-                      <input key={index}/>
-                      ,
-                    </>
-                  ));
-                })()
-              }
-              </td>
+                  {inputRows[rowIndex].map((val, colIndex) => (
+                    <input
+                      key={colIndex}
+                      style= {{marginRight: '3px'}}
+                      value={val}
+                      onChange={e => {
+                        const copy = inputRows.map(r => [...r]);
+                        copy[rowIndex][colIndex] = e.target.value;
+                        setInputRows(copy);
+                      }}
+                    />
+                  ))}
+                </td>
               {mutations.map((passOrFail:any, index:number) => (
                 <td key={index}>
                   {passOrFail
@@ -86,16 +115,17 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
                     : ''}
                 </td>
               ))}
-              <td>{row?.solution?.actual || ''} </td>
+              <td>{row?.solution?.actual.toString() || ''} </td>
               <td>
-                {
-                  (() => {
-                    return Array.from({length:outputCount}).map((_, index) => (
-                      <input key={index}/>
-                    ));
-                  })()
-                }
-              </td>
+                  <input
+                    value={expectedRows[rowIndex]}
+                    onChange={e => {
+                      const copy = [...expectedRows];
+                      copy[rowIndex] = e.target.value;
+                      setExpectedRows(copy);
+                    }}
+                  />
+                </td>
             </tr>
             )
           }
@@ -107,7 +137,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           </tr>
         </tbody>
       </table>
-      <Button onClick={() => runCode(inputs)}>Run</Button>
+      <Button onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">
         You have found {countPassedMutants()}/{numOfMutations} mutations.
