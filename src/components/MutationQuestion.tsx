@@ -1,5 +1,5 @@
 import {Box, Button} from '@mui/joy';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
 
@@ -26,6 +26,12 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
       setExpectedRows(rows => [...rows, '']);
     }
   };
+
+  useEffect(() => {
+    setNumRows(1)
+    setInputRows([ Array(inputCount).fill('') ])
+    setExpectedRows([''])
+  }, [inputCount, problem.meta.name])
 
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
