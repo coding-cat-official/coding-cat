@@ -52,7 +52,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                 const totalTests = response.report.length;
     
                 const submission = {
-                    problem_title: problem.meta.title,
+                    problem_title: problem.meta.name,
                     problem_category: problem.meta.category,
                     code: currentCodeRef.current,
                     passed_tests: numPassed,
