@@ -39,11 +39,10 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
 
   const [numOfTableRows, setNumRows] = useState(hardCodedPassFail.report.length);
   const maxNumberOfRows = 15;
-  const numOfMutationFiles = [1, 2, 3, 4];
+  const numOfMutations = problem.mutations.length;
+  console.log('MUTATIONS', problem.mutations.length)
   const inputCount = (problem.io[0].input).toString().includes("[[") ? 1: problem.io[0].input.length;
   const outputCount = 1;
-  console.log('AWAWWAWAW', (problem.io[0].input).includes("[["));
-  console.log('RRRRMIMIJIMI', problem.io[0].output);
   
 
   const handleNewRowClick = () => {
@@ -81,7 +80,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           <tr>
             <th>N°</th>
             <th>Input</th>
-            {numOfMutationFiles.map((_, index:any) => {
+            {Array.from({length:numOfMutations}).map((_, index:any) => {
               return(
                 <th key={index}>M{index+1}</th>
               )
@@ -94,7 +93,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
         <tbody>
         { Array.from({length:numOfTableRows}).map((_, rowIndex) => {
           const row = hardCodedPassFail.report[rowIndex];
-          const mutations = row?.mutations ?? Array(numOfMutationFiles.length).fill(null);
+          const mutations = row?.mutations ?? Array(numOfMutations).fill(null);
 
           return(
             <tr key={rowIndex}>
@@ -132,7 +131,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           }
         )}
           <tr>
-            <td colSpan={4+numOfMutationFiles.length}>
+            <td colSpan={4+numOfMutations}>
               <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
             </td>
           </tr>
@@ -141,7 +140,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
       <Button onClick={() => runCode(inputs)}>Run</Button>
 
       <Box className="mutation-results">
-        You have found {countPassedMutants()}/{numOfMutationFiles.length} mutations.
+        You have found {countPassedMutants()}/{numOfMutations} mutations.
       </Box>
     </>
   )
