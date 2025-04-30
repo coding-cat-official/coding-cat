@@ -90,7 +90,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
               <List>
                 { problemsByType[selectedTab].map((p) => 
-                    <ListItemButton sx={{ width: "60%"}} key={p.meta.name} selected={p.meta.name === activeProblem}
+                    <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
                           <Typography>{p.meta.title}</Typography>
