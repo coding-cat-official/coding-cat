@@ -6,7 +6,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   const [numOfTableRows, setNumRows] = useState(1);
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
-  const inputCount = (problem.io[0].input).toString().includes("[[") ? 1: problem.io[0].input.length;
+  const inputCount = problem.io[0].input.length;
   const outputCount = 1;
   
 
@@ -69,7 +69,10 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
               {
                 (() => {
                   return Array.from({length:inputCount}).map((_, index) => (
-                    <input key={index}/>
+                    <>
+                      <input key={index}/>
+                      ,
+                    </>
                   ));
                 })()
               }
