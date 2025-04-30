@@ -37,7 +37,7 @@ export default function ResizableEditor({code, fontSize, changeCode}: any){
   }, []);
 
   return(
-    <div ref={containerRef} style={{height: "300px"}}>
+    <div ref={containerRef} style={{height: "100%"}}>
        {mounted && (
         <Editor
           height="300px"

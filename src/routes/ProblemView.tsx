@@ -7,10 +7,12 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import {Stack, Sheet, Box, Typography, Table} from '@mui/joy';
+import { Button, Stack, Sheet, Box, Typography, Table } from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
+
+import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 
@@ -45,6 +47,7 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [hidePrompt, setHidePrompt] = useState(true);
     const [inputs, setInputs] = useState([]);
 
     const { session } = useOutletContext<{ session: Session | null }>();
@@ -55,7 +58,15 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [setActiveProblem, problem.meta.name]);
 
     const [evalResponse, runCode] = useEval(problem, session);
-    
+
+    useEffect(() => {
+      if (evalResponse?.status === "success") {
+        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
+  
+        if (result) setHidePrompt(false);
+      }
+    }, [evalResponse]);
+
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
     useEffect(() => {
@@ -96,9 +107,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
 
     return (
-      <Stack sx={{ width: "80%",p: 1, display:"flex", }} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
-        <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%", height:"610px", overflowY: "scroll" }} className="hello">
+      <Stack sx={{ width: "100%", height: "100%", p: 3 }} className="problem-container" direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
+        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "99%", height:"100%", overflowY: "auto" }} className="hello">
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
               <Typography level="title-lg">{problem.meta.title}</Typography>
               <Markdown>
@@ -116,9 +127,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         </Stack>
       
         { problem.meta.question_type[0] === 'coding' ? (
-          <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
-            {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-          </Box>
+          <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+            <Box flex={1} width="100%">
+              {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+            </Box>
+            <Box flex={1} width="100%">
+              <ReflectionInput hide={hidePrompt} problemName={problem.meta.title} />
+            </Box>
+        </Stack>
         ) : (
           <></>
         ) }
@@ -132,44 +148,52 @@ interface ReportProps {
   evalResponse: EvalResponse | null;
 }
 
-const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
+function Report({ evalResponse }: ReportProps) {
   if (null === evalResponse) return null;
-  if ('failure' === evalResponse.status)
-    return <Stack direction="column">
-      <Typography> Uh-oh... There was a problem with your submission. </Typography>
-      <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
-    </Stack>;
-  if ('success' === evalResponse.status)
-    return <Box sx={{ border: 1, borderRadius: 3}} >
+
+  if ('failure' === evalResponse.status) {
+    return (
       <Stack direction="column">
-        <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
-        <Table>
-          <thead>
-          <tr>
-            <th> Input </th>
-            <th> Expected output </th>
-            <th> Your output </th>
-          </tr>
-          </thead>
-          <tbody>
-          { evalResponse.report.map((r, i) =>
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono"> {r.input} </td>
-                <td className="mono"> {r.expected} </td>
-                <td className="mono"> {r.actual} </td>
-              </tr>)
-          }
-          </tbody>
-        </Table>
-        { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
-          ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
-              <Typography sx={{ p: 2 }} level='body-lg'>
-                Bravo {ALL_TESTS_PASSED} You completed this problem!
-              </Typography>
-            </Box>
-          : null }
+        <Typography> Uh-oh... There was a problem with your submission. </Typography>
+        <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
       </Stack>
-    </Box>;
+    )
+  }
+
+  if ('success' === evalResponse.status) {
+    return (
+      <Box sx={{ border: 2, borderRadius: 10}} >
+        <Stack direction="column">
+          <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
+          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
+            <thead>
+            <tr>
+              <th> Input </th>
+              <th> Expected output </th>
+              <th> Your output </th>
+            </tr>
+            </thead>
+            <tbody>
+            { evalResponse.report.map((r, i) =>
+                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                  <td className="mono"> {r.input} </td>
+                  <td className="mono"> {r.expected} </td>
+                  <td className="mono"> {r.actual} </td>
+                </tr>)
+            }
+            </tbody>
+          </Table>
+          { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
+            ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
+                <Typography sx={{ p: 2 }} level='body-lg'>
+                  Bravo {ALL_TESTS_PASSED} You completed this problem!
+                </Typography>
+              </Box>
+            : null }
+        </Stack>
+      </Box>
+    ) 
+  }
 
   return <p> If this text appears, it&apos;s a bug :^) </p>;
 };
