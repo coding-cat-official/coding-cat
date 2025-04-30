@@ -96,10 +96,10 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                           <Typography>{p.meta.title}</Typography>
                           <Stack direction="row" gap={1}>
                             {
-                              solvedProblems.includes(p.meta.title) && <CheckCircle size={24} color="#47f22f" />
+                              solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
                             }
                             {
-                              uncompletedProblems.includes(p.meta.title) && <MinusCircle size={24} color="#939393" />
+                              uncompletedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
                             }
                             <DifficultyChip difficulty={p.meta.difficulty} />
                           </Stack>
