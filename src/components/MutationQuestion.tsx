@@ -115,7 +115,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
                     : ''}
                 </td>
               ))}
-              <td>{row?.solution?.actual || ''} </td>
+              <td>{row?.solution?.actual.toString() || ''} </td>
               <td>
                   <input
                     value={expectedRows[rowIndex]}

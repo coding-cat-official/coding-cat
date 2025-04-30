@@ -50,7 +50,7 @@ def test_mutation_function(solution, mutations, tests, function_name):
             solution_string = solution_output if isinstance(solution_output, (list, tuple)) else [solution_output]
             solution_ok = (len(expected)==1 and solution_output==expected[0]) or (solution_string==expected)
         except Exception as e:
-            solution_string = f"<error: {type(e).__name__}>"
+            solution_string = f"<error: {e}>"
             solution_ok = False
         entry["solution"] = {"inputs": inputs, "actual": solution_string, "equal": solution_ok}
         mutants = []
@@ -60,7 +60,7 @@ def test_mutation_function(solution, mutations, tests, function_name):
                 mutant_string =mutant_output if isinstance(mutant_output, (list, tuple)) else [mutant_output]
                 mutant_ok = (len(expected)==1 and mutant_output==expected[0]) or (mutant_string==expected)
             except Exception as e:
-                mutant_string = f"<error: {type(e).__name__}>"
+                mutant_string = f"<error: {e}>"
                 mutant_ok = False
             mutants.append({ "index": index, "actual": mutant_string, "equal": mutant_ok})
         entry["mutations"] = mutants
