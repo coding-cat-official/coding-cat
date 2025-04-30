@@ -116,7 +116,7 @@ export default function App() {
                   session={session}
                 />
               </Box>
-              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+              <Box sx={{ flex: 3}}>
                 <ProblemList
                   searchedProblems={searchedProblems}
                   selectedTopic={activeCategory}
