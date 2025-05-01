@@ -35,7 +35,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
 
-    if(evalResponse == null || evalResponse.mutants == null) return 0
+    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
 
     evalResponse?.report?.forEach((row:any) => {
       row.mutations.forEach((mutation:any, index:number) => {
