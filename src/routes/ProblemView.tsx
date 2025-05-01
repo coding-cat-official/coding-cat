@@ -107,6 +107,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+    let author = problem.meta.author;
+    if (author.toLowerCase() === "chatgpt") author = "";
 
     return (
       <Stack sx={{ width: "100%", height: "100%", p: 3 }} className="problem-container" direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
@@ -114,6 +116,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "99%", height:"100%", overflowY: "auto" }} className="hello">
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
               <Typography level="title-lg">{problem.meta.title}</Typography>
+              { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
               <Markdown>
                 {problem.description}
               </Markdown>
