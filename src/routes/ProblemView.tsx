@@ -7,7 +7,7 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import { Button, Stack, Sheet, Box, Typography, Table } from '@mui/joy';
+import { Stack, Sheet, Box, Typography, Table } from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
@@ -60,6 +60,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [evalResponse, runCode] = useEval(problem, session);
 
     useEffect(() => {
+      if (!evalResponse) setHidePrompt(true);
+
       if (evalResponse?.status === "success") {
         const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
   
@@ -132,7 +134,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
             </Box>
             <Box flex={1} width="100%">
-              <ReflectionInput hide={hidePrompt} problemName={problem.meta.title} />
+              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} /> : <Box></Box>}
             </Box>
         </Stack>
         ) : (
