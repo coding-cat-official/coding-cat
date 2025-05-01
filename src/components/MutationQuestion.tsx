@@ -38,7 +38,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     const mutantResults = new Map<number, Set<boolean>>();
     const rightOutputs = new Map<number, boolean>();
 
-    if(!evalResponse?.report?.length) return 0
+    if(evalResponse?.report?.length) return 0
 
     evalResponse?.report?.forEach((row:any) => {
       const rightOutput = row.actual === row.expected;
