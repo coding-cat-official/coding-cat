@@ -8,9 +8,10 @@ import { supabase } from "../supabaseClient";
 interface ReflectionProps {
   hide?: boolean;
   problemName: string;
+  question: string;
 }
 
-export default function ReflectionInput({ hide, problemName }: ReflectionProps) {
+export default function ReflectionInput({ hide, problemName, question }: ReflectionProps) {
   const [text, setText] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [error, setError] = useState("");
@@ -27,9 +28,14 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
 
     const { user } = session!!;
 
+    const reflection = {
+      question: question,
+      answer: text
+    }
+
     const { error } = await supabase
       .from("submissions")
-      .update({ "reflection": text })
+      .update({ "reflection": reflection })
       .eq('profile_id', user.id)
       .eq('problem_title', problemName)
       .order('submitted_at', { ascending: false})
@@ -60,8 +66,7 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
           </IconButton>
         </Tooltip>
       </Stack>
-      {/* Placeholder question for now, will have a list of rotating questions later. */}
-      <FormLabel>How did you end up solving the problem?</FormLabel>
+      <FormLabel>{question}</FormLabel>
       <Textarea
         sx={{ width: "100%", height: "100%", border: 2, borderRadius: 10 }}
         placeholder="Enter your reflection..."
