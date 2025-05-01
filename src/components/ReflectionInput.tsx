@@ -1,9 +1,10 @@
 import { Button, FormLabel, IconButton, Stack, Textarea, Tooltip, Typography } from "@mui/joy";
 import { Info } from "@phosphor-icons/react";
 import { Session } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import { reflectionQuestions } from "../questions";
 
 interface ReflectionProps {
   hide?: boolean;
@@ -18,6 +19,9 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
   const [loading, setLoading] = useState(false);
   const { session } = useOutletContext<{ session: Session | null }>();
 
+  const rand = useRef(Math.floor(Math.random() * reflectionQuestions.regular.length));
+  const question = reflectionQuestions.regular[rand.current];
+
   if (hide || !session) return <></>
 
   async function handleSubmission() {
@@ -27,9 +31,14 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
 
     const { user } = session!!;
 
+    const reflection = {
+      question: question,
+      answer: text
+    }
+
     const { error } = await supabase
       .from("submissions")
-      .update({ "reflection": text })
+      .update({ "reflection": reflection })
       .eq('profile_id', user.id)
       .eq('problem_title', problemName)
       .order('submitted_at', { ascending: false})
@@ -60,8 +69,7 @@ export default function ReflectionInput({ hide, problemName }: ReflectionProps) 
           </IconButton>
         </Tooltip>
       </Stack>
-      {/* Placeholder question for now, will have a list of rotating questions later. */}
-      <FormLabel>How did you end up solving the problem?</FormLabel>
+      <FormLabel>{question}</FormLabel>
       <Textarea
         sx={{ width: "100%", height: "100%", border: 2, borderRadius: 10 }}
         placeholder="Enter your reflection..."
