@@ -66,12 +66,12 @@ code {
   animation: fadeIt 1.2s ease-in-out; 
 }
 
-thead tr{
+.mutation-table thead tr{
   border-bottom: 4px solid black;
   background-color: rgb(18, 148, 160);
 }
 
-.mutation-table table tr:nth-child(odd) td{
+.mutation-table tr:nth-child(odd) td{
   background-color: rgb(131, 218, 225);
 }
 

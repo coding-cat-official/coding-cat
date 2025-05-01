@@ -1,14 +1,14 @@
 import {Box, Button} from '@mui/joy';
 import { useEffect, useState } from 'react';
 
-export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
+export default function MutationQuestion({runCode, evalResponse, problem, code, setCode}: any) {
+
   const [numOfTableRows, setNumRows] = useState(1);
   const [disabled, setDisabled] = useState(false);
 
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
-  const outputCount = 1;
 
   //The inputRows are 2D arrays since each row is a test and each test contains 
   //an array of inputs
@@ -20,6 +20,38 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     [ '' ]
   );
 
+  useEffect(() => {
+    setNumRows(1)
+    setInputRows([ Array(inputCount).fill('') ])
+    setExpectedRows([''])
+  }, [inputCount, problem.meta.name])
+
+  useEffect(() => {
+    if (!code){
+      setNumRows(1)
+      setInputRows([ Array(inputCount).fill('') ])
+      setExpectedRows([''])
+      return;
+    };
+    
+    const lines = code.split('\n').filter((line: string) => line.trim());
+    const newInputs: string[][] = [];
+    const newExpected: string[] = []
+
+    for (let line of lines) {
+      const [left = '', right= ''] = line.split(';');
+      newInputs.push(left.split('|'));
+      newExpected.push(right);
+    }
+
+    const finalInputs = newInputs.slice(0, maxNumberOfRows);
+    const finalExpected = newExpected.slice(0, maxNumberOfRows);
+
+    setInputRows(finalInputs);
+    setExpectedRows(finalExpected);
+    setNumRows(finalInputs.length || 1);
+  }, [code, problem.meta.name])
+
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
@@ -28,33 +60,31 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     }
   };
 
-  useEffect(() => {
-    setNumRows(1)
-    setInputRows([ Array(inputCount).fill('') ])
-    setExpectedRows([''])
-  }, [inputCount, problem.meta.name])
 
+  // The progress bar for mutations
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
 
-    if(evalResponse == null) return 0
+    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
 
-    evalResponse?.report?.forEach((row:any) => {
-      row.mutations.forEach((mutation:any, index:number) => {
-        if (!mutantResults.has(index)) {
-          mutantResults.set(index, new Set());
-        }
-        mutantResults.get(index)!.add(mutation.equal);
-      });
+    evalResponse?.report?.forEach((row:any, rowNum:number) => {
+
+      if(row.solution.equal){
+        row.mutations.forEach((mutation:any, index:number) => {
+          if (!mutantResults.has(index)) {
+            mutantResults.set(index, new Set());
+          }
+          mutantResults.get(index)!.add(mutation.equal);  
+        });
+      }
     });
 
     let count = 0;
-    mutantResults.forEach(resultSet => {
+    mutantResults.forEach((resultSet, index) => {
       if (resultSet.has(true) && resultSet.has(false)) {
         count++;
       }
     });
-
     return count;
   };
 
@@ -65,6 +95,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     .map((rowInputs, i) =>
       `${rowInputs.join('|')};${expectedRows[i]}`)
     .join('\n');
+    setCode(payload);
     runCode(payload);
 
     setDisabled(true);
