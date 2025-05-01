@@ -1,7 +1,7 @@
 import {Box, Button} from '@mui/joy';
 import { useEffect, useState } from 'react';
 
-export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
+export default function MutationQuestion({runCode, evalResponse, problem, code, setCode}: any){
 
   const [numOfTableRows, setNumRows] = useState(1);
   const maxNumberOfRows = 15;
@@ -19,6 +19,38 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     [ '' ]
   );
 
+  useEffect(() => {
+    setNumRows(1)
+    setInputRows([ Array(inputCount).fill('') ])
+    setExpectedRows([''])
+  }, [inputCount, problem.meta.name])
+
+  useEffect(() => {
+    if (!code){
+      setNumRows(1)
+      setInputRows([ Array(inputCount).fill('') ])
+      setExpectedRows([''])
+      return;
+    };
+    
+    const lines = code.split('\n').filter((line: string) => line.trim());
+    const newInputs: string[][] = [];
+    const newExpected: string[] = []
+
+    for (let line of lines) {
+      const [left = '', right= ''] = line.split(';');
+      newInputs.push(left.split('|'));
+      newExpected.push(right);
+    }
+
+    const finalInputs = newInputs.slice(0, maxNumberOfRows);
+    const finalExpected = newExpected.slice(0, maxNumberOfRows);
+
+    setInputRows(finalInputs);
+    setExpectedRows(finalExpected);
+    setNumRows(finalInputs.length || 1);
+  }, [code, problem.meta.name])
+
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
@@ -26,12 +58,6 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
       setExpectedRows(rows => [...rows, '']);
     }
   };
-
-  useEffect(() => {
-    setNumRows(1)
-    setInputRows([ Array(inputCount).fill('') ])
-    setExpectedRows([''])
-  }, [inputCount, problem.meta.name])
 
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
@@ -64,6 +90,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     .map((rowInputs, i) =>
       `${rowInputs.join('|')};${expectedRows[i]}`)
     .join('\n');
+    setCode(payload);
     runCode(payload);
   };
 

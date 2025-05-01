@@ -92,7 +92,12 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         if (json){
           setCode(json.code);
         } else {
-          setCode(problem.starter || '');
+          if(problem.meta.question_type[0] === 'coding'){
+            setCode(problem.starter || '');
+          }
+          else{
+            setCode('');
+          }
         }
         hasFetchedProblems.current.add(problem.meta.name);
       }
@@ -120,7 +125,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
               ) : ( 
-                <MutationQuestion inputs={inputs} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
               )
             }
           </Sheet>
