@@ -65,9 +65,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       if (!evalResponse) setHidePrompt(true);
 
       if (evalResponse?.status === "success") {
-        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-  
-        if (result) setHidePrompt(false);
+        setHidePrompt(false);
       }
     }, [evalResponse]);
 
@@ -110,8 +108,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
 
     function generateQuestion() {
-      const rand = Math.floor(Math.random() * reflectionQuestions.regular.length);
-      const question = reflectionQuestions.regular[rand];
+      let questionList = reflectionQuestions.success;
+
+      if (evalResponse?.status === "success") {
+        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
+        console.log(result);
+  
+        if (!result) questionList = reflectionQuestions.fail;
+      }
+
+      const rand = Math.floor(Math.random() * questionList.length);
+      const question = questionList[rand];
 
       setQuestion(question);
     }
