@@ -1,10 +1,17 @@
 import {Button, Box} from '@mui/joy';
 import ResizableEditor from './ResizableEditor';
 import { useState } from 'react';
+import { Problem } from '../types';
 
+interface CodingProps {
+  code: string;
+  changeCode: (e: string | undefined) => void;
+  problem: Problem;
+  runCode: (code: string) => void;
+  generateQuestion: () => void;
+}
 
-
-export default function CodingQuestion({code, changeCode, problem, runCode}: any){
+export default function CodingQuestion({code, changeCode, problem, runCode, generateQuestion}: CodingProps){
   const [fontSize, setFontSize] = useState(14);
 
   function increaseFontSize() {
@@ -25,7 +32,10 @@ export default function CodingQuestion({code, changeCode, problem, runCode}: any
       <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
 
       <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
-        <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
+        <Button sx={{ flex: 4 }} onClick={() => {
+          runCode(code);
+          generateQuestion();
+        }}>Run</Button>
         <Button
           sx={{ flex: 1 }}
           variant="outlined"

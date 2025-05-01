@@ -1,26 +1,23 @@
 import { Button, FormLabel, IconButton, Stack, Textarea, Tooltip, Typography } from "@mui/joy";
 import { Info } from "@phosphor-icons/react";
 import { Session } from "@supabase/supabase-js";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { reflectionQuestions } from "../questions";
 
 interface ReflectionProps {
   hide?: boolean;
   problemName: string;
+  question: string;
 }
 
-export default function ReflectionInput({ hide, problemName }: ReflectionProps) {
+export default function ReflectionInput({ hide, problemName, question }: ReflectionProps) {
   const [text, setText] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const { session } = useOutletContext<{ session: Session | null }>();
-
-  const rand = useRef(Math.floor(Math.random() * reflectionQuestions.regular.length));
-  const question = reflectionQuestions.regular[rand.current];
 
   if (hide || !session) return <></>
 

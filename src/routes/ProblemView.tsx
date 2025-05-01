@@ -15,6 +15,7 @@ import { supabase } from '../supabaseClient';
 import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
+import { reflectionQuestions } from '../questions';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -49,6 +50,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
     const [inputs, setInputs] = useState([]);
+    const [question, setQuestion] = useState("");
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
@@ -107,6 +109,13 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+    function generateQuestion() {
+      const rand = Math.floor(Math.random() * reflectionQuestions.regular.length);
+      const question = reflectionQuestions.regular[rand];
+
+      setQuestion(question);
+    }
+
     let author = problem.meta.author;
     if (author.toLowerCase() === "chatgpt") author = "";
 
@@ -123,7 +132,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             </Box>
             { problem.meta.question_type[0] === 'coding' ?
               (
-                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode}/>
+                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
                 <MutationQuestion inputs={inputs} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
               )
@@ -137,7 +146,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
             </Box>
             <Box flex={1} width="100%">
-              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} /> : <Box></Box>}
+              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
             </Box>
         </Stack>
         ) : (
