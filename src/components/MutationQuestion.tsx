@@ -36,7 +36,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   // The progress bar for mutations
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
-    const rightOuputs = new Map<number, boolean>();
+    const rightOutputs = new Map<number, boolean>();
 
     if(!evalResponse?.report?.length) return 0
 
@@ -48,14 +48,14 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           mutantResults.set(index, new Set());
         }
         mutantResults.get(index)!.add(mutation.equal);
-        if (!rightOuputs.has(index)) rightOuputs.set(index, rightOutput);
+        if (!rightOutputs.has(index)) rightOutputs.set(index, rightOutput);
     
       });
     });
 
     let count = 0;
     mutantResults.forEach((resultSet, index) => {
-      if (resultSet.has(true) && resultSet.has(false) && rightOuputs.get(index)) {
+      if (resultSet.has(true) && resultSet.has(false) && rightOutputs.get(index)) {
         count++;
       }
     });
