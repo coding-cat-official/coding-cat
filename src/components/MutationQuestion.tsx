@@ -2,8 +2,9 @@ import {Box, Button} from '@mui/joy';
 import { useEffect, useState } from 'react';
 
 export default function MutationQuestion({runCode, inputs, setInput, evalResponse, problem}: any){
-
   const [numOfTableRows, setNumRows] = useState(1);
+  const [disabled, setDisabled] = useState(false);
+
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
@@ -65,6 +66,13 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
       `${rowInputs.join('|')};${expectedRows[i]}`)
     .join('\n');
     runCode(payload);
+
+    setDisabled(true);
+    
+    // disable the button for 2 seconds to prevent spamming it
+    setTimeout(() => {
+      setDisabled(false);
+    }, 2000)
   };
 
   return(
@@ -137,7 +145,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
           </tr>
         </tbody>
       </table>
-      <Button onClick={handleRun}>Run</Button>
+      <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">
         You have found {countPassedMutants()}/{numOfMutations} mutations.
