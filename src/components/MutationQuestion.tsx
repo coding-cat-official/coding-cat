@@ -32,12 +32,15 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     setExpectedRows([''])
   }, [inputCount, problem.meta.name])
 
+
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
+    const expects = [];
 
-    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
+    if(!evalResponse?.report?.length) return 0
 
     evalResponse?.report?.forEach((row:any) => {
+      row.actual === row.expected ? expects.push(true) : expects.push(false)
       row.mutations.forEach((mutation:any, index:number) => {
         if (!mutantResults.has(index)) {
           mutantResults.set(index, new Set());
@@ -47,7 +50,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     });
 
     let count = 0;
-    mutantResults.forEach(resultSet => {
+    mutantResults.forEach((resultSet, index) => {
       if (resultSet.has(true) && resultSet.has(false)) {
         count++;
       }
