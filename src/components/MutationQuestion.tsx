@@ -41,7 +41,7 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
 
     evalResponse?.report?.forEach((row:any, rowNum:number) => {
 
-      if(row.solution.actual[0] === row.expected[0]){
+      if(row.solution.equal){
         row.mutations.forEach((mutation:any, index:number) => {
           if (!mutantResults.has(index)) {
             mutantResults.set(index, new Set());
