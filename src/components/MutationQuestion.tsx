@@ -33,29 +33,32 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
   }, [inputCount, problem.meta.name])
 
 
+  // The progress bar for mutations
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
-    const expects = [];
+    const rightOuputs = new Map<number, boolean>();
 
     if(!evalResponse?.report?.length) return 0
 
     evalResponse?.report?.forEach((row:any) => {
-      row.actual === row.expected ? expects.push(true) : expects.push(false)
+      const rightOutput = row.actual === row.expected;
+
       row.mutations.forEach((mutation:any, index:number) => {
         if (!mutantResults.has(index)) {
           mutantResults.set(index, new Set());
         }
         mutantResults.get(index)!.add(mutation.equal);
+        if (!rightOuputs.has(index)) rightOuputs.set(index, rightOutput);
+    
       });
     });
 
     let count = 0;
     mutantResults.forEach((resultSet, index) => {
-      if (resultSet.has(true) && resultSet.has(false)) {
+      if (resultSet.has(true) && resultSet.has(false) && rightOuputs.get(index)) {
         count++;
       }
     });
-
     return count;
   };
 
