@@ -7,7 +7,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
-  const outputCount = 1;
 
   //The inputRows are 2D arrays since each row is a test and each test contains 
   //an array of inputs
@@ -59,27 +58,31 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     }
   };
 
+
+  // The progress bar for mutations
   const countPassedMutants = () => {
     const mutantResults = new Map<number, Set<boolean>>();
 
-    if(evalResponse == null) return 0
+    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
 
-    evalResponse?.report?.forEach((row:any) => {
-      row.mutations.forEach((mutation:any, index:number) => {
-        if (!mutantResults.has(index)) {
-          mutantResults.set(index, new Set());
-        }
-        mutantResults.get(index)!.add(mutation.equal);
-      });
+    evalResponse?.report?.forEach((row:any, rowNum:number) => {
+
+      if(row.solution.equal){
+        row.mutations.forEach((mutation:any, index:number) => {
+          if (!mutantResults.has(index)) {
+            mutantResults.set(index, new Set());
+          }
+          mutantResults.get(index)!.add(mutation.equal);  
+        });
+      }
     });
 
     let count = 0;
-    mutantResults.forEach(resultSet => {
+    mutantResults.forEach((resultSet, index) => {
       if (resultSet.has(true) && resultSet.has(false)) {
         count++;
       }
     });
-
     return count;
   };
 
