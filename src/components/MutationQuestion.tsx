@@ -38,10 +38,10 @@ export default function MutationQuestion({runCode, inputs, setInput, evalRespons
     const mutantResults = new Map<number, Set<boolean>>();
     const rightOutputs = new Map<number, boolean>();
 
-    if(evalResponse?.report?.length) return 0
+    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
 
     evalResponse?.report?.forEach((row:any) => {
-      const rightOutput = row.actual === row.expected;
+      const rightOutput = row.solution.actual[0] === row.expected[0];
 
       row.mutations.forEach((mutation:any, index:number) => {
         if (!mutantResults.has(index)) {
