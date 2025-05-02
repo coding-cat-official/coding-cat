@@ -36,6 +36,17 @@ export type Progress = {
     total: number;
 }
 
+export type Reflection = {
+    category: string;
+    problem_title: string;
+    code: string;
+    reflection: string | {
+        question: string;
+        answer: string;
+    };
+    submitted_at: Date;
+}
+
 export type Submission = {
     problem_title: string;
     passed_tests: number;
