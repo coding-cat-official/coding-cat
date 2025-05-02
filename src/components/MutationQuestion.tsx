@@ -112,15 +112,15 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         <thead>
           <tr>
             <th>N°</th>
-            <th>Input</th>
+            <th className='input'>Input</th>
             {Array.from({length:numOfMutations}).map((_, index:any) => {
               return(
-                <th key={index}>M{index+1}</th>
+                <th key={index} className='mutations'>M{index+1}</th>
               )
             })
             }
-            <th>Solution's Output</th>
-            <th>Expected Output</th>
+            <th className='solution-output'>Solution's Output</th>
+            <th className='xp-output'>Expected Output</th>
           </tr>
         </thead>
         <tbody>
@@ -131,7 +131,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
           return(
             <tr key={rowIndex}>
               <td>{rowIndex+1}</td>
-              <td>
+              <td className='input'>
                   {inputRows[rowIndex].map((val, colIndex) => (
                     <input
                       key={colIndex}
@@ -146,7 +146,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                   ))}
                 </td>
               {mutations.map((passOrFail:any, index:number) => (
-                <td key={index}>
+                <td key={index} className='mutations'>
                   {passOrFail
                     ? passOrFail.equal
                       ? '✅'
@@ -154,8 +154,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     : ''}
                 </td>
               ))}
-              <td>{row?.solution?.actual.toString() || ''} </td>
-              <td>
+              <td className='solution-output'>{row?.solution?.actual.toString() || ''} </td>
+              <td className='xp-output'>
                   <input
                     value={expectedRows[rowIndex]}
                     onChange={e => {
