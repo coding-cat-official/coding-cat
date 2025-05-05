@@ -195,8 +195,8 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
           </Stack>
         </form> :
         <>
-          <Avatar color="primary" size="lg" />
-          <Stack>
+          <Avatar color="primary" size="lg">{username.charAt(0)}</Avatar>
+          <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{username}</Typography>
               <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
@@ -282,7 +282,7 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
     return (
       <Stack>
         <Typography level="h2">Your Reflections</Typography>
-        <Typography>Reflections haven't been implemented yet!</Typography>
+        <Typography>You have no reflections!</Typography>
       </Stack>
     )
   }
