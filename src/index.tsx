@@ -43,8 +43,6 @@ function EmptyChild() {
   </div>;
 }
 
-const userId = window.location.pathname.split('/')[1];
-const basename = userId ? `/${userId}` : '/';
 const router = createHashRouter([
   {
     path: "/",
@@ -73,7 +71,7 @@ const router = createHashRouter([
   },
 ],
 {
-  basename: basename,
+  basename: '/',
 }
 );
 
