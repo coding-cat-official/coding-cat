@@ -6,6 +6,7 @@ import { Accordion,
   AccordionGroup, 
   AccordionSummary, 
   accordionSummaryClasses, 
+  Avatar, 
   Box, 
   Button, 
   Card, 
@@ -194,8 +195,8 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
           </Stack>
         </form> :
         <>
-          <img src="" alt="pfp"></img>
-          <Stack>
+          <Avatar color="primary" size="lg">{username.charAt(0)}</Avatar>
+          <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{username}</Typography>
               <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
@@ -228,15 +229,14 @@ function Contract() {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack gap={2}>
+    <>
       <Typography level="h2">Your Progress</Typography>
-      {/* looking for a better solution for the height */}
-      <Stack sx={{ height: "59vh", overflowY: "scroll" }} direction="column" gap={2}>
+      <Stack sx={{ height: "100%", overflowY: "scroll" }} direction="column" gap={2} mb={2}>
         {progress.map((item) => (
           <ProgressCard item={item} key={item.category} />
         ))}
       </Stack>
-    </Stack>
+    </>
   )
 }
 
@@ -282,58 +282,60 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
     return (
       <Stack>
         <Typography level="h2">Your Reflections</Typography>
-        <Typography>Reflections haven't been implemented yet!</Typography>
+        <Typography>You have no reflections!</Typography>
       </Stack>
     )
   }
 
   return (
-    <Stack gap={2} sx={{ maxHeight: '70vh', overflowY: 'auto'}}>
-      <Typography level="h2">Your Reflections</Typography>
-      {reflections.map((reflection, index) => {
-        const isOpen = expandedIndex === index
-        return (
-          <Card
-            key={`${reflection.problem_title}-${reflection.submitted_at}`}
-            onClick={() => setExpandedIndex(isOpen ? null : index)}
-            sx={{cursor: 'pointer', width: '90%'}}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography level="h3">{reflection.problem_title}</Typography>
-                  <Typography color="neutral" fontSize="sm">
-                    {reflection.category}
-                  </Typography>
-                </Stack>
-
-                <Typography fontSize="sm" color="neutral">
-                  Written on{' '}
-                  {new Date(reflection.submitted_at).toLocaleString()}
-                </Typography>
-
-                {typeof reflection.reflection === 'string' ? (
-                  <Typography>{reflection.reflection}</Typography>
-                ) : (
-                  <Stack spacing={1}>
-                    <Typography>
-                      <strong>Question:</strong> {reflection.reflection.question}
-                    </Typography>
-                    <Typography>
-                      <strong>Reflection:</strong> {reflection.reflection.answer}
+    <>
+      <Typography level="h2">Your Reflections</Typography>  
+      <Stack gap={2} mb={2} sx={{ maxHeight: '100%', overflowY: 'auto'}}>
+        {reflections.map((reflection, index) => {
+          const isOpen = expandedIndex === index
+          return (
+            <Card
+              key={`${reflection.problem_title}-${reflection.submitted_at}`}
+              onClick={() => setExpandedIndex(isOpen ? null : index)}
+              sx={{cursor: 'pointer', width: '90%'}}>
+              <CardContent>
+                <Stack spacing={1}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography level="h3">{reflection.problem_title}</Typography>
+                    <Typography color="neutral" fontSize="sm">
+                      {reflection.category}
                     </Typography>
                   </Stack>
-                )}
 
-                {isOpen && reflection.code && (
-                  <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
-                    {reflection.code}
-                  </Box>
-                )}
-              </Stack>
-            </CardContent>
-          </Card>
-        )
-      })}
-    </Stack>
+                  <Typography fontSize="sm" color="neutral">
+                    Written on{' '}
+                    {new Date(reflection.submitted_at).toLocaleString()}
+                  </Typography>
+
+                  {typeof reflection.reflection === 'string' ? (
+                    <Typography>{reflection.reflection}</Typography>
+                  ) : (
+                    <Stack spacing={1}>
+                      <Typography>
+                        <strong>Question:</strong> {reflection.reflection.question}
+                      </Typography>
+                      <Typography>
+                        <strong>Reflection:</strong> {reflection.reflection.answer}
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {isOpen && reflection.code && (
+                    <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
+                      {reflection.code}
+                    </Box>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </Stack>
+    </>
   )
 }
