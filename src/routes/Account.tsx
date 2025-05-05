@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, FormEvent, useMemo } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Accordion,
@@ -6,6 +6,7 @@ import { Accordion,
   AccordionGroup, 
   AccordionSummary, 
   accordionSummaryClasses, 
+  Avatar, 
   Box, 
   Button, 
   Card, 
@@ -15,11 +16,21 @@ import { Accordion,
   Input, 
   LinearProgress, 
   Stack, 
+  Tooltip, 
   Typography 
 } from '@mui/joy';
 import { Progress, Reflection } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+} from 'recharts';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -27,7 +38,8 @@ export default function Account({ session }: { session: Session }) {
   const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
   const [reflections, setReflections] = useState<Reflection[]>([])
-  const [view, setView] = useState<"progress" | "reflections">("progress");
+  const [activityStamps, setActivityStamps] = useState<string[]>([])
+  const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -88,10 +100,33 @@ export default function Account({ session }: { session: Session }) {
           code: r.code
         }));
       setReflections(reflections)
+
+      setActivityStamps((submissions || []).map((r) => r.submitted_at))
     }
 
     fetchProgress();
   }, [session]);
+
+  const activityData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    activityStamps.forEach((iso) => {
+      const date = iso.slice(0,10)
+      counts[date] = (counts[date] ?? 0) + 1
+    })
+
+    const days = Object.keys(counts).sort();
+    if (days.length === 0) return [];
+
+    const start = new Date(days[0]);
+  const end = new Date(days[days.length - 1]);
+  const allDays: { x: string; y: number }[] = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const iso = d.toISOString().slice(0, 10);
+    allDays.push({ x: iso, y: counts[iso] || 0 });
+  }
+  
+  return allDays;
+}, [activityStamps]);
 
   
 
@@ -105,13 +140,40 @@ export default function Account({ session }: { session: Session }) {
         <Stack direction="row" gap={1}>
           <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
+          <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections reflections = {reflections}/> }
-      </Stack>
-    </Stack> 
+        { view === "progress" && <ProgressList progress={progress} />}
+        { view === "reflections" && <Reflections reflections = {reflections}/> }
+        { view === "activity" && (
+          <Stack gap={2}>
+          <Typography level="h2">Your Activity</Typography>
+          <Card sx={{ p: 2, width: "90%", height: "100%" }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={activityData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="x"
+                  tickFormatter={(date) => date.slice(5)}
+                  minTickGap={20}
+                />
+                <YAxis allowDecimals={false} />
+                <RechartsTooltip
+                  labelFormatter={(label) => `Date: ${label}`}
+                  formatter={(value: number) => [`${value}`, "Submissions"]}
+                />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 0 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </Stack>
+      )}
+    </Stack>
+  </Stack>
   )
 }
+  
+    
 
 interface UserProps {
   username: string
@@ -194,8 +256,8 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
           </Stack>
         </form> :
         <>
-          <img src="" alt="pfp"></img>
-          <Stack>
+          <Avatar color="primary" size="lg">{username.charAt(0)}</Avatar>
+          <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{username}</Typography>
               <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
@@ -228,15 +290,14 @@ function Contract() {
 
 function ProgressList({ progress }: { progress: Progress[] }) {
   return (
-    <Stack gap={2}>
+    <>
       <Typography level="h2">Your Progress</Typography>
-      {/* looking for a better solution for the height */}
-      <Stack sx={{ height: "59vh", overflowY: "scroll" }} direction="column" gap={2}>
+      <Stack sx={{ height: "100%", overflowY: "scroll" }} direction="column" gap={2} mb={2}>
         {progress.map((item) => (
           <ProgressCard item={item} key={item.category} />
         ))}
       </Stack>
-    </Stack>
+    </>
   )
 }
 
@@ -282,58 +343,60 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
     return (
       <Stack>
         <Typography level="h2">Your Reflections</Typography>
-        <Typography>Reflections haven't been implemented yet!</Typography>
+        <Typography>You have no reflections!</Typography>
       </Stack>
     )
   }
 
   return (
-    <Stack gap={2} sx={{ maxHeight: '70vh', overflowY: 'auto'}}>
-      <Typography level="h2">Your Reflections</Typography>
-      {reflections.map((reflection, index) => {
-        const isOpen = expandedIndex === index
-        return (
-          <Card
-            key={`${reflection.problem_title}-${reflection.submitted_at}`}
-            onClick={() => setExpandedIndex(isOpen ? null : index)}
-            sx={{cursor: 'pointer', width: '90%'}}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography level="h3">{reflection.problem_title}</Typography>
-                  <Typography color="neutral" fontSize="sm">
-                    {reflection.category}
-                  </Typography>
-                </Stack>
-
-                <Typography fontSize="sm" color="neutral">
-                  Written on{' '}
-                  {new Date(reflection.submitted_at).toLocaleString()}
-                </Typography>
-
-                {typeof reflection.reflection === 'string' ? (
-                  <Typography>{reflection.reflection}</Typography>
-                ) : (
-                  <Stack spacing={1}>
-                    <Typography>
-                      <strong>Question:</strong> {reflection.reflection.question}
-                    </Typography>
-                    <Typography>
-                      <strong>Reflection:</strong> {reflection.reflection.answer}
+    <>
+      <Typography level="h2">Your Reflections</Typography>  
+      <Stack gap={2} mb={2} sx={{ maxHeight: '100%', overflowY: 'auto'}}>
+        {reflections.map((reflection, index) => {
+          const isOpen = expandedIndex === index
+          return (
+            <Card
+              key={`${reflection.problem_title}-${reflection.submitted_at}`}
+              onClick={() => setExpandedIndex(isOpen ? null : index)}
+              sx={{cursor: 'pointer', width: '90%'}}>
+              <CardContent>
+                <Stack spacing={1}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography level="h3">{reflection.problem_title}</Typography>
+                    <Typography color="neutral" fontSize="sm">
+                      {reflection.category}
                     </Typography>
                   </Stack>
-                )}
 
-                {isOpen && reflection.code && (
-                  <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
-                    {reflection.code}
-                  </Box>
-                )}
-              </Stack>
-            </CardContent>
-          </Card>
-        )
-      })}
-    </Stack>
+                  <Typography fontSize="sm" color="neutral">
+                    Written on{' '}
+                    {new Date(reflection.submitted_at).toLocaleString()}
+                  </Typography>
+
+                  {typeof reflection.reflection === 'string' ? (
+                    <Typography>{reflection.reflection}</Typography>
+                  ) : (
+                    <Stack spacing={1}>
+                      <Typography>
+                        <strong>Question:</strong> {reflection.reflection.question}
+                      </Typography>
+                      <Typography>
+                        <strong>Reflection:</strong> {reflection.reflection.answer}
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {isOpen && reflection.code && (
+                    <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
+                      {reflection.code}
+                    </Box>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </Stack>
+    </>
   )
 }
