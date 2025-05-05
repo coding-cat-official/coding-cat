@@ -18,7 +18,7 @@ export default function Tutorial({tourState, setTourState}){
     },
     {
       selector: '.input',
-      content: 'How can you',
+      content: 'Write your inputs here',
       position: "top",
     },
     {
@@ -37,22 +37,20 @@ export default function Tutorial({tourState, setTourState}){
         <>
           <h3>To score points...</h3>
           <p>One mutation needs to have a ✅ <b>AND</b> ❌.</p>
+          <table style={{border: "1px solid black", borderCollapse: "collapse"}}>
+            <tr><td style={{border: "1px solid black", padding: "10px"}}><b>M1</b></td></tr>
+            <tr><td style={{border: "1px solid black", padding: "10px"}}><b>✅</b></td></tr>
+            <tr><td style={{border: "1px solid black", padding: "10px"}}><b>❌</b></td></tr>
+          </table>
         </>
       ),
       position:"top"
     },
     {
-      selector: '.solution-output',
-      content: () => (
-        <h3>Make sure that the solution's ouput is the same</h3>
-      ),
-      position:"top"
-    },
-    {
-      selector: '.xp-output',
+      selector: '.outputs',
       content: () => (
         <>
-          <h3>as the expected output</h3>
+          <h3>Make sure that the <u>solution's ouput</u> is the same as the <u>expected output</u></h3>
           <p>to gain points 📈🗿</p>
         </>
       ),
@@ -68,6 +66,20 @@ export default function Tutorial({tourState, setTourState}){
         </>
       ),
       position: 'top'
+    },
+    {
+      selector: '.add-mutation-button',
+      content: () => (
+        <>
+          <h3>Click here if you ever run out of rows 🙀</h3>
+        </>
+      )
+    },
+    {
+      selector: '.mutation-results',
+      content: () => (
+        <h4>This is your progress!👈(ﾟヮﾟ👈)</h4>
+      )
     }
 
   ];

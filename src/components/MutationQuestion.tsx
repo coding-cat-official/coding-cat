@@ -116,8 +116,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
           <col span={1} className="input" />
           <col span={1} className='mutations' />
           <col span={numOfMutations-1} className="mutations-th" />
-          <col span={1} className="solution-output" />
-          <col span={1} className="xp-output" />
+          <col span={2} className="outputs" />
         </colgroup>
         <thead>
           <tr>
