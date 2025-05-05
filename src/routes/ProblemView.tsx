@@ -146,24 +146,24 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} generateQuestion={generateQuestion}/>
               )
             }
           </Sheet>
         </Stack>
       
-        { problem.meta.question_type[0] === 'coding' ? (
           <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-            <Box flex={1} width="100%">
-              {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-            </Box>
+            { 
+              problem.meta.question_type[0] === 'coding' ? (
+                <Box flex={1} width="100%">
+                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+                </Box>
+              ) : <></>
+            }
             <Box flex={1} width="100%">
               {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
             </Box>
         </Stack>
-        ) : (
-          <></>
-        ) }
         
       </Stack>
     
