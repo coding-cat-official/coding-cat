@@ -15,7 +15,7 @@ import { supabase } from '../supabaseClient';
 import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
-import { reflectionQuestions } from '../questions';
+import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/Tutorial';
 
 // Emoji rendered in the report
@@ -51,6 +51,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
     const [question, setQuestion] = useState("");
+    const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
 
     const { session } = useOutletContext<{ session: Session | null }>();
@@ -127,6 +128,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       const question = questionList[rand];
 
       setQuestion(question);
+
+      setTimeout(() => {
+        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100)
     }
 
     let author = problem.meta.author;
@@ -152,24 +157,24 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} generateQuestion={generateQuestion}/>
               )
             }
           </Sheet>
         </Stack>
       
-        { problem.meta.question_type[0] === 'coding' ? (
           <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-            <Box flex={1} width="100%">
-              {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-            </Box>
-            <Box flex={1} width="100%">
+            { 
+              problem.meta.question_type[0] === 'coding' ? (
+                <Box flex={1} width="100%">
+                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+                </Box>
+              ) : <></>
+            }
+            <Box ref={reflectionInput} flex={1} width="100%">
               {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
             </Box>
         </Stack>
-        ) : (
-          <></>
-        ) }
         
       </Stack>
     
