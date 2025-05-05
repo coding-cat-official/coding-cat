@@ -15,7 +15,7 @@ import { supabase } from '../supabaseClient';
 import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
-import { reflectionQuestions } from '../questions';
+import { reflectionQuestions } from '../utils/questions';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
