@@ -296,7 +296,7 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
           <Card
             key={`${reflection.problem_title}-${reflection.submitted_at}`}
             onClick={() => setExpandedIndex(isOpen ? null : index)}
-            sx={{cursor: 'pointer'}}>
+            sx={{cursor: 'pointer', width: '90%'}}>
             <CardContent>
               <Stack spacing={1}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
