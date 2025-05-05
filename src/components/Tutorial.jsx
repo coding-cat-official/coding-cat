@@ -7,13 +7,18 @@ export default function Tutorial({tourState, setTourState}){
   const steps = [
     {
       selector: 'table',
-      content: 'Your goal is to find the inputs that correspond to t',
+      content: () => (
+        <>
+          <h2>Mutations? 🤔</h2>
+          <p>Your goal is to find out how a function could go wrong by visualizing the function and trying out different inputs.</p>
+        </>
+      ),
       position: "top",
       stepInteraction: false
     },
     {
       selector: '.input',
-      content: 'Following the description above, you need to visualize your function',
+      content: 'How can you',
       position: "top",
     },
     {
@@ -52,6 +57,17 @@ export default function Tutorial({tourState, setTourState}){
         </>
       ),
       position:"top"
+    },
+    {
+      selector: '.input-box',
+      content: () => (
+        <>
+          <h3>❕Note</h3>
+          <p>Make sure to add <b>""</b> when it's a string and <b>[]</b> when it's an array</p>
+          <h4>["calico", "void"]</h4>
+        </>
+      ),
+      position: 'top'
     }
 
   ];

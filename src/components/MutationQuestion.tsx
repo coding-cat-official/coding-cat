@@ -110,7 +110,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     <> 
       <table className='mutation-table'>
         <colgroup>
-          <col span={1} className="rrrmimimimi" />
+          <col span={1}/>
           <col span={1} className="input" />
           <col span={1} className='mutations' />
           <col span={numOfMutations-1} className="mutations-th" />
@@ -120,15 +120,15 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         <thead>
           <tr>
             <th>N°</th>
-            <th className='input'>Input</th>
+            <th>Input</th>
             {Array.from({length:numOfMutations}).map((_, index:any) => {
               return(
-                <th key={index} className='mutations-th'>M{index+1}</th>
+                <th key={index}>M{index+1}</th>
               )
             })
             }
-            <th className='solution-output'>Solution's Output</th>
-            <th className='xp-output'>Expected Output</th>
+            <th>Solution's Output</th>
+            <th>Expected Output</th>
           </tr>
         </thead>
         <tbody>
@@ -139,7 +139,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
           return(
             <tr key={rowIndex}>
               <td>{rowIndex+1}</td>
-              <td className='input'>
+              <td className='input-box'>
                   {inputRows[rowIndex].map((val, colIndex) => (
                     <input
                       key={colIndex}
@@ -162,8 +162,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     : ''}
                 </td>
               ))}
-              <td className='solution-output'>{row?.solution?.actual.toString() || ''} </td>
-              <td className='xp-output'>
+              <td>{row?.solution?.actual.toString() || ''} </td>
+              <td>
                   <input
                     value={expectedRows[rowIndex]}
                     onChange={e => {
