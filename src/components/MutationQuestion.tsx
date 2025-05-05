@@ -112,7 +112,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         <colgroup>
           <col span={1} className="rrrmimimimi" />
           <col span={1} className="input" />
-          <col span={numOfMutations} className="mutations" />
+          <col span={1} className='mutations' />
+          <col span={numOfMutations-1} className="mutations-th" />
           <col span={1} className="solution-output" />
           <col span={1} className="xp-output" />
         </colgroup>
@@ -122,7 +123,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
             <th className='input'>Input</th>
             {Array.from({length:numOfMutations}).map((_, index:any) => {
               return(
-                <th key={index} className='mutations'>M{index+1}</th>
+                <th key={index} className='mutations-th'>M{index+1}</th>
               )
             })
             }
@@ -153,7 +154,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                   ))}
                 </td>
               {mutations.map((passOrFail:any, index:number) => (
-                <td key={index} className='mutations'>
+                <td key={index}>
                   {passOrFail
                     ? passOrFail.equal
                       ? '✅'
