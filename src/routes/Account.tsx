@@ -6,7 +6,10 @@ import { Accordion,
   AccordionGroup, 
   AccordionSummary, 
   accordionSummaryClasses, 
+  Box, 
   Button, 
+  Card, 
+  CardContent, 
   FormLabel, 
   IconButton, 
   Input, 
@@ -14,7 +17,7 @@ import { Accordion,
   Stack, 
   Typography 
 } from '@mui/joy';
-import { Progress } from '../types';
+import { Progress, Reflection } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 
@@ -23,6 +26,7 @@ export default function Account({ session }: { session: Session }) {
   const [username, setUsername] = useState("");
   const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [reflections, setReflections] = useState<Reflection[]>([])
   const [view, setView] = useState<"progress" | "reflections">("progress");
   const [error, setError] = useState("");
 
@@ -63,16 +67,27 @@ export default function Account({ session }: { session: Session }) {
       
       const {data: submissions, error } = await supabase
       .from('submissions')
-      .select('problem_title, passed_tests, total_tests')
-      .eq('profile_id', user.id);
+      .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
+      .eq('profile_id', user.id)
+      .order('submitted_at', { ascending: false });
 
       if(error) {
         setError(error.message);
       }
 
       const summary = getCompletedProblems(submissions || []);
-
       setProgress(summary);
+
+      const reflections: Reflection[] = (submissions || [])
+        .filter((r) => r.reflection != null)
+        .map((r) => ({
+          category: r.problem_category,
+          problem_title: r.problem_title,
+          reflection: r.reflection,
+          submitted_at: r.submitted_at,
+          code: r.code
+        }));
+      setReflections(reflections)
     }
 
     fetchProgress();
@@ -92,7 +107,7 @@ export default function Account({ session }: { session: Session }) {
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
         </Stack>
 
-        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections /> }
+        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections reflections = {reflections}/> }
       </Stack>
     </Stack> 
   )
@@ -260,11 +275,65 @@ function ProgressCard({ item }: { item: Progress }) {
   )
 }
 
-function Reflections() {
+function Reflections({ reflections }: { reflections: Reflection[] }) {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+
+  if (!reflections.length) {
+    return (
+      <Stack>
+        <Typography level="h2">Your Reflections</Typography>
+        <Typography>Reflections haven't been implemented yet!</Typography>
+      </Stack>
+    )
+  }
+
   return (
-    <Stack>
+    <Stack gap={2} sx={{ maxHeight: '70vh', overflowY: 'auto'}}>
       <Typography level="h2">Your Reflections</Typography>
-      <Typography>Reflections haven't been implemented yet!</Typography>
+      {reflections.map((reflection, index) => {
+        const isOpen = expandedIndex === index
+        return (
+          <Card
+            key={`${reflection.problem_title}-${reflection.submitted_at}`}
+            onClick={() => setExpandedIndex(isOpen ? null : index)}
+            sx={{cursor: 'pointer', width: '90%'}}>
+            <CardContent>
+              <Stack spacing={1}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography level="h3">{reflection.problem_title}</Typography>
+                  <Typography color="neutral" fontSize="sm">
+                    {reflection.category}
+                  </Typography>
+                </Stack>
+
+                <Typography fontSize="sm" color="neutral">
+                  Written on{' '}
+                  {new Date(reflection.submitted_at).toLocaleString()}
+                </Typography>
+
+                {typeof reflection.reflection === 'string' ? (
+                  <Typography>{reflection.reflection}</Typography>
+                ) : (
+                  <Stack spacing={1}>
+                    <Typography>
+                      <strong>Question:</strong> {reflection.reflection.question}
+                    </Typography>
+                    <Typography>
+                      <strong>Reflection:</strong> {reflection.reflection.answer}
+                    </Typography>
+                  </Stack>
+                )}
+
+                {isOpen && reflection.code && (
+                  <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
+                    {reflection.code}
+                  </Box>
+                )}
+              </Stack>
+            </CardContent>
+          </Card>
+        )
+      })}
     </Stack>
   )
 }
