@@ -1,7 +1,7 @@
 import {Box, Button} from '@mui/joy';
 import { useEffect, useState } from 'react';
 
-export default function MutationQuestion({runCode, evalResponse, problem, code, setCode}: any) {
+export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
   const [numOfTableRows, setNumRows] = useState(1);
   const [disabled, setDisabled] = useState(false);
@@ -97,6 +97,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     .join('\n');
     setCode(payload);
     runCode(payload);
+
+    generateQuestion();
 
     setDisabled(true);
     
