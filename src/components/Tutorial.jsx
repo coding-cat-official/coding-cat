@@ -1,6 +1,7 @@
 
 import { Button } from '@mui/joy';
 import Tour from 'reactour'
+import { Question } from '@phosphor-icons/react'
 
 export default function Tutorial({tourState, setTourState}){
   
@@ -86,7 +87,7 @@ export default function Tutorial({tourState, setTourState}){
 
   return(
     <>
-      <Button onClick={()=>{setTourState(true)}}>?</Button>
+      <Question size={60} weight="fill" style={{cursor:'pointer', color:'#0B6BCB'}} onClick={()=>{setTourState(true)}}>?</Question>
       <Tour
         steps={steps}
         isOpen={tourState}

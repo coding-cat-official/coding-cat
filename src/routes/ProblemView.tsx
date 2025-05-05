@@ -142,16 +142,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
           <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "99%", height:"100%", overflowY: "auto", scrollbarWidth: "thin" }} className="hello">
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
-              <Box sx={{display:"flex", justifyContent:"space-between"}}>
-                <Box>
-                  <Typography level="title-lg">{problem.meta.title}</Typography>
-                  { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
-                </Box>
+              <Box>
+                <Typography level="title-lg">{problem.meta.title}</Typography>
+                { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
+              </Box>
+
+              <Box sx={{display:"flex", alignItems: "flex-end"}}>
+                <Markdown>
+                  {problem.description}
+                </Markdown>
                 {problem.meta.question_type[0] === 'coding' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
               </Box>
-              <Markdown>
-                {problem.description}
-              </Markdown>
             </Box>
             { problem.meta.question_type[0] === 'coding' ?
               (
