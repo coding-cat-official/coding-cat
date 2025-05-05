@@ -6,6 +6,7 @@ import { Accordion,
   AccordionGroup, 
   AccordionSummary, 
   accordionSummaryClasses, 
+  Avatar, 
   Box, 
   Button, 
   Card, 
@@ -194,7 +195,7 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
           </Stack>
         </form> :
         <>
-          <img src="" alt="pfp"></img>
+          <Avatar color="primary" size="lg" />
           <Stack>
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{username}</Typography>
