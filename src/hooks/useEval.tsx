@@ -20,8 +20,29 @@ export default function useEval(problem: Problem, session: Session | null): Eval
             console.log(response);
     
             if(response.status === 'success' && session?.user){
-                const numPassed = response.report.filter((r: any) => r.equal).length;
-                const totalTests = response.report.length;
+                let numPassed: number
+                let totalTests: number
+                if (problem.meta.question_type[0] === "mutation"){
+                    totalTests = problem.mutations?.length ?? 0;
+                    const mutationResults = new Map<number, Set<boolean>>()
+                    for (const row of response.report as any[]){
+                        if(!row.solution?.equal) continue;
+                        row.mutations.forEach((mutation: any, index: number) => {
+                            if(!mutationResults.has(index)) mutationResults.set(index, new Set())
+                                mutationResults.get(index)!.add(mutation.equal)
+                        })
+                    }
+                    numPassed = 0
+                    mutationResults.forEach(outcomeSet => {
+                        if (outcomeSet.has(true) && outcomeSet.has(false)){
+                            numPassed ++;
+                        }
+                    })
+                }
+                else{
+                    numPassed = response.report.filter((r: any) => r.equal).length;
+                    totalTests = response.report.length;
+                }
     
                 const submission = {
                     problem_title: problem.meta.name,
