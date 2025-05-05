@@ -19,7 +19,7 @@ export function getCompletedProblems(submissions: Submission[]) {
 
   for (const p of problems) {
     const category = p.meta.category;
-    if (completedTitles.has(p.meta.title)) {
+    if (completedTitles.has(p.meta.name)) {
       completedByCategory[category] = (completedByCategory[category] || 0) + 1;
     }
   }
