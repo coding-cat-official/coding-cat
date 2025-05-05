@@ -51,6 +51,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [hidePrompt, setHidePrompt] = useState(true);
     const [inputs, setInputs] = useState([]);
     const [question, setQuestion] = useState("");
+    const reflectionInput = useRef<HTMLElement>(null);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
@@ -126,6 +127,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       const question = questionList[rand];
 
       setQuestion(question);
+
+      setTimeout(() => {
+        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100)
     }
 
     let author = problem.meta.author;
@@ -160,7 +165,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 </Box>
               ) : <></>
             }
-            <Box flex={1} width="100%">
+            <Box ref={reflectionInput} flex={1} width="100%">
               {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
             </Box>
         </Stack>
