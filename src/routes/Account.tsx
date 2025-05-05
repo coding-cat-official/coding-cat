@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, FormEvent, useMemo } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Accordion,
@@ -15,11 +15,21 @@ import { Accordion,
   Input, 
   LinearProgress, 
   Stack, 
+  Tooltip, 
   Typography 
 } from '@mui/joy';
 import { Progress, Reflection } from '../types';
 import { NotePencil } from '@phosphor-icons/react';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+} from 'recharts';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -27,7 +37,8 @@ export default function Account({ session }: { session: Session }) {
   const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
   const [reflections, setReflections] = useState<Reflection[]>([])
-  const [view, setView] = useState<"progress" | "reflections">("progress");
+  const [activityStamps, setActivityStamps] = useState<string[]>([])
+  const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -88,10 +99,26 @@ export default function Account({ session }: { session: Session }) {
           code: r.code
         }));
       setReflections(reflections)
+
+      setActivityStamps((submissions || []).map((r) => r.submitted_at))
     }
 
     fetchProgress();
   }, [session]);
+
+  const activityData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    activityStamps.forEach((iso) => {
+      const date = iso.slice(0,10)
+      counts[date] = (counts[date] ?? 0) + 1
+    })
+
+    return Object.entries(counts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([Date, count]) => ({
+      x: Date, y: count,
+    }))
+  }, [activityStamps])
 
   
 
@@ -105,13 +132,40 @@ export default function Account({ session }: { session: Session }) {
         <Stack direction="row" gap={1}>
           <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
+          <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "progress" ? <ProgressList progress={progress} /> : <Reflections reflections = {reflections}/> }
-      </Stack>
-    </Stack> 
+        { view === "progress" && <ProgressList progress={progress} />}
+        { view === "reflections" && <Reflections reflections = {reflections}/> }
+        { view === "activity" && (
+          <Stack gap={2}>
+          <Typography level="h2">Your Activity</Typography>
+          <Card sx={{ p: 2, width: "90%", height: "100%" }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={activityData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="x"
+                  tickFormatter={(date) => date.slice(5)}
+                  minTickGap={20}
+                />
+                <YAxis allowDecimals={false} />
+                <RechartsTooltip
+                  labelFormatter={(label) => `Date: ${label}`}
+                  formatter={(value: number) => [`${value}`, "Submissions"]}
+                />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </Stack>
+      )}
+    </Stack>
+  </Stack>
   )
 }
+  
+    
 
 interface UserProps {
   username: string
