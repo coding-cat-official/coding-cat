@@ -109,6 +109,13 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   return(
     <> 
       <table className='mutation-table'>
+        <colgroup>
+          <col span={1} className="rrrmimimimi" />
+          <col span={1} className="input" />
+          <col span={numOfMutations} className="mutations" />
+          <col span={1} className="solution-output" />
+          <col span={1} className="xp-output" />
+        </colgroup>
         <thead>
           <tr>
             <th>N°</th>
@@ -169,13 +176,9 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
             )
           }
         )}
-          <tr>
-            <td colSpan={4+numOfMutations}>
-              <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
-            </td>
-          </tr>
         </tbody>
       </table>
+      <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
       <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">
