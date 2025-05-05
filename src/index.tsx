@@ -13,6 +13,7 @@ import ErrorPage from './error';
 
 import Auth from './routes/Auth'
 import AccountWrapper from './routes/AccountWrapper';
+import MainTutorial from './components/MainTutorial';
 
 const theme = extendTheme({
   components: {
@@ -37,11 +38,6 @@ declare module "@mui/joy/Drawer" {
   }
 } 
 
-function EmptyChild() {
-  return <div>
-    <p> Select a problem on the left to begin! </p>
-  </div>;
-}
 
 const router = createHashRouter([
   {
@@ -52,7 +48,7 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <EmptyChild />,
+        element: <MainTutorial/>,
       },
       {
         path: "/problems/:problemName",
