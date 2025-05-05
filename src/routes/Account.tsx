@@ -114,12 +114,19 @@ export default function Account({ session }: { session: Session }) {
       counts[date] = (counts[date] ?? 0) + 1
     })
 
-    return Object.entries(counts)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([Date, count]) => ({
-      x: Date, y: count,
-    }))
-  }, [activityStamps])
+    const days = Object.keys(counts).sort();
+    if (days.length === 0) return [];
+
+    const start = new Date(days[0]);
+  const end = new Date(days[days.length - 1]);
+  const allDays: { x: string; y: number }[] = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const iso = d.toISOString().slice(0, 10);
+    allDays.push({ x: iso, y: counts[iso] || 0 });
+  }
+  
+  return allDays;
+}, [activityStamps]);
 
   
 
@@ -155,7 +162,7 @@ export default function Account({ session }: { session: Session }) {
                   labelFormatter={(label) => `Date: ${label}`}
                   formatter={(value: number) => [`${value}`, "Submissions"]}
                 />
-                <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 0 }} />
               </LineChart>
             </ResponsiveContainer>
           </Card>
