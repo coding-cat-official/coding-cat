@@ -119,7 +119,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
       if (evalResponse?.status === "success") {
         const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-        console.log(result);
   
         if (!result) questionList = reflectionQuestions.fail;
       }
