@@ -54,11 +54,28 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     total_tests: totalTests,
                 };
     
-                const { error } = await supabase.from('submissions').insert([submission]);
-    
-                if (error) {
-                    console.error('Error saving submission: ' , error.message);
-                    alert(error.message)
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select("submission_id, code")
+                    .eq('profile_id', session.user.id)
+                    .eq('problem_title', problem.meta.name)
+                    .order('submitted_at', { ascending: false})
+                    .limit(1);
+
+                console.error(error);
+
+                const json = data?.[0] || null;
+
+                // if the most recent submission is the exact same as the new one, don't insert a new one into the db
+                if (json?.code === currentCodeRef.current) {
+                    const { error } = await supabase
+                        .from('submissions')
+                        .update({ 'submitted_at': new Date().toISOString() })
+                        .eq('submission_id', json.submission_id)
+                    console.error(error);
+                } else {
+                    const { error } = await supabase.from('submissions').insert([submission]);
+                    console.error(error);
                 }
             }
         };
