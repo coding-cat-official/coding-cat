@@ -1,9 +1,8 @@
 import { Box, Button, Card } from '@mui/joy';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const tutorialSteps = [
   {
-    selector: '',
     content: () => (
       <>
         <h1>Welcome to CODING CAT 😸</h1>
@@ -12,26 +11,28 @@ const tutorialSteps = [
     )
   },
   {
-    selector: '.desktop-bar',
-    content: 'Open the navigation bar here',
+    content: () => (
+      <p>Open the navigation bar here</p>
+    )
   },
   {
-    selector: '.MuiBox-root.problems-navbar',
     content: () => (
       <h2>Let's choose a problem!</h2>
 
     ),
-    observe: '.problems-navbar'
   },
   {
-    content: 'Profile'
+    content: () => (
+      <p>Profile</p>
+    )
   }
 ];
 
 export default function MainTutorial(){
 
   const[step, setStep] = useState(0);
-  const [isOpen, setOpen] = useState(true);
+
+  const content = tutorialSteps[step];
 
   const nextStep = () => {
     if(step < tutorialSteps.length-1) setStep(step+1);
@@ -43,8 +44,8 @@ export default function MainTutorial(){
 
   return(
     <Box>
-      <Card>rrrmmimimimim</Card>
-      <Button onClick={() => {setStep(step-1)}}>Back</Button>
+      <Card> {content.content()} </Card>
+      <Button onClick={previousStep}>Back</Button>
       <Button onClick={nextStep}>Continue</Button>
     </Box>
   )
