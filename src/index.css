@@ -117,7 +117,13 @@ table input{
 
 .tutorial-icons{
   position: absolute;
-  bottom: 130px;
+  bottom: 130px;  
+}
+
+.tutorial-icons button{
+  border: 1px solid black;
+  color: black;
+  background-color: white;
 }
 
 @media (max-width: 1024px){
