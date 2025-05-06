@@ -108,6 +108,18 @@ table input{
   background-color: antiquewhite;
 }
 
+.MuiCard-root.main-tutorial{
+  margin: 20px 100px;
+  min-width: 500px;
+  max-width: 1000px;
+  padding: 20px 50px;
+}
+
+.tutorial-icons{
+  position: absolute;
+  bottom: 130px;
+}
+
 @media (max-width: 1024px){
   .problem-ide-editor div{
     width: 900px;
