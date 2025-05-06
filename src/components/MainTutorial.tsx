@@ -1,33 +1,51 @@
-import {Tour} from '@reactour/tour';
-import { Box } from '@mui/joy';
-import { SetStateAction, useState } from 'react';
+import { Box, Button, Card } from '@mui/joy';
+import { useEffect, useState } from 'react';
+
+const tutorialSteps = [
+  {
+    selector: '',
+    content: () => (
+      <>
+        <h1>Welcome to CODING CAT 😸</h1>
+        <p>yap yap</p>
+      </>
+    )
+  },
+  {
+    selector: '.desktop-bar',
+    content: 'Open the navigation bar here',
+  },
+  {
+    selector: '.MuiBox-root.problems-navbar',
+    content: () => (
+      <h2>Let's choose a problem!</h2>
+
+    ),
+    observe: '.problems-navbar'
+  },
+  {
+    content: 'Profile'
+  }
+];
 
 export default function MainTutorial(){
 
+  const[step, setStep] = useState(0);
   const [isOpen, setOpen] = useState(true);
 
-  const steps = [
-    {
-      selector: '',
-      content: 'WELCOME TO CODING CAT'
-    }
-  ];
+  const nextStep = () => {
+    if(step < tutorialSteps.length-1) setStep(step+1);
+  }
+
+  const previousStep = () => {
+    if(step > 0) setStep(step-1);
+  }
 
   return(
     <Box>
-      <Tour
-        steps={steps} 
-        setIsOpen={setOpen} 
-        setCurrentStep={function (value: SetStateAction<number>): void {
-          throw new Error('Function not implemented.');
-        } } 
-        currentStep={0} 
-        isOpen={false} 
-        disabledActions={false} 
-        setDisabledActions={function (value: SetStateAction<boolean>): void {
-          throw new Error('Function not implemented.');
-        } }/>
-      <h1>WELCOME TO CODING CAT</h1>
+      <Card>rrrmmimimimim</Card>
+      <Button onClick={() => {setStep(step-1)}}>Back</Button>
+      <Button onClick={nextStep}>Continue</Button>
     </Box>
   )
 }
