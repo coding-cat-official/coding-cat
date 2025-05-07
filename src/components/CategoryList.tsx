@@ -94,11 +94,13 @@ export default function CategoryList({
         }
         switch(category) {
             case "Fundamentals": return true 
-            case "Logic": return (solved["Fundamentals"] || 0) >= 5
-            case "String-1": return (solved["Logic"] || 0) >= 5
-            case "List-1: Indexing": return  (solved["Logic"] || 0) >= 5
-            case "String-2": return (solved["List-1: Indexing"] || 0) >= 5 && (solved["String-1"] || 0) >= 5
-            case "List-2: Iterating": return (solved["List-1: Indexing"] || 0) >= 5 && (solved["String-1"] || 0) >= 5
+            case "Logic": return (solved["Fundamentals"] || 0) >= 0
+            case "String-1": return (solved["Logic"] || 0) >= 0
+            case "List-1: Indexing": return  (solved["Logic"] || 0) >= 0
+            case "String-2": return (solved["List-1: Indexing"] || 0) >= 0 && (solved["String-1"] || 0) >= 0
+            case "List-2: Iterating": return (solved["List-1: Indexing"] || 0) >= 0 && (solved["String-1"] || 0) >= 0
+            case "List-3: Complex Loop": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
+            case "String-3": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
             default: return false
         }
     }
