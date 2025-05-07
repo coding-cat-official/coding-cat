@@ -77,6 +77,14 @@ const tutorialSteps = [
   {
     content: () => (
       <>
+        <h2>Quick Tip ❕</h2>
+        <h3>Press "Alt" + "Enter" to Run your code <i>fast</i> 🏃💨</h3>
+      </>
+    )
+  },
+  {
+    content: () => (
+      <>
         <h2>Let's choose a problem! (๑•̀ㅂ•́)و✧</h2>
         <p>Explore and Have fun!</p>
       </>
