@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useOutletContext } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -17,6 +17,7 @@ import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
+import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -56,6 +57,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    
+    const { name } = useParams();
+    const navigate = useNavigate();
+    const [currIndex, setCurrIndex] = useState(problems.findIndex(p => p.meta.name === name));
 
     useEffect(() => {
       setActiveProblem(problem.meta.name);
@@ -114,6 +119,22 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+    function handlePreviousProblem(){
+      if(currIndex > 0){
+        const prevProblem = problems[currIndex-1].meta.name;
+        setCurrIndex(currIndex-1);
+        navigate(`/problems/${prevProblem}`)
+      }
+    }
+
+    function handleNextProblem(){
+      if(currIndex < problems.length - 1){
+        const nextProblem = problems[currIndex+1].meta.name;
+        setCurrIndex(currIndex+1);
+        navigate(`/problems/${nextProblem}`)
+      }
+    }
+
     function generateQuestion() {
       let questionList = reflectionQuestions.success;
 
@@ -161,6 +182,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               )
             }
           </Sheet>
+          <Box className="navigate-problem-btn">
+            <ArrowCircleLeft size={50} onClick={handlePreviousProblem}/>
+            <ArrowCircleRight size={50} onClick={handleNextProblem}/>
+          </Box>
         </Stack>
       
           <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
