@@ -50,6 +50,9 @@ export default function CategoryList({
     }, [session])
 
     function getHint(category: string) {
+        if(!session && category != "Fundamentals") {
+            return "Log in to continue learning.";
+        }
         switch (category) {
           case "Logic": {
             const done = solved["Fundamentals"] || 0;
@@ -86,6 +89,9 @@ export default function CategoryList({
     }
 
     function getUnlocked(category: string) {
+        if (!session) {
+            return category === "Fundamentals"
+        }
         switch(category) {
             case "Fundamentals": return true 
             case "Logic": return (solved["Fundamentals"] || 0) >= 5
