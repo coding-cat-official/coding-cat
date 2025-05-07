@@ -49,6 +49,7 @@ interface ProblemIDEOutletContext {
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
+    console.log(problem.meta.name)
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
     const [question, setQuestion] = useState("");
@@ -60,9 +61,28 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     
     const navigate = useNavigate();
 
+    const currCategoryProblems = () => {
+      const questionType = problem.meta.question_type[0];
+      if(questionType.includes("mutation") || questionType.includes("haystack")){
+        return problems.filter(p => p.meta.question_type.includes(questionType))
+      }
+      else{
+        return problems.filter(p => {
+          const questionType = p.meta.question_type[0];
+          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
+          return p.meta.category === problem.meta.category && !exclude;
+        })
+      }
+    };
+
+    const currProblems = currCategoryProblems();
+    const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
+
+
     useEffect(() => {
       setActiveProblem(problem.meta.name);
-    }, [setActiveProblem, problem.meta.name]);
+      setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
+    }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session);
 
@@ -117,23 +137,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
-    const currCategoryProblems = () => {
-      const questionType = problem.meta.question_type[0];
-      if(questionType.includes("mutation") || questionType.includes("haystack")){
-        return problems.filter(p => p.meta.question_type.includes(questionType))
-      }
-      else{
-        return problems.filter(p => {
-          const questionType = p.meta.question_type[0];
-          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
-          return p.meta.category === problem.meta.category && !exclude;
-        })
-      }
-    };
-    const currProblems = currCategoryProblems();
-    const index = currProblems.findIndex(p => p.meta.name === problem.meta.name);
-
-    const [currIndex, setCurrIndex] = useState(index);
 
     function handlePreviousProblem(){
       if(currIndex > 0){
