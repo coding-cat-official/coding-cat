@@ -16,7 +16,7 @@ import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
-import Tutorial from '../components/Tutorial';
+import Tutorial from '../components/MutationTutorial';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
