@@ -1,9 +1,16 @@
 import problems from "../public-problems/problems";
-import { Submission } from "../types";
+import { Progress, Submission } from "../types";
 
-export function getCompletedProblems(submissions: Submission[]) {
+interface CompletedByCategory {
+  problems: {
+    title: string;
+    difficulty: string;
+  }[];
+}
+
+export function getCompletedProblems(submissions: Submission[]): Progress[] {
   const totalByCategory: Record<string, number> = {};
-  const completedByCategory: Record<string, number> = {};
+  const completedByCategory: Record<string, CompletedByCategory> = {};
   const completedTitles = new Set<string>();
 
   for(const p of problems) {
@@ -19,15 +26,28 @@ export function getCompletedProblems(submissions: Submission[]) {
 
   for (const p of problems) {
     const category = p.meta.category;
-    if (completedTitles.has(p.meta.name)) {
-      completedByCategory[category] = (completedByCategory[category] || 0) + 1;
-    }
+    
+    completedTitles.forEach((ct) => {
+      if (ct === p.meta.name) {
+        if (!completedByCategory[category]) {
+          completedByCategory[category] = {
+            problems: []
+          }
+        }
+
+        completedByCategory[category].problems.push({
+          title: p.meta.name,
+          difficulty: p.meta.difficulty
+        })
+      }
+    });
   }
 
   const summary = Object.keys(totalByCategory).map(category => ({
     category: category,
-    completed: completedByCategory[category] || 0,
-    total: totalByCategory[category]
+    completed: (completedByCategory[category] || {problems: []}).problems.length,
+    total: totalByCategory[category],
+    problems: (completedByCategory[category] || {problems: []}).problems
   }));
 
   return summary
