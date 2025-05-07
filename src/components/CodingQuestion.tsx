@@ -24,7 +24,7 @@ export default function CodingQuestion({code, changeCode, problem, runCode, gene
   }
   
     const handleKeyPress = useCallback((event:KeyboardEvent) => {
-        if(event.ctrlKey && event.key === "Enter"){
+        if(event.altKey && event.key === "Enter"){
           runCode(code);
         }
       },[code, runCode]);

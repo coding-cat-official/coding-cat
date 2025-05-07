@@ -21,7 +21,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   );
 
     const handleKeyPress = useCallback((event:KeyboardEvent) => {
-        if(event.ctrlKey && event.key === "Enter"){
+        if(event.altKey && event.key === "Enter"){
           runCode(code);
         }
       },[code, runCode]);
