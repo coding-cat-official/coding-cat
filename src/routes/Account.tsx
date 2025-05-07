@@ -167,7 +167,7 @@ export default function Account({ session }: { session: Session }) {
                   minTickGap={20}
                 />
                 <YAxis allowDecimals={false} />
-                <RechartsTooltip
+                <RechartsTooltip isAnimationActive={false}
                   labelFormatter={(label) => `Date: ${label}`}
                   formatter={(value: number) => [`${value}`, "Submissions"]}
                 />
