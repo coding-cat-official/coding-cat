@@ -58,7 +58,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     
-    const { name } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -131,7 +130,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         })
       }
     };
-    const [currIndex, setCurrIndex] = useState(currCategoryProblems().findIndex(p => p.meta.name === name));
+    const currProblems = currCategoryProblems();
+    const index = currProblems.findIndex(p => p.meta.name === problem.meta.name);
+
+    const [currIndex, setCurrIndex] = useState(index);
 
     function handlePreviousProblem(){
       if(currIndex > 0){
@@ -141,7 +143,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       }
     }
 
-    function handleNextProblem(){
+    function handleNextProblem(){ 
       if(currIndex < currCategoryProblems().length - 1){
         const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
         setCurrIndex(currIndex+1);
