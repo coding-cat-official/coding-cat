@@ -7,7 +7,7 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import { Stack, Sheet, Box, Typography, Table } from '@mui/joy';
+import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
@@ -49,7 +49,6 @@ interface ProblemIDEOutletContext {
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
-    console.log(problem.meta.name)
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
     const [question, setQuestion] = useState("");
@@ -202,8 +201,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             }
           </Sheet>
           <Box className="navigate-problem-btn">
-            <ArrowCircleLeft size={50} onClick={handlePreviousProblem}/>
-            <ArrowCircleRight size={50} onClick={handleNextProblem}/>
+            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
+            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
           </Box>
         </Stack>
       
