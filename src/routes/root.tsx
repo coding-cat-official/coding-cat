@@ -161,10 +161,12 @@ export default function App() {
           </Stack>
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
-          <Box component="img" src={logo} sx={{ maxHeight: "80px" }} onClick={() => setOpen(true)}/>
-          <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
-            Coding Cat!
-          </Typography>
+          <Link to="/">
+            <Box component="img" src={logo} sx={{ maxHeight: "80px" }}/>
+          </Link>
+            <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+              Coding Cat!
+            </Typography>
         </Stack>
         
         <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
