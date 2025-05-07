@@ -17,15 +17,6 @@ interface ProblemListProps {
   session: Session | null;
 }
 
-const UNLOCK_RULES: Record<string, {dependency: string[]; count: number;}> = {
-  'fundamentals': { dependency: [], count: 0 },
-  'logic': { dependency: ['fundamentals'], count: 5},
-  'string-1': { dependency: ['logic'], count: 5},
-  'list-1': { dependency: ['logic'], count: 5},
-  'string-2': { dependency: ['string-1', 'list-1'], count: 5},
-  'list-2': { dependency: ['string-1', 'list-1'], count: 5},
-}
-
 export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
