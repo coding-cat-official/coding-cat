@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent, useMemo } from 'react'
+import { useState, useEffect, FormEvent, useMemo, Dispatch, SetStateAction } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Accordion,
@@ -15,12 +15,15 @@ import { Accordion,
   IconButton, 
   Input, 
   LinearProgress, 
+  Modal, 
+  ModalClose, 
+  ModalDialog, 
   Stack, 
   Tooltip, 
   Typography 
 } from '@mui/joy';
 import { Progress, Reflection } from '../types';
-import { NotePencil } from '@phosphor-icons/react';
+import { ArrowSquareOut, NotePencil } from '@phosphor-icons/react';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import {
   ResponsiveContainer,
@@ -33,6 +36,7 @@ import {
 } from 'recharts';
 import { capitalizeString } from '../utils/capitalizeString';
 import { Link } from 'react-router-dom';
+import { getCategoryList } from '../utils/getCategoryList';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -277,15 +281,107 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
 }
 
 function Contract() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Stack alignItems="center">
-      <Stack direction="row" alignItems="center" gap={1}>
-        <Typography level="h2">Contract</Typography>
-        <IconButton onClick={() => {}}>
-          <NotePencil size={23} />
-        </IconButton>
+    <>
+      <Stack alignItems="center">
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Typography level="h2">Contract</Typography>
+          <IconButton onClick={() => setOpen(true)}>
+            <ArrowSquareOut size={23} />
+          </IconButton>
+        </Stack>
+        <Typography>Last Modified: { new Date().toDateString() }</Typography>
       </Stack>
-      <Typography>contract here</Typography>
+
+      <ContractModal open={open} setOpen={setOpen} />
+    </>
+  )
+}
+
+interface ModalProps {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+function ContractModal({ open, setOpen }: ModalProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  return (
+    <Modal open={open} onClose={() => setOpen(false)}>
+      <ModalDialog sx={{ width: "90vw", height: "90vh" }} variant="outlined">
+        <ModalClose />
+        <Typography level="h2">Your Contract</Typography>
+        {
+          isUpdating ? <ContractEdit setIsUpdating={setIsUpdating} /> : <ContractText setIsUpdating={setIsUpdating} />
+        }
+      </ModalDialog>
+    </Modal>
+  )
+}
+
+function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
+  const categories = getCategoryList();
+
+  return (
+    <>
+    
+      <Stack sx={{ overflowY: "scroll" }} gap={2}>
+        <Typography level="h3">Coding</Typography>
+        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
+        <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
+        <Stack justifyContent="center" direction="row" columnGap={20} rowGap={2} flexWrap="wrap">
+          {
+            categories.map((c) => <Typography>{c}: <strong>20</strong></Typography>)
+          }
+        </Stack>
+        <Typography>
+          Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+        <Typography>
+          How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+        <Typography level="h3">Haystack</Typography>
+        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
+        <Typography>How many haystack problems will you solve? <strong>20</strong></Typography>
+        <Typography>
+          Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+        <Typography>
+          How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+        <Typography level="h3">Mutation Testing</Typography>
+        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
+        <Typography>How many mutation testing problems will you solve? <strong>20</strong></Typography>
+        <Typography>
+          Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+        <Typography>
+          How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
+          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+        </Typography>
+      </Stack>
+
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
+        <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
+        <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
+      </Stack>
+    </>
+  )
+}
+
+function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
+  return (
+    <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
+      <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
+      <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
+      <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(false)}>Save Changes</Button>
     </Stack>
   )
 }
