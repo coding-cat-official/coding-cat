@@ -50,7 +50,7 @@ export default function CategoryList({
 
     return (
         <List component="nav" sx={{ py: 2}}>
-            {progress.map((p) => (
+            {progress.sort((a,b) => a.category.localeCompare(b.category)).map((p) => (
                 categories.includes(p.category) &&
                 <ListItemButton
                     key={p.category}
