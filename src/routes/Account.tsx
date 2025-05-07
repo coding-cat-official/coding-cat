@@ -327,6 +327,8 @@ function ContractModal({ open, setOpen }: ModalProps) {
 function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
   const categories = getCategoryList();
 
+  // TODO: replace all the placeholder text with the actual values from the database.
+
   return (
     <>
       <Stack sx={{ overflowY: "scroll" }} gap={2}>
@@ -382,6 +384,8 @@ function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
 
 function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
   const categories = getCategoryList();
+
+  // TODO: replace placeholder values with actual values from database and implement updating
 
   return (
     <>
