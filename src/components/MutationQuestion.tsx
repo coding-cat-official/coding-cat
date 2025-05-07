@@ -20,19 +20,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     [ '' ]
   );
 
-    const handleKeyPress = useCallback((event:KeyboardEvent) => {
-        if(event.altKey && event.key === "Enter"){
-          runCode(code);
-        }
-      },[code, runCode]);
-  
-      useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
-        return () => {
-          document.removeEventListener('keydown', handleKeyPress);
-        };
-      }, [handleKeyPress]);
-
   useEffect(() => {
     setNumRows(1)
     setInputRows([ Array(inputCount).fill('') ])
@@ -120,6 +107,19 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       setDisabled(false);
     }, 2000)
   };
+
+  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+    if(event.altKey && event.key === "Enter"){
+      handleRun();
+    }
+  },[handleRun]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return(
     <> 
