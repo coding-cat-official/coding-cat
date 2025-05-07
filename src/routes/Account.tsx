@@ -18,7 +18,10 @@ import { Accordion,
   Modal, 
   ModalClose, 
   ModalDialog, 
+  Option, 
+  Select, 
   Stack, 
+  Textarea, 
   Tooltip, 
   Typography 
 } from '@mui/joy';
@@ -326,7 +329,6 @@ function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
 
   return (
     <>
-    
       <Stack sx={{ overflowY: "scroll" }} gap={2}>
         <Typography level="h3">Coding</Typography>
         <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
@@ -344,6 +346,7 @@ function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
           <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
         </Typography>
+
         <Typography level="h3">Haystack</Typography>
         <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
         <Typography>How many haystack problems will you solve? <strong>20</strong></Typography>
@@ -355,6 +358,7 @@ function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
           <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
         </Typography>
+
         <Typography level="h3">Mutation Testing</Typography>
         <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
         <Typography>How many mutation testing problems will you solve? <strong>20</strong></Typography>
@@ -377,12 +381,81 @@ function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
 }
 
 function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
+  const categories = getCategoryList();
+
   return (
-    <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
-      <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
-      <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
-      <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(false)}>Save Changes</Button>
-    </Stack>
+    <>
+      <Stack sx={{ overflowY: "scroll" }} gap={2}>
+        <Typography level="h3">Coding</Typography>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography>What grade do you want to get?</Typography>
+          <Select placeholder="Grade">
+            <Option value="proficient">Proficient</Option>
+            <Option value="approaching_mastery">Approaching Mastery</Option>
+            <Option value="mastery">Mastery</Option>
+          </Select>
+        </Stack>
+        <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
+        <Stack justifyContent="center" direction="row" columnGap={20} rowGap={2} flexWrap="wrap">
+          {
+            categories.map((c) => {
+              return (
+                <Stack direction="row" alignItems="center" gap={2}>
+                  <Typography>{c}: </Typography>
+                  <Input sx={{ width: "3em" }} placeholder="0" />
+                </Stack>
+              )
+            })
+          }
+        </Stack>
+        <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+
+        <Typography level="h3">Haystack</Typography>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography>What grade do you want to get?</Typography>
+          <Select placeholder="Grade">
+            <Option value="proficient">Proficient</Option>
+            <Option value="approaching_mastery">Approaching Mastery</Option>
+            <Option value="mastery">Mastery</Option>
+          </Select>
+        </Stack>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography>How many haystack problems will you solve?</Typography>
+          <Input sx={{ width: "3em" }} placeholder="0" />
+        </Stack>
+        <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+
+        <Typography level="h3">Mutation Testing</Typography>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography>What grade do you want to get?</Typography>
+          <Select placeholder="Grade">
+            <Option value="proficient">Proficient</Option>
+            <Option value="approaching_mastery">Approaching Mastery</Option>
+            <Option value="mastery">Mastery</Option>
+          </Select>
+        </Stack>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Typography>How many mutation testing problems will you solve?</Typography>
+          <Input sx={{ width: "3em" }} placeholder="0" />
+        </Stack>
+        <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+      </Stack>
+
+      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
+        <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
+        <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
+        <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(false)}>Save Changes</Button>
+      </Stack>
+    </>
   )
 }
 
