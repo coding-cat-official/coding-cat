@@ -105,7 +105,7 @@ export default function CategoryList({
 
     return (
         <List component="nav" sx={{ py: 2}}>
-            {categories.map(category => {
+            {categories.sort((a,b) => a.localeCompare(b)).map(category => {
                 const summary = progress.find(p => p.category == category)
                 const unlocked = getUnlocked(category)
                 const hint = getHint(category)
