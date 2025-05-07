@@ -81,6 +81,15 @@ export default function Tutorial({tourState, setTourState}){
       content: () => (
         <h4>This is your progress!👈(ﾟヮﾟ👈)</h4>
       )
+    },
+    {
+      selector: "table",
+      content: () => (
+        <>
+          <h2>Quick Tip ❕</h2>
+          <h3>Press "Alt" + "Enter" to run your code <i>fast</i> 🏃💨</h3>
+        </>
+      )
     }
 
   ];

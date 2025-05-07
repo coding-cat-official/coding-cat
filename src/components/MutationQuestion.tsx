@@ -1,5 +1,5 @@
 import {Box, Button} from '@mui/joy';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
@@ -107,6 +107,19 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       setDisabled(false);
     }, 2000)
   };
+
+  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+    if(event.altKey && event.key === "Enter"){
+      handleRun();
+    }
+  },[handleRun]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return(
     <> 
