@@ -34,6 +34,10 @@ export type Progress = {
     category: string;
     completed: number;
     total: number;
+    problems: {
+        title: string;
+        difficulty: string;
+    }[];
 }
 
 export type Reflection = {
