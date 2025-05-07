@@ -126,6 +126,20 @@ table input{
   background-color: white;
 }
 
+.MuiBox-root.navigate-problem-btn{
+  display: flex; 
+  width: 100%;
+  justify-content: space-between; 
+  padding: 0 5px; 
+  margin-top: 5px !important;
+  cursor: pointer;
+} 
+
+[aria-disabled="true"]{
+  color: grey;
+  cursor: not-allowed;
+}
+
 @media (max-width: 1024px){
   .problem-ide-editor div{
     width: 900px;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useOutletContext } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -7,7 +7,7 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import { Stack, Sheet, Box, Typography, Table } from '@mui/joy';
+import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
@@ -17,6 +17,7 @@ import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
+import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -56,10 +57,31 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    
+    const navigate = useNavigate();
+
+    const currCategoryProblems = () => {
+      const questionType = problem.meta.question_type[0];
+      if(questionType.includes("mutation") || questionType.includes("haystack")){
+        return problems.filter(p => p.meta.question_type.includes(questionType))
+      }
+      else{
+        return problems.filter(p => {
+          const questionType = p.meta.question_type[0];
+          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
+          return p.meta.category === problem.meta.category && !exclude;
+        })
+      }
+    };
+
+    const currProblems = currCategoryProblems();
+    const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
+
 
     useEffect(() => {
       setActiveProblem(problem.meta.name);
-    }, [setActiveProblem, problem.meta.name]);
+      setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
+    }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session);
 
@@ -114,6 +136,23 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+
+    function handlePreviousProblem(){
+      if(currIndex > 0){
+        const prevProblem = currCategoryProblems()[currIndex-1].meta.name;
+        setCurrIndex(currIndex-1);
+        navigate(`/problems/${prevProblem}`)
+      }
+    }
+
+    function handleNextProblem(){ 
+      if(currIndex < currCategoryProblems().length - 1){
+        const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
+        setCurrIndex(currIndex+1);
+        navigate(`/problems/${nextProblem}`)
+      }
+    }
+
     function generateQuestion() {
       let questionList = reflectionQuestions.success;
 
@@ -161,6 +200,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               )
             }
           </Sheet>
+          <Box className="navigate-problem-btn">
+            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
+            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
+          </Box>
         </Stack>
       
           <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
