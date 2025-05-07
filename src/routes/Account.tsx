@@ -31,6 +31,7 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
 } from 'recharts';
+import { capitalizeString } from '../utils/capitalizeString';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -302,9 +303,15 @@ function ProgressList({ progress }: { progress: Progress[] }) {
 }
 
 function ProgressCard({ item }: { item: Progress }) {
-  const percentageCompleted = Math.round((item.completed / item.total) * 100);
   // capitalize first letter of each category
   const categoryName = item.category.charAt(0).toUpperCase() + item.category.slice(1);
+  const percentageCompleted = Math.round((item.completed / item.total) * 100);
+  const completedProblems: Record<string, string[]> = {};
+
+  item.problems.forEach((p) => {
+    if (!completedProblems[p.difficulty]) completedProblems[p.difficulty] = [];
+    completedProblems[p.difficulty].push(p.title);
+  });
 
   // TODO:
   // - fix border radius on hover
@@ -330,7 +337,28 @@ function ProgressCard({ item }: { item: Progress }) {
             <LinearProgress sx={{ backgroundColor: "#D5D5D5" }} color="success" determinate value={percentageCompleted} size="lg" />
           </Stack>
         </AccordionSummary>
-        <AccordionDetails>This is where all the types of problems and their completion rates will go.</AccordionDetails>
+        <AccordionDetails>
+          {
+            item.completed === 0 ? <Typography>You haven't completed any problems from this category.</Typography> :
+            <Stack>
+              {
+                Object.keys(completedProblems).map((o) => (
+                    <Stack direction="column" gap={2}>
+                      <Typography level="title-lg">{o.charAt(0).toUpperCase() + o.slice(1)}</Typography>
+                      <Stack direction="row" gap={3} flexWrap="wrap">
+                        {
+                          completedProblems[o].map((p) => (
+                            <Typography>{capitalizeString(p)}</Typography>
+                          ))
+                        }
+                      </Stack>
+                    </Stack>
+                  )
+                )
+              }
+            </Stack>
+          }
+        </AccordionDetails>
       </Accordion>
     </AccordionGroup>
   )
