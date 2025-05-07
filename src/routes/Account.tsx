@@ -32,6 +32,7 @@ import {
   Tooltip as RechartsTooltip,
 } from 'recharts';
 import { capitalizeString } from '../utils/capitalizeString';
+import { Link } from 'react-router-dom';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -340,15 +341,19 @@ function ProgressCard({ item }: { item: Progress }) {
         <AccordionDetails>
           {
             item.completed === 0 ? <Typography>You haven't completed any problems from this category.</Typography> :
-            <Stack>
+            <Stack gap={2}>
               {
                 Object.keys(completedProblems).map((o) => (
-                    <Stack direction="column" gap={2}>
+                    <Stack direction="column" gap={1}>
                       <Typography level="title-lg">{o.charAt(0).toUpperCase() + o.slice(1)}</Typography>
                       <Stack direction="row" gap={3} flexWrap="wrap">
                         {
                           completedProblems[o].map((p) => (
-                            <Typography>{capitalizeString(p)}</Typography>
+                            <Link style={{ textDecoration: "none" }} to={`/problems/${p}`}>
+                              <Button sx={{ fontWeight: "normal" }} variant="plain">
+                                <Typography>{capitalizeString(p)}</Typography>
+                              </Button>
+                            </Link>
                           ))
                         }
                       </Stack>
