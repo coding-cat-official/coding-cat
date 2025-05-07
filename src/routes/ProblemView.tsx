@@ -60,7 +60,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     
     const { name } = useParams();
     const navigate = useNavigate();
-    const [currIndex, setCurrIndex] = useState(problems.findIndex(p => p.meta.name === name));
 
     useEffect(() => {
       setActiveProblem(problem.meta.name);
@@ -119,17 +118,32 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
+    const currCategoryProblems = () => {
+      const questionType = problem.meta.question_type[0];
+      if(questionType.includes("mutation") || questionType.includes("haystack")){
+        return problems.filter(p => p.meta.question_type.includes(questionType))
+      }
+      else{
+        return problems.filter(p => {
+          const questionType = p.meta.question_type[0];
+          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
+          return p.meta.category === problem.meta.category && !exclude;
+        })
+      }
+    };
+    const [currIndex, setCurrIndex] = useState(currCategoryProblems().findIndex(p => p.meta.name === name));
+
     function handlePreviousProblem(){
       if(currIndex > 0){
-        const prevProblem = problems[currIndex-1].meta.name;
+        const prevProblem = currCategoryProblems()[currIndex-1].meta.name;
         setCurrIndex(currIndex-1);
         navigate(`/problems/${prevProblem}`)
       }
     }
 
     function handleNextProblem(){
-      if(currIndex < problems.length - 1){
-        const nextProblem = problems[currIndex+1].meta.name;
+      if(currIndex < currCategoryProblems().length - 1){
+        const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
         setCurrIndex(currIndex+1);
         navigate(`/problems/${nextProblem}`)
       }
