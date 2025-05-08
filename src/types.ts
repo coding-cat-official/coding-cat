@@ -1,3 +1,5 @@
+import { getCategoryList } from "./utils/getCategoryList";
+
 export interface IOPair {
     input: any[];
     output: any;
@@ -57,11 +59,38 @@ export type Submission = {
     total_tests: number;
 }
 
-export interface CategoryContract {
-    gradeWanted: number;
+export interface GenericContract {
+    gradeWanted: string;
     problemsToSolve: number;
     codeDescription: string;
     reflectionPlan: string;
 }
 
-export type ContractData = Record<string, CategoryContract>
+export interface CodingContract {
+    gradeWanted: string;
+    problemsToSolveByCategory: Record<string, number>;
+    codeDescription: string;
+    reflectionPlan: string;
+}
+
+export type ContractData ={
+    Coding: CodingContract;
+    Haystack: GenericContract;
+    Mutation: GenericContract;
+}
+
+const codingCategories = getCategoryList();
+
+export const BLANK_CONTRACT: ContractData = {
+    "Coding":{
+        gradeWanted: "",
+        problemsToSolveByCategory: codingCategories.reduce(
+          (acc, cat) => ({ ...acc, [cat]: 0 }),
+          {}
+        ),
+        codeDescription: "",
+        reflectionPlan: "",
+      },
+    "Mutation":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' },
+    "Haystack":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' }
+}
