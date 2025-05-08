@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
+import { categorizeCategories } from '../utils/categorizeCategories';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
@@ -50,11 +51,13 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   });
 
   const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemCategories = problem.meta.question_type.includes("coding") ? "" : problem.meta.category;
+    const problemCategories = problem.meta.question_type.includes("coding") ? "" : categorizeCategories(problem);
     if (!acc[problemCategories]) acc[problemCategories] = [];
     acc[problemCategories].push(problem);
     return acc;
   }, {});
+
+  console.log(problemsByCategory)
 
   const solvedProblems = progress.filter((p) => {
     return p.passed_tests === p.total_tests;
