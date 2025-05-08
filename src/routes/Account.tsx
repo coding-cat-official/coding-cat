@@ -564,7 +564,7 @@ function ContractEdit({ setIsUpdating, contract, setContract, onSave }: Contract
                 ...c,
                 Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
               }))
-            } sx={{ width: "3em" }} placeholder="0" />
+            } sx={{ width: "4em" }} placeholder="0" />
         </Stack>
         <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
         <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Haystack.codeDescription} 
@@ -600,7 +600,7 @@ function ContractEdit({ setIsUpdating, contract, setContract, onSave }: Contract
         </Stack>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>How many mutation testing problems will you solve?</Typography>
-          <Input sx={{ width: "3em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+          <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
             onChange={(e) =>
               setContract((c) => ({
                 ...c,
