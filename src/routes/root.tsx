@@ -25,7 +25,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
-    const [selectedTab, setSelectedTab] = useState("coding");
+    const [selectedTab, setSelectedTab] = useState("");
 
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
@@ -44,7 +44,8 @@ export default function App() {
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
-    setSelectedTab("coding");
+    if(category === "mutation") setSelectedTab("List-2: Iterating")
+    if(category === "coding") setSelectedTab("")
   }
 
   function handleSelectedProblem(name: string){

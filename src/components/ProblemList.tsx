@@ -21,6 +21,8 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
 
+  
+
   useEffect(() => {
     async function fetchProgress() {
       if (!session) return;
@@ -47,7 +49,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return category === selectedTopic;
   });
 
-  const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+  const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
     const problemCategories = problem.meta.question_type.includes("coding") ? "" : problem.meta.category;
     if (!acc[problemCategories]) acc[problemCategories] = [];
     acc[problemCategories].push(problem);
@@ -62,7 +64,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
   }).map((p) => p.problem_title);
 
-  if (Object.keys(problemsByTopic).length === 0) {
+  if (Object.keys(problemsByCategory).length === 0) {
     return (
       <Typography>No problems found</Typography>
     )
@@ -80,7 +82,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
-            {Object.keys(problemsByType).sort().map((type) => (
+            {Object.keys(problemsByCategory).sort().map((type) => (
               <Tab key={type} value={type} variant="plain" color="neutral">
                 {type}
               </Tab>
@@ -89,7 +91,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           
           <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
               <List>
-                {/* { problemsByType[selectedTab].map((p) => 
+                { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
                     <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
@@ -105,7 +107,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                           </Stack>
                         </Stack>
                     </ListItemButton>,
-                )} */}
+                )}
               </List>
           </TabPanel>
         </Tabs>
