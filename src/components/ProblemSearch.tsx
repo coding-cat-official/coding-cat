@@ -4,10 +4,11 @@ import { Dispatch, SetStateAction } from "react";
 
 interface SearchProps {
   query: string;
-  setQuery: Dispatch<SetStateAction<string>>
+  setQuery: Dispatch<SetStateAction<string>>;
+  placeholder: string;
 }
 
-export default function ProblemSearch({ query, setQuery }: SearchProps) {
+export default function CustomSearch({ query, setQuery, placeholder }: SearchProps) {
   return (
     <Input
       sx={{
@@ -30,7 +31,7 @@ export default function ProblemSearch({ query, setQuery }: SearchProps) {
       }}
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      placeholder="Search for exercises..."
+      placeholder={placeholder}
       endDecorator={<MagnifyingGlass size={23}/>}
       size="lg"
     />
