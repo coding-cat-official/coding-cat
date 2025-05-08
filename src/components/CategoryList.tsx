@@ -27,6 +27,9 @@ export default function CategoryList({
         return c.meta.category;
     }).filter((c, index, array) => array.indexOf(c) === index);
 
+    categories.push("mutation", "haystack");
+
+
     useEffect(() => {
         async function fetchProgress() {
             if (!session) return;
@@ -34,7 +37,7 @@ export default function CategoryList({
             
             const {data: submissions, error } = await supabase
             .from('submissions')
-            .select('problem_title, passed_tests, total_tests')
+            .select('problem_title, passed_tests, total_tests, question_type')
             .eq('profile_id', user.id);
 
             if(error) {
@@ -50,7 +53,7 @@ export default function CategoryList({
     }, [session])
 
     function getHint(category: string) {
-        if(!session && category != "Fundamentals") {
+        if(!session && category !== "Fundamentals") {
             return "Log in to continue learning.";
         }
         switch (category) {
@@ -101,6 +104,8 @@ export default function CategoryList({
             case "List-2: Iterating": return (solved["List-1: Indexing"] || 0) >= 0 && (solved["String-1"] || 0) >= 0
             case "List-3: Complex Loop": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
             case "String-3": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
+            case "mutation": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
+            case "haystack": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
             default: return false
         }
     }
@@ -108,7 +113,7 @@ export default function CategoryList({
     return (
         <List component="nav" sx={{ py: 2}}>
             {categories.sort((a,b) => a.localeCompare(b)).map(category => {
-                const summary = progress.find(p => p.category == category)
+                const summary = progress.find(p => p.category === category) ?? progress.find(p => p.question_type === category)
                 const unlocked = getUnlocked(category)
                 const hint = getHint(category)
                 return (
@@ -136,7 +141,7 @@ export default function CategoryList({
                         >
                             {!unlocked && <LockSimple size={16}/>}
                             <Typography>
-                                {category} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
+                                {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
                             </Typography>
                         </ListItemButton>
                     )

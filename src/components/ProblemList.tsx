@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
+import { categorizeCategories } from '../utils/categorizeCategories';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
@@ -21,6 +22,8 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
 
+  
+
   useEffect(() => {
     async function fetchProgress() {
       if (!session) return;
@@ -28,7 +31,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
       
       const {data: submissions, error } = await supabase
       .from('submissions')
-      .select('problem_title, passed_tests, total_tests')
+      .select('problem_title, passed_tests, total_tests, question_type')
       .eq('profile_id', user.id);
 
       if(error) {
@@ -42,17 +45,19 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   }, [session]);
 
   const problemsByTopic = searchedProblems.filter(problem => {
-    return problem.meta.category === selectedTopic;
+    const question_type = problem.meta.question_type[0];
+    const category = question_type === "coding" ? problem.meta.category : question_type;
+    return category === selectedTopic;
   });
 
-  const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemsByType = problem.meta.question_type;
-    problemsByType.forEach(type => {
-      if (!acc[type]) acc[type] = [];
-      acc[type].push(problem);
-    } )
+  const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+    const problemCategories = problem.meta.question_type.includes("coding") ? "" : categorizeCategories(problem);
+    if (!acc[problemCategories]) acc[problemCategories] = [];
+    acc[problemCategories].push(problem);
     return acc;
   }, {});
+
+  console.log(problemsByCategory)
 
   const solvedProblems = progress.filter((p) => {
     return p.passed_tests === p.total_tests;
@@ -62,7 +67,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
   }).map((p) => p.problem_title);
 
-  if (Object.keys(problemsByType).length === 0) {
+  if (Object.keys(problemsByCategory).length === 0) {
     return (
       <Typography>No problems found</Typography>
     )
@@ -76,20 +81,21 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
 
   return(
     <Stack gap={1}>
-      <Typography level="h2">{selectedTopic}</Typography>
+      <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
-            {Object.keys(problemsByType).sort().map((type) => (
-              <Tab key={type} value={type} variant="plain" color="neutral">
+            {Object.keys(problemsByCategory).sort().map((type) => (
+               type ?
+                <Tab key={type} value={type} variant="plain" color="neutral">
                 {type}
-              </Tab>
+              </Tab> : <></>
             ))}
           </TabList>
           
           <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
               <List>
-                { problemsByType[selectedTab].map((p) => 
+                { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
                     <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">

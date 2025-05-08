@@ -34,6 +34,7 @@ export type Progress = {
     category: string;
     completed: number;
     total: number;
+    question_type: string;
     problems: {
         title: string;
         difficulty: string;
