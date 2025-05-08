@@ -14,7 +14,7 @@ import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import ProblemList from '../components/ProblemList';
-import ProblemSearch from '../components/ProblemSearch';
+import CustomSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -104,7 +104,7 @@ export default function App() {
                 <Option value="medium">Medium</Option>
                 <Option value="hard">Hard</Option>
               </Select>
-              <ProblemSearch query={query} setQuery={setQuery} />
+              <CustomSearch query={query} setQuery={setQuery} placeholder="Search for exercises..." />
             </Stack>
           </Stack>
         <DialogContent>
