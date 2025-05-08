@@ -52,6 +52,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     submitted_at: new Date().toISOString(),
                     profile_id: session.user.id,
                     total_tests: totalTests,
+                    question_type: problem.meta.question_type
                 };
     
                 const { data, error } = await supabase
