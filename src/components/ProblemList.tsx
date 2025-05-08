@@ -28,7 +28,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
       
       const {data: submissions, error } = await supabase
       .from('submissions')
-      .select('problem_title, passed_tests, total_tests')
+      .select('problem_title, passed_tests, total_tests, question_type')
       .eq('profile_id', user.id);
 
       if(error) {
@@ -42,7 +42,9 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   }, [session]);
 
   const problemsByTopic = searchedProblems.filter(problem => {
-    return problem.meta.category === selectedTopic;
+    const question_type = problem.meta.question_type[0];
+    const category = question_type === "coding" ? problem.meta.category : question_type;
+    return category === selectedTopic;
   });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
