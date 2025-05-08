@@ -41,6 +41,7 @@ import { capitalizeString } from '../utils/capitalizeString';
 import { Link } from 'react-router-dom';
 import { getCategoryList } from '../utils/getCategoryList';
 import { ContractData } from '../types';
+import CustomSearch from '../components/ProblemSearch';
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
@@ -707,22 +708,32 @@ function ProgressCard({ item }: { item: Progress }) {
 }
 
 function Reflections({ reflections }: { reflections: Reflection[] }) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("");
 
-  if (!reflections.length) {
+  let cat = category;
+  if (cat === "all") cat = "";
+
+  const filteredReflections = reflections.filter((r) => {
+    const name = capitalizeString(r.problem_title).toLowerCase();
+    return name.includes(query.toLowerCase()) && r.category.includes(cat);
+  });
+
+  if (!filteredReflections.length) {
     return (
-      <Stack>
-        <Typography level="h2">Your Reflections</Typography>
+      <>
+        <ReflectionTitle query={query} setQuery={setQuery} category={cat} setCategory={setCategory} />
         <Typography>You have no reflections!</Typography>
-      </Stack>
+      </>
     )
   }
 
   return (
     <>
-      <Typography level="h2">Your Reflections</Typography>  
-      <Stack gap={2} mb={2} sx={{ maxHeight: '100%', overflowY: 'auto'}}>
-        {reflections.map((reflection, index) => {
+      <ReflectionTitle query={query} setQuery={setQuery} category={cat} setCategory={setCategory} />
+      <Stack gap={2} mb={2} sx={{ maxHeight: '100%', overflowY: 'auto', scrollbarWidth: "thin"}}>
+        {filteredReflections.map((reflection, index) => {
           const isOpen = expandedIndex === index
           return (
             <Card
@@ -732,7 +743,7 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
               <CardContent>
                 <Stack spacing={1}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography level="h3">{reflection.problem_title}</Typography>
+                    <Typography level="h3">{capitalizeString(reflection.problem_title)}</Typography>
                     <Typography color="neutral" fontSize="sm">
                       {reflection.category}
                     </Typography>
@@ -768,5 +779,29 @@ function Reflections({ reflections }: { reflections: Reflection[] }) {
         })}
       </Stack>
     </>
+  )
+}
+
+interface SearchProps {
+  query: string;
+  setQuery: Dispatch<SetStateAction<string>>;
+  category: string;
+  setCategory: Dispatch<SetStateAction<string>>;
+}
+
+function ReflectionTitle({ query, setQuery, category, setCategory }: SearchProps) {
+  const categories = useMemo(() => getCategoryList(), []);
+
+  return (
+    <Stack width="90%" direction="row" justifyContent="space-between">
+      <Typography level="h2">Your Reflections</Typography>
+      <Stack direction="row" gap={2}>
+        <Select sx={{ width: "150px" }} placeholder="Category" value={category} onChange={(e, newValue) => setCategory(newValue || "")}>
+          <Option value="all">All</Option>
+          { categories.map((c) => <Option value={c}>{c}</Option>) }
+        </Select>
+        <CustomSearch query={query} setQuery={setQuery} placeholder="Search for reflections..." />
+      </Stack>
+    </Stack>
   )
 }

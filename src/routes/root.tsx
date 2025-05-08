@@ -14,7 +14,7 @@ import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import ProblemList from '../components/ProblemList';
-import ProblemSearch from '../components/ProblemSearch';
+import CustomSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -25,7 +25,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
-    const [selectedTab, setSelectedTab] = useState("coding");
+    const [selectedTab, setSelectedTab] = useState("");
 
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
@@ -44,7 +44,8 @@ export default function App() {
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
-    setSelectedTab("coding");
+    if(category === "mutation") setSelectedTab("List")
+    if(category === "coding") setSelectedTab("")
   }
 
   function handleSelectedProblem(name: string){
@@ -103,7 +104,7 @@ export default function App() {
                 <Option value="medium">Medium</Option>
                 <Option value="hard">Hard</Option>
               </Select>
-              <ProblemSearch query={query} setQuery={setQuery} />
+              <CustomSearch query={query} setQuery={setQuery} placeholder="Search for exercises..." />
             </Stack>
           </Stack>
         <DialogContent>
