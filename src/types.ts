@@ -56,3 +56,12 @@ export type Submission = {
     passed_tests: number;
     total_tests: number;
 }
+
+export interface CategoryContract {
+    gradeWanted: number;
+    problemsToSolve: number;
+    codeDescription: string;
+    reflectionPlan: string;
+}
+
+export type ContractData = Record<string, CategoryContract>
