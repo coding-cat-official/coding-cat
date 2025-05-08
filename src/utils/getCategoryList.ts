@@ -7,5 +7,5 @@ export function getCategoryList() {
     categories.add(p.meta.category);
   });
 
-  return Array.from(categories);
+  return Array.from(categories).sort();
 }
