@@ -48,11 +48,9 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   });
 
   const problemsByType = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemsByType = problem.meta.question_type;
-    problemsByType.forEach(type => {
-      if (!acc[type]) acc[type] = [];
-      acc[type].push(problem);
-    } )
+    const problemCategories = problem.meta.question_type.includes("coding") ? "" : problem.meta.category;
+    if (!acc[problemCategories]) acc[problemCategories] = [];
+    acc[problemCategories].push(problem);
     return acc;
   }, {});
 
@@ -64,7 +62,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
   }).map((p) => p.problem_title);
 
-  if (Object.keys(problemsByType).length === 0) {
+  if (Object.keys(problemsByTopic).length === 0) {
     return (
       <Typography>No problems found</Typography>
     )
@@ -78,7 +76,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
 
   return(
     <Stack gap={1}>
-      <Typography level="h2">{selectedTopic}</Typography>
+      <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
@@ -91,7 +89,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           
           <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
               <List>
-                { problemsByType[selectedTab].map((p) => 
+                {/* { problemsByType[selectedTab].map((p) => 
                     <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
@@ -107,7 +105,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                           </Stack>
                         </Stack>
                     </ListItemButton>,
-                )}
+                )} */}
               </List>
           </TabPanel>
         </Tabs>
