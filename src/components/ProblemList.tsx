@@ -86,9 +86,10 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
             {Object.keys(problemsByCategory).sort().map((type) => (
-              <Tab key={type} value={type} variant="plain" color="neutral">
+               type ?
+                <Tab key={type} value={type} variant="plain" color="neutral">
                 {type}
-              </Tab>
+              </Tab> : <></>
             ))}
           </TabList>
           
