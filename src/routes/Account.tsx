@@ -501,7 +501,13 @@ function ContractEdit({ setIsUpdating, contract, setContract, onSave }: Contract
               return (
                 <Stack direction="row" alignItems="center" gap={2}>
                   <Typography>{c}: </Typography>
-                  <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Coding.problemsToSolveByCategory[c]} sx={{ width: "3em" }}
+                  <Input
+                    variant="plain"
+                    size="sm"
+                    sx={{ width: "50px", typography: 'body1' }}
+                    slotProps={{ input: { type: "number", min: 0 } }}
+                    placeholder="0"
+                    value={contract.Coding.problemsToSolveByCategory[c]}
                     onChange={(e) =>
                       setContract((cat) => ({
                         ...cat,
@@ -513,7 +519,8 @@ function ContractEdit({ setIsUpdating, contract, setContract, onSave }: Contract
                           },
                         },
                       }))
-                    } placeholder="0" />
+                    }
+                  />
                 </Stack>
               )
             })
