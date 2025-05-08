@@ -25,7 +25,7 @@ import { Accordion,
   Tooltip, 
   Typography 
 } from '@mui/joy';
-import { Progress, Reflection } from '../types';
+import { BLANK_CONTRACT, Progress, Reflection } from '../types';
 import { ArrowSquareOut, NotePencil } from '@phosphor-icons/react';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import {
@@ -40,6 +40,7 @@ import {
 import { capitalizeString } from '../utils/capitalizeString';
 import { Link } from 'react-router-dom';
 import { getCategoryList } from '../utils/getCategoryList';
+import { ContractData } from '../types';
 import CustomSearch from '../components/ProblemSearch';
 
 export default function Account({ session }: { session: Session }) {
@@ -51,6 +52,8 @@ export default function Account({ session }: { session: Session }) {
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
   const [error, setError] = useState("");
+  const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -81,6 +84,26 @@ export default function Account({ session }: { session: Session }) {
     return () => {
       ignore = true;
     }
+  }, [session])
+
+  useEffect(() => {
+    async function fetchContract() {
+      const {data, error} = await supabase
+      .from('contracts')
+      .select('data, updated_at')
+      .eq('profile_id', session.user.id)
+      .order('updated_at', {ascending:false})
+      .limit(1)
+      .single()
+      
+      if(error){
+        console.error(error);
+      }else{
+        setContract(data.data as ContractData);
+        setLastUpdated(new Date(data.updated_at));
+      }
+    }
+    fetchContract()
   }, [session])
 
   useEffect(() => {
@@ -138,13 +161,34 @@ export default function Account({ session }: { session: Session }) {
   return allDays;
 }, [activityStamps]);
 
+async function handleContractSave() {
+  const now = new Date()
+  const {error, data } = await supabase
+  .from('contracts')
+  .upsert({
+    profile_id: session.user.id,
+    data: contract,
+    updated_at: now
+  })
+  .select('data, updated_at')
+  .single()
+  if(error){
+    console.error(error);
+  }
+  else {
+    setContract(data.data as ContractData);
+    setLastUpdated(new Date(data.updated_at));
+  }
+
+  setLoading(false);
+}
   
 
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
-        <Contract />
+        <Contract contract={contract} lastUpdated={lastUpdated} onSave={handleContractSave} setContract={setContract}/>
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
@@ -284,9 +328,20 @@ function UserInfo({ username, email, studentId, session }: UserProps) {
   )
 }
 
-function Contract() {
-  const [open, setOpen] = useState(false);
+interface ContractProps{
+  contract: ContractData;
+  setContract: Dispatch<SetStateAction<ContractData>>;
+  lastUpdated: Date | null;
+  onSave: () => Promise<void>;
+}
 
+function Contract({
+  contract,
+  setContract, 
+  lastUpdated,
+  onSave
+}: ContractProps) {
+  const [open, setOpen] = useState(false);
   return (
     <>
       <Stack alignItems="center">
@@ -296,94 +351,127 @@ function Contract() {
             <ArrowSquareOut size={23} />
           </IconButton>
         </Stack>
-        <Typography>Last Modified: { new Date().toDateString() }</Typography>
+        <Typography>Last Modified:{' '} 
+        {lastUpdated
+          ? `${lastUpdated.toLocaleDateString()} ${lastUpdated.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}`
+          : '—'}
+        </Typography>
       </Stack>
 
-      <ContractModal open={open} setOpen={setOpen} />
+      <ContractModal open={open} setOpen={setOpen} contract={contract} lastUpdated={lastUpdated} onSave={onSave} setContract={setContract}/>
     </>
   )
 }
 
-interface ModalProps {
+
+
+interface ContractModalProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  contract: ContractData;
+  setContract: Dispatch<SetStateAction<ContractData>>;
+  lastUpdated: Date | null;
+  onSave: () => Promise<void>;
 }
-
-function ContractModal({ open, setOpen }: ModalProps) {
+function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
-
+    
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog sx={{ width: "90vw", height: "90vh" }} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
         {
-          isUpdating ? <ContractEdit setIsUpdating={setIsUpdating} /> : <ContractText setIsUpdating={setIsUpdating} />
+          isUpdating ? <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} /> : <ContractText setIsUpdating={setIsUpdating} contract={contract} lastUpdated={lastUpdated} />
         }
       </ModalDialog>
     </Modal>
   )
 }
 
-function ContractText({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
-  const categories = getCategoryList();
+interface ContractTextProps {
+  setIsUpdating: Dispatch<SetStateAction<boolean>>;
+  contract: ContractData;
+  lastUpdated: Date | null;
+}
 
-  // TODO: replace all the placeholder text with the actual values from the database.
+function ContractText({setIsUpdating, contract, lastUpdated}: ContractTextProps) {
 
   return (
     <>
       <Stack sx={{ overflowY: "scroll" }} gap={2}>
         <Typography level="h3">Coding</Typography>
-        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
+        <Typography>What grade do you want to get? <strong>{contract.Coding.gradeWanted}</strong></Typography>
         <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
-        <Stack justifyContent="center" direction="row" columnGap={20} rowGap={2} flexWrap="wrap">
-          {
-            categories.map((c) => <Typography>{c}: <strong>20</strong></Typography>)
-          }
-        </Stack>
+        <Stack direction="row" flexWrap="wrap" columnGap={4} rowGap={2} justifyContent="center">
+          {Object.entries(contract.Coding.problemsToSolveByCategory).map(
+            ([cat, count]) => (
+              <Typography key={cat}>
+                {cat}: <strong>{count}</strong>
+              </Typography>
+            )
+          )}
+          </Stack>
         <Typography>
           Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Coding.codeDescription}</strong>
         </Typography>
         <Typography>
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Coding.reflectionPlan}</strong>
         </Typography>
 
         <Typography level="h3">Haystack</Typography>
-        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
-        <Typography>How many haystack problems will you solve? <strong>20</strong></Typography>
+        <Typography>What grade do you want to get? <strong>{contract.Haystack.gradeWanted}</strong></Typography>
+        <Typography>How many haystack problems will you solve? <strong>{contract.Haystack.problemsToSolve}</strong></Typography>
         <Typography>
           Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Haystack.codeDescription} </strong>
         </Typography>
         <Typography>
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Haystack.reflectionPlan}</strong>
         </Typography>
 
         <Typography level="h3">Mutation Testing</Typography>
-        <Typography>What grade do you want to get? <strong>Mastery</strong></Typography>
-        <Typography>How many mutation testing problems will you solve? <strong>20</strong></Typography>
+        <Typography>What grade do you want to get? <strong>{contract.Mutation.gradeWanted}</strong></Typography>
+        <Typography>How many mutation testing problems will you solve? <strong>{contract.Mutation.problemsToSolve}</strong></Typography>
         <Typography>
           Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Mutation.codeDescription}</strong>
         </Typography>
         <Typography>
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-          <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean porta ligula feugiat ante elementum maximus. Maecenas volutpat tortor ut enim porttitor, quis volutpat elit lacinia. </strong>
+          <strong>{contract.Mutation.reflectionPlan}</strong>
         </Typography>
       </Stack>
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
-        <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
+        <Typography level="body-xs">Last Modified:{' '} 
+        {lastUpdated
+          ? `${lastUpdated.toLocaleDateString()} ${lastUpdated.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}`
+          : '—'}
+        </Typography>
         <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
       </Stack>
     </>
   )
 }
 
-function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateAction<boolean>> }) {
+interface ContractEditProps {
+  setIsUpdating: Dispatch<SetStateAction<boolean>>;
+  contract: ContractData;
+  setContract: Dispatch<SetStateAction<ContractData>>;
+  onSave: () => Promise<void>;
+}
+
+function ContractEdit({ setIsUpdating, contract, setContract, onSave }: ContractEditProps) {
   const categories = getCategoryList();
 
   // TODO: replace placeholder values with actual values from database and implement updating
@@ -394,7 +482,13 @@ function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
         <Typography level="h3">Coding</Typography>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>What grade do you want to get?</Typography>
-          <Select placeholder="Grade">
+          <Select placeholder="Grade" value={contract.Coding.gradeWanted}
+            onChange={(_, v) =>                          // ← v is the new string
+              setContract(c => ({
+                ...c,
+                Coding: { ...c.Coding, gradeWanted: v as string },
+              }))
+            }>
             <Option value="proficient">Proficient</Option>
             <Option value="approaching_mastery">Approaching Mastery</Option>
             <Option value="mastery">Mastery</Option>
@@ -407,21 +501,56 @@ function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
               return (
                 <Stack direction="row" alignItems="center" gap={2}>
                   <Typography>{c}: </Typography>
-                  <Input sx={{ width: "3em" }} placeholder="0" />
+                  <Input
+                    variant="plain"
+                    size="sm"
+                    sx={{ width: "50px", typography: 'body1' }}
+                    slotProps={{ input: { type: "number", min: 0 } }}
+                    placeholder="0"
+                    value={contract.Coding.problemsToSolveByCategory[c]}
+                    onChange={(e) =>
+                      setContract((cat) => ({
+                        ...cat,
+                        Coding: {
+                          ...cat.Coding,
+                          problemsToSolveByCategory: {
+                            ...cat.Coding.problemsToSolveByCategory,
+                            [c]: +e.target.value,
+                          },
+                        },
+                      }))
+                    }
+                  />
                 </Stack>
               )
             })
           }
         </Stack>
         <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Textarea value={contract.Coding.codeDescription} 
+          onChange={(e) =>
+            setContract((c) => ({
+              ...c,
+              Coding: { ...c.Coding, codeDescription: e.target.value },
+            }))
+          } placeholder="Enter your answer..." minRows={2} maxRows={2} />
         <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
-
+        <Textarea value={contract.Coding.reflectionPlan} onChange={(e) =>
+          setContract((c) => ({
+            ...c,
+            Coding: { ...c.Coding, reflectionPlan: e.target.value },
+          }))
+        } placeholder="Enter your answer..." minRows={2} maxRows={2} />
         <Typography level="h3">Haystack</Typography>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>What grade do you want to get?</Typography>
-          <Select placeholder="Grade">
+          <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
+            onChange={(_, v) =>
+              setContract(c => ({
+                ...c,
+                Haystack: { ...c.Haystack, gradeWanted: v as string },
+              }))
+            }>
             <Option value="proficient">Proficient</Option>
             <Option value="approaching_mastery">Approaching Mastery</Option>
             <Option value="mastery">Mastery</Option>
@@ -429,17 +558,41 @@ function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
         </Stack>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>How many haystack problems will you solve?</Typography>
-          <Input sx={{ width: "3em" }} placeholder="0" />
+          <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
+            onChange={(e) =>
+              setContract((c) => ({
+                ...c,
+                Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
+              }))
+            } sx={{ width: "4em" }} placeholder="0" />
         </Stack>
         <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Haystack.codeDescription} 
+          onChange={(e) =>
+            setContract((c) => ({
+              ...c,
+              Haystack: { ...c.Haystack, codeDescription: e.target.value },
+            }))
+          }/>
         <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Haystack.reflectionPlan} 
+          onChange={(e) =>
+            setContract((c) => ({
+              ...c,
+              Haystack: { ...c.Haystack, reflectionPlan: e.target.value },
+            }))
+          }/>
 
         <Typography level="h3">Mutation Testing</Typography>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>What grade do you want to get?</Typography>
-          <Select placeholder="Grade">
+          <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
+            onChange={(_, v) =>
+              setContract(c => ({
+                ...c,
+                Mutation: { ...c.Mutation, gradeWanted: v as string },
+              }))
+            }>
             <Option value="proficient">Proficient</Option>
             <Option value="approaching_mastery">Approaching Mastery</Option>
             <Option value="mastery">Mastery</Option>
@@ -447,18 +600,36 @@ function ContractEdit({ setIsUpdating }: { setIsUpdating: Dispatch<SetStateActio
         </Stack>
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>How many mutation testing problems will you solve?</Typography>
-          <Input sx={{ width: "3em" }} placeholder="0" />
+          <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+            onChange={(e) =>
+              setContract((c) => ({
+                ...c,
+                Mutation: { ...c.Mutation, problemsToSolve: +e.target.value },
+              }))
+            }/>
         </Stack>
         <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Mutation.codeDescription} 
+          onChange={(e) =>
+            setContract((c) => ({
+              ...c,
+              Mutation: { ...c.Mutation, codeDescription: e.target.value },
+            }))
+          }/>
         <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Mutation.reflectionPlan} 
+          onChange={(e) =>
+            setContract((c) => ({
+              ...c,
+              Mutation: { ...c.Mutation, reflectionPlan: e.target.value },
+            }))
+          }/>
       </Stack>
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
         <Typography level="body-xs">Last Modified: { new Date().toDateString() }</Typography>
         <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
-        <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(false)}>Save Changes</Button>
+        <Button sx={{ width: "15%" }} onClick={async() => { await onSave(); setIsUpdating(false);}}>Save Changes</Button>
       </Stack>
     </>
   )
