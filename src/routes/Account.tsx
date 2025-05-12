@@ -1,22 +1,14 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { Button, Card, Stack, Typography } from '@mui/joy';
+import { Button, Stack, Typography } from '@mui/joy';
 import { Progress, Reflection } from '../types';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-} from 'recharts';
 import UserInfo from '../components/profile/UserInfo';
 import ProgressList from '../components/profile/progress/Progress';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
+import ActivityGraph from '../components/profile/progress/ActivityGraph';
 
 export default function Account({ session }: { session: Session }) {
   const [progress, setProgress] = useState<Progress[]>([]);
@@ -59,27 +51,6 @@ export default function Account({ session }: { session: Session }) {
     fetchProgress();
   }, [session]);
 
-  const activityData = useMemo(() => {
-    const counts: Record<string, number> = {}
-    activityStamps.forEach((iso) => {
-      const date = iso.slice(0,10)
-      counts[date] = (counts[date] ?? 0) + 1
-    })
-
-    const days = Object.keys(counts).sort();
-    if (days.length === 0) return [];
-
-    const start = new Date(days[0]);
-  const end = new Date(days[days.length - 1]);
-  const allDays: { x: string; y: number }[] = [];
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const iso = d.toISOString().slice(0, 10);
-    allDays.push({ x: iso, y: counts[iso] || 0 });
-  }
-  
-  return allDays;
-}, [activityStamps]);
-
   if (error) {
     return (
       <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
@@ -101,31 +72,9 @@ export default function Account({ session }: { session: Session }) {
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "progress" && <ProgressList progress={progress} />}
-        { view === "reflections" && <Reflections reflections = {reflections}/> }
-        { view === "activity" && (
-          <Stack gap={2}>
-          <Typography level="h2">Your Activity</Typography>
-          <Card sx={{ p: 2, width: "90%", height: "100%" }}>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={activityData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="x"
-                  tickFormatter={(date) => date.slice(5)}
-                  minTickGap={20}
-                />
-                <YAxis allowDecimals={false} />
-                <RechartsTooltip isAnimationActive={false}
-                  labelFormatter={(label) => `Date: ${label}`}
-                  formatter={(value: number) => [`${value}`, "Submissions"]}
-                />
-                <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 0 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </Card>
-        </Stack>
-      )}
+        { view === "progress" && <ProgressList progress={progress} /> }
+        { view === "reflections" && <Reflections reflections = {reflections} /> }
+        { view === "activity" && <ActivityGraph activityStamps={activityStamps} /> }
     </Stack>
   </Stack>
   )
