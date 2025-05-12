@@ -31,22 +31,33 @@ const theme = extendTheme({
     },
     JoyListItemButton: {
       styleOverrides: {
-        root : ({ownerState, theme}) => ({
+        root: ({ ownerState, theme }) => ({
           '&.category-active': {
-            backgroundColor: '#8dd96f',
+            backgroundColor: '#8ae514',
             color: 'black',
-            cursor: 'pointer',
-            boxShadow: '5px 5px black',
-            border: '1px solid black',
             '&:hover': {
-              backgroundColor: '#8dd96f'
+              backgroundColor: '#8ae514'
+            }
+          },
+          '&.category-inactive': {
+            backgroundColor: '#d4ff99',
+            color: 'black',
+            '&:hover': {
+              backgroundColor: '#82d078'
+            }
+          },
+          '&.category-locked': {
+            backgroundColor: '#d2d2d2',
+            color: theme.vars.palette.neutral?.[400],
+            '&:hover': {
+              backgroundColor: '#d2d2d2',
             }
           }
         })
       }
     }
   }
-})
+});
 
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {

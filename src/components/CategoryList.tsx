@@ -140,13 +140,10 @@ export default function CategoryList({
                             justifyContent: 'center',
                             alignItems: 'center',
                             gap: 1,
-                            color: unlocked ? 'inherit' : 'neutral.400',
-                            bgcolor: category === activeCategory ? '#8dd96f !important' : '#d4ff99',
                             cursor: unlocked ? 'pointer' : 'not-allowed',
                             margin: "10px 10px 10px 15px",
                             boxShadow: "5px 5px black",
                             border: "1px solid black",
-                            '&:hover': { bgcolor: unlocked ? '#8dd96f !important' : 'danger.softBgHover'},
                         }}
                         >
                             {!unlocked && <LockSimple size={16}/>}
