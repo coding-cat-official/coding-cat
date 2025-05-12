@@ -55,6 +55,18 @@ const theme = extendTheme({
           }
         })
       }
+    },
+    JoyBox: {
+      styleOverrides: {
+        root: ({ ownerState, theme}) => ({
+          '&.parent-problemList': {
+            backgroundColor: '#feffed',
+            '&:hover': {
+              backgroundColor: '#d2d2d2',
+            }
+          },
+        })
+      }
     }
   }
 });

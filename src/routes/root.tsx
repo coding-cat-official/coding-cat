@@ -117,7 +117,7 @@ export default function App() {
                   session={session}
                 />
               </Box>
-              <Box sx={{ flex: 3}}>
+              <Box sx={{ flex: 3}} className="parent-problemList">
                 <ProblemList
                   selectedTab={selectedTab}
                   setSelectedTab={setSelectedTab}
