@@ -1,23 +1,50 @@
 import { Session } from "@supabase/supabase-js";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { Avatar, Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
+import { useOutletContext } from "react-router-dom";
 
-interface UserProps {
-  username: string
-  email: string
-  studentId: string
-  session: Session
-}
-
-export default function UserInfo({ username, email, studentId, session }: UserProps) {
+export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [name, setName] = useState(username);
-  const [id, setId] = useState(studentId);
+  const [name, setName] = useState("");
+  const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const { session } = useOutletContext<{ session: Session | null }>();
+
+  useEffect(() => {
+    let ignore = false;
+
+    (async function getProfile() {
+      setLoading(true);
+      if (!session) return;
+      const { user } = session;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`username, student_id`)
+        .eq('profile_id', user.id)
+        .single();
+
+      if (!ignore) {
+        if (error) {
+          alert(error.message);
+          console.warn(error);
+        } else if (data) {
+          setName(data.username);
+          setId(data.student_id);
+        }
+      }
+      setLoading(false);
+    })();
+
+    return () => {
+      ignore = true;
+    }
+  }, [session])
 
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
@@ -25,6 +52,7 @@ export default function UserInfo({ username, email, studentId, session }: UserPr
     setError("");
     setSuccess("");
     setLoading(true);
+    if (!session) return;
     const { user } = session;
 
     const updates = {
@@ -62,7 +90,7 @@ export default function UserInfo({ username, email, studentId, session }: UserPr
             />
             <FormLabel>Email</FormLabel>
             <Input
-              value={email}
+              value={session?.user.email}
               required
               disabled
             />
@@ -85,16 +113,16 @@ export default function UserInfo({ username, email, studentId, session }: UserPr
           </Stack>
         </form> :
         <>
-          <Avatar color="primary" size="lg">{username.charAt(0)}</Avatar>
+          <Avatar color="primary" size="lg">{name.charAt(0)}</Avatar>
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
-              <Typography level="h2">{username}</Typography>
+              <Typography level="h2">{name}</Typography>
               <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
                 <NotePencil size={23} />
               </IconButton>
             </Stack>
-            <Typography>{email}</Typography>
-            <Typography>#{studentId}</Typography>
+            <Typography>{session?.user.email}</Typography>
+            <Typography>#{id}</Typography>
             <Typography color="success">{success}</Typography>
           </Stack>
         </>

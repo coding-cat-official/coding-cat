@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Card, Stack, Typography } from '@mui/joy';
-import { BLANK_CONTRACT, Progress, Reflection, ContractData } from '../types';
+import { Progress, Reflection } from '../types';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import {
   ResponsiveContainer,
@@ -19,45 +19,11 @@ import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
 
 export default function Account({ session }: { session: Session }) {
-  const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [studentId, setStudentId] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    let ignore = false;
-    async function getProfile() {
-      setLoading(true);
-      const { user } = session;
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`username, student_id`)
-        .eq('profile_id', user.id)
-        .single();
-
-      if (!ignore) {
-        if (error) {
-          alert(error.message);
-          console.warn(error);
-        } else if (data) {
-          setUsername(data.username);
-          setStudentId(data.student_id);
-        }
-      }
-      setLoading(false);
-    }
-
-    getProfile();
-
-    return () => {
-      ignore = true;
-    }
-  }, [session])
 
   useEffect(() => {
     async function fetchProgress() {
@@ -114,10 +80,18 @@ export default function Account({ session }: { session: Session }) {
   return allDays;
 }, [activityStamps]);
 
+  if (error) {
+    return (
+      <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+        <Typography color="danger">Error fetching profile: {error}</Typography>
+      </Stack>
+    )
+  }
+
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
-        <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
+        <UserInfo />
         <Contract />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
