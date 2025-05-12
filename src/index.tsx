@@ -56,11 +56,17 @@ const theme = extendTheme({
           '&.problems': {
             backgroundColor: 'white',
             margin: '2px',
+            '&:nth-child(odd)': {
+              backgroundColor: '#fff0b8'
+            }
           },
           '&.problems.Mui-selected': {
               backgroundColor: '#dde7ee',
               border: '1px solid black',
-              fontWeight: '700'
+              fontWeight: '700',
+              '&:nth-child(odd)': {
+                backgroundColor: '#ffe293'
+            }
           }
         })
       }
