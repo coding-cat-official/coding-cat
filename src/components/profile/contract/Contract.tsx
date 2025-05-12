@@ -58,6 +58,12 @@ export default function Contract() {
     setLoading(false);
   }
 
+  if (loading) {
+    return (
+      <Typography>Loading...</Typography>
+    )
+  }
+
   return (
     <>
       <Stack alignItems="center">
