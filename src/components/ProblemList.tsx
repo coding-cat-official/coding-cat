@@ -1,11 +1,12 @@
-import { Chip, List, ListItem, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
+import { Chip, LinearProgress, List, ListItem, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
+import { getCompletedProblems } from '../utils/getCompletedProblems';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
@@ -21,8 +22,12 @@ interface ProblemListProps {
 export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
-
   
+  const completedProblems = useMemo(() => {
+    return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
+  }, [selectedTopic, progress]);
+    
+  const percentageCompleted = Math.round((completedProblems?.completed / completedProblems?.total) * 100);
 
   useEffect(() => {
     async function fetchProgress() {
@@ -57,8 +62,6 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return acc;
   }, {});
 
-  console.log(problemsByCategory)
-
   const solvedProblems = progress.filter((p) => {
     return p.passed_tests === p.total_tests;
   }).map((p) => p.problem_title);
@@ -79,9 +82,21 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     }
   }
 
+  if (error) {
+    return (
+      <Typography color="danger">Error fetching problems: {error}</Typography>
+    )
+  }
+
   return(
     <Stack gap={1}>
-      <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
+      <Stack pr={4} gap={1}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" >
+          <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{completedProblems?.total}</Typography>
+          <Typography level="h4">{percentageCompleted}%</Typography>
+        </Stack>
+        <LinearProgress sx={{ backgroundColor: "#D5D5D5" }} color="success" determinate value={percentageCompleted} size="lg" />
+      </Stack>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
