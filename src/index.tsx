@@ -52,22 +52,59 @@ const theme = extendTheme({
             '&:hover': {
               backgroundColor: '#d2d2d2',
             }
+          },
+          '&.problems': {
+            backgroundColor: 'white',
+            margin: '2px',
+          },
+          '&.problems.Mui-selected': {
+              backgroundColor: '#dde7ee',
+              border: '1px solid black',
+              fontWeight: '700'
           }
         })
       }
     },
-    JoyBox: {
+    JoyDialogContent: {
       styleOverrides: {
-        root: ({ ownerState, theme}) => ({
-          '&.parent-problemList': {
-            backgroundColor: '#feffed',
-            '&:hover': {
-              backgroundColor: '#d2d2d2',
-            }
-          },
-        })
+        root: {
+          backgroundColor: '#feffed',
+        }
       }
-    }
+    },
+    JoyDialogTitle: {
+      styleOverrides: {
+        root: {
+          '&.big-navbar': {
+            backgroundColor: '#feffed',
+            fontFamily: "Monomaniac One"
+          }
+        }
+      }
+    },
+    JoyStack: {
+      styleOverrides: {
+        root: {
+          '&.big-navbar': {
+            backgroundColor: '#feffed'
+          },
+          '&.stack-problemList': {
+            margin: '20px'
+          }
+        }
+      }
+    },
+    JoyTabPanel: {
+      styleOverrides: {
+        root: {
+          '&.tabPanel-problemList': {
+            padding: "0",
+            backgroundColor: '#feffed'
+          }
+        }
+      }
+    },
+
   }
 });
 
