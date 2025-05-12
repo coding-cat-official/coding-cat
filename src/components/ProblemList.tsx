@@ -80,8 +80,8 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   }
 
   return(
-    <Stack gap={1}>
-      <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
+    <Stack gap={1} className="stack-problemList">
+      <Typography level="h1" sx={{fontFamily: "Monomaniac One"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
@@ -93,13 +93,13 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             ))}
           </TabList>
           
-          <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}}>
+          <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}} className="tabPanel-problemList">
               <List>
                 { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
-                    <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
+                    <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
-                          <Typography>{p.meta.title}</Typography>
+                          <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
                           <Stack direction="row" gap={1}>
                             {
                               solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />

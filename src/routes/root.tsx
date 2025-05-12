@@ -93,9 +93,9 @@ export default function App() {
       />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
-            <DialogTitle level='h2'>
-              Problem List
+          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar">
+            <DialogTitle level='h1' className="big-navbar">
+              Coding Cat
             </DialogTitle>
             <Stack marginRight="5em" direction="row" gap={3}>
               <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
