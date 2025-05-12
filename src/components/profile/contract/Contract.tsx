@@ -108,7 +108,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
         {
           isUpdating ? 
           <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} /> :
-          <ContractText setIsUpdating={setIsUpdating} contract={contract} lastUpdated={lastUpdated} />
+          <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} />
         }
       </ModalDialog>
     </Modal>

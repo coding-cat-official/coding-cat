@@ -117,7 +117,7 @@ export default function UserInfo() {
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name}</Typography>
-              <IconButton onClick={() => {setIsUpdating(true); setSuccess("");}}>
+              <IconButton onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
                 <NotePencil size={23} />
               </IconButton>
             </Stack>

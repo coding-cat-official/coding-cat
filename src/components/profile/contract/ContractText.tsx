@@ -9,7 +9,6 @@ interface ContractTextProps {
 }
 
 export default function ContractText({ setIsUpdating, contract, lastUpdated }: ContractTextProps) {
-
   return (
     <>
       <Stack sx={{ overflowY: "scroll" }} gap={2}>
