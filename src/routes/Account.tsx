@@ -27,8 +27,6 @@ export default function Account({ session }: { session: Session }) {
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
   const [error, setError] = useState("");
-  const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -59,26 +57,6 @@ export default function Account({ session }: { session: Session }) {
     return () => {
       ignore = true;
     }
-  }, [session])
-
-  useEffect(() => {
-    async function fetchContract() {
-      const {data, error} = await supabase
-      .from('contracts')
-      .select('data, updated_at')
-      .eq('profile_id', session.user.id)
-      .order('updated_at', {ascending:false})
-      .limit(1)
-      .single()
-      
-      if(error){
-        console.error(error);
-      }else{
-        setContract(data.data as ContractData);
-        setLastUpdated(new Date(data.updated_at));
-      }
-    }
-    fetchContract()
   }, [session])
 
   useEffect(() => {
@@ -136,34 +114,11 @@ export default function Account({ session }: { session: Session }) {
   return allDays;
 }, [activityStamps]);
 
-async function handleContractSave() {
-  const now = new Date()
-  const {error, data } = await supabase
-  .from('contracts')
-  .upsert({
-    profile_id: session.user.id,
-    data: contract,
-    updated_at: now
-  })
-  .select('data, updated_at')
-  .single()
-  if(error){
-    console.error(error);
-  }
-  else {
-    setContract(data.data as ContractData);
-    setLastUpdated(new Date(data.updated_at));
-  }
-
-  setLoading(false);
-}
-  
-
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo username={username} email={session.user.email || ""} studentId={studentId} session={session} />
-        <Contract contract={contract} lastUpdated={lastUpdated} onSave={handleContractSave} setContract={setContract}/>
+        <Contract />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
