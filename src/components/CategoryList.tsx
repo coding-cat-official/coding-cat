@@ -127,7 +127,13 @@ export default function CategoryList({
                                 alert(hint)
                             }
                         }}
-                        className="categoryList-items"
+                        className={
+                            unlocked
+                            ? category === activeCategory
+                                ? 'category-active'
+                                : 'category-inactive'
+                            : 'category-locked'
+                        }
                         sx = {{
                             borderRadius: 'md', my: 1, py: 2, px: 2,
                             display: 'flex',

@@ -28,6 +28,22 @@ const theme = extendTheme({
           })
         })
       }
+    },
+    JoyListItemButton: {
+      styleOverrides: {
+        root : ({ownerState, theme}) => ({
+          '&.category-active': {
+            backgroundColor: '#8dd96f',
+            color: 'black',
+            cursor: 'pointer',
+            boxShadow: '5px 5px black',
+            border: '1px solid black',
+            '&:hover': {
+              backgroundColor: '#8dd96f'
+            }
+          }
+        })
+      }
     }
   }
 })
