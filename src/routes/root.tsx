@@ -139,6 +139,7 @@ export default function App() {
           height: "100%",
           justifyContent: "start",
           alignItems: "center",
+          overflowY: "scroll"
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
             <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
