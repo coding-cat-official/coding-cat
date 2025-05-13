@@ -95,6 +95,9 @@ const theme = extendTheme({
           },
           '&.stack-problemList': {
             margin: '20px'
+          },
+          '&.desktop-bar': {
+            backgroundColor: "#d4ff99"
           }
         }
       }
@@ -118,7 +121,7 @@ const theme = extendTheme({
           }
         }
       }
-    }
+    },
   }
 });
 
