@@ -94,7 +94,7 @@ export default function App() {
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar">
-            <DialogTitle level='h1' className="big-navbar">
+            <DialogTitle level='h1' className="big-navbar" sx={{ fontFamily: '"Press Start 2P", monospace', padding: "10px"}}>
               Coding Cat
             </DialogTitle>
             <Stack marginRight="5em" direction="row" gap={3}>
@@ -165,7 +165,7 @@ export default function App() {
           <Link to="/">
             <Box component="img" src={logo} sx={{ maxHeight: "80px" }}/>
           </Link>
-            <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+            <Typography  sx={{ fontFamily: '"Press Start 2P", monospace'}} level="h1">
               Coding Cat!
             </Typography>
         </Stack>

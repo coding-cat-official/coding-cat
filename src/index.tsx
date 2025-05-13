@@ -83,7 +83,6 @@ const theme = extendTheme({
         root: {
           '&.big-navbar': {
             backgroundColor: '#feffed',
-            fontFamily: "Monomaniac One"
           }
         }
       }
