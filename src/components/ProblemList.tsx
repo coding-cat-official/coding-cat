@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
-import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
+import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
+import { capitalizeString } from '../utils/capitalizeString';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
@@ -27,7 +28,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState("name");
 
-  const sortCategories = ["Name", "Completed", "Difficulty"];
+  const sortCategories = ["name", "completed", "difficulty"];
   
   const completedProblems = useMemo(() => {
     return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
@@ -123,11 +124,30 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             ))}
           </TabList>
 
-          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={2}>
+          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={1}>
             {
-              sortCategories.map((sc) => (
-                <Button variant="plain" onClick={() => handleSort(sc.toLowerCase())}>{sc}</Button>
-              ))
+              sortCategories.map((sc) => {
+                const active = orderBy === sc;
+
+                return <Button
+                  variant="plain"
+                  onClick={() => handleSort(sc)}
+                  color={active ? "primary" : "neutral"}
+                  endDecorator={
+                    <CaretDown size={20} opacity={ active ? 1 : 0 } />
+                  }
+                  sx={{
+                    width: "10em",
+
+                    "& svg": {
+                      transition: "0.2s",
+                      transform: active && order === "desc" ? "rotate(0deg)" : "rotate(180deg)"
+                    },
+
+                    "&:hover": { "& svg": { opacity: 1 } }
+                  }}
+                >{capitalizeString(sc)}</Button>
+              })
             }
           </Stack>
           
@@ -206,8 +226,8 @@ function sortByCompleted(a: Problem, b: Problem, solvedProblems: string[]) {
 }
 
 function sortByName(a: Problem, b: Problem) {
-  const nameA = a.meta.name.toLowerCase();
-  const nameB = b.meta.name.toLowerCase();
+  const nameA = a.meta.title.toLowerCase();
+  const nameB = b.meta.title.toLowerCase();
 
   if (nameA < nameB) return -1;
   if (nameA > nameB) return 1;
