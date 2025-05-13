@@ -170,7 +170,7 @@ export default function App() {
             </Typography>
         </Stack>
         
-        <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
+        <Box width="100%" height="100%">
           <Outlet context={{ setActiveProblem, session }} />
         </Box>
         
