@@ -127,13 +127,13 @@ export default function CategoryList({
                                 alert(hint)
                             }
                         }}
-                        className={
+                        className={[
                             unlocked
-                            ? category === activeCategory
-                                ? 'category-active'
-                                : 'category-inactive'
-                            : 'category-locked'
-                        }
+                            ? category === activeCategory ? 'category-active' : 'category-inactive'
+                            : 'category-locked',
+                            category === 'haystack' ? 'category-haystack' : '',
+                            category === 'mutation' ? 'category-mutation': ''
+                        ].join(' ')}
                         sx = {{
                             borderRadius: 'md', my: 1, py: 2, px: 2,
                             display: 'flex',
@@ -147,7 +147,7 @@ export default function CategoryList({
                         }}
                         >
                             {!unlocked && <LockSimple size={16}/>}
-                            <Typography>
+                            <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
                                 {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
                             </Typography>
                         </ListItemButton>
