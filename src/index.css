@@ -24,11 +24,6 @@ code {
   border: 3px solid #eef;
 }
 
-#root {
-  height: 100vh;
-  width: 100vw;
-}
-
 .mono {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
