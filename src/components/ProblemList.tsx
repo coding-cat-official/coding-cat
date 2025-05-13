@@ -81,7 +81,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
 
   return(
     <Stack gap={1} className="stack-problemList">
-      <Typography level="h1" sx={{fontFamily: "Silkscreen", fontWeight: "900"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
+      <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""}</Typography>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
