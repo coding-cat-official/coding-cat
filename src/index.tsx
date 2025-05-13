@@ -109,7 +109,16 @@ const theme = extendTheme({
         }
       }
     },
-
+    JoyInput: {
+      styleOverrides: {
+        root: {
+          '&.problemList-search': {
+            '&::before': {
+              border: '1.5px solid rgb(255, 217, 80)'}
+          }
+        }
+      }
+    }
   }
 });
 

@@ -94,15 +94,15 @@ export default function App() {
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar">
-            <DialogTitle level='h1' className="big-navbar" sx={{ fontFamily: '"Press Start 2P", monospace', padding: "10px"}}>
+            <DialogTitle level='h1' className="big-navbar" sx={{ fontFamily: '"Press Start 2P", monospace', padding: "10px", fontSize: "20pt"}}>
               Coding Cat
             </DialogTitle>
             <Stack marginRight="5em" direction="row" gap={3}>
-              <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
-                <Option value="all">All</Option>
-                <Option value="easy">Easy</Option>
-                <Option value="medium">Medium</Option>
-                <Option value="hard">Hard</Option>
+              <Select sx={{ width: "150px", fontWeight: "normal", fontFamily: "Silkscreen" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
+                <Option sx={{fontFamily: "Silkscreen"}} value="all">All</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="easy">Easy</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="medium">Medium</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="hard">Hard</Option>
               </Select>
               <CustomSearch query={query} setQuery={setQuery} placeholder="Search for exercises..." />
             </Stack>

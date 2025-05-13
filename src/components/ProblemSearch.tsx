@@ -13,7 +13,6 @@ export default function CustomSearch({ query, setQuery, placeholder }: SearchPro
     <Input
       sx={{
         '&::before': {
-          border: '1.5px solid var(--Input-focusedHighlight)',
           transform: 'scaleX(0)',
           left: '2.5px',
           right: '2.5px',
@@ -27,8 +26,10 @@ export default function CustomSearch({ query, setQuery, placeholder }: SearchPro
         '&:focus-within::before': {
           transform: 'scaleX(1)',
         },
-        fontWeight: "normal"
+        fontWeight: "normal",
+        fontFamily: "Silkscreen"
       }}
+      className="problemList-search"
       value={query}
       onChange={(e) => setQuery(e.target.value)}
       placeholder={placeholder}
