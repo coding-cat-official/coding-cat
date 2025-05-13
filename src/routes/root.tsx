@@ -12,6 +12,8 @@ import {List as ListIcon} from '@phosphor-icons/react';
 import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
 
+import whitePaw from '../assets/white_paw.webp';
+import whitePawHover from '../assets/white_paw_hover.webp';
 import logo from './coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
@@ -64,29 +66,26 @@ export default function App() {
 
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
-      <Box
-        sx={{
-          className: 'desktop-bar',
+      <Stack
+       sx={{
           width: '6em',
-          flex: 1,
-          backgroundColor: '#c8cada',
           cursor: 'pointer',
-          left: 0,
-          top: 0,
-          zIndex: 10,
-          display: 'flex',
-          alignItems: 'center',  // Center the arrow vertically
+          alignItems: 'center',
+          position: 'relative',
           '&::after': {
             content: '""',
-            display: 'block',
-            width: 0,
-            height: 0,
-            borderTop: '30px solid transparent',
-            borderBottom: '30px solid transparent',
-            borderLeft: '50px solid white', // Arrow color
-            marginLeft: '30px', // Position the arrow
-            paddingRight: '1em',
+            position: 'absolute',
+            top: '50%',
+            width: '70px',
+            height: '70px',
+            backgroundImage: `url(${whitePaw})`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
           },
+          '&:hover::after': {
+            backgroundImage: `url(${whitePawHover})`
+          }
         }}
         className="desktop-bar"
         onClick={() => setOpen(true)}
