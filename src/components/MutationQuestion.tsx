@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
-  const [numOfTableRows, setNumRows] = useState(1);
+  const [numOfTableRows, setNumRows] = useState(5);
   const [disabled, setDisabled] = useState(false);
 
   const maxNumberOfRows = 15;
@@ -13,24 +13,25 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   //The inputRows are 2D arrays since each row is a test and each test contains 
   //an array of inputs
   const [inputRows, setInputRows] = useState<string[][]>(
-    [ Array(inputCount).fill('') ]
+    Array.from({ length: 5 }, () => Array(inputCount).fill(''))
   );
   
   const [expectedRows, setExpectedRows] = useState<string[]>(
-    [ '' ]
+    Array(5).fill('')
   );
+  console.log('exp', expectedRows)
 
   useEffect(() => {
-    setNumRows(1)
-    setInputRows([ Array(inputCount).fill('') ])
-    setExpectedRows([''])
+    setNumRows(5)
+    setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
+    setExpectedRows(Array(5).fill(''))
   }, [inputCount, problem.meta.name])
 
   useEffect(() => {
     if (!code){
-      setNumRows(1)
-      setInputRows([ Array(inputCount).fill('') ])
-      setExpectedRows([''])
+      setNumRows(5)
+      setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
+      setExpectedRows(Array(5).fill(''))
       return;
     };
     
