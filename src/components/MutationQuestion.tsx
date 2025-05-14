@@ -30,7 +30,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     .slice(0, numOfTableRows)
     .some(row => row === "")
     
-  console.log('exp', expectedRows)
 
   useEffect(() => {
     setAttemptedRun(false);
@@ -214,7 +213,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                 {row?.solution?.equal != null
                   ? row.solution.equal
                     ? '✅'
-                    : '❌'
+                    : (typeof(row.solution.actual) == "string" ? row.solution.actual : '❌')
                   : ''}
               </td>
               <td>

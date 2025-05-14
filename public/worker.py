@@ -36,12 +36,27 @@ def test_mutation_function(solution, mutations, tests, function_name):
     if isinstance(tests, list) and tests and isinstance(tests[0], dict) and 'Input' in tests[0]:
         parsed_tests = []
         for row in tests:
-            inputs   = [ast.literal_eval(tok) for tok in row['Input']]
-            expected = [ast.literal_eval(row['Expected'])]
-            parsed_tests.append((inputs, expected, None))
+            try:
+                inputs   = [ast.literal_eval(tok) for tok in row['Input']]
+                expected = [ast.literal_eval(row['Expected'])]
+                parsed_tests.append((inputs, expected, None))
+            except SyntaxError as e:
+                tag = "__SYNTAX_ERROR__"
+                err = str(e)
+                parsed_tests.append((tag, err, row['Input']))
 
     report = []
     for inputs, expected, raw in parsed_tests:
+        if inputs == "__SYNTAX_ERROR__":
+            report.append({
+                "input": raw,
+                "expected": None,
+                "solution": {"inputs": raw, "actual": f"<syntax error: {expected}>", "equal": False},
+                "mutations": [{"index": i, "actual": "<skipped due to syntax error>", "equal": False}
+                      for i, _ in enumerate(mutation_functions)],
+            })
+            continue
+                
         entry = {
             "input": inputs if inputs is not None else raw,
             "expected": expected,
