@@ -39,11 +39,12 @@ def test_mutation_function(solution, mutations, tests, function_name):
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
 
-    if isinstance(tests, (list, tuple)):
-        parsed_tests = [
-            (test['input'], test['expected'], None)
-            for test in tests
-        ]
+    if isinstance(tests, list) and tests and isinstance(tests[0], dict) and 'Input' in tests[0]:
+        parsed_tests = []
+        for row in tests:
+            inputs   = [ast.literal_eval(tok) for tok in row['Input']]
+            expected = [ast.literal_eval(row['Expected'])]
+            parsed_tests.append((inputs, expected, None))
     else:
         parsed_tests = load_tests(tests)
 
