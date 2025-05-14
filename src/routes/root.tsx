@@ -82,6 +82,7 @@ export default function App() {
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
+            transform: 'rotate(-90deg)'
           },
           '&:hover::after': {
             backgroundImage: `url(${whitePawHover})`
