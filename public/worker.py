@@ -92,6 +92,13 @@ def respond_success(report):
 @bind(self, "message")
 def load_and_test_student_function(e):
     data = e.data
+    hints = { 
+        "TypeError": "You may be passing the wrong number or type of arguments to your function.",
+        "IndexError":  "Looks like you're accessing an index that doesn't exist – check your loops or indexing.",
+        "KeyError":    "You're trying to access a dictionary key that isn't there.",
+        "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
+        "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
+    }
     if data.get("question_type",[0]) == 'coding':
         try:
             student_function = load_student_function(data['code'], data['name'])
@@ -107,20 +114,15 @@ def load_and_test_student_function(e):
             for result in report:
                 if result["error"]:
                     err_type, err_msg = result["error"].split(":", 1)
+                    
+                    hint = hints.get(err_type.strip())
                     return respond_failure(
-                        f"{err_type.strip()} while running your code on {report['input']}: {err_msg.strip()}\n\n"
+                        f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}\n\n"
+                        f"Tip: {hint}"
                     )
             
         except Exception as e:
             err_type = type(e).__name__ 
-            hints = { 
-                "TypeError": "You may be passing the wrong number or type of arguments to your function.",
-                "IndexError":  "Looks like you're accessing an index that doesn't exist – check your loops or indexing.",
-                "KeyError":    "You're trying to access a dictionary key that isn't there.",
-                "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
-                "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
-            }
-
             hint = hints.get(err_type)
 
             return respond_failure(
