@@ -1,10 +1,11 @@
 import { List, ListItemButton, Typography } from '@mui/joy'
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { Problem, Progress } from '../types';
 import { LockSimple } from '@phosphor-icons/react';
+import CategoryLock from '../utils/CategoryLock';
 
 export interface CategoryListProps {
     searchedProblems: Problem[];
@@ -29,7 +30,6 @@ export default function CategoryList({
 
     categories.push("mutation", "haystack");
 
-
     useEffect(() => {
         async function fetchProgress() {
             if (!session) return;
@@ -52,61 +52,21 @@ export default function CategoryList({
         fetchProgress();
     }, [session])
 
-    function getHint(category: string) {
-        if(!session && category !== "Fundamentals") {
-            return "Log in to continue learning.";
-        }
-        switch (category) {
-          case "Logic": {
-            const done = solved["Fundamentals"] || 0;
-            const need = Math.max(0, 5 - done);
-            return `Complete ${need} more Fundamentals problem${need !== 1 ? "s" : ""} to unlock Logic.`;
-          }
-          case "String-1": {
-            const done = solved["Logic"] || 0;
-            const need = Math.max(0, 5 - done);
-            return `Complete ${need} more Logic problem${need !== 1 ? "s" : ""} to unlock String-1.`;
-          }
-          case "List-1: Indexing": {
-            const done = solved["Logic"] || 0;
-            const need = Math.max(0, 5 - done);
-            return `Complete ${need} more Logic problem${need !== 1 ? "s" : ""} to unlock List-1.`;
-          }
-          case "String-2":
-          case "List-2: Iterating": {
-            const done1 = solved["String-1"] || 0;
-            const done2 = solved["List-1: Indexing"] || 0;
-            const need1 = Math.max(0, 5 - done1);
-            const need2 = Math.max(0, 5 - done2);
-            return `Complete ${need1} more String-1 and ${need2} more List-1 problems to unlock ${category}.`;
-          }
-          default:
-            return "Keep going!";
-        }
-    }
+    const categoryLock = useMemo(() => new CategoryLock(progress), [progress]);
 
-    const solved: Record<string, number> = {}
-    for (let problem of progress) {
-        const key = problem.category;
-        solved[key] = problem.completed
-    }
-
-    function getUnlocked(category: string) {
-        if (!session) {
-            return category === "Fundamentals"
-        }
+    function mapCategoryToLock(category: string) {
         switch(category) {
-            case "Fundamentals": return true 
-            case "Logic": return (solved["Fundamentals"] || 0) >= 0
-            case "String-1": return (solved["Logic"] || 0) >= 0
-            case "List-1: Indexing": return  (solved["Logic"] || 0) >= 0
-            case "String-2": return (solved["List-1: Indexing"] || 0) >= 0 && (solved["String-1"] || 0) >= 0
-            case "List-2: Iterating": return (solved["List-1: Indexing"] || 0) >= 0 && (solved["String-1"] || 0) >= 0
-            case "List-3: Complex Loop": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
-            case "String-3": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
-            case "mutation": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
-            case "haystack": return (solved["List-2: Iterating"] || 0) >= 0 && (solved["String-2"] || 0) >= 0
-            default: return false
+            case "Fundamentals": return categoryLock.fundamentals
+            case "Logic": return categoryLock.logic
+            case "String-1": return categoryLock.string_1
+            case "String-2": return categoryLock.string_2
+            case "String-3": return categoryLock.string_3
+            case "List-1: Indexing": return categoryLock.list_1
+            case "List-2: Iterating": return categoryLock.list_2
+            case "List-3: Complex Loop": return categoryLock.list_3
+            case "Mutation": return categoryLock.mutation
+            case "Haystack": return categoryLock.haystack
+            default: return categoryLock.fundamentals
         }
     }
 
@@ -120,8 +80,9 @@ export default function CategoryList({
         <List component="nav" sx={{ py: 2}}>
             {categories.sort((a,b) => a.localeCompare(b)).map(category => {
                 const summary = progress.find(p => p.category === category) ?? progress.find(p => p.question_type === category)
-                const unlocked = getUnlocked(category)
-                const hint = getHint(category)
+                const lock = mapCategoryToLock(category);
+                const unlocked = lock.isUnlocked();
+
                 return (
                     <ListItemButton 
                         key = {category}
@@ -130,7 +91,7 @@ export default function CategoryList({
                             if(unlocked){
                                 onSelectCategory(category)
                             } else {
-                                alert(hint)
+                                lock.hint();
                             }
                         }}
                         sx = {{
