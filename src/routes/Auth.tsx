@@ -1,12 +1,19 @@
 import { FormEvent, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
+import { Navigate, useOutletContext } from 'react-router-dom';
+import { Session } from '@supabase/supabase-js';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { session } = useOutletContext<{ session: Session | null }>();
+
+  if (session) {
+    return <Navigate to="/profile" />
+  }
 
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();

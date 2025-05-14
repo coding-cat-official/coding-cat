@@ -3,11 +3,13 @@
 }
 
 html {
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 
 body {
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
   margin: 0 0.5em;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -23,7 +25,8 @@ code {
 }
 
 #root {
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 
 .mono {
@@ -44,6 +47,98 @@ code {
   right: 0;
 }
 
+/* Animation CSS from https://stackoverflow.com/a/26937037 */
+
+@-o-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffffac; }
+  100% { background-color: #FFFFFF; }
+}
+@keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffffac; }
+  100% { background-color: #FFFFFF; }
+}
+
+.backgroundAnimated{    
+  background-image:none !important; 
+  -o-animation: fadeIt 1.2s ease-in-out; 
+  animation: fadeIt 1.2s ease-in-out; 
+}
+
+.mutation-table thead tr{
+  border-bottom: 4px solid black;
+  background-color: rgb(18, 148, 160);
+}
+
+.mutation-table tr:nth-child(odd) td{
+  background-color: rgb(131, 218, 225);
+}
+
+.mutation-table td{
+  text-align: center;
+  padding: 10px;
+}
+
+.mutation-table th{
+  padding: 20px 0;
+}
+
+.mutation-results{
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+table input{
+  max-width: 100px;
+  height: 30px;
+  font-size: 14pt;
+  text-align: center;
+}
+
+.MuiButton-root.add-mutation-button{
+  background-color: white;
+  border: 1px solid black;
+}
+
+.MuiButton-root.add-mutation-button:hover{
+  background-color: antiquewhite;
+}
+
+.MuiCard-root.main-tutorial{
+  margin: 20px 100px;
+  min-width: 500px;
+  max-width: 1000px;
+  padding: 20px 50px;
+}
+
+.tutorial-icons{
+  position: absolute;
+  bottom: 130px;  
+}
+
+.tutorial-icons button{
+  border: 1px solid black;
+  color: black;
+  background-color: white;
+}
+
+.MuiBox-root.navigate-problem-btn{
+  display: flex; 
+  width: 100%;
+  justify-content: space-between; 
+  padding: 0 5px; 
+  margin-top: 5px !important;
+  cursor: pointer;
+} 
+
+[aria-disabled="true"]{
+  color: grey;
+  cursor: not-allowed;
+}
 
 @media (max-width: 1024px){
   .problem-ide-editor div{

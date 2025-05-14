@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react' ;
+import { useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ import CategoryList from '../components/CategoryList';
 
 import logo from './coding-cat.png';
 import ProblemList from '../components/ProblemList';
-import ProblemSearch from '../components/ProblemSearch';
+import CustomSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -24,10 +24,28 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
+  const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
+    const [selectedTab, setSelectedTab] = useState("");
+
+  let newDifficulty = difficulty;
+  if (newDifficulty === "all") newDifficulty = "";
+
+  const filteredProblems = useMemo(() => {
+    return problems.filter(problem => {
+      return problem.meta.title.toLowerCase().includes(query.toLowerCase().trim()) &&
+        problem.meta.difficulty.includes(newDifficulty);
+    });
+  }, [problems, query, newDifficulty])
+
+  useEffect(() => {
+    setSearchedProblems(filteredProblems);
+  }, [filteredProblems])
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
+    if(category === "mutation") setSelectedTab("List")
+    if(category === "coding") setSelectedTab("")
   }
 
   function handleSelectedProblem(name: string){
@@ -44,37 +62,35 @@ export default function App() {
     });
   }, []);
 
-  return <Box sx={{ height: '100%'}}>
-    
-    
-    <Box sx={{ display:'flex', minHeight: "100%", flex: 1}}>
-    <Box
-      sx={{
-        className: 'desktop-bar',
-        width: '6em',
-        flex: 1,
-        backgroundColor: '#c8cada',
-        cursor: 'pointer',
-        left: 0,
-        top: 0,
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',  // Center the arrow vertically
-        '&::after': {
-          content: '""',
-          display: 'block',
-          width: 0,
-          height: 0,
-          borderTop: '30px solid transparent',
-          borderBottom: '30px solid transparent',
-          borderLeft: '50px solid white', // Arrow color
-          marginLeft: '30px', // Position the arrow
-          paddingRight: '1em',
-        },
-      }}
-      className="desktop-bar"
-      onClick={() => setOpen(true)}
-    />
+  return (
+    <Box sx={{ display:'flex', height: "100%", flex: 1}}>
+      <Box
+        sx={{
+          className: 'desktop-bar',
+          width: '6em',
+          flex: 1,
+          backgroundColor: '#c8cada',
+          cursor: 'pointer',
+          left: 0,
+          top: 0,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',  // Center the arrow vertically
+          '&::after': {
+            content: '""',
+            display: 'block',
+            width: 0,
+            height: 0,
+            borderTop: '30px solid transparent',
+            borderBottom: '30px solid transparent',
+            borderLeft: '50px solid white', // Arrow color
+            marginLeft: '30px', // Position the arrow
+            paddingRight: '1em',
+          },
+        }}
+        className="desktop-bar"
+        onClick={() => setOpen(true)}
+      />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
@@ -88,27 +104,29 @@ export default function App() {
                 <Option value="medium">Medium</Option>
                 <Option value="hard">Hard</Option>
               </Select>
-              <ProblemSearch query={query} setQuery={setQuery} />
+              <CustomSearch query={query} setQuery={setQuery} placeholder="Search for exercises..." />
             </Stack>
           </Stack>
         <DialogContent>
-          <Box sx={{ display: 'flex', overflow: 'hidden', }}>
+          <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
                 <CategoryList
-                  problems={problems}
+                  searchedProblems={searchedProblems}
                   activeCategory={activeCategory}
                   onSelectCategory={handleSelectedCategory}
+                  session={session}
                 />
               </Box>
-              <Box sx={{ flex: 3, overflowY: 'auto' }}>
+              <Box sx={{ flex: 3}}>
                 <ProblemList
-                  problems={problems}
+                  selectedTab={selectedTab}
+                  setSelectedTab={setSelectedTab}
+                  searchedProblems={searchedProblems}
                   selectedTopic={activeCategory}
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
-                  searchQuery={query}
-                  difficulty={difficulty}
+                  session={session}
                 />
               </Box>
             </Box>
@@ -144,17 +162,21 @@ export default function App() {
           </Stack>
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
-          <Box component="img" src={logo} sx={{ maxHeight: "80px" }} onClick={() => setOpen(true)}/>
-          <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
-            Coding Cat!
-          </Typography>
+          <Link to="/">
+            <Box component="img" src={logo} sx={{ maxHeight: "80px" }}/>
+          </Link>
+            <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+              Coding Cat!
+            </Typography>
         </Stack>
-        <Outlet context={{ setActiveProblem, session }} />
+        
+        <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
+          <Outlet context={{ setActiveProblem, session }} />
+        </Box>
         
       </Stack>
     </Box>
-  </Box>
-};
+)};
 
 export async function problemListLoader(): Promise<Problem[]> {
     return problems as Problem[];

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useOutletContext } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -7,11 +7,17 @@ import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
-import {Button, Stack, Sheet, Box, Typography, Table} from '@mui/joy';
-import ResizableEditor from '../components/ResizableEditor';
+import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
+
+import ReflectionInput from '../components/ReflectionInput';
+import CodingQuestion from '../components/CodingQuestion';
+import MutationQuestion from '../components/MutationQuestion';
+import { reflectionQuestions } from '../utils/questions';
+import Tutorial from '../components/MutationTutorial';
+import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -44,17 +50,49 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
-    const [fontSize, setFontSize] = useState(14);
+    const [hidePrompt, setHidePrompt] = useState(true);
+    const [question, setQuestion] = useState("");
+    const reflectionInput = useRef<HTMLElement>(null);
+    const [isTourOpen, setTourOpen] = useState(false);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    
+    const navigate = useNavigate();
+
+    const currCategoryProblems = () => {
+      const questionType = problem.meta.question_type[0];
+      if(questionType.includes("mutation") || questionType.includes("haystack")){
+        return problems.filter(p => p.meta.question_type.includes(questionType))
+      }
+      else{
+        return problems.filter(p => {
+          const questionType = p.meta.question_type[0];
+          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
+          return p.meta.category === problem.meta.category && !exclude;
+        })
+      }
+    };
+
+    const currProblems = currCategoryProblems();
+    const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
+
 
     useEffect(() => {
       setActiveProblem(problem.meta.name);
-    }, [setActiveProblem, problem.meta.name]);
+      setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
+    }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session);
-    
+
+    useEffect(() => {
+      if (!evalResponse) setHidePrompt(true);
+
+      if (evalResponse?.status === "success") {
+        setHidePrompt(false);
+      }
+    }, [evalResponse]);
+
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
     useEffect(() => {
@@ -66,7 +104,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         .from('submissions')
         .select('code')
         .eq('profile_id', session.user.id)
-        .eq('problem_title', problem.meta.title)
+        .eq('problem_title', problem.meta.name)
         .order('submitted_at', { ascending: false})
         .limit(1);
 
@@ -78,9 +116,23 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         }
         
         if (json){
-          setCode(json.code);
+          if (problem.meta.question_type[0] === 'mutation') {
+            setCode(json.code);
+          } else {
+            const stored = json.code;
+            setCode(
+              typeof stored === 'object' && stored !== null && 'code' in stored
+                ? (stored as any).code
+                : (stored as string)
+            );
+          }
         } else {
-          setCode(problem.starter);
+          if(problem.meta.question_type[0] === 'coding'){
+            setCode(problem.starter || '');
+          }
+          else{
+            setCode('');
+          }
         }
         hasFetchedProblems.current.add(problem.meta.name);
       }
@@ -93,49 +145,89 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCode(e ?? '')
     }
 
-    function increaseFontSize() {
-      if (fontSize < 30) setFontSize(fontSize + 4);
+
+    function handlePreviousProblem(){
+      if(currIndex > 0){
+        const prevProblem = currCategoryProblems()[currIndex-1].meta.name;
+        setCurrIndex(currIndex-1);
+        navigate(`/problems/${prevProblem}`)
+      }
     }
 
-    function decreaseFontSize() {
-      if (fontSize > 10) setFontSize(fontSize - 4);
+    function handleNextProblem(){ 
+      if(currIndex < currCategoryProblems().length - 1){
+        const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
+        setCurrIndex(currIndex+1);
+        navigate(`/problems/${nextProblem}`)
+      }
     }
+
+    function generateQuestion() {
+      let questionList = reflectionQuestions.success;
+
+      if (evalResponse?.status === "success") {
+        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
+  
+        if (!result) questionList = reflectionQuestions.fail;
+      }
+
+      const rand = Math.floor(Math.random() * questionList.length);
+      const question = questionList[rand];
+
+      setQuestion(question);
+
+      setTimeout(() => {
+        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100)
+    }
+
+    let author = problem.meta.author;
+    if (author.toLowerCase() === "chatgpt") author = "";
 
     return (
-      <Stack sx={{ width: "80%",p: 1, display:"flex", }} className="problem-container" direction="row" spacing={2} alignItems="flex-start">
-        <Stack sx={{ flex: 4, width: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-          <Sheet sx={{ border: 1, borderRadius: 3, m: 3, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "100%", height:"610px", overflowY: "scroll" }} className="hello">
+      <Stack sx={{ width: "100%", height: "100%", p: 3 }} className="problem-container" direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
+        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "99%", height:"100%", overflowY: "auto", scrollbarWidth: "thin" }} className="hello">
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
-              <Typography level="title-lg">{problem.meta.title}</Typography>
-              <Markdown>
-                {problem.description}
-              </Markdown>
+              <Box>
+                <Typography level="title-lg">{problem.meta.title}</Typography>
+                { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
+              </Box>
+
+              <Box sx={{display:"flex", alignItems: "flex-end"}}>
+                <Markdown>
+                  {problem.description}
+                </Markdown>
+                {problem.meta.question_type[0] === 'coding' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+              </Box>
             </Box>
-      
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end", gap: 1 }}>
-              <Button onClick={decreaseFontSize}>A-</Button>
-              <Button onClick={increaseFontSize}>A+</Button>
-            </Box>
-      
-            <ResizableEditor code={code} fontSize={fontSize} changeCode={changeCode}/>
-      
-            <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
-              <Button sx={{ flex: 4 }} onClick={() => runCode(code)}>Run</Button>
-              <Button
-                sx={{ flex: 1 }}
-                variant="outlined"
-                onClick={() => changeCode(problem.starter)}
-                disabled={code === problem.starter}
-              >
-                Reset
-              </Button>
-            </Box>
+            { problem.meta.question_type[0] === 'coding' ?
+              (
+                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
+              ) : ( 
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} generateQuestion={generateQuestion}/>
+              )
+            }
           </Sheet>
+          <Box className="navigate-problem-btn">
+            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
+            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
+          </Box>
         </Stack>
       
-        <Box sx={{ flex: 2, display: "flex", alignItems: "flex-start" }} className="results-container">
-          {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-        </Box>
+          <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+            { 
+              problem.meta.question_type[0] === 'coding' ? (
+                <Box flex={1} width="100%">
+                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+                </Box>
+              ) : <></>
+            }
+            <Box ref={reflectionInput} flex={1} width="100%">
+              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+            </Box>
+        </Stack>
+        
       </Stack>
     
     );
@@ -145,44 +237,52 @@ interface ReportProps {
   evalResponse: EvalResponse | null;
 }
 
-const Report: React.FC<ReportProps> = ({ evalResponse }: ReportProps) => {
+function Report({ evalResponse }: ReportProps) {
   if (null === evalResponse) return null;
-  if ('failure' === evalResponse.status)
-    return <Stack direction="column">
-      <Typography> Uh-oh... There was a problem with your submission. </Typography>
-      <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
-    </Stack>;
-  if ('success' === evalResponse.status)
-    return <Box sx={{ border: 1, borderRadius: 3}} >
+
+  if ('failure' === evalResponse.status) {
+    return (
       <Stack direction="column">
-        <Typography sx={{ p: 2, borderBottom: 1 }} level="h4"> Results </Typography>
-        <Table>
-          <thead>
-          <tr>
-            <th> Input </th>
-            <th> Expected output </th>
-            <th> Your output </th>
-          </tr>
-          </thead>
-          <tbody>
-          { evalResponse.report.map((r, i) =>
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono"> {r.input} </td>
-                <td className="mono"> {r.expected} </td>
-                <td className="mono"> {r.actual} </td>
-              </tr>)
-          }
-          </tbody>
-        </Table>
-        { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
-          ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
-              <Typography sx={{ p: 2 }} level='body-lg'>
-                Bravo {ALL_TESTS_PASSED} You completed this problem!
-              </Typography>
-            </Box>
-          : null }
+        <Typography> Uh-oh... There was a problem with your submission. </Typography>
+        <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
       </Stack>
-    </Box>;
+    )
+  }
+
+  if ('success' === evalResponse.status) {
+    return (
+      <Box sx={{ border: 2, borderRadius: 10}} >
+        <Stack direction="column">
+          <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
+          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
+            <thead>
+            <tr>
+              <th> Input </th>
+              <th> Expected output </th>
+              <th> Your output </th>
+            </tr>
+            </thead>
+            <tbody>
+            { evalResponse.report.map((r, i) =>
+                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                  <td className="mono"> {r.input} </td>
+                  <td className="mono"> {r.expected} </td>
+                  <td className="mono"> {r.actual} </td>
+                </tr>)
+            }
+            </tbody>
+          </Table>
+          { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
+            ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
+                <Typography sx={{ p: 2 }} level='body-lg'>
+                  Bravo {ALL_TESTS_PASSED} You completed this problem!
+                </Typography>
+              </Box>
+            : null }
+        </Stack>
+      </Box>
+    ) 
+  }
 
   return <p> If this text appears, it&apos;s a bug :^) </p>;
 };

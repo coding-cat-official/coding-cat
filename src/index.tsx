@@ -13,6 +13,7 @@ import ErrorPage from './error';
 
 import Auth from './routes/Auth'
 import AccountWrapper from './routes/AccountWrapper';
+import MainTutorial from './components/MainTutorial';
 
 const theme = extendTheme({
   components: {
@@ -37,14 +38,7 @@ declare module "@mui/joy/Drawer" {
   }
 } 
 
-function EmptyChild() {
-  return <div>
-    <p> Select a problem on the left to begin! </p>
-  </div>;
-}
 
-const userId = window.location.pathname.split('/')[1];
-const basename = userId ? `/${userId}` : '/';
 const router = createHashRouter([
   {
     path: "/",
@@ -54,7 +48,7 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <EmptyChild />,
+        element: <MainTutorial/>,
       },
       {
         path: "/problems/:problemName",
@@ -73,7 +67,7 @@ const router = createHashRouter([
   },
 ],
 {
-  basename: basename,
+  basename: '/',
 }
 );
 
