@@ -105,7 +105,7 @@ def load_and_test_student_function(e):
         "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
         "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
     }
-    if data.get("question_type",[0]) == 'coding':
+    if data.get("question_type", None) == 'coding':
         try:
             student_function = load_student_function(data['code'], data['name'])
         except Exception as e:
@@ -135,16 +135,18 @@ def load_and_test_student_function(e):
                 f"{err_type} while running your code: {e}\n\n"
                 f"Tip: {hint}"        
             )
-    else:
+    elif data.get("question_type", None) == "mutation":
         try:
-            solution_code   = data["solution"]
+            solution_code = data["solution"]
             mutation_codes = data.get("mutations", [])
             tests = data.get("code","")
-            function_name    = data["name"]     
+            function_name = data["name"]     
             report = test_mutation_function(solution_code, mutation_codes, tests, function_name)
         except Exception as ex:
             return respond_failure(f"{type(ex).__name__} in mutation harness: {ex}")
         return respond_success(report)
+    else:
+        return respond_failure("Question type not supported.")
 
     print(report)
 
