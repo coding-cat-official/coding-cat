@@ -68,7 +68,7 @@ code {
   background-color: rgb(18, 148, 160);
 }
 
-.mutation-table tr:nth-child(odd) td{
+.mutation-table tr:nth-of-type(odd) td{
   background-color: rgb(131, 218, 225);
 }
 

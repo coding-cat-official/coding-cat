@@ -117,7 +117,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           <TabList>
             {Object.keys(problemsByCategory).sort().map((type) => (
                type ?
-                <Tab key={type} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
+                <Tab key={`${type}-${selectedTab}`} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
                 {type}
               </Tab> : <></>
             ))}

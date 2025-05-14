@@ -41,7 +41,7 @@ export const theme = extendTheme({
           '&.problems': {
             backgroundColor: 'white',
             margin: '2px',
-            '&:nth-child(odd)': {
+            '&:nth-of-type(odd)': {
               backgroundColor: '#fff0b8'
             }
           },
@@ -49,7 +49,7 @@ export const theme = extendTheme({
               backgroundColor: '#dde7ee',
               border: '1px solid black',
               fontWeight: '700',
-              '&:nth-child(odd)': {
+              '&:nth-of-type(odd)': {
                 backgroundColor: '#ffe293'
             }
           }
