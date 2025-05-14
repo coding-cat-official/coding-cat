@@ -116,7 +116,16 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         }
         
         if (json){
-          setCode(json.code);
+          if (problem.meta.question_type[0] === 'mutation') {
+            setCode(json.code);
+          } else {
+            const stored = json.code;
+            setCode(
+              typeof stored === 'object' && stored !== null && 'code' in stored
+                ? (stored as any).code
+                : (stored as string)
+            );
+          }
         } else {
           if(problem.meta.question_type[0] === 'coding'){
             setCode(problem.starter || '');
