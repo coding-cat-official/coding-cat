@@ -13,6 +13,11 @@ interface ContractEditProps {
 
 export default function ContractEdit({ setIsUpdating, contract, setContract, onSave, featureMap }: ContractEditProps) {
   const categories = useMemo(() => getCategoryList(), []);
+  const baseCategories = ["Fundamentals", "Logic", "String-1", "List-1: Indexing"];
+  const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
+  const categoriesToEdit = featureMap["CodingStage2"]
+     ? allCategories
+     : baseCategories.filter((c) => allCategories.includes(c));
 
   return (
     <>
@@ -21,7 +26,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
         <Stack direction="row" alignItems="center" gap={2}>
           <Typography>What grade do you want to get?</Typography>
           <Select placeholder="Grade" value={contract.Coding.gradeWanted}
-            onChange={(_, v) =>                          // ← v is the new string
+            onChange={(_, v) =>                          
               setContract(c => ({
                 ...c,
                 Coding: { ...c.Coding, gradeWanted: v as string },
@@ -35,7 +40,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
         <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
         <Stack justifyContent="center" direction="row" columnGap={20} rowGap={2} flexWrap="wrap">
           {
-            categories.map((c) => {
+            categoriesToEdit.map((c) => {
               return (
                 <Stack direction="row" alignItems="center" gap={2}>
                   <Typography>{c}: </Typography>

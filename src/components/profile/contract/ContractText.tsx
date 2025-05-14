@@ -10,6 +10,12 @@ interface ContractTextProps {
 }
 
 export default function ContractText({ setIsUpdating, contract, lastUpdated, featureMap }: ContractTextProps) {
+  const baseCategories = ["Fundamentals", "Logic", "String-1", "List-1: Indexing"];
+  const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
+  const categoriesToShow = featureMap["CodingStage2"]
+   ? allCategories
+   : baseCategories.filter((c) => allCategories.includes(c));
+   
   return (
     <>
       <Stack sx={{ overflowY: "scroll"}} gap={2}>
@@ -17,13 +23,11 @@ export default function ContractText({ setIsUpdating, contract, lastUpdated, fea
         <Typography>What grade do you want to get? <strong>{contract.Coding.gradeWanted}</strong></Typography>
         <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
         <Stack direction="row" flexWrap="wrap" columnGap={4} rowGap={2} justifyContent="center">
-          {Object.entries(contract.Coding.problemsToSolveByCategory).map(
-            ([cat, count]) => (
-              <Typography key={cat}>
-                {cat}: <strong>{count}</strong>
-              </Typography>
-            )
-          )}
+          {categoriesToShow.map((cat) => (
+            <Typography key={cat}>
+              {cat}: <strong>{contract.Coding.problemsToSolveByCategory[cat]}</strong>
+            </Typography>
+          ))}
           </Stack>
         <Typography>
           Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
