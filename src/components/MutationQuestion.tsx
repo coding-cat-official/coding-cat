@@ -91,13 +91,12 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
 
   //Formatting the inputs and output so that the runCode is able to use them
   const handleRun = () => {
-    const payload = inputRows
-    .slice(0, numOfTableRows)
-    .map((rowInputs, i) =>
-      `${rowInputs.join('|')};${expectedRows[i]}`)
-    .join('\n');
-    setCode(payload);
-    runCode(payload);
+    const payload = inputRows.slice(0, numOfTableRows).map((rowInputs, i) => ({
+      input:    rowInputs.map(tok => JSON.parse(tok)),
+      expected: JSON.parse(expectedRows[i]),
+    }))
+    setCode(payload);        
+    runCode(payload);        
 
     generateQuestion();
 
