@@ -93,7 +93,7 @@ export default function App() {
       />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar">
+          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{alignItems: "center"}}>
             <DialogTitle level='h1' className="big-navbar" sx={{ fontFamily: '"Silkscreen", monospace', padding: "5px", fontSize: "30pt"}}>
               Coding Cat
             </DialogTitle>
@@ -133,6 +133,7 @@ export default function App() {
         </DialogContent>
       </Drawer>
       <Stack
+        className= 'main'
         direction="column"
         sx={{
           width: '100%',
