@@ -42,7 +42,7 @@ export default class CategoryLock {
     const categoryName = "Logic";
 
     const required = {
-      "Fundamentals": 5
+      "Fundamentals": 0
     };
 
     const prereqSolved = {
@@ -56,7 +56,7 @@ export default class CategoryLock {
     const categoryName = "String-1";
 
     const required = {
-      "Logic": 5
+      "Logic": 0
     };
 
     const prereqSolved = {
@@ -70,7 +70,7 @@ export default class CategoryLock {
     const categoryName = "List-1: Indexing";
 
     const required = {
-      "Logic": 5
+      "Logic": 0
     };
 
     const prereqSolved = {
@@ -84,8 +84,8 @@ export default class CategoryLock {
     const categoryName = "String-2";
 
     const required = {
-      "String-1": 5,
-      "List-1": 5
+      "String-1": 0,
+      "List-1": 0
     };
 
     const prereqSolved = {
@@ -100,8 +100,8 @@ export default class CategoryLock {
     const categoryName = "List-2: Iterating";
 
     const required = {
-      "List-1: Indexing": 5,
-      "String-1": 5
+      "List-1: Indexing": 0,
+      "String-1": 0
     };
 
     const prereqSolved = {
@@ -116,8 +116,8 @@ export default class CategoryLock {
     const categoryName = "List-3: Complex Loop";
 
     const required = {
-      "List-2: Iterating": 5,
-      "String-2": 5
+      "List-2: Iterating": 0,
+      "String-2": 0
     };
 
     const prereqSolved = {
@@ -132,8 +132,8 @@ export default class CategoryLock {
     const categoryName = "String-3";
 
     const required = {
-      "List-2: Iterating": 5,
-      "String-2": 5
+      "List-2: Iterating": 0,
+      "String-2": 0
     };
 
     const prereqSolved = {
@@ -148,8 +148,8 @@ export default class CategoryLock {
     const categoryName = "Mutation";
 
     const required = {
-      "List-2: Iterating": 5,
-      "String-2": 5
+      "List-2: Iterating": 0,
+      "String-2": 0
     };
 
     const prereqSolved = {
@@ -164,8 +164,8 @@ export default class CategoryLock {
     const categoryName = "Haystack";
 
     const required = {
-      "List-2: Iterating": 5,
-      "String-2": 5
+      "List-2: Iterating": 0,
+      "String-2": 0
     };
 
     const prereqSolved = {
