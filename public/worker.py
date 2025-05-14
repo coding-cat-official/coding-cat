@@ -29,22 +29,6 @@ def test_student_function(student_function, tests):
             })
     return report
 
-def load_tests(tests_str: str):
-    parsed = []
-    for line in tests_str.strip().splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            left, right = line.split(";", 1)
-            inputs   = [ast.literal_eval(tok) for tok in left.split("|") if tok.strip()]
-            expected = [ast.literal_eval(tok) for tok in right.split("|") if tok.strip()]
-        except Exception:
-            parsed.append((None, None, line))
-            continue
-        parsed.append((inputs, expected, line))
-    return parsed
-
 def test_mutation_function(solution, mutations, tests, function_name):
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
@@ -55,8 +39,6 @@ def test_mutation_function(solution, mutations, tests, function_name):
             inputs   = [ast.literal_eval(tok) for tok in row['Input']]
             expected = [ast.literal_eval(row['Expected'])]
             parsed_tests.append((inputs, expected, None))
-    else:
-        parsed_tests = load_tests(tests)
 
     report = []
     for inputs, expected, raw in parsed_tests:
