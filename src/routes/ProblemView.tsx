@@ -185,7 +185,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     if (author.toLowerCase() === "chatgpt") author = "";
 
     return (
-      <Stack sx={{ width: "100%", height: "100%", p: 3 }} className="problem-container" direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
+      <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
         <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
           <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%"}}>
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>

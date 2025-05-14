@@ -39,7 +39,7 @@ code {
 
 
 .MuiBox-root.account-btns{
-  position: absolute;
+  position: relative;
   top: 0;
   right: 0;
 }
@@ -141,6 +141,11 @@ table input{
   background-color: aqua !important;
 }
 
+  .MuiStack-root.upper-nav{
+    justify-content: right;
+  }
+
+
 @media (max-width: 1024px){
   .problem-ide-editor div{
     width: 900px;
@@ -198,10 +203,6 @@ table input{
 
   .MuiStack-root .logo img, h1{
     max-height: 50px;
-  }
-
-  .MuiStack-root.upper-nav{
-    justify-content: space-between;
   }
 
   .MuiStack-root.account-wrapper{
