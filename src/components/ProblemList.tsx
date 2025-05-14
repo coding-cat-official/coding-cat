@@ -1,12 +1,14 @@
-import { Chip, LinearProgress, List, ListItem, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
+import { Button, Chip, LinearProgress, List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
-import { CheckCircle, MinusCircle } from '@phosphor-icons/react';
+import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
+import { capitalizeString } from '../utils/capitalizeString';
+import sortProblems from '../utils/sortProblems';
 
 interface ProblemListProps {
   searchedProblems: Problem[];
@@ -22,6 +24,10 @@ interface ProblemListProps {
 export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("name");
+
+  const sortCategories = ["name", "completed", "difficulty"];
   
   const completedProblems = useMemo(() => {
     return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
@@ -70,16 +76,25 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
   }).map((p) => p.problem_title);
 
-  if (Object.keys(problemsByCategory).length === 0) {
-    return (
-      <Typography>No problems found</Typography>
-    )
-  }
+  sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
 
   const handleTabChange = (_: any, newValue: any) => {
     if(newValue != null){
       setSelectedTab(newValue);
     }
+  }
+
+  const handleSort = (sortCategory: string) => {
+    const isAsc = orderBy === sortCategory && order === "asc";
+
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(sortCategory);
+  }
+
+  if (Object.keys(problemsByCategory).length === 0) {
+    return (
+      <Typography>No problems found</Typography>
+    )
   }
 
   if (error) {
@@ -107,15 +122,42 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
               </Tab> : <></>
             ))}
           </TabList>
+
+          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={1}>
+            {
+              sortCategories.map((sc) => {
+                const active = orderBy === sc;
+
+                return <Button
+                  variant="plain"
+                  onClick={() => handleSort(sc)}
+                  color={active ? "primary" : "neutral"}
+                  endDecorator={
+                    <CaretDown size={20} opacity={ active ? 1 : 0 } />
+                  }
+                  sx={{
+                    width: "10em",
+
+                    "& svg": {
+                      transition: "0.2s",
+                      transform: active && order === "desc" ? "rotate(0deg)" : "rotate(180deg)"
+                    },
+
+                    "&:hover": { "& svg": { opacity: 1 } }
+                  }}
+                >{capitalizeString(sc)}</Button>
+              })
+            }
+          </Stack>
           
-          <TabPanel value={selectedTab} sx={{overflowY: 'scroll', height:"80vh"}} className="tabPanel-problemList">
-              <List>
+          <TabPanel value={selectedTab} sx={{overflowY: 'auto', height:"80vh", pt: 0}}>
+              <List sx={{ pt: 0 }}>
                 { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
                     <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
                           <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
-                          <Stack direction="row" gap={1}>
+                          <Stack direction="row" gap={1} justifyContent="center">
                             {
                               solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
                             }
@@ -144,7 +186,7 @@ function DifficultyChip({ difficulty }: { difficulty: string }) {
 
   return (
     <Chip variant="soft" color={color}>
-      {difficulty}
+      <Typography sx={{ color: "black" }} textAlign="center" width="4em" level="body-sm">{difficulty}</Typography>
     </Chip>
   )
 }
