@@ -213,7 +213,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                 {row?.solution?.equal != null
                   ? row.solution.equal
                     ? '✅'
-                    : '❌'
+                    : (typeof(row.solution.actual) == "string" ? row.solution.actual : '❌')
                   : ''}
               </td>
               <td>
