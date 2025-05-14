@@ -7,7 +7,7 @@ const tutorialSteps = [
     content: () => (
       <>
         <h1>Welcome to CODING CAT 😸</h1>
-        <p>You will do all the exercises Eric will require of you this semester here</p>
+        <p>Here, you will choose the number of problems that Eric will require you to solve this semester</p>
         <h3>╮(╯▽╰)╭</h3>
       </>
     )
