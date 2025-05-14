@@ -10,13 +10,23 @@ def load_student_function(code, name):
 def test_student_function(student_function, tests): 
     report = []
     for test in tests:
-        actual_output = student_function(*test['input'])
-        report.append({
-            "input": ", ".join(str(x) for x in test['input']),
-            "expected": str(test['output']),
-            "actual": str(actual_output),
-            "equal": actual_output == test['output'],
-        })
+        try:
+            actual_output = student_function(*test['input'])
+            report.append({
+                "input": ", ".join(str(x) for x in test['input']),
+                "expected": str(test['output']),
+                "actual": str(actual_output),
+                "equal": actual_output == test['output'],
+                "error": None
+            })
+        except Exception as e:
+            report.append({
+                "input": ", ".join(str(x) for x in test['input']),
+                "expected": str(test['output']),
+                "actual": None,
+                "equal": False,
+                "error": f"{type(e).__name__}: {e}"
+            })
     return report
 
 def load_tests(tests_str: str):
@@ -87,12 +97,20 @@ def load_and_test_student_function(e):
             student_function = load_student_function(data['code'], data['name'])
         except Exception as e:
             return respond_failure(
-                f"{type(e).__name__} while loading your function: {e}\n"
+                f"{type(e).__name__} while loading your function: {e}\n\n"
                 "Tip: Make sure your function is defined with the correct name and syntax."
             )
 
         try:
             report = test_student_function(student_function, data['tests'])
+            
+            for result in report:
+                if result["error"]:
+                    err_type, err_msg = result["error"].split(":", 1)
+                    return respond_failure(
+                        f"{err_type.strip()} while running your code on {report['input']}: {err_msg.strip()}\n\n"
+                    )
+            
         except Exception as e:
             err_type = type(e).__name__ 
             hints = { 
