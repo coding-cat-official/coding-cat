@@ -119,7 +119,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
     
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ width: "90vw", height: "90vh" }} variant="outlined">
+      <ModalDialog sx={{ width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
         {

@@ -12,7 +12,7 @@ interface ContractTextProps {
 export default function ContractText({ setIsUpdating, contract, lastUpdated, featureMap }: ContractTextProps) {
   return (
     <>
-      <Stack sx={{ overflowY: "scroll" }} gap={2}>
+      <Stack sx={{ overflowY: "scroll"}} gap={2}>
         <Typography level="h3">Coding</Typography>
         <Typography>What grade do you want to get? <strong>{contract.Coding.gradeWanted}</strong></Typography>
         <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
