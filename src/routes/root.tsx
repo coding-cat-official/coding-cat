@@ -205,7 +205,7 @@ export default function App() {
         </Stack>
         
         <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session }} />
+          <Outlet context={{ setActiveProblem, session, isAdmin }} />
         </Box>
         
       </Stack>
