@@ -2,19 +2,16 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Stack, Typography } from '@mui/joy';
-import { Progress, Reflection } from '../types';
-import { getCompletedProblems } from '../utils/getCompletedProblems';
+import { Reflection } from '../types';
 import UserInfo from '../components/profile/UserInfo';
-import ProgressList from '../components/profile/progress/Progress';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
 
 export default function Account({ session }: { session: Session }) {
-  const [progress, setProgress] = useState<Progress[]>([]);
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])
-  const [view, setView] = useState<"progress" | "reflections" | "activity">("progress");
+  const [view, setView] = useState<"reflections" | "activity">("reflections");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -30,9 +27,6 @@ export default function Account({ session }: { session: Session }) {
       if(error) {
         setError(error.message);
       }
-
-      const summary = getCompletedProblems(submissions || []);
-      setProgress(summary);
 
       const reflections: Reflection[] = (submissions || [])
         .filter((r) => r.reflection != null)
@@ -67,12 +61,10 @@ export default function Account({ session }: { session: Session }) {
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
-          <Button onClick={() => setView("progress")} color={ view === "progress" ? "primary" : "neutral" }>Progress</Button>
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "progress" && <ProgressList progress={progress} /> }
         { view === "reflections" && <Reflections reflections = {reflections} /> }
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} /> }
     </Stack>
