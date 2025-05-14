@@ -13,8 +13,24 @@ export default function Contract() {
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
+  const [featureMap, setFeatureMap] = useState<Record<string, boolean>>({});
 
   const { session } = useOutletContext<{ session: Session | null }>();
+
+  useEffect(()=> {
+    supabase
+      .from("activated")
+      .select("topic, activated")
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+        } else if (data) {
+          const map: Record<string,boolean> = {};
+          data.forEach((r) => { map[r.topic] = r.activated; });
+          setFeatureMap(map);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     (async function fetchContract() {
@@ -83,7 +99,7 @@ export default function Contract() {
         </Typography>
       </Stack>
 
-      <ContractModal open={open} setOpen={setOpen} contract={contract} lastUpdated={lastUpdated} onSave={handleContractSave} setContract={setContract}/>
+      <ContractModal open={open} setOpen={setOpen} contract={contract} lastUpdated={lastUpdated} onSave={handleContractSave} setContract={setContract} featureMap={featureMap}/>
     </>
   )
 }
@@ -95,20 +111,21 @@ interface ContractModalProps {
   setContract: Dispatch<SetStateAction<ContractData>>;
   lastUpdated: Date | null;
   onSave: () => Promise<void>;
+  featureMap: Record<string, boolean>;
 }
 
-function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave }: ContractModalProps) {
+function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
     
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ width: "90vw", height: "90vh" }} variant="outlined">
+      <ModalDialog sx={{ width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
         {
           isUpdating ? 
-          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} /> :
-          <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} />
+          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} featureMap={featureMap} /> :
+          <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} featureMap={featureMap} />
         }
       </ModalDialog>
     </Modal>
