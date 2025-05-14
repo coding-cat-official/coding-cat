@@ -203,6 +203,20 @@ table input{
     flex-direction: row;
     gap: 10px;
   }
+
+  .MuiStack-root.big-navbar{
+    flex-direction: column;
+  }
+
+  .MuiStack-root.problemList-search-filter{
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+  }
+
+  .MuiTabPanel-root.problemList-list {
+    height: 50vh;
+  }
 }
 
 @media (max-width: 500px){

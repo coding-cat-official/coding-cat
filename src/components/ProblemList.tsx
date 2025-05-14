@@ -151,7 +151,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             }
           </Stack>
           
-          <TabPanel value={selectedTab} sx={{overflowY: 'auto', height:"80vh", pt: 0}}>
+          <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"80vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
                 { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
                     <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}

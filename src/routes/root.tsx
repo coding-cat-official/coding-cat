@@ -94,10 +94,10 @@ export default function App() {
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{alignItems: "center"}}>
-            <DialogTitle level='h1' className="big-navbar" sx={{ fontFamily: '"Silkscreen", monospace', padding: "5px", fontSize: "30pt"}}>
+            <DialogTitle level='h1'  sx={{ fontFamily: '"Silkscreen", monospace', padding: "5px", fontSize: "30pt"}}>
               Coding Cat
             </DialogTitle>
-            <Stack marginRight="5em" direction="row" gap={3}>
+            <Stack marginRight="5em" direction="row" gap={3} className="problemList-search-filter">
               <Select sx={{ width: "150px", fontWeight: "normal", fontFamily: "Silkscreen" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
                 <Option sx={{fontFamily: "Silkscreen"}} value="all">All</Option>
                 <Option sx={{fontFamily: "Silkscreen"}} value="easy">Easy</Option>
