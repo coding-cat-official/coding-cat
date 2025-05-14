@@ -1,22 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Problem } from '../types';
 
-type PersistentProblemCode = [string, (code: string) => void];
+type PersistentProblemCode = [any, (code: any) => void];
 
 export default function usePersistentProblemCode(problem: Problem): PersistentProblemCode {
-  const [code, setCode] = useState(localStorage.getItem(problem.meta.name) ?? problem.starter);
+  const key = problem.meta.name;
+  const isMutation = problem.meta.question_type[0] === "mutation"
+  
+  const [code, setCode] = useState<any>(() => {
+    const raw = localStorage.getItem(key)
+    if (raw) return JSON.parse(raw)
+    return isMutation ? [] : problem.starter
+  })
 
   useEffect(() => {
-    const storedCode = localStorage.getItem(problem.meta.name);
-    setCode(storedCode ?? problem.starter);
-    console.log('loaded stored code:', storedCode);
-  }, [problem.meta.name]);
+    const raw = localStorage.getItem(key)
+    if (raw) setCode(JSON.parse(raw))
+    else       setCode(isMutation ? [] : problem.starter)
+  }, [problem.meta.name])
 
-  function setCodeInDB(code: string) {
-    localStorage.setItem(problem.meta.name, code);
-    setCode(code);
-    console.log('saved code');
+  function setCodeInDB(newCode: any) {
+    localStorage.setItem(key, JSON.stringify(newCode))
+    setCode(newCode)
   }
 
-  return [code || '', setCodeInDB];
+  return [code, setCodeInDB]
 }
