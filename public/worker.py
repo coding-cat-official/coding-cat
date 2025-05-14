@@ -39,10 +39,12 @@ def load_tests(tests_str: str):
             left, right = line.split(";", 1)
             inputs   = [ast.literal_eval(tok) for tok in left.split("|") if tok.strip()]
             expected = [ast.literal_eval(tok) for tok in right.split("|") if tok.strip()]
-        except Exception:
-            parsed.append((None, None, line))
+            parsed.append((inputs, expected, line))
+
+        except SyntaxError as e:
+            parsed.append(("__SYNTAX_ERROR__", e, line))
             continue
-        parsed.append((inputs, expected, line))
+            
     return parsed
 
 def test_mutation_function(solution, mutations, tests, function_name):
@@ -50,7 +52,19 @@ def test_mutation_function(solution, mutations, tests, function_name):
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
     tests = load_tests(tests)
     report = []
-    for inputs, expected, raw in tests:
+    for test in tests:
+        if test[0] == "__SYNTAX_ERROR__":
+            _, err, raw = test
+            report.append({
+                "input": raw,
+                "expected": None,
+                "solution": {"inputs": raw, "actual": f"<syntax error: {err}>", "equal": False},
+                "mutations": [{"index": i, "actual": "<skipped due to syntax error>", "equal": False}
+                      for i, _ in enumerate(mutation_functions)],
+            })
+            continue
+        
+        inputs, expected, raw = test
         entry = {
             "input": inputs if inputs is not None else raw,
             "expected": expected,
