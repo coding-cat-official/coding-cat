@@ -38,9 +38,17 @@ def load_tests(tests_str: str):
 def test_mutation_function(solution, mutations, tests, function_name):
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
-    tests = load_tests(tests)
+
+    if isinstance(tests, (list, tuple)):
+        parsed_tests = [
+            (test['input'], test['expected'], None)
+            for test in tests
+        ]
+    else:
+        parsed_tests = load_tests(tests)
+
     report = []
-    for inputs, expected, raw in tests:
+    for inputs, expected, raw in parsed_tests:
         entry = {
             "input": inputs if inputs is not None else raw,
             "expected": expected,
