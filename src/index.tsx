@@ -98,6 +98,15 @@ const theme = extendTheme({
           },
           '&.desktop-bar': {
             backgroundColor: "#d4ff99"
+          },
+          '&.logo': {
+            backgroundColor: '#feffed'
+          },
+          '&.problem-container': {
+            backgroundColor: '#feffed'
+          },
+          '&.profile-wrapper': {
+            backgroundColor: '#feffed'
           }
         }
       }
@@ -122,6 +131,20 @@ const theme = extendTheme({
         }
       }
     },
+    JoyButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffbd57',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: '#f89e35',
+          },
+          '&.Mui-disabled': {
+            backgroundColor: 'white'
+          }
+        }
+      }
+    }
   }
 });
 
