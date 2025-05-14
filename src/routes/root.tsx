@@ -18,6 +18,7 @@ import CustomSearch from '../components/ProblemSearch';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
@@ -56,9 +57,37 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session?.user){
+        if (session?.user) {
+          supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('profile_id', session.user.id)
+            .single()
+            .then(({ data, error }) => {
+              if (!error && data) {
+                setIsAdmin(data.is_admin);
+              }
+            });
+        }
+      }
     });
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session?.user) {
+        supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('profile_id', session.user.id)
+          .single()
+          .then(({ data, error }) => {
+            if (!error && data) {
+              setIsAdmin(data.is_admin);
+            }
+          });
+      } else {
+        setIsAdmin(false);
+      }
     });
   }, []);
 
@@ -152,6 +181,11 @@ export default function App() {
                     <Button>Profile</Button>
                   </Link>
                   <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
+                  {isAdmin && (
+                    <Link to="/admin">
+                      <Button color="warning">Admin</Button>
+                    </Link>
+                  )}
                 </>
               ) : (
                 <Link to="/signin">
