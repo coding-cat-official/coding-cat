@@ -70,6 +70,12 @@ export default function CategoryList({
         }
     }
 
+    if (error) {
+        return (
+            <Typography>Error fetching categories: {error}</Typography>
+        )
+    }
+
     return (
         <List component="nav" sx={{ py: 2}}>
             {categories.sort((a,b) => a.localeCompare(b)).map(category => {
