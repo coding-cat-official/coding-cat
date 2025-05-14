@@ -19,7 +19,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   const [expectedRows, setExpectedRows] = useState<string[]>(
     Array(5).fill('')
   );
-  console.log('exp', expectedRows)
 
   useEffect(() => {
     setNumRows(5)
