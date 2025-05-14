@@ -210,7 +210,13 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     : ''}
                 </td>
               ))}
-              <td>{row?.solution?.actual.toString() || ''} </td>
+              <td style={{ textAlign: 'center' }}>
+                {row?.solution?.equal != null
+                  ? row.solution.equal
+                    ? '✅'
+                    : '❌'
+                  : ''}
+              </td>
               <td>
                   <input
                     value={expectedRows[rowIndex]}
