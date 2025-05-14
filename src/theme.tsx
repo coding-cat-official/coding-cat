@@ -92,6 +92,9 @@ export const theme = extendTheme({
           },
           '&.profile-wrapper': {
             backgroundColor: '#feffed'
+          },
+          '&.main': {
+            backgroundColor: '#feffed'
           }
         }
       }
@@ -122,7 +125,8 @@ export const theme = extendTheme({
           backgroundColor: '#ffbd57',
           color: 'white',
           '&:hover': {
-            backgroundColor: '#f89e35',
+            backgroundColor: '#ff8b05',
+            color: 'white',
           },
           '&.Mui-disabled': {
             backgroundColor: 'white'
