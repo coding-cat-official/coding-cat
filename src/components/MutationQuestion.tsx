@@ -10,48 +10,76 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
 
+  const [attemptedRun, setAttemptedRun] = useState(false);
+
   //The inputRows are 2D arrays since each row is a test and each test contains 
   //an array of inputs
   const [inputRows, setInputRows] = useState<string[][]>(
     Array.from({ length: 5 }, () => Array(inputCount).fill(''))
   );
+
+  const hasEmptyInputs = inputRows
+    .slice(0, numOfTableRows)
+    .some(row => row.some(val => val.trim() === ""))
   
   const [expectedRows, setExpectedRows] = useState<string[]>(
     Array(5).fill('')
   );
 
+  const hasEmptyExpected = expectedRows
+    .slice(0, numOfTableRows)
+    .some(row => row === "")
+    
+
   useEffect(() => {
+    setAttemptedRun(false);
     setNumRows(5)
     setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
     setExpectedRows(Array(5).fill(''))
   }, [inputCount, problem.meta.name])
 
   useEffect(() => {
-    if (!code){
-      setNumRows(5)
-      setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
-      setExpectedRows(Array(5).fill(''))
+    if (!Array.isArray(code) || code.length === 0) {
+      setNumRows(5);
+      setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')));
+      setExpectedRows(Array(5).fill(''));
       return;
-    };
-    
-    const lines = code.split('\n').filter((line: string) => line.trim());
-    const newInputs: string[][] = [];
-    const newExpected: string[] = []
-
-    for (let line of lines) {
-      const [left = '', right= ''] = line.split(';');
-      newInputs.push(left.split('|'));
-      newExpected.push(right);
     }
-
-    const finalInputs = newInputs.slice(0, maxNumberOfRows);
-    const finalExpected = newExpected.slice(0, maxNumberOfRows);
-
-    setInputRows(finalInputs);
-    setExpectedRows(finalExpected);
-    setNumRows(finalInputs.length || 1);
-  }, [code, problem.meta.name])
-
+  
+    const rows = code.slice(0, maxNumberOfRows);
+    setNumRows(rows.length);
+  
+    setInputRows(
+      rows.map(r => {
+        if (Array.isArray((r as any).Input)) {
+          return (r as any).Input as string[];
+        }
+  
+        if (Array.isArray((r as any).input)) {
+          return (r as any).input.map((x: any) =>
+            typeof x === 'string' ? x : JSON.stringify(x)
+          );
+        }
+  
+        return Array(inputCount).fill('');
+      })
+    );
+  
+    setExpectedRows(
+      rows.map(r => {
+        if (typeof (r as any).Expected === 'string') {
+          return (r as any).Expected;
+        }
+  
+        if (Array.isArray((r as any).expected)) {
+          return JSON.stringify((r as any).expected);
+        }
+  
+        return '';
+      })
+    );
+  }, [code, problem.meta.name]);
+  
   const handleNewRowClick = () => {
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
@@ -88,15 +116,17 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     return count;
   };
 
-  //Formatting the inputs and output so that the runCode is able to use them
   const handleRun = () => {
+    setAttemptedRun(true);
+    if(hasEmptyInputs || hasEmptyExpected) return;
     const payload = inputRows
-    .slice(0, numOfTableRows)
-    .map((rowInputs, i) =>
-      `${rowInputs.join('|')};${expectedRows[i]}`)
-    .join('\n');
-    setCode(payload);
-    runCode(payload);
+      .slice(0, numOfTableRows)
+      .map((rowInputs, i) => ({
+        Input:    [...rowInputs],       
+        Expected: expectedRows[i],      
+      }));
+    setCode(payload);        
+    runCode(payload);        
 
     generateQuestion();
 
@@ -157,7 +187,10 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                   {inputRows[rowIndex].map((val, colIndex) => (
                     <input
                       key={colIndex}
-                      style= {{marginRight: '3px'}}
+                      style= {{
+                        marginRight: '3px',
+                        border: attemptedRun && val.trim() === '' ? '1px solid red' : undefined,
+                      }}
                       value={val}
                       onChange={e => {
                         const copy = inputRows.map(r => [...r]);
@@ -176,10 +209,17 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     : ''}
                 </td>
               ))}
-              <td>{row?.solution?.actual.toString() || ''} </td>
+              <td style={{ textAlign: 'center' }}>
+                {row?.solution?.equal != null
+                  ? row.solution.equal
+                    ? '✅'
+                    : '❌'
+                  : ''}
+              </td>
               <td>
                   <input
                     value={expectedRows[rowIndex]}
+                    style={{ border: attemptedRun && expectedRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
                     onChange={e => {
                       const copy = [...expectedRows];
                       copy[rowIndex] = e.target.value;
@@ -194,6 +234,11 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         </tbody>
       </table>
       <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
+      {attemptedRun && (hasEmptyInputs || hasEmptyExpected) && (
+        <Box sx={{ color: 'danger.plainColor', mb: 1 }}>
+          Please fill in all input and expected boxes before running.
+        </Box>
+      )}
       <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">

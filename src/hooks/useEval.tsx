@@ -15,6 +15,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
 
     useEffect(() => {
         const onEvalFinished: EventListener = async (e) => {
+            const isMutation = problem.meta.question_type[0] === "mutation";
             const response = (e as CustomEvent).detail;
             setEvalResponse(response);
             console.log(response);
@@ -43,11 +44,15 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     numPassed = response.report.filter((r: any) => r.equal).length;
                     totalTests = response.report.length;
                 }
+
+                const submissionPayload = isMutation
+                    ? currentCodeRef.current
+                    : { code: currentCodeRef.current }
     
                 const submission = {
                     problem_title: problem.meta.name,
                     problem_category: problem.meta.category,
-                    code: currentCodeRef.current,
+                    code: submissionPayload,
                     passed_tests: numPassed,
                     submitted_at: new Date().toISOString(),
                     profile_id: session.user.id,
@@ -68,7 +73,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                 const json = data?.[0] || null;
 
                 // if the most recent submission is the exact same as the new one, don't insert a new one into the db
-                if (json?.code === currentCodeRef.current) {
+                if (json && JSON.stringify(json.code) === JSON.stringify(submissionPayload)) {
                     const { error } = await supabase
                         .from('submissions')
                         .update({ 'submitted_at': new Date().toISOString() })
