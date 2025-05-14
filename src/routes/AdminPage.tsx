@@ -69,6 +69,7 @@ export default function AdminPage() {
         onClick={handleSave}
         sx={{ mt: 2 }}
       >
+        Update
       </Button>
     </Box>
   )
