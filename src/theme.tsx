@@ -129,6 +129,21 @@ export const theme = extendTheme({
           }
         }
       }
+    },
+    JoyLinearProgress: {
+      styleOverrides: {
+        root: {
+          '&.problemList-progressBar': {
+            color: '#8ae514',
+            backgroundColor: '#d4ff99',
+            border: '1px solid black',
+            boxShadow: '2px 2px black',
+            '&::before': {
+              border: '1px solid black',
+            }
+          }
+        }
+      }
     }
   }
 });
