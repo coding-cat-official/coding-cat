@@ -141,10 +141,14 @@ table input{
   background-color: aqua !important;
 }
 
-  .MuiStack-root.upper-nav{
-    justify-content: right;
-  }
+.MuiStack-root.upper-nav{
+  justify-content: right;
+}
 
+.MuiTypography-root.MuiTypography-h2{
+  font-family: "Press Start 2P", monospace;
+  font-size: 16pt;
+}
 
 @media (max-width: 1024px){
   .problem-ide-editor div{

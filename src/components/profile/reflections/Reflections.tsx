@@ -91,8 +91,8 @@ function ReflectionTitle({ query, setQuery, category, setCategory }: SearchProps
   const categories = useMemo(() => getCategoryList(), []);
 
   return (
-    <Stack width="90%" direction="row" justifyContent="space-between">
-      <Typography level="h2">Your Reflections</Typography>
+    <Stack width="90%" direction="row" justifyContent="space-between" alignItems="center">
+      <Typography level="h2">Reflections📃 </Typography>
       <Stack direction="row" gap={2}>
         <Select sx={{ width: "150px" }} placeholder="Category" value={category} onChange={(e, newValue) => setCategory(newValue || "")}>
           <Option value="all">All</Option>
