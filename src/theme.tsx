@@ -122,15 +122,17 @@ export const theme = extendTheme({
     JoyButton: {
       styleOverrides: {
         root: {
-          backgroundColor: '#ffbd57',
-          color: 'white',
+          fontFamily: 'Doto',
+          fontWeight: 'bolder',
+          backgroundColor: '#ffb5a9',
+          color: 'black',
           '&:hover': {
-            backgroundColor: '#ff8b05',
+            backgroundColor: '#ff8b78',
             color: 'white',
           },
           '&.Mui-disabled': {
             backgroundColor: 'white'
-          }
+          },
         }
       }
     },

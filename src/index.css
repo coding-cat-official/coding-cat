@@ -150,6 +150,11 @@ table input{
   font-size: 16pt;
 }
 
+.MuiButton-root.problemList-sortButton{
+  font-family: Doto;
+  font-weight: bolder;
+}
+
 @media (max-width: 1024px){
   .problem-ide-editor div{
     width: 900px;

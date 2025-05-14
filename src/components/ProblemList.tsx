@@ -129,6 +129,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                 const active = orderBy === sc;
 
                 return <Button
+                  className='problemList-sortButton'
                   variant="plain"
                   onClick={() => handleSort(sc)}
                   color={active ? "primary" : "neutral"}
