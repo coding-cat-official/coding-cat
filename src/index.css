@@ -37,9 +37,6 @@ code {
   display: none;
 }
 
-.MuiBox-root.desktop-bar{
-  display: flex;
-}
 
 .MuiBox-root.account-btns{
   position: absolute;
@@ -158,7 +155,7 @@ table input{
     margin-top: 10px;
   }
 
-  .MuiBox-root.desktop-bar{
+  .MuiStack-root.desktop-bar{
     display: none;
   }
 
