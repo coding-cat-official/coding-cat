@@ -65,11 +65,11 @@ code {
 
 .mutation-table thead tr{
   border-bottom: 4px solid black;
-  background-color: rgb(18, 148, 160);
+  background-color: #ffb564;
 }
 
 .mutation-table tr:nth-of-type(odd) td{
-  background-color: rgb(131, 218, 225);
+  background-color: #fff0b8;
 }
 
 .mutation-table td{
