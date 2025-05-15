@@ -39,7 +39,7 @@ code {
 
 
 .MuiBox-root.account-btns{
-  position: relative;
+  position: absolute;
   top: 0;
   right: 0;
 }
@@ -156,6 +156,13 @@ table input{
 }
 
 @media (max-width: 1024px){
+
+  .MuiBox-root.account-btns{
+    position: relative;
+    top: 0;
+    right: 0;
+  }
+  
   .problem-ide-editor div{
     width: 900px;
   }
@@ -220,6 +227,7 @@ table input{
 }
 
 @media (max-width: 500px){
+
   .MuiSvgIcon-root.menu-icon{
     font-size: 20px;
   }
