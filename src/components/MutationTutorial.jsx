@@ -95,7 +95,7 @@ export default function Tutorial({tourState, setTourState}){
 
   return(
     <>
-      <Question size={40} weight="fill" style={{cursor:'pointer', color:'#0B6BCB', minWidth:'50px'}} onClick={()=>{setTourState(true)}}>?</Question>
+      <Question size={40} weight="fill" style={{cursor:'pointer', color:'#ffb564', minWidth:'50px'}} onClick={()=>{setTourState(true)}}>?</Question>
       <Tour
         steps={steps}
         isOpen={tourState}

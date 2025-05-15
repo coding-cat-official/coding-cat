@@ -12,7 +12,9 @@ import {List as ListIcon} from '@phosphor-icons/react';
 import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
 
-import logo from './coding-cat.png';
+import whitePaw from '../assets/white_paw.webp';
+import whitePawHover from '../assets/white_paw_hover.webp';
+import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 
@@ -93,45 +95,43 @@ export default function App() {
 
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
-      <Box
-        sx={{
-          className: 'desktop-bar',
+      <Stack
+       sx={{
           width: '6em',
-          flex: 1,
-          backgroundColor: '#c8cada',
           cursor: 'pointer',
-          left: 0,
-          top: 0,
-          zIndex: 10,
-          display: 'flex',
-          alignItems: 'center',  // Center the arrow vertically
+          alignItems: 'center',
+          position: 'relative',
           '&::after': {
             content: '""',
-            display: 'block',
-            width: 0,
-            height: 0,
-            borderTop: '30px solid transparent',
-            borderBottom: '30px solid transparent',
-            borderLeft: '50px solid white', // Arrow color
-            marginLeft: '30px', // Position the arrow
-            paddingRight: '1em',
+            position: 'absolute',
+            top: '50%',
+            width: '70px',
+            height: '70px',
+            backgroundImage: `url(${whitePaw})`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transform: 'rotate(-90deg)'
           },
+          '&:hover::after': {
+            backgroundImage: `url(${whitePawHover})`
+          }
         }}
         className="desktop-bar"
         onClick={() => setOpen(true)}
       />
       <Drawer open={open} onClose={() => setOpen(false)} size="xl">
         <ModalClose />
-          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'}>
-            <DialogTitle level='h2'>
-              Problem List
+          <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{alignItems: "center"}}>
+            <DialogTitle level='h1'  sx={{ fontFamily: '"Silkscreen", monospace', padding: "5px", fontSize: "30pt"}}>
+              Coding Cat
             </DialogTitle>
-            <Stack marginRight="5em" direction="row" gap={3}>
-              <Select sx={{ width: "150px" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
-                <Option value="all">All</Option>
-                <Option value="easy">Easy</Option>
-                <Option value="medium">Medium</Option>
-                <Option value="hard">Hard</Option>
+            <Stack marginRight="5em" direction="row" gap={3} className="problemList-search-filter">
+              <Select sx={{ width: "150px", fontWeight: "normal", fontFamily: "Silkscreen" }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || "")}>
+                <Option sx={{fontFamily: "Silkscreen"}} value="all">All</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="easy">Easy</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="medium">Medium</Option>
+                <Option sx={{fontFamily: "Silkscreen"}} value="hard">Hard</Option>
               </Select>
               <CustomSearch query={query} setQuery={setQuery} placeholder="Search for exercises..." />
             </Stack>
@@ -146,7 +146,7 @@ export default function App() {
                   session={session}
                 />
               </Box>
-              <Box sx={{ flex: 3}}>
+              <Box sx={{ flex: 3}} className="parent-problemList">
                 <ProblemList
                   selectedTab={selectedTab}
                   setSelectedTab={setSelectedTab}
@@ -162,6 +162,7 @@ export default function App() {
         </DialogContent>
       </Drawer>
       <Stack
+        className= 'main'
         direction="column"
         sx={{
           width: '100%',
@@ -169,6 +170,7 @@ export default function App() {
           height: "100%",
           justifyContent: "start",
           alignItems: "center",
+          overflowY: "scroll"
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
             <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
@@ -197,14 +199,14 @@ export default function App() {
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
           <Link to="/">
-            <Box component="img" src={logo} sx={{ maxHeight: "80px" }}/>
+            <Box component="img" src={logo} sx={{ maxHeight: "80px", marginTop: "5px", marginRight:"15px" }}/>
           </Link>
-            <Typography  sx={{ fontFamily: 'Permanent Marker, sans-serif'}} level="h1">
+            <Typography  sx={{ fontFamily: '"Silkscreen", monospace', fontSize: "35pt"}} level="h1">
               Coding Cat!
             </Typography>
         </Stack>
         
-        <Box sx={{ overflowY: "auto" }} width="100%" height="100%">
+        <Box width="100%" height="100%">
           <Outlet context={{ setActiveProblem, session, isAdmin }} />
         </Box>
         

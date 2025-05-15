@@ -104,20 +104,20 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   }
 
   return(
-    <Stack gap={1}>
+    <Stack gap={1} className="stack-problemList">
       <Stack pr={4} gap={1}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
-          <Typography level="h2">{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{completedProblems?.total}</Typography>
+          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{completedProblems?.total}</Typography>
           <Typography level="h4">{percentageCompleted}%</Typography>
         </Stack>
-        <LinearProgress sx={{ backgroundColor: "#D5D5D5" }} color="success" determinate value={percentageCompleted} size="lg" />
+        <LinearProgress className="problemList-progressBar" color="success" determinate value={percentageCompleted} size="lg" />
       </Stack>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
             {Object.keys(problemsByCategory).sort().map((type) => (
                type ?
-                <Tab key={type} value={type} variant="plain" color="neutral">
+                <Tab key={`${type}-${selectedTab}`} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
                 {type}
               </Tab> : <></>
             ))}
@@ -129,6 +129,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                 const active = orderBy === sc;
 
                 return <Button
+                  className='problemList-sortButton'
                   variant="plain"
                   onClick={() => handleSort(sc)}
                   color={active ? "primary" : "neutral"}
@@ -150,13 +151,13 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             }
           </Stack>
           
-          <TabPanel value={selectedTab} sx={{overflowY: 'auto', height:"80vh", pt: 0}}>
+          <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"70vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
                 { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
-                    <ListItemButton className={"problems"} key={p.meta.name} selected={p.meta.name === activeProblem}
+                    <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
-                          <Typography>{p.meta.title}</Typography>
+                          <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
                           <Stack direction="row" gap={1} justifyContent="center">
                             {
                               solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
