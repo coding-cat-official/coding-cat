@@ -14,13 +14,11 @@ export default function CategoryListItem({category, lock, unlocked, summary, act
               lock.hint();
           }
       }}
-      className={[
+      className={
           unlocked
           ? category === activeCategory ? 'category-active' : 'category-inactive'
-          : 'category-locked',
-          category === 'haystack' ? 'category-haystack' : '',
-          category === 'mutation' ? 'category-mutation': ''
-      ].join(' ')}
+          : 'category-locked'
+        }
       sx = {{
           borderRadius: 'md', my: 1, py: 2, px: 2,
           display: 'flex',
