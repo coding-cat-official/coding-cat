@@ -1,11 +1,11 @@
-import { List, ListItemButton, Typography } from '@mui/joy'
+import { List, Box, Typography } from '@mui/joy'
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { Problem, Progress } from '../types';
-import { LockSimple } from '@phosphor-icons/react';
 import CategoryLock from '../utils/CategoryLock';
+import CategoryListItem from './CategoryListItem';
 
 export interface CategoryListProps {
     searchedProblems: Problem[];
@@ -29,11 +29,12 @@ export default function CategoryList({
     .filter((c, index, array) => array.indexOf(c) === index)
     .sort((a,b) => a.localeCompare(b));
 
+    const specialCategories = [];
     if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
-    categories.push("mutation");
+        specialCategories.push("mutation");
     }
     if (searchedProblems.some((c) => c.meta.question_type[0] === 'haystack')) {
-    categories.push("haystack");
+        specialCategories.push("haystack");
     }
 
 
@@ -85,48 +86,42 @@ export default function CategoryList({
 
     return (
         <List component="nav" sx={{ py: 2}}>
-            {categories.map(category => {
-                const summary = progress.find(p => p.category === category) ?? progress.find(p => p.question_type === category)
-                const lock = mapCategoryToLock(category);
-                const unlocked = lock.isUnlocked();
+            <>
+                {categories.map(category => {
+                    const summary = progress.find(p => p.category === category)
+                    const lock = mapCategoryToLock(category);
+                    const unlocked = lock.isUnlocked();
 
-                return (
-                    <ListItemButton 
-                        key = {category}
-                        selected = { category === activeCategory}
-                        onClick={() => {
-                            if(unlocked){
-                                onSelectCategory(category)
-                            } else {
-                                lock.hint();
-                            }
-                        }}
-                        className={[
-                            unlocked
-                            ? category === activeCategory ? 'category-active' : 'category-inactive'
-                            : 'category-locked',
-                            category === 'haystack' ? 'category-haystack' : '',
-                            category === 'mutation' ? 'category-mutation': ''
-                        ].join(' ')}
-                        sx = {{
-                            borderRadius: 'md', my: 1, py: 2, px: 2,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: 1,
-                            cursor: unlocked ? 'pointer' : 'not-allowed',
-                            margin: "10px 10px 10px 15px",
-                            boxShadow: "5px 5px black",
-                            border: "1px solid black",
-                        }}
-                        >
-                            {!unlocked && <LockSimple size={16}/>}
-                            <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
-                                {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
-                            </Typography>
-                        </ListItemButton>
+                    return (
+                        <CategoryListItem 
+                            category={category}
+                            lock={lock}
+                            unlocked={unlocked}
+                            summary={summary}
+                            activeCategory={activeCategory}
+                            onSelectCategory={onSelectCategory}
+                        />
                     )
                 })}
+                <Box>
+                    <hr/>
+                </Box>
+                { specialCategories.map(category => {
+                    const summary = progress.find(p => p.question_type === category)
+                    const lock = mapCategoryToLock(category);
+                    const unlocked = lock.isUnlocked();
+                    return (
+                        <CategoryListItem 
+                            category={category}
+                            lock={lock}
+                            unlocked={unlocked}
+                            summary={summary}
+                            activeCategory={activeCategory}
+                            onSelectCategory={onSelectCategory}
+                        />
+                    )
+                })}
+            </>
         </List>
     )
 }
