@@ -18,11 +18,10 @@ export default function ActivityGraph({ activityStamps, passingStamps }: { activ
       passCounts[date] = (passCounts[date] ?? 0) + 1
     })
 
-    const days = Object.keys(counts).sort();
-    if (days.length === 0) return [];
+    const end = new Date();
+    const start = new Date(end);
+    start.setDate(end.getDate() -29);
 
-    const start = new Date(days[0]);
-    const end = new Date(days[days.length - 1]);
     const allDays: { x: string; y: number; cumulative: number }[] = [];
     let runningPassTotal = 0;
     
@@ -35,7 +34,7 @@ export default function ActivityGraph({ activityStamps, passingStamps }: { activ
     }
     
     return allDays;
-  }, [activityStamps]);
+  }, [activityStamps, passingStamps]);
 
   return (
     <Stack gap={2}>
