@@ -2,13 +2,20 @@ import { Card, Stack, Typography } from "@mui/joy";
 import { useMemo } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-export default function ActivityGraph({ activityStamps }: { activityStamps: string[] }) {
+export default function ActivityGraph({ activityStamps, passingStamps }: { activityStamps: string[], passingStamps: string[] }) {
   const activityData = useMemo(() => {
+    
     const counts: Record<string, number> = {}
+    const passCounts: Record<string, number> = {}
 
     activityStamps.forEach((iso) => {
       const date = iso.slice(0,10)
       counts[date] = (counts[date] ?? 0) + 1
+    })
+
+    passingStamps.forEach((iso) => {
+      const date = iso.slice(0,10)
+      passCounts[date] = (passCounts[date] ?? 0) + 1
     })
 
     const days = Object.keys(counts).sort();
@@ -16,11 +23,15 @@ export default function ActivityGraph({ activityStamps }: { activityStamps: stri
 
     const start = new Date(days[0]);
     const end = new Date(days[days.length - 1]);
-    const allDays: { x: string; y: number }[] = [];
+    const allDays: { x: string; y: number; cumulative: number }[] = [];
+    let runningPassTotal = 0;
     
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const iso = d.toISOString().slice(0, 10);
-      allDays.push({ x: iso, y: counts[iso] || 0 });
+      const daily = counts[iso] || 0;
+      const dailyPass = passCounts[iso] || 0;
+      runningPassTotal += dailyPass
+      allDays.push({ x: iso, y: daily, cumulative: runningPassTotal });
     }
     
     return allDays;
@@ -41,9 +52,9 @@ export default function ActivityGraph({ activityStamps }: { activityStamps: stri
             <YAxis allowDecimals={false} />
             <Tooltip isAnimationActive={false}
               labelFormatter={(label) => `Date: ${label}`}
-              formatter={(value: number) => [`${value}`, "Submissions"]}
             />
-            <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={{ r: 0 }} />
+            <Line type="monotone" dataKey="y" name="Submissions" stroke="#8884d8" strokeWidth={2} dot={{ r: 0 }} />
+            <Line type="monotone" dataKey="cumulative" name="Cumulative Passes" stroke="#82ca9d" strokeWidth={2} dot={{ r: 0 }} />
           </LineChart>
         </ResponsiveContainer>
       </Card>

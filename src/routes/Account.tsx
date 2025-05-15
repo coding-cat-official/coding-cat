@@ -11,6 +11,7 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 export default function Account({ session }: { session: Session }) {
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])
+  const [passingStamps, setPassingStamps] = useState<string[]>([])
   const [view, setView] = useState<"reflections" | "activity">("reflections");
   const [error, setError] = useState("");
 
@@ -38,8 +39,13 @@ export default function Account({ session }: { session: Session }) {
           code: r.code
         }));
       setReflections(reflections)
+      const all = (submissions || []).map((r) => r.submitted_at)
+      const pass = (submissions || [])
+      .filter((r) => r.passed_tests === r.total_tests)
+      .map((r) => r.submitted_at);
 
-      setActivityStamps((submissions || []).map((r) => r.submitted_at))
+      setActivityStamps(all);
+      setPassingStamps(pass);
     }
 
     fetchProgress();
@@ -66,7 +72,7 @@ export default function Account({ session }: { session: Session }) {
         </Stack>
 
         { view === "reflections" && <Reflections reflections = {reflections} /> }
-        { view === "activity" && <ActivityGraph activityStamps={activityStamps} /> }
+        { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps}/> }
     </Stack>
   </Stack>
   )
