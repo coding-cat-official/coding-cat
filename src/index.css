@@ -25,8 +25,8 @@ code {
 }
 
 #root {
-  height: 100vh;
-  width: 100vw;
+  width: inherit;
+  height: inherit;
 }
 
 .mono {
@@ -37,9 +37,6 @@ code {
   display: none;
 }
 
-.MuiBox-root.desktop-bar{
-  display: flex;
-}
 
 .MuiBox-root.account-btns{
   position: absolute;
@@ -68,11 +65,11 @@ code {
 
 .mutation-table thead tr{
   border-bottom: 4px solid black;
-  background-color: rgb(18, 148, 160);
+  background-color: #ffb564;
 }
 
-.mutation-table tr:nth-child(odd) td{
-  background-color: rgb(131, 218, 225);
+.mutation-table tr:nth-of-type(odd) td{
+  background-color: #fff0b8;
 }
 
 .mutation-table td{
@@ -140,7 +137,32 @@ table input{
   cursor: not-allowed;
 }
 
+.MuiListItemButton.category-haystack{
+  background-color: aqua !important;
+}
+
+.MuiStack-root.upper-nav{
+  justify-content: right;
+}
+
+.MuiTypography-root.MuiTypography-h2{
+  font-family: "Press Start 2P", monospace;
+  font-size: 16pt;
+}
+
+.MuiButton-root.problemList-sortButton{
+  font-family: Doto;
+  font-weight: bolder;
+}
+
 @media (max-width: 1024px){
+
+  .MuiBox-root.account-btns{
+    position: relative;
+    top: 0;
+    right: 0;
+  }
+  
   .problem-ide-editor div{
     width: 900px;
   }
@@ -154,7 +176,7 @@ table input{
     margin-top: 10px;
   }
 
-  .MuiBox-root.desktop-bar{
+  .MuiStack-root.desktop-bar{
     display: none;
   }
 
@@ -188,19 +210,30 @@ table input{
     flex-direction: row;
     gap: 10px;
   }
+
+  .MuiStack-root.big-navbar{
+    flex-direction: column;
+  }
+
+  .MuiStack-root.problemList-search-filter{
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+  }
+
+  .MuiTabPanel-root.problemList-list {
+    height: 50vh;
+  }
 }
 
 @media (max-width: 500px){
+
   .MuiSvgIcon-root.menu-icon{
     font-size: 20px;
   }
 
   .MuiStack-root .logo img, h1{
     max-height: 50px;
-  }
-
-  .MuiStack-root.upper-nav{
-    justify-content: space-between;
   }
 
   .MuiStack-root.account-wrapper{

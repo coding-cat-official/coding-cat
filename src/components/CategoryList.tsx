@@ -94,20 +94,27 @@ export default function CategoryList({
                                 lock.hint();
                             }
                         }}
+                        className={[
+                            unlocked
+                            ? category === activeCategory ? 'category-active' : 'category-inactive'
+                            : 'category-locked',
+                            category === 'haystack' ? 'category-haystack' : '',
+                            category === 'mutation' ? 'category-mutation': ''
+                        ].join(' ')}
                         sx = {{
                             borderRadius: 'md', my: 1, py: 2, px: 2,
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
                             gap: 1,
-                            color: unlocked ? 'inherit' : 'neutral.400',
-                            bgcolor: category === activeCategory ? 'primary.softBg' : 'background.surface',
                             cursor: unlocked ? 'pointer' : 'not-allowed',
-                            '&:hover': { bgcolor: unlocked ? 'primary.softBgHover' : 'danger.softBgHover' },
+                            margin: "10px 10px 10px 15px",
+                            boxShadow: "5px 5px black",
+                            border: "1px solid black",
                         }}
                         >
                             {!unlocked && <LockSimple size={16}/>}
-                            <Typography>
+                            <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
                                 {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
                             </Typography>
                         </ListItemButton>
