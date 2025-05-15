@@ -67,7 +67,12 @@ export default function Reflections({ reflections }: { reflections: Reflection[]
 
                   {isOpen && reflection.code && (
                     <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'auto', }}>
-                      {reflection.code}
+                      {
+                        "code" in reflection.code ? reflection.code.code :
+                        reflection.code.map((c, i) => (
+                          `Input ${++i}: ${c.Input}\t\t Output: ${c.Expected}\n`
+                        ))
+                      }
                     </Box>
                   )}
                 </Stack>

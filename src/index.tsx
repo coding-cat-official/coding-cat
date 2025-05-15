@@ -15,6 +15,8 @@ import {theme} from './theme';
 import Auth from './routes/Auth'
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
+import AdminWrapper from './routes/AdminWrapper';
+import AdminPage from './routes/AdminPage';
 
 
 
@@ -48,7 +50,14 @@ const router = createHashRouter([
       {
         path: "profile",
         element: <AccountWrapper />
-      }
+      },
+      {
+        path: "admin",
+        element: <AdminWrapper />,
+        children: [
+          {index: true, element: <AdminPage />}
+        ],
+      },
     ],
   },
 ],
