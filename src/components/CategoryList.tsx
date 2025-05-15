@@ -5,7 +5,7 @@ import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { Problem, Progress } from '../types';
 import CategoryLock from '../utils/CategoryLock';
-import CategoryListItem from './CategoryListItem';
+import CategoryListItems from './CategoryListItem';
 
 export interface CategoryListProps {
     searchedProblems: Problem[];
@@ -87,40 +87,25 @@ export default function CategoryList({
     return (
         <List component="nav" sx={{ py: 2}}>
             <>
-                {categories.map(category => {
-                    const summary = progress.find(p => p.category === category)
-                    const lock = mapCategoryToLock(category);
-                    const unlocked = lock.isUnlocked();
-
-                    return (
-                        <CategoryListItem 
-                            category={category}
-                            lock={lock}
-                            unlocked={unlocked}
-                            summary={summary}
-                            activeCategory={activeCategory}
-                            onSelectCategory={onSelectCategory}
-                        />
-                    )
-                })}
+                <CategoryListItems
+                    categories={categories}
+                    type="category"
+                    progress={progress}
+                    mapCategoryToLock={mapCategoryToLock}
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                />
                 <Box>
                     <hr/>
                 </Box>
-                { specialCategories.map(category => {
-                    const summary = progress.find(p => p.question_type === category)
-                    const lock = mapCategoryToLock(category);
-                    const unlocked = lock.isUnlocked();
-                    return (
-                        <CategoryListItem 
-                            category={category}
-                            lock={lock}
-                            unlocked={unlocked}
-                            summary={summary}
-                            activeCategory={activeCategory}
-                            onSelectCategory={onSelectCategory}
-                        />
-                    )
-                })}
+                <CategoryListItems
+                    categories={specialCategories}
+                    type="question_type"
+                    progress={progress}
+                    mapCategoryToLock={mapCategoryToLock}
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                />
             </>
         </List>
     )
