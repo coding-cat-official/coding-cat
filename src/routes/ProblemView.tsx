@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -17,7 +17,6 @@ import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
-import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -210,8 +209,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             }
           </Sheet>
           <Box className="navigate-problem-btn">
-            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
-            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
+            <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>Prev</Button>
+            <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>Next</Button>
           </Box>
         </Stack>
       
