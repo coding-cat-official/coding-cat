@@ -14,7 +14,7 @@ import CategoryList from '../components/CategoryList';
 
 import whitePaw from '../assets/white_paw.webp';
 import whitePawHover from '../assets/white_paw_hover.webp';
-import logo from './coding-cat.png';
+import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 
