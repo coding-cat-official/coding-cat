@@ -24,11 +24,18 @@ export default function CategoryList({
     const [progress, setProgress] = useState<Progress[]>([]);
 
     // List of categories that show up in search results.
-    const categories = searchedProblems.map((c) => {
-        return c.meta.category;
-    }).filter((c, index, array) => array.indexOf(c) === index);
+    const categories = searchedProblems
+    .map((c) => c.meta.category)
+    .filter((c, index, array) => array.indexOf(c) === index)
+    .sort((a,b) => a.localeCompare(b));
 
-    categories.push("mutation", "haystack");
+    if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
+    categories.push("mutation");
+    }
+    if (searchedProblems.some((c) => c.meta.question_type[0] === 'haystack')) {
+    categories.push("haystack");
+    }
+
 
     useEffect(() => {
         async function fetchProgress() {
@@ -78,7 +85,7 @@ export default function CategoryList({
 
     return (
         <List component="nav" sx={{ py: 2}}>
-            {categories.sort((a,b) => a.localeCompare(b)).map(category => {
+            {categories.map(category => {
                 const summary = progress.find(p => p.category === category) ?? progress.find(p => p.question_type === category)
                 const lock = mapCategoryToLock(category);
                 const unlocked = lock.isUnlocked();
