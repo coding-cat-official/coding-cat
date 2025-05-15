@@ -199,7 +199,7 @@ export default function App() {
         
         <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
           <Link to="/">
-            <Box component="img" src={logo} sx={{ maxHeight: "80px" }}/>
+            <Box component="img" src={logo} sx={{ maxHeight: "80px", marginTop: "5px", marginRight:"15px" }}/>
           </Link>
             <Typography  sx={{ fontFamily: '"Silkscreen", monospace', fontSize: "35pt"}} level="h1">
               Coding Cat!
