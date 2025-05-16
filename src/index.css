@@ -154,6 +154,14 @@ table input{
   font-weight: bolder;
 }
 
+.col-pass{
+  background-color: aquamarine !important;
+}
+
+.col-fail{
+  background-color: pink !important;
+}
+
 @media (max-width: 1024px){
 
   .MuiBox-root.account-btns{

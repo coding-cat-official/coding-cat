@@ -1,5 +1,6 @@
-function mapMutantResults({evalResponse}:any): Map<number, Set<boolean>>{
+export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>{
   const mutantResults = new Map<number, Set<boolean>>();
+      console.log('EVAL', evalResponse)
 
   evalResponse?.report?.forEach((row:any) => {
     if(row.solution.equal){
@@ -12,14 +13,19 @@ function mapMutantResults({evalResponse}:any): Map<number, Set<boolean>>{
     }
   });
 
+  console.log('res',mutantResults)
+
   return mutantResults;
 }
 
-export function countPassedMutants({ evalResponse }: any){
-  if(evalResponse == null || evalResponse.report[0].mutations == null) return 0;
+export function countPassedMutants( evalResponse : any){
+  console.log(evalResponse)
+  if(evalResponse == null || evalResponse.report[0].mutations == null){
+    return 0
+  };
 
   const mutantResults = mapMutantResults(evalResponse);
-  let count = 0;
+  let count = 100;
 
   mutantResults.forEach(({resultSet}:any) => {
     if (resultSet.has(true) && resultSet.has(false)) {
@@ -29,10 +35,15 @@ export function countPassedMutants({ evalResponse }: any){
   return count;
 }
 
-export function getColumnStatuses({ evalResponse }: { evalResponse: any } = { evalResponse: null }){
-  if(evalResponse == null || evalResponse.report[0].mutations == null) return 0;
-  const mutantResults = mapMutantResults(evalResponse);
+export function getColumnStatuses( evalResponse : any){
 
+  if(typeof(evalResponse) == "number") {
+    return new Map<number, string>(
+      Array.from({ length: 5 }, (_, i) => [i, "none"])
+    )
+  };
+
+  const mutantResults = mapMutantResults(evalResponse);
   const statusMap = new Map<number, string>();
   mutantResults.forEach((results, index) => {
 
