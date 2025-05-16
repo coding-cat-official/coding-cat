@@ -1,4 +1,4 @@
-export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>{
+export function mapMutantResults (evalResponse:any): Map<number, Set<boolean>>{
   const mutantResults = new Map<number, Set<boolean>>();
 
   evalResponse?.report?.forEach((row:any) => {

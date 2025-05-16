@@ -89,9 +89,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     }
   };
 
-
-  const columnStatuses = getColumnStatuses(5);
-
+  const columnStatuses = getColumnStatuses(evalResponse ?? numOfMutations);
 
   const handleRun = () => {
     setAttemptedRun(true);
