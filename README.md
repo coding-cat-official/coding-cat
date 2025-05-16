@@ -12,7 +12,7 @@ First, you will need to install [jq](https://jqlang.org/). It is recommended to 
 
 Then, clone the repo and run `git submodule sync` and `git -c submodule.src/private-problems.update=none submodule update --init --recursive`. This will clone the public-problems submodule, while ignoring private-problems.
 
-Run `npm install` to install the dependencies, then run `npm run build` in the project root to set up the list of problems (`npm run build-windows` if you're on Windows).
+Run `npm install` to install the dependencies, then run `npm run build` in the project root to set up the list of problems.
 
 Finally, run `npm run start` to run the app locally.
 
@@ -22,7 +22,7 @@ To run the tests, use the `npm run test` command in the project root.
 
 ### Load different problem sets
 
-To switch the problem set from the public-problems repository to the private-problems one, define an environment variable called `REACT_APP_PROBLEM_SET` and set it to either `public-problems` or `private_problems`. If it is not defined, it will use `public-problems` by default.
+To switch the problem set from the public-problems repository to the private-problems one, define an environment variable called `REACT_APP_PROBLEM_SET` and set it to either `public-problems` or `private_problems`. You will have to rebuild the problem list using `npm run build-problems`. If this variable is not defined, it will use `public-problems` by default.
 
 ## Project History and Timeline
 
