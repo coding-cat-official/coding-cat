@@ -23,11 +23,11 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     .slice(0, numOfTableRows)
     .some(row => row.some(val => val.trim() === ""))
   
-  const [expectedRows, setExpectedRows] = useState<string[]>(
+  const [expectedOutputRows, setExpectedOutputRows] = useState<string[]>(
     Array(5).fill('')
   );
 
-  const hasEmptyExpected = expectedRows
+  const hasEmptyExpected = expectedOutputRows
     .slice(0, numOfTableRows)
     .some(row => row === "")
     
@@ -36,14 +36,14 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     setAttemptedRun(false);
     setNumRows(5)
     setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
-    setExpectedRows(Array(5).fill(''))
+    setExpectedOutputRows(Array(5).fill(''))
   }, [inputCount, problem.meta.name])
 
   useEffect(() => {
     if (!Array.isArray(code) || code.length === 0) {
       setNumRows(5);
       setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')));
-      setExpectedRows(Array(5).fill(''));
+      setExpectedOutputRows(Array(5).fill(''));
       return;
     }
   
@@ -66,7 +66,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       })
     );
   
-    setExpectedRows(
+    setExpectedOutputRows(
       rows.map(r => {
         if (typeof (r as any).Expected === 'string') {
           return (r as any).Expected;
@@ -81,13 +81,22 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     );
   }, [code, problem.meta.name]);
   
-  const handleNewRowClick = () => {
+  function handleNewRow(){
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
       setInputRows(rows => [...rows, Array(inputCount).fill('')]);
-      setExpectedRows(rows => [...rows, '']);
+      setExpectedOutputRows(rows => [...rows, '']);
     }
   };
+
+  function handleRemoveRow(){
+    console.log(expectedOutputRows)
+    if(numOfTableRows > 1 && expectedOutputRows.length < numOfTableRows){
+      setNumRows(numOfTableRows-1);
+      setInputRows(rows => rows.slice(0, -1));
+      setExpectedOutputRows(rows => rows.slice(0, -1));
+    }
+  }
 
   const columnStatuses = getColumnStatuses(evalResponse ?? numOfMutations);
 
@@ -98,7 +107,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       .slice(0, numOfTableRows)
       .map((rowInputs, i) => ({
         Input:    [...rowInputs],       
-        Expected: expectedRows[i],      
+        Expected: expectedOutputRows[i],      
       }));
     setCode(payload);        
     runCode(payload);     
@@ -206,12 +215,12 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
               </td>
               <td>
                   <input
-                    value={expectedRows[rowIndex]}
-                    style={{ border: attemptedRun && expectedRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
+                    value={expectedOutputRows[rowIndex]}
+                    style={{ border: attemptedRun && expectedOutputRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
                     onChange={e => {
-                      const copy = [...expectedRows];
+                      const copy = [...expectedOutputRows];
                       copy[rowIndex] = e.target.value;
-                      setExpectedRows(copy);
+                      setExpectedOutputRows(copy);
                     }}
                   />
                 </td>
@@ -222,8 +231,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         </tbody>
       </table>
       <Box sx={{display: "flex", flexDirection: "row", gap: "10px"}}>
-        <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>+</Button>
-        <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>-</Button>
+        <Button sx={{width:"100%"}} onClick={handleNewRow} className='add-mutation-button'>+</Button>
+        <Button sx={{width:"100%"}} onClick={handleRemoveRow} className='add-mutation-button'>-</Button>
       </Box>
       {attemptedRun && (hasEmptyInputs || hasEmptyExpected) && (
         <Box sx={{ color: 'danger.plainColor', mb: 1 }}>

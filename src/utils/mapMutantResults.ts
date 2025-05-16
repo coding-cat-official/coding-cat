@@ -15,23 +15,23 @@ export function mapMutantResults (evalResponse:any): Map<number, Set<boolean>>{
   return mutantResults;
 }
 
- export function countPassedMutants(evalResponse:any){
+export function countPassedMutants(evalResponse:any){
     
-      if(evalResponse == null || evalResponse.report[0].mutations == null){
-        return 0
-      };
+  if(evalResponse == null || evalResponse?.report[0]?.mutations == null){
+    return 0
+  };
+
+  const mutantResults = mapMutantResults(evalResponse);
+  let count = 0;
+
+  mutantResults.forEach((resultSet) => {
+    if (resultSet.has(true) && resultSet.has(false)) {
+      count++;
+    }
+  });
+  return count;
     
-      const mutantResults = mapMutantResults(evalResponse);
-      let count = 0;
-    
-      mutantResults.forEach((resultSet) => {
-        if (resultSet.has(true) && resultSet.has(false)) {
-          count++;
-        }
-      });
-      return count;
-    
-  }
+}
 
 
 export function getColumnStatuses( evalResponse : any){
