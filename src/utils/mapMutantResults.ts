@@ -1,6 +1,5 @@
 export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>{
   const mutantResults = new Map<number, Set<boolean>>();
-      console.log('EVAL', evalResponse)
 
   evalResponse?.report?.forEach((row:any) => {
     if(row.solution.equal){
@@ -12,8 +11,6 @@ export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>
       });
     }
   });
-
-  console.log('res',mutantResults)
 
   return mutantResults;
 }
@@ -35,7 +32,7 @@ export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>
       return count;
     
   }
-  
+
 
 export function getColumnStatuses( evalResponse : any){
 
