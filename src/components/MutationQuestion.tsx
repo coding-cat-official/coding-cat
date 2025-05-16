@@ -1,6 +1,6 @@
 import {Box, Button} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
-import {  getColumnStatuses, mapMutantResults } from '../utils/mapMutantResults';
+import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
 export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
@@ -91,23 +91,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
 
 
   const columnStatuses = getColumnStatuses(5);
-  const countPassedMutants = () => {
-    
-      if(evalResponse == null || evalResponse.report[0].mutations == null){
-        return 0
-      };
-    
-      const mutantResults = mapMutantResults(evalResponse);
-      let count = 0;
-    
-      mutantResults.forEach((resultSet) => {
-        if (resultSet.has(true) && resultSet.has(false)) {
-          count++;
-        }
-      });
-      return count;
-    
-  }
+
 
   const handleRun = () => {
     setAttemptedRun(true);
@@ -243,7 +227,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">
-        You have found {countPassedMutants()}/{numOfMutations} mutations.
+        You have found {countPassedMutants(evalResponse)}/{numOfMutations} mutations.
       </Box>
     </>
   )

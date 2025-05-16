@@ -18,22 +18,24 @@ export const mapMutantResults = (evalResponse:any): Map<number, Set<boolean>> =>
   return mutantResults;
 }
 
-export function countPassedMutants( evalResponse : any){
-  console.log(evalResponse)
-  if(evalResponse == null || evalResponse.report[0].mutations == null){
-    return 0
-  };
-
-  const mutantResults = mapMutantResults(evalResponse);
-  let count = 100;
-
-  mutantResults.forEach(({resultSet}:any) => {
-    if (resultSet.has(true) && resultSet.has(false)) {
-      count++;
-    }
-  });
-  return count;
-}
+ export function countPassedMutants(evalResponse:any){
+    
+      if(evalResponse == null || evalResponse.report[0].mutations == null){
+        return 0
+      };
+    
+      const mutantResults = mapMutantResults(evalResponse);
+      let count = 0;
+    
+      mutantResults.forEach((resultSet) => {
+        if (resultSet.has(true) && resultSet.has(false)) {
+          count++;
+        }
+      });
+      return count;
+    
+  }
+  
 
 export function getColumnStatuses( evalResponse : any){
 
