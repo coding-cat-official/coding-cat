@@ -19,12 +19,29 @@ export function countPassedMutants({ evalResponse }: any){
   if(evalResponse == null || evalResponse.report[0].mutations == null) return 0;
 
   const mutantResults = mapMutantResults(evalResponse);
-    let count = 0;
+  let count = 0;
 
-    mutantResults.forEach(({resultSet}:any) => {
-      if (resultSet.has(true) && resultSet.has(false)) {
-        count++;
-      }
-    });
-    return count;
+  mutantResults.forEach(({resultSet}:any) => {
+    if (resultSet.has(true) && resultSet.has(false)) {
+      count++;
+    }
+  });
+  return count;
+}
+
+export function getColumnStatuses({ evalResponse }: { evalResponse: any } = { evalResponse: null }){
+  if(evalResponse == null || evalResponse.report[0].mutations == null) return 0;
+  const mutantResults = mapMutantResults(evalResponse);
+
+  const statusMap = new Map<number, string>();
+  mutantResults.forEach((results, index) => {
+
+     if (results.has(true) && results.has(false)) {
+      statusMap.set(index, "pass");
+    } else {
+      statusMap.set(index, "fail");
+    }
+  });
+
+  return statusMap;
 }
