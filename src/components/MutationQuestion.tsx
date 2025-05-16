@@ -221,7 +221,10 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         )}
         </tbody>
       </table>
-      <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
+      <Box sx={{display: "flex", flexDirection: "row", gap: "10px"}}>
+        <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>+</Button>
+        <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>-</Button>
+      </Box>
       {attemptedRun && (hasEmptyInputs || hasEmptyExpected) && (
         <Box sx={{ color: 'danger.plainColor', mb: 1 }}>
           Please fill in all input and expected boxes before running.
