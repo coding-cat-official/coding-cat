@@ -1,5 +1,6 @@
 import {Box, Button} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
+import { countPassedMutants } from '../utils/mapMutantResults';
 
 export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
@@ -89,33 +90,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   };
 
 
-  // The progress bar for mutations
-  const countPassedMutants = () => {
-    const mutantResults = new Map<number, Set<boolean>>();
-
-    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
-
-    evalResponse?.report?.forEach((row:any, rowNum:number) => {
-
-      if(row.solution.equal){
-        row.mutations.forEach((mutation:any, index:number) => {
-          if (!mutantResults.has(index)) {
-            mutantResults.set(index, new Set());
-          }
-          mutantResults.get(index)!.add(mutation.equal);  
-        });
-      }
-    });
-
-    let count = 0;
-    mutantResults.forEach((resultSet, index) => {
-      if (resultSet.has(true) && resultSet.has(false)) {
-        count++;
-      }
-    });
-    return count;
-  };
-
   const handleRun = () => {
     setAttemptedRun(true);
     if(hasEmptyInputs || hasEmptyExpected) return;
@@ -200,15 +174,18 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     />
                   ))}
                 </td>
-              {mutations.map((passOrFail:any, index:number) => (
-                <td key={index}>
-                  {passOrFail
-                    ? passOrFail.equal
-                      ? '✅'
-                      : '❌'
-                    : ''}
-                </td>
-              ))}
+              {mutations.map((passOrFail:any, index:number) => {
+
+                return (
+                  <td key={index}>
+                    {passOrFail
+                      ? passOrFail.equal
+                        ? '✅'
+                        : '❌'
+                      : ''}
+                  </td>
+                );
+              })}
               <td style={{ textAlign: 'center' }}>
                 {row?.solution?.equal != null
                   ? row.solution.equal
@@ -242,7 +219,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
       <Box className="mutation-results">
-        You have found {countPassedMutants()}/{numOfMutations} mutations.
+        You have found {countPassedMutants({evalResponse})}/{numOfMutations} mutations.
       </Box>
     </>
   )
