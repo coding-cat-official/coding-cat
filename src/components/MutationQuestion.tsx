@@ -90,8 +90,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
   };
 
   function handleRemoveRow(){
-    console.log(expectedOutputRows)
-    if(numOfTableRows > 1 && expectedOutputRows.length < numOfTableRows){
+    if(numOfTableRows > 1 && expectedOutputRows[expectedOutputRows.length-1] === ""){
       setNumRows(numOfTableRows-1);
       setInputRows(rows => rows.slice(0, -1));
       setExpectedOutputRows(rows => rows.slice(0, -1));
