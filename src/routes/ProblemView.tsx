@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
@@ -16,7 +16,6 @@ import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
-import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
 import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
@@ -156,15 +155,15 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     function handlePreviousProblem(){
       if(currIndex > 0){
-        const prevProblem = currCategoryProblems()[currIndex-1].meta.name;
+        const prevProblem = currProblems[currIndex-1].meta.name;
         setCurrIndex(currIndex-1);
         navigate(`/problems/${prevProblem}`)
       }
     }
 
     function handleNextProblem(){ 
-      if(currIndex < currCategoryProblems().length - 1){
-        const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
+      if(currIndex < currProblems.length - 1){
+        const nextProblem = currProblems[currIndex+1].meta.name;
         setCurrIndex(currIndex+1);
         navigate(`/problems/${nextProblem}`)
       }
@@ -195,6 +194,24 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     return (
       <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
         <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+          <Box className="navigate-problem-btn">
+            <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
+              <Stack direction="column" spacing={0} alignItems="center">
+                <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                  {currProblems[currIndex - 1]?.meta?.title}
+                </Typography>
+              </Stack>
+            </Button>
+            <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
+              <Stack direction="column" spacing={0} alignItems="center">
+                <Typography level="body-md" fontFamily="inherit">Next</Typography>
+                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                  {currProblems[currIndex + 1]?.meta?.title}
+                </Typography>
+              </Stack>
+            </Button>
+          </Box>
           <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%"}}>
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
               <Box>
@@ -217,10 +234,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               )
             }
           </Sheet>
-          <Box className="navigate-problem-btn">
-            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
-            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
-          </Box>
+          
         </Stack>
       
           <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
