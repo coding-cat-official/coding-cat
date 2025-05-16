@@ -1,4 +1,4 @@
-import {Box, Button} from '@mui/joy';
+import {Box, Button, LinearProgress, Typography} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
 import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
@@ -128,6 +128,11 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
 
   return(
     <> 
+      <LinearProgress className="mutation-progressBar" determinate value={countPassedMutants(evalResponse)/numOfMutations*100} size="lg" thickness={30}>
+        <Typography level="title-sm" sx={{ fontWeight: 'xl', color:"black", zIndex: "5" }}>
+          You have found {countPassedMutants(evalResponse)}/{numOfMutations} mutations.
+        </Typography>
+      </LinearProgress>
       <table className='mutation-table'>
         <colgroup>
           <col span={1}/>
@@ -224,9 +229,8 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       )}
       <Button disabled={disabled} onClick={handleRun}>Run</Button>
 
-      <Box className="mutation-results">
-        You have found {countPassedMutants(evalResponse)}/{numOfMutations} mutations.
-      </Box>
+      
+
     </>
   )
 }
