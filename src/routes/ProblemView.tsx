@@ -3,7 +3,6 @@ import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-r
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
-import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
@@ -18,6 +17,7 @@ import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
+import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -28,6 +28,7 @@ const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
+    const problems = await getProblemSet();
     const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
     if (selected.length !== 1) throw new Error('fuck');
     return selected[0];
@@ -54,11 +55,18 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [question, setQuestion] = useState("");
     const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
+    const [problems, setProblems] = useState<Problem[]>([]);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     
     const navigate = useNavigate();
+
+    useEffect(() => {
+      (async () => {
+        setProblems(await getProblemSet());
+      })();
+    }, []);
 
     const currCategoryProblems = () => {
       const questionType = problem.meta.question_type[0];
