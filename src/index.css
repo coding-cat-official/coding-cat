@@ -163,6 +163,11 @@ table input{
   background-color: #ffb5a9 !important;
 }
 
+textarea{
+  max-width: 350px;
+  max-height: 100px;
+}
+
 @media (max-width: 1024px){
 
   .MuiBox-root.account-btns{

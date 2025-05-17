@@ -173,7 +173,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
               <td>{rowIndex+1}</td>
               <td className='input-box'>
                   {inputRows[rowIndex].map((val, colIndex) => (
-                    <input
+                    <textarea
                       key={colIndex}
                       style= {{
                         marginRight: '3px',
@@ -213,7 +213,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                   : ''}
               </td>
               <td>
-                  <input
+                  <textarea
                     value={expectedOutputRows[rowIndex]}
                     style={{ border: attemptedRun && expectedOutputRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
                     onChange={e => {
