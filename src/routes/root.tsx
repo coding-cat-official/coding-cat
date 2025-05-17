@@ -1,22 +1,18 @@
 import { useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
-
-import problems from '../public-problems/problems';
 import { Problem } from '../types';
-
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
-
 import {List as ListIcon} from '@phosphor-icons/react';
 import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
-
 import whitePaw from '../assets/white_paw.webp';
 import whitePawHover from '../assets/white_paw_hover.webp';
 import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
+import getProblemSet from '../utils/getProblemSet';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -215,5 +211,5 @@ export default function App() {
 )};
 
 export async function problemListLoader(): Promise<Problem[]> {
-    return problems as Problem[];
+  return await getProblemSet() as Problem[];
 }
