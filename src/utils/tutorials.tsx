@@ -1,4 +1,5 @@
 import categories from '../assets/categories.png';
+import tabPaw from '../assets/tab-paw.png';
 
 export const welcomePageTutorial = [
   {
@@ -16,6 +17,7 @@ export const welcomePageTutorial = [
         <h2>To navigate to exercises 📚</h2>
         <p>Click on the bar on your left</p>
         <h3>👈(ﾟヮﾟ) </h3>
+        <img src={tabPaw} alt="tab white cat paw navbar" height="50px" width="50px"/>
       </>
     )
   },
@@ -24,7 +26,7 @@ export const welcomePageTutorial = [
       <>
         <h2>Categories 📃</h2>
         <p>All problems are separated by category but you don't need to worrry about their meaning for now!</p>
-        <img src={categories} alt="Different categories" height="100px" width="130px"/>
+        <img src={categories} alt="Different categories" height="170px" width="200px"/>
       </>
     )
   },
