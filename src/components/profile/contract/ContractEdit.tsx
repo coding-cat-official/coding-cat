@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { ContractData } from "../../../types";
-import { Button, Input, Option, Select, Stack, Table, Textarea, Typography } from "@mui/joy";
+import { Button, Input, Option, Select, Stack, Table, Typography } from "@mui/joy";
 
 interface ContractEditProps {
   setIsUpdating: Dispatch<SetStateAction<boolean>>;
@@ -74,20 +74,20 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
           </Table>
         </Stack>
         <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-        <Textarea value={contract.Coding.codeDescription} 
+        <Input value={contract.Coding.codeDescription} 
           onChange={(e) =>
             setContract((c) => ({
               ...c,
               Coding: { ...c.Coding, codeDescription: e.target.value },
             }))
-          } placeholder="Enter your answer..." minRows={2} maxRows={2} />
+          } placeholder="Enter your answer..." />
         <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-        <Textarea value={contract.Coding.reflectionPlan} onChange={(e) =>
+        <Input value={contract.Coding.reflectionPlan} onChange={(e) =>
           setContract((c) => ({
             ...c,
             Coding: { ...c.Coding, reflectionPlan: e.target.value },
           }))
-        } placeholder="Enter your answer..." minRows={2} maxRows={2} />
+        } placeholder="Enter your answer..." />
 
         {featureMap["Haystack"] && (
           <>
@@ -117,7 +117,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
                 } sx={{ width: "4em" }} placeholder="0" />
             </Stack>
             <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-            <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Haystack.codeDescription} 
+            <Input placeholder="Enter your answer..." value={contract.Haystack.codeDescription} 
               onChange={(e) =>
                 setContract((c) => ({
                   ...c,
@@ -125,7 +125,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
                 }))
               }/>
             <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-            <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Haystack.reflectionPlan} 
+            <Input placeholder="Enter your answer..." value={contract.Haystack.reflectionPlan} 
               onChange={(e) =>
                 setContract((c) => ({
                   ...c,
@@ -163,7 +163,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
                 }/>
             </Stack>
             <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-            <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Mutation.codeDescription} 
+            <Input placeholder="Enter your answer..." value={contract.Mutation.codeDescription} 
               onChange={(e) =>
                 setContract((c) => ({
                   ...c,
@@ -171,7 +171,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
                 }))
               }/>
             <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-            <Textarea placeholder="Enter your answer..." minRows={2} maxRows={2} value={contract.Mutation.reflectionPlan} 
+            <Input placeholder="Enter your answer..." value={contract.Mutation.reflectionPlan} 
               onChange={(e) =>
                 setContract((c) => ({
                   ...c,
