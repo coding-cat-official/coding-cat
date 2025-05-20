@@ -1,5 +1,6 @@
 import categories from '../assets/categories.png';
 import tabPaw from '../assets/tab-paw.png';
+import codingQuestion from '../assets/coding-question.png';
 
 export const welcomePageTutorial = [
   {
@@ -37,7 +38,7 @@ export const welcomePageTutorial = [
       <>
         <h2>Coding 💻</h2>
         <p>Read the description, write a function, and make sure to return a value.</p>
-        <p>[Image of a coding question]</p>
+        <img src={codingQuestion} alt="coding question" height="200px"/>
       </>
     )
   },
