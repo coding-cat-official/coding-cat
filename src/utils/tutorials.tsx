@@ -111,13 +111,11 @@ export const mutationPageTutorial = [
           <p>Your goal is to find out how a function could go wrong by visualizing the function and trying out different inputs.</p>
         </>
       ),
-      position: "top",
       stepInteraction: false
     },
     {
       selector: '.input',
       content: 'Write your inputs here',
-      position: "top",
     },
     {
       selector: '.mutations',
@@ -127,7 +125,6 @@ export const mutationPageTutorial = [
           <p>These will either show ✅ or ❌ if you found a mutant or not.</p>
         </>
       ),
-      position:"top"
     },
     {
       selector: '.mutations-th',
@@ -148,11 +145,10 @@ export const mutationPageTutorial = [
       selector: '.outputs',
       content: () => (
         <>
-          <h3>Make sure that the <u>solution's ouput</u> is the same as the <u>expected output</u></h3>
-          <p>to gain points 📈🗿</p>
+          <h3>Make sure that the <u>solution's ouput</u> is the same as the <u>expected output</u> 📈🗿</h3>
+          <p>it will show a ✅</p>
         </>
       ),
-      position:"top"
     },
     {
       selector: '.input-box',
@@ -163,30 +159,19 @@ export const mutationPageTutorial = [
           <h4>["calico", "void"]</h4>
         </>
       ),
-      position: 'top'
     },
     {
-      selector: '.add-mutation-button',
+      selector: '.add-rm-mutation-button',
       content: () => (
         <>
-          <h3>Click here if you ever run out of rows 🙀</h3>
+          <h3>Click here if you ever run out of rows or have TOO many rows 🙀</h3>
         </>
       )
     },
     {
-      selector: '.mutation-results',
+      selector: '.mutation-progressBar',
       content: () => (
         <h4>This is your progress!👈(ﾟヮﾟ👈)</h4>
       )
-    },
-    {
-      selector: "table",
-      content: () => (
-        <>
-          <h2>Quick Tip ❕</h2>
-          <h3>Press "Alt" + "Enter" to run your code <i>fast</i> 🏃💨</h3>
-        </>
-      )
     }
-
   ];

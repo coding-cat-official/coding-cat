@@ -81,14 +81,6 @@ code {
   padding: 20px 0;
 }
 
-.mutation-results{
-  text-align: center;
-  border: 1px solid black;
-  border-radius: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
 table input{
   max-width: 100px;
   height: 30px;
