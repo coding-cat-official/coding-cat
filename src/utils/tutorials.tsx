@@ -1,3 +1,4 @@
+import categories from '../assets/categories.png';
 
 export const welcomePageTutorial = [
   {
@@ -21,10 +22,9 @@ export const welcomePageTutorial = [
   {
     content: () => (
       <>
-        <h2>Problem Types 📃</h2>
-        <span>Problems are categorized by type:</span>
-        <p><b>Coding, haystack, and mutation</b></p>
-        <p>[Image of the different tabs]</p>
+        <h2>Categories 📃</h2>
+        <p>All problems are separated by category but you don't need to worrry about their meaning for now!</p>
+        <img src={categories} alt="Different categories" height="100px" width="130px"/>
       </>
     )
   },
