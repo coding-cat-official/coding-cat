@@ -1,6 +1,10 @@
 import categories from '../assets/categories.png';
 import tabPaw from '../assets/tab-paw.png';
 import codingQuestion from '../assets/coding-question.png';
+import resultTable from '../assets/result-table.png';
+import haystackQuestiom from '../assets/haystack-question.png';
+import mutationQuestion from '../assets/mutation-question.png';
+import bongoCoding from '../assets/bongo-coding.png';
 
 export const welcomePageTutorial = [
   {
@@ -46,13 +50,15 @@ export const welcomePageTutorial = [
     content: () => (
       <>
         <h2>Coding 💻</h2>
-        <p>When you press "Run", your code will be executed and its output will be compared to the expected output.</p>
-        <ul>
-          <li><b>Input:</b> The data provided to your function.</li>
-          <li><b>Expected output:</b> The correct result your function should return</li>
-          <li><b>Output:</b> What your function really returns with the input</li>
-        </ul>
-        <p>[Image Results table]</p>
+        <p>When you press Run, your code will be executed and its output will be compared to the expected output.</p>
+        <section style={{ display:"flex", gap:"30px", alignItems: "center" }}>
+          <p style={{ textAlign: "left"}}>
+            <b>Input:</b> The data provided to your function.<br/>
+            <b>Expected output:</b> The correct result your function should return<br/>
+            <b>Output:</b> What your function really returns with the input
+          </p>
+          <img src={resultTable} alt="Coding Question Result Table" height="200px"/>
+        </section>
       </>
     )
   },
@@ -62,7 +68,7 @@ export const welcomePageTutorial = [
         <h2>Haystack 🐴</h2>
         <p>It's a coding question disguised in jargon~</p>
         <span>Find the important info 🔍</span>
-        <p>[Image of a haystack question]</p>
+        <img src={haystackQuestiom} alt="Haystack Question" height="180px"/>
       </>
     )
   },
@@ -72,7 +78,7 @@ export const welcomePageTutorial = [
         <h2>Mutation Testing 🧟</h2>
         <p>You will learn more about this later in the course...</p>
         <span>but essentially, it involves making small changes to catch mutations</span>
-        <p>[Image of a mutation question]</p>
+        <img src={mutationQuestion} alt="Mutation Question" height="200px"/>
       </>
     )
   },
@@ -87,8 +93,9 @@ export const welcomePageTutorial = [
   {
     content: () => (
       <>
-        <h2>Let's choose a problem! (๑•̀ㅂ•́)و✧</h2>
-        <p>Explore and Have fun!</p>
+        <h2>Let's choose a problem!</h2>
+        <img src={bongoCoding} alt="Bongo Coding" height="200px"/>
+        
       </>
     ),
   }
