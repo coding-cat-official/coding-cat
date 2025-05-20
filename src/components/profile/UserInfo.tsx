@@ -34,8 +34,8 @@ export default function UserInfo() {
           alert(error.message);
           console.warn(error);
         } else if (data) {
-          setName(data.username);
-          setId(data.student_id);
+          setName(data.username ?? "Unnamed User");
+          setId(data.student_id ?? "");
         }
       }
       setLoading(false);
@@ -113,10 +113,10 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <Avatar color="primary" size="lg">{name.charAt(0)}</Avatar>
+          <Avatar color="primary" size="lg">{(name || "").charAt(0)}</Avatar>
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
-              <Typography level="h2">{name}</Typography>
+              <Typography level="h2">{name || "Unnamed User"}</Typography>
               <IconButton onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
                 <NotePencil size={23} />
               </IconButton>
