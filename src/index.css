@@ -102,7 +102,8 @@ table input{
 }
 
 .MuiButton-root.add-mutation-button:hover{
-  background-color: antiquewhite;
+  background-color: #d4ff99;
+  color: black;
 }
 
 .MuiCard-root.main-tutorial{
@@ -152,6 +153,19 @@ table input{
 .MuiButton-root.problemList-sortButton{
   font-family: Doto;
   font-weight: bolder;
+}
+
+.col-pass{
+  background-color: #bae87f !important;
+}
+
+.col-fail{
+  background-color: #ffb5a9 !important;
+}
+
+textarea{
+  max-width: 350px;
+  max-height: 100px;
 }
 
 @media (max-width: 1024px){
