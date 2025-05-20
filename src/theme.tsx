@@ -144,17 +144,11 @@ export const theme = extendTheme({
             backgroundColor: 'white',
             border: '1px solid black',
             boxShadow: '2px 2px black',
-            '&::before': {
-              border: '1px solid black',
-            },
           },
           '&.mutation-progressBar': {
             backgroundColor: "white",
             color: '#d4ff99',
             border: '1px solid black',
-            '&::before': {
-              border: '1px solid black',
-            },
           }
         }
       }
