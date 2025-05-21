@@ -17,6 +17,7 @@ import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import getProblemSet from '../utils/getProblemSet';
+import cursedCat from '../assets/cUrSed.png';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -295,10 +296,11 @@ function Report({ evalResponse }: ReportProps) {
             </tbody>
           </Table>
           { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
-            ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
-                <Typography sx={{ p: 2 }} level='body-lg'>
+            ? <Box style={{ textAlign: "center"}} sx={{ borderTop: 1 }} >
+                <Typography sx={{ p: 1 }} level='body-lg'>
                   Bravo {ALL_TESTS_PASSED} You completed this problem!
                 </Typography>
+                <img src={cursedCat} alt='cursed coding cat' height="100px"/>
               </Box>
             : null }
         </Stack>

@@ -27,7 +27,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     totalTests = problem.mutations?.length ?? 0;
                     const mutationResults = new Map<number, Set<boolean>>()
                     for (const row of response.report as any[]){
-                        if(!row.solution?.equal) continue;
+                        if(!row?.solution?.equal) continue;
                         row.mutations.forEach((mutation: any, index: number) => {
                             if(!mutationResults.has(index)) mutationResults.set(index, new Set())
                                 mutationResults.get(index)!.add(mutation.equal)
