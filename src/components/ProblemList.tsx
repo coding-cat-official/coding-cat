@@ -1,5 +1,5 @@
 import { Button, Chip, LinearProgress, List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
-import { Problem, Submission } from '../types';
+import { ContractProgress, Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
@@ -19,9 +19,10 @@ interface ProblemListProps {
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
   session: Session | null;
+  contractProgress: ContractProgress;
 }
 
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
   const [order, setOrder] = useState("asc");
@@ -33,7 +34,9 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
   }, [selectedTopic, progress]);
     
-  const percentageCompleted = Math.round((completedProblems?.completed / completedProblems?.total) * 100);
+  let percentageCompleted = Math.round((completedProblems?.completed / contractProgress[selectedTopic!!]) * 100);
+  if (percentageCompleted > 100) percentageCompleted = 100;
+  if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
   useEffect(() => {
     async function fetchProgress() {
@@ -107,7 +110,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     <Stack gap={1} className="stack-problemList">
       <Stack pr={4} gap={1}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
-          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{completedProblems?.total}</Typography>
+          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!]}</Typography>
           <Typography level="h4">{percentageCompleted}%</Typography>
         </Stack>
         <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />

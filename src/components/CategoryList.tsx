@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
-import { Problem, Progress } from '../types';
+import { ContractProgress, Problem, Progress } from '../types';
 import CategoryLock from '../utils/CategoryLock';
 import CategoryListItems from './CategoryListItem';
 
@@ -12,13 +12,15 @@ export interface CategoryListProps {
     activeCategory: string | null;
     onSelectCategory: (cat: string) => void;
     session: Session | null;
+    contractProgress: ContractProgress;
 }
 
 export default function CategoryList({
     searchedProblems,
     activeCategory,
     onSelectCategory,
-    session
+    session,
+    contractProgress
   }: CategoryListProps) {
     const [error, setError] = useState("");
     const [progress, setProgress] = useState<Progress[]>([]);
@@ -94,6 +96,8 @@ export default function CategoryList({
                     mapCategoryToLock={mapCategoryToLock}
                     activeCategory={activeCategory}
                     onSelectCategory={onSelectCategory}
+                    session={session}
+                    contractProgress={contractProgress}
                 />
                 <Box>
                     <hr/>
@@ -105,6 +109,8 @@ export default function CategoryList({
                     mapCategoryToLock={mapCategoryToLock}
                     activeCategory={activeCategory}
                     onSelectCategory={onSelectCategory}
+                    session={session}
+                    contractProgress={contractProgress}
                 />
             </>
         </List>

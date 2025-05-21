@@ -1,8 +1,7 @@
 import { ListItemButton, Typography } from '@mui/joy'
 import { LockSimple } from '@phosphor-icons/react';
 
-export default function CategoryListItems({categories, type, progress, mapCategoryToLock, activeCategory, onSelectCategory}:any) {
-  
+export default function CategoryListItems({categories, type, progress, mapCategoryToLock, activeCategory, onSelectCategory, contractProgress}:any) {
   return(
     <>
      {categories.map((category:string) => {
@@ -39,7 +38,7 @@ export default function CategoryListItems({categories, type, progress, mapCatego
                 >
                     {!unlocked && <LockSimple size={16}/>}
                     <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
+                        {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{contractProgress[category] ?? 0}</strong>
                     </Typography>
                 </ListItemButton>
             )
