@@ -36,6 +36,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     
   let percentageCompleted = Math.round((completedProblems?.completed / contractProgress[selectedTopic!!]) * 100);
   if (percentageCompleted > 100) percentageCompleted = 100;
+  if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
   useEffect(() => {
     async function fetchProgress() {
