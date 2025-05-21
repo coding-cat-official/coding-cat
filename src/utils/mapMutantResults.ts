@@ -17,9 +17,13 @@ export function mapMutantResults (evalResponse:any): Map<number, Set<boolean>>{
 
 export function countPassedMutants(evalResponse:any){
     
-  if(evalResponse == null || evalResponse?.report[0]?.mutations == null){
+  if(evalResponse == null){
     return 0
   };
+
+  if(evalResponse.status === 'failure'){
+    return 0;
+  }
 
   const mutantResults = mapMutantResults(evalResponse);
   let count = 0;

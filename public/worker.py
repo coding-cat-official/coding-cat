@@ -40,18 +40,19 @@ def test_mutation_function(solution, mutations, tests, function_name):
                 inputs   = [ast.literal_eval(tok) for tok in row['Input']]
                 expected = [ast.literal_eval(row['Expected'])]
                 parsed_tests.append((inputs, expected, None))
-            except SyntaxError as e:
-                tag = "__SYNTAX_ERROR__"
+            except Exception as e:
+                tag = "__ERROR__"
                 err = str(e)
                 parsed_tests.append((tag, err, row['Input']))
+                print()
 
     report = []
     for inputs, expected, raw in parsed_tests:
-        if inputs == "__SYNTAX_ERROR__":
+        if inputs == "__ERROR__":
             report.append({
                 "input": raw,
                 "expected": None,
-                "solution": {"inputs": raw, "actual": f"<syntax error: {expected}>", "equal": False},
+                "solution": {"inputs": raw, "actual": f"<error: {expected}>", "equal": False},
                 "mutations": [{"index": i, "actual": "<skipped due to syntax error>", "equal": False}
                       for i, _ in enumerate(mutation_functions)],
             })
