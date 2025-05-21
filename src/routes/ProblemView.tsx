@@ -18,6 +18,7 @@ import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
+import SolutionCode from '../components/SolutionCode';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -236,20 +237,24 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             }
           </Sheet>
           
-        </Stack>
+      </Stack>
       
-          <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-            { 
-              problem.meta.question_type[0] === 'coding' ? (
-                <Box flex={1} width="100%">
-                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-                </Box>
-              ) : <></>
-            }
-            <Box ref={reflectionInput} flex={1} width="100%">
-              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-            </Box>
+        <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+          { 
+            problem.meta.question_type[0] === 'coding' ? (
+              <Box flex={1} width="100%">
+                {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+              </Box>
+            ) : <SolutionCode problem={problem}/>
+
+          }
+          <Box ref={reflectionInput} flex={1} width="100%">
+            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+          </Box>
+
+
         </Stack>
+
         
       </Stack>
     
