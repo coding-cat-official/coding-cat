@@ -18,6 +18,8 @@ import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
+import SolutionCode from '../components/SolutionCode';
+import { getColumnStatuses } from '../utils/mapMutantResults';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -192,6 +194,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     let author = problem.meta.author;
     if (author.toLowerCase() === "chatgpt") author = "";
 
+    const statuses = evalResponse?.status === 'success'
+    ? getColumnStatuses(evalResponse)
+    : undefined;
+
     return (
       <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
         <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
@@ -236,20 +242,36 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             }
           </Sheet>
           
-        </Stack>
+      </Stack>
       
-          <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-            { 
-              problem.meta.question_type[0] === 'coding' ? (
-                <Box flex={1} width="100%">
-                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-                </Box>
-              ) : <></>
-            }
-            <Box ref={reflectionInput} flex={1} width="100%">
-              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-            </Box>
+        <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+          { 
+            problem.meta.question_type[0] === 'coding' ? (
+              <Box flex={1} width="100%">
+                {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+              </Box>
+            ) : 
+            (
+              <>
+                <SolutionCode code={problem.solution} title="Problem Solution"/>
+                
+                {statuses &&
+                  problem.mutations?.map((mutCode, idx) =>
+                    statuses.get(idx) === 'pass' ? (
+                      <SolutionCode key={idx} code={mutCode} title={`Mutation M${idx + 1} Code`}/>
+                    ) : null
+                  )}
+              </>
+             
+            )
+          }
+          <Box ref={reflectionInput} flex={1} width="100%">
+            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+          </Box>
+
+
         </Stack>
+
         
       </Stack>
     
