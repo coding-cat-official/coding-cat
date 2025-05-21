@@ -1,4 +1,4 @@
-import {Box, Button, LinearProgress, Typography} from '@mui/joy';
+import {Box, Button, LinearProgress, Stack, Typography} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
 import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
@@ -229,7 +229,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         )}
         </tbody>
       </table>
-      <Box sx={{display: "flex", flexDirection: "row", gap: "10px"}}>
+      <Box sx={{display: "flex", flexDirection: "row", gap: "10px"}} className="add-rm-mutation-button">
         <Button sx={{width:"100%"}} onClick={handleNewRow} className='add-mutation-button'>+</Button>
         <Button sx={{width:"100%"}} onClick={handleRemoveRow} className='add-mutation-button'>-</Button>
       </Box>
@@ -238,7 +238,15 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
           Please fill in all input and expected boxes before running.
         </Box>
       )}
-      <Button disabled={disabled} onClick={handleRun}>Run</Button>
+      
+      <Button disabled={disabled} onClick={handleRun}>
+        <Stack direction="column" spacing={0} alignItems="center">
+          <Typography level="body-md" fontFamily="inherit">Run</Typography>
+          <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+            Alt + Enter
+          </Typography>
+        </Stack>
+      </Button>
 
       
 
