@@ -252,17 +252,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               </Box>
             ) : 
             (
-              statuses && (
-                <>
-                  <SolutionCode code={problem.solution} title="Problem Solution"/>
-    
-                  {problem.mutations?.map((mutCode, idx) =>
+              <>
+                <SolutionCode code={problem.solution} title="Problem Solution"/>
+                
+                {statuses &&
+                  problem.mutations?.map((mutCode, idx) =>
                     statuses.get(idx) === 'pass' ? (
                       <SolutionCode key={idx} code={mutCode} title={`Mutation M${idx + 1} Code`}/>
                     ) : null
                   )}
-                </>
-             )
+              </>
+             
             )
           }
           <Box ref={reflectionInput} flex={1} width="100%">

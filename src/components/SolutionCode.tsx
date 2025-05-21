@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/joy";
+import { useState } from "react";
 
 interface SolutionCodeProps {
   code: any;
@@ -6,16 +7,20 @@ interface SolutionCodeProps {
 }
 
 export default function SolutionCode({code, title}:SolutionCodeProps){
-
+  
+  const [open, setOpen] = useState(false);
+  
   return(
     <>
       <Box>
-        <Typography level="h3">
-          {title}
+        <Typography level="h3" onClick={() => setOpen(o => !o)} sx={{ cursor: "pointer"}}>
+          {title} {open ? "▾" : "▸"}
         </Typography>
-        <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'scroll', width: 500,}}>
+        {open && (
+          <Box component="pre" sx={{mt: 1, p: 1, bgcolor: '#f5f5f5', borderRadius: 1, fontSize: '0.85rem', overflowX: 'scroll', width: 500,}}>
           { code }
-        </Box>
+          </Box>
+        )}
       </Box>
     </>
   )
