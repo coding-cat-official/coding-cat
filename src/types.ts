@@ -100,3 +100,7 @@ export const BLANK_CONTRACT: ContractData = {
     "Mutation":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' },
     "Haystack":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' }
 }
+
+export type ContractProgress = {
+    [category: string]: number;
+}
