@@ -81,14 +81,6 @@ code {
   padding: 20px 0;
 }
 
-.mutation-results{
-  text-align: center;
-  border: 1px solid black;
-  border-radius: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
 table input{
   max-width: 100px;
   height: 30px;
@@ -108,14 +100,19 @@ table input{
 
 .MuiCard-root.main-tutorial{
   margin: 20px 100px;
+  height: 450px;
   min-width: 500px;
   max-width: 1000px;
   padding: 20px 50px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px solid #bae87f;
 }
 
 .tutorial-icons{
-  position: absolute;
-  bottom: 130px;  
+  position: relative;
 }
 
 .tutorial-icons button{
