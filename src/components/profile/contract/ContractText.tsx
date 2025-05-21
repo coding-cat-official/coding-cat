@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { ContractData } from "../../../types";
-import { Button, Stack, Typography } from "@mui/joy";
+import { Box, Button, Stack, Typography } from "@mui/joy";
 
 interface ContractTextProps {
   setIsUpdating: Dispatch<SetStateAction<boolean>>;
@@ -31,11 +31,15 @@ export default function ContractText({ setIsUpdating, contract, lastUpdated, fea
           </Stack>
         <Typography>
           Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-          <strong>{contract.Coding.codeDescription}</strong>
+          <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+            <strong>{contract.Coding.codeDescription}</strong>
+          </Box>
         </Typography>
         <Typography>
           How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-          <strong>{contract.Coding.reflectionPlan}</strong>
+          <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+            <strong>{contract.Coding.reflectionPlan}</strong>
+          </Box>
         </Typography>
 
         {featureMap["Haystack"] && (
@@ -45,11 +49,15 @@ export default function ContractText({ setIsUpdating, contract, lastUpdated, fea
             <Typography>How many haystack problems will you solve? <strong>{contract.Haystack.problemsToSolve}</strong></Typography>
             <Typography>
               Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-              <strong>{contract.Haystack.codeDescription} </strong>
+              <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+                <strong>{contract.Haystack.codeDescription} </strong>
+              </Box>
             </Typography>
             <Typography>
               How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-              <strong>{contract.Haystack.reflectionPlan}</strong>
+              <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+                <strong>{contract.Haystack.reflectionPlan}</strong>
+              </Box>
             </Typography>
           </>
         )}
@@ -61,11 +69,15 @@ export default function ContractText({ setIsUpdating, contract, lastUpdated, fea
             <Typography>How many mutation testing problems will you solve? <strong>{contract.Mutation.problemsToSolve}</strong></Typography>
             <Typography>
               Give a qualitative description of what your code will look like in order to achieve your desired grade.<br />
-              <strong>{contract.Mutation.codeDescription}</strong>
+              <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+                <strong>{contract.Mutation.codeDescription}</strong>
+              </Box>
             </Typography>
             <Typography>
               How many reflections will you do in order to reach your desired grade and how in depth will you go with them?<br />
-              <strong>{contract.Mutation.reflectionPlan}</strong>
+              <Box component="div" sx={{p: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word', }}>
+                <strong>{contract.Mutation.reflectionPlan}</strong>
+              </Box>
             </Typography>
           </>
         )}
