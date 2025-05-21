@@ -173,6 +173,7 @@ export default function App() {
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
                   session={session}
+                  contractProgress={contractProgress}
                 />
               </Box>
             </Box>
