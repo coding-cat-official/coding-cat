@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Problem } from '../types';
+import { BLANK_CONTRACT, ContractData, ContractProgress, Problem } from '../types';
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 import {List as ListIcon} from '@phosphor-icons/react';
@@ -24,7 +24,12 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
-    const [selectedTab, setSelectedTab] = useState("");
+  const [selectedTab, setSelectedTab] = useState("");
+  const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
+  
+  const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
+  contractProgress["mutation"] = contract.Mutation.problemsToSolve;
+  contractProgress["haystack"] = contract.Haystack.problemsToSolve;
 
   let newDifficulty = difficulty;
   if (newDifficulty === "all") newDifficulty = "";
@@ -89,6 +94,21 @@ export default function App() {
     });
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      if (!session) return;
+
+      const { data } = await supabase
+        .from("contracts")
+        .select("data")
+        .eq("profile_id", session?.user.id)
+        .order("updated_at", { ascending: false })
+        .limit(1);
+
+      if (data) setContract(data[0].data);
+    })();
+  }, [session])
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -140,6 +160,7 @@ export default function App() {
                   activeCategory={activeCategory}
                   onSelectCategory={handleSelectedCategory}
                   session={session}
+                  contractProgress={contractProgress}
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
