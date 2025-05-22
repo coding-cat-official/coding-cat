@@ -34,7 +34,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
   }, [selectedTopic, progress]);
     
-  let percentageCompleted = Math.round((completedProblems?.completed / contractProgress[selectedTopic!!]) * 100);
+  let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)) * 100));
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
