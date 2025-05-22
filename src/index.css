@@ -165,6 +165,10 @@ textarea{
   max-height: 100px;
 }
 
+.MuiButton-root.mobile-categoryList{
+  display: none;
+}
+
 @media (max-width: 1024px){
 
   .MuiBox-root.account-btns{
@@ -239,6 +243,19 @@ textarea{
   .MuiBox-root.categoryList{
     display: none;
   }
+
+  .MuiStack-root.stack-problemList{
+    margin: 20px 0 !important;
+  }
+
+  .MuiTypography-root.MuiTypography-h1{
+    font-size: 14pt;
+  }
+
+  .MuiButton-root.mobile-categoryList{
+  display: block;
+}
+
 }
 
 @media (max-width: 500px){

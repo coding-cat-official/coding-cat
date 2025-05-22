@@ -154,7 +154,7 @@ export default function App() {
           </Stack>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
-              <Button>&gt;</Button>
+              <Button className="mobile-categoryList">&gt;</Button>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}} className="categoryList">
                 <CategoryList
                   searchedProblems={searchedProblems}
