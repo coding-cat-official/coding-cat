@@ -110,7 +110,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     <Stack gap={1} className="stack-problemList">
       <Stack pr={4} gap={1}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" >
-          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!]}</Typography>
+          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)}</Typography>
           <Typography level="h4">{percentageCompleted}%</Typography>
         </Stack>
         <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />

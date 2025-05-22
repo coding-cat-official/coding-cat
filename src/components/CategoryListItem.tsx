@@ -38,7 +38,7 @@ export default function CategoryListItems({categories, type, progress, mapCatego
                 >
                     {!unlocked && <LockSimple size={16}/>}
                     <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{contractProgress[category] ?? 0}</strong>
+                        {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{contractProgress[category] || (summary?.total ?? 0)}</strong>
                     </Typography>
                 </ListItemButton>
             )
