@@ -1,7 +1,8 @@
 import { ListItemButton, Typography } from '@mui/joy'
 import { LockSimple } from '@phosphor-icons/react';
+import { capitalizeString } from '../utils/capitalizeString';
 
-export default function CategoryListItems({categories, type, progress, mapCategoryToLock, activeCategory, onSelectCategory, contractProgress}:any) {
+export default function CategoryListItems({categories, type, progress, mapCategoryToLock, activeCategory, onSelectCategory, session, contractProgress}:any) {
   return(
     <>
      {categories.map((category:string) => {
@@ -38,7 +39,11 @@ export default function CategoryListItems({categories, type, progress, mapCatego
                 >
                     {!unlocked && <LockSimple size={16}/>}
                     <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
-                        {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{contractProgress[category] ?? 0}</strong>
+                        {
+                            !!session ? 
+                            <>{capitalizeString(category)} - <strong>{summary?.completed ?? 0}/{contractProgress[category] || (summary?.total ?? 0)}</strong></> 
+                            : capitalizeString(category)
+                        }
                     </Typography>
                 </ListItemButton>
             )

@@ -94,11 +94,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     setOrderBy(sortCategory);
   }
 
-  if (Object.keys(problemsByCategory).length === 0) {
-    return (
-      <Typography>No problems found</Typography>
-    )
-  }
+  const problemsFound = (problemsByCategory[selectedTab] || problemsByCategory[""])?.length || 0;
 
   if (error) {
     return (
@@ -108,13 +104,18 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
 
   return(
     <Stack gap={1} className="stack-problemList">
-      <Stack pr={4} gap={1}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" >
-          <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? selectedTopic.charAt(0).toUpperCase() + selectedTopic.slice(1): ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!]}</Typography>
-          <Typography level="h4">{percentageCompleted}%</Typography>
-        </Stack>
-        <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />
-      </Stack>
+      {
+        !!session ? 
+        <Stack pr={4} gap={1}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" >
+            <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)}</Typography>
+            <Typography level="h4">{percentageCompleted}%</Typography>
+          </Stack>
+          <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />
+        </Stack> :
+        <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""}</Typography>
+      }
+      
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
@@ -126,7 +127,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             ))}
           </TabList>
 
-          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={1}>
+          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={2} alignItems="center">
             {
               sortCategories.map((sc) => {
                 const active = orderBy === sc;
@@ -152,11 +153,14 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                 >{capitalizeString(sc)}</Button>
               })
             }
+            <Typography fontFamily="Victor Mono">
+              {problemsFound} problem{problemsFound !== 1 ? "s" : ""} found
+            </Typography>
           </Stack>
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
-                { (problemsByCategory[selectedTab] || problemsByCategory[""]).map((p) => 
+                { (problemsByCategory[selectedTab] || problemsByCategory[""])?.map((p) => 
                     <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
