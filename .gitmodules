@@ -3,4 +3,4 @@
 	url = https://github.com/coding-cat-official/coding-cat-public
 [submodule "src/private-problems"]
 	path = src/private-problems
-	url = git@github.com:emaj9/coding-cat-private.git
+	url = https://github.com/coding-cat-official/coding-cat-private

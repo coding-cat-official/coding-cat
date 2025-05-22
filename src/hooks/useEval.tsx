@@ -18,7 +18,6 @@ export default function useEval(problem: Problem, session: Session | null): Eval
             const isMutation = problem.meta.question_type[0] === "mutation";
             const response = (e as CustomEvent).detail;
             setEvalResponse(response);
-            console.log(response);
     
             if(response.status === 'success' && session?.user){
                 let numPassed: number
