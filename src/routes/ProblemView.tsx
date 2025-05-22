@@ -21,7 +21,6 @@ import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 
-
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
 const TEST_CASE_FAILED = '❌';
@@ -249,7 +248,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           { 
             ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
               <Box flex={1} width="100%">
-                {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
+                {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
               </Box>
             ) : 
             (
@@ -281,10 +280,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
 interface ReportProps {
   evalResponse: EvalResponse | null;
-  questionType: string;
 }
 
-function Report({ evalResponse, questionType }: ReportProps) {
+function Report({ evalResponse }: ReportProps) {
   if (null === evalResponse) return null;
 
   if ('failure' === evalResponse.status) {
@@ -297,38 +295,6 @@ function Report({ evalResponse, questionType }: ReportProps) {
   }
 
   if ('success' === evalResponse.status) {
-
-    if(questionType === 'haystack'){
-      return (
-        <Table size="sm" variant="outlined"
-          sx={{
-            '--TableCell-headBackground': '#f5f5f5',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center'}}>Test #</th>
-              <th style={{ textAlign: 'center'}}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evalResponse.report.map((r, i) => (
-              <tr key={i}>
-                <td style={{ textAlign: 'center'}}>
-                  <Typography>{i + 1}</Typography>
-                </td>
-                <td style={{ textAlign: 'center' }}>
-                  {r.equal ? '✅' : '❌'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      );
-    }
-
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
