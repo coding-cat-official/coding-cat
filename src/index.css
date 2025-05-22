@@ -165,7 +165,13 @@ textarea{
   max-height: 100px;
 }
 
+
+
 .MuiButton-root.mobile-categoryList{
+  display: none;
+}
+
+.MuiBox-root.mobile-categoryList{
   display: none;
 }
 
@@ -254,6 +260,10 @@ textarea{
   }
 
   .MuiButton-root.mobile-categoryList{
+    display: block;
+  }
+
+  .MuiBox-root.mobile-categoryList{
     display: block;
   }
 
