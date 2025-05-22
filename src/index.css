@@ -233,10 +233,11 @@ textarea{
     flex-direction: column;
     gap: 0;
     align-items: center;
+    margin: 0;
   }
 
   .MuiTabPanel-root.problemList-list {
-    height: 50vh;
+    height: 45vh;
     padding: 0;
   }
 
@@ -248,13 +249,19 @@ textarea{
     margin: 20px 0 !important;
   }
 
-  .MuiTypography-root.MuiTypography-h1{
-    font-size: 14pt;
+  div.MuiTypography-root.MuiTypography-h1{
+    font-size: 16pt;
   }
 
   .MuiButton-root.mobile-categoryList{
-  display: block;
-}
+    display: block;
+  }
+
+  .MuiStack-root.sort-parent{
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
 
 }
 
@@ -279,5 +286,5 @@ textarea{
   .MuiTypography-root.MuiTypography-h1{
     font-size: 12pt;
   }
-  
+
 }

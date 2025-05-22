@@ -127,7 +127,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
             ))}
           </TabList>
 
-          <Stack pl={2} pt={2} pb={2} width="100%" direction="row" gap={2} alignItems="center">
+          <Stack pl={1} pt={1} pb={1} width="100%" direction="row" gap={2} alignItems="center" className="sort-parent">
             {
               sortCategories.map((sc) => {
                 const active = orderBy === sc;
