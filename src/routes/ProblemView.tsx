@@ -138,7 +138,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             );
           }
         } else {
-          if(problem.meta.question_type[0] === 'coding' || 'haystack'){
+          if(['coding','haystack'].includes(problem.meta.question_type[0])){
             setCode(problem.starter || '');
           }
           else{
@@ -231,10 +231,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 <Markdown>
                   {problem.description}
                 </Markdown>
-                {problem.meta.question_type[0] === 'coding' || 'haystack' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+                {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
               </Box>
             </Box>
-            { problem.meta.question_type[0] === 'coding' || 'haystack' ?
+            { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
