@@ -20,8 +20,7 @@ import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
-import { CheckCircle } from '@phosphor-icons/react';
-import { XCircle } from '@phosphor-icons/react/dist/ssr';
+
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
