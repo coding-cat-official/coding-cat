@@ -234,6 +234,10 @@ textarea{
   .MuiTabPanel-root.problemList-list {
     height: 50vh;
   }
+
+  .MuiBox-root.categoryList{
+    display: none;
+  }
 }
 
 @media (max-width: 500px){
@@ -253,4 +257,6 @@ textarea{
   .MuiStack-root.account{
     flex-direction: column;
   }
+
+  
 }
