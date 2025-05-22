@@ -308,16 +308,16 @@ function Report({ evalResponse, questionType }: ReportProps) {
         >
           <thead>
             <tr>
-              <th style={{ textAlign: 'center'}}>Test #</th>
-              <th style={{ textAlign: 'center'}}>Status</th>
+              <th style={{ textAlign: 'center' }}>Input</th>
+              <th style={{ textAlign: 'center' }}>Your output</th>
+              <th style={{ textAlign: 'center' }}>Status</th>
             </tr>
           </thead>
           <tbody>
             {evalResponse.report.map((r, i) => (
-              <tr key={i}>
-                <td style={{ textAlign: 'center'}}>
-                  <Typography>{i + 1}</Typography>
-                </td>
+              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                <td className="mono" style={{ textAlign: 'center' }}>{r.input}</td>
+                <td className="mono" style={{ textAlign: 'center' }}>{r.actual}</td>
                 <td style={{ textAlign: 'center' }}>
                   {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
                 </td>
