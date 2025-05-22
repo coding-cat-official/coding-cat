@@ -79,7 +79,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         return '';
       })
     );
-  }, [code, problem.meta.name]);
+  }, [code, problem.meta.name, inputCount]);
   
   function handleNewRow(){
     if(numOfTableRows < maxNumberOfRows){
@@ -99,7 +99,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
 
   const columnStatuses = getColumnStatuses(evalResponse ?? numOfMutations);
 
-  const handleRun = () => {
+  const handleRun = useCallback(() => {
     setAttemptedRun(true);
     if(hasEmptyInputs || hasEmptyExpected) return;
     const payload = inputRows
@@ -119,20 +119,20 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     setTimeout(() => {
       setDisabled(false);
     }, 2000)
-  };
-
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
-    if(event.altKey && event.key === "Enter"){
-      handleRun();
-    }
-  },[handleRun]);
+  }, [expectedOutputRows, generateQuestion, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
 
   useEffect(() => {
+    const handleKeyPress = (event:KeyboardEvent) => {
+      if(event.altKey && event.key === "Enter"){
+        handleRun();
+      }
+    };
+
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [handleKeyPress]);
+  }, [handleRun]);
 
   return(
     <> 

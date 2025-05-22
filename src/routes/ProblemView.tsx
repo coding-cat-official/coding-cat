@@ -150,7 +150,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
       fetchLatestSubmission();
 
-    }, [problem.meta.name, problem.meta.title, problem.starter, session, setCode]);
+    }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
@@ -320,7 +320,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
                   <Typography>{i + 1}</Typography>
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  {r.equal ? '✅' : '❌'}
+                  {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
                 </td>
               </tr>
             ))}
