@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Problem } from '../types';
 
 type PersistentProblemCode = [ any, (code: any) => void ];
@@ -7,7 +7,7 @@ export default function usePersistentProblemCode(problem: Problem): PersistentPr
   const isMutation = problem.meta.question_type[0] === 'mutation';
   const key = problem.meta.name;
 
-  function loadStored() {
+  const loadStored = useCallback(() => {
     const raw = localStorage.getItem(key);
     if (!raw) {
       return isMutation ? [] : problem.starter;
@@ -28,19 +28,19 @@ export default function usePersistentProblemCode(problem: Problem): PersistentPr
       }
     } 
     catch {
-        if (isMutation) {
-          return [];
-        } else {
-          return raw;
-        }
+      if (isMutation) {
+        return [];
+      } else {
+        return raw;
       }
     }
+  }, [isMutation, key, problem.starter]);
 
   const [code, setCode] = useState<any>(loadStored);
 
   useEffect(() => {
     setCode(loadStored());
-  }, [problem.meta.name]);
+  }, [problem.meta.name, loadStored]);
 
   function setCodeInDB(newCode: any) {
     localStorage.setItem(key, JSON.stringify(newCode));

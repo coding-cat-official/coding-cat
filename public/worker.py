@@ -106,7 +106,7 @@ def load_and_test_student_function(e):
         "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
         "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
     }
-    if data.get("question_type", None) == 'coding':
+    if data.get("question_type", None) in ('coding', 'haystack'):
         try:
             student_function = load_student_function(data['code'], data['name'])
         except Exception as e:
@@ -148,7 +148,5 @@ def load_and_test_student_function(e):
         return respond_success(report)
     else:
         return respond_failure("Question type not supported.")
-
-    print(report)
 
     return respond_success(report)
