@@ -149,6 +149,4 @@ def load_and_test_student_function(e):
     else:
         return respond_failure("Question type not supported.")
 
-    print(report)
-
     return respond_success(report)
