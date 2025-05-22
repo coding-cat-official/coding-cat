@@ -18,6 +18,7 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
@@ -48,6 +49,7 @@ export default function App() {
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
+    setOpenCategory(false)
     if(category === "coding") setSelectedTab("") 
     else setSelectedTab("List")
   }
@@ -154,7 +156,17 @@ export default function App() {
           </Stack>
         <DialogContent>
           <Box sx={{ display: 'flex', overflow: 'hidden', gap: "16px" }}>
-              <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}}>
+              <Button className="mobile-categoryList" onClick={() => setOpenCategory(true)}>&gt;</Button>
+              <Drawer open={openCategory} onClose={() => setOpenCategory(false)} sx={{ flex: 1, width: 300, overflowY: 'auto',}} className="mobile-categoryList">
+                <CategoryList
+                  searchedProblems={searchedProblems}
+                  activeCategory={activeCategory}
+                  onSelectCategory={handleSelectedCategory}
+                  session={session}
+                  contractProgress={contractProgress}
+                />
+              </Drawer>
+              <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}} className="categoryList">
                 <CategoryList
                   searchedProblems={searchedProblems}
                   activeCategory={activeCategory}

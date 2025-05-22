@@ -165,6 +165,16 @@ textarea{
   max-height: 100px;
 }
 
+
+
+.MuiButton-root.mobile-categoryList{
+  display: none;
+}
+
+.MuiBox-root.mobile-categoryList{
+  display: none;
+}
+
 @media (max-width: 1024px){
 
   .MuiBox-root.account-btns{
@@ -229,11 +239,40 @@ textarea{
     flex-direction: column;
     gap: 0;
     align-items: center;
+    margin: 0;
   }
 
   .MuiTabPanel-root.problemList-list {
-    height: 50vh;
+    height: 45vh;
+    padding: 0;
   }
+
+  .MuiBox-root.categoryList{
+    display: none;
+  }
+
+  .MuiStack-root.stack-problemList{
+    margin: 20px 0 !important;
+  }
+
+  div.MuiTypography-root.MuiTypography-h1{
+    font-size: 16pt;
+  }
+
+  .MuiButton-root.mobile-categoryList{
+    display: block;
+  }
+
+  .MuiBox-root.mobile-categoryList{
+    display: block;
+  }
+
+  .MuiStack-root.sort-parent{
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
 }
 
 @media (max-width: 500px){
@@ -253,4 +292,9 @@ textarea{
   .MuiStack-root.account{
     flex-direction: column;
   }
+
+  .MuiTypography-root.MuiTypography-h1{
+    font-size: 12pt;
+  }
+
 }
