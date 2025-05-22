@@ -233,6 +233,7 @@ textarea{
 
   .MuiTabPanel-root.problemList-list {
     height: 50vh;
+    padding: 0;
   }
 
   .MuiBox-root.categoryList{
@@ -258,5 +259,8 @@ textarea{
     flex-direction: column;
   }
 
+  .MuiTypography-root.MuiTypography-h1{
+    font-size: 12pt;
+  }
   
 }
