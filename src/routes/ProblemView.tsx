@@ -20,6 +20,8 @@ import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
+import { CheckCircle } from '@phosphor-icons/react';
+import { XCircle } from '@phosphor-icons/react/dist/ssr';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -137,7 +139,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             );
           }
         } else {
-          if(problem.meta.question_type[0] === 'coding'){
+          if(problem.meta.question_type[0] === 'coding' || 'haystack'){
             setCode(problem.starter || '');
           }
           else{
@@ -230,10 +232,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 <Markdown>
                   {problem.description}
                 </Markdown>
-                {problem.meta.question_type[0] === 'coding' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+                {problem.meta.question_type[0] === 'coding' || 'haystack' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
               </Box>
             </Box>
-            { problem.meta.question_type[0] === 'coding' ?
+            { problem.meta.question_type[0] === 'coding' || 'haystack' ?
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
@@ -246,9 +248,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       
         <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
           { 
-            problem.meta.question_type[0] === 'coding' ? (
+            problem.meta.question_type[0] === 'coding' || 'haystack' ? (
               <Box flex={1} width="100%">
-                {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
+                {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
               </Box>
             ) : 
             (
@@ -280,9 +282,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
 interface ReportProps {
   evalResponse: EvalResponse | null;
+  questionType: string;
 }
 
-function Report({ evalResponse }: ReportProps) {
+function Report({ evalResponse, questionType }: ReportProps) {
   if (null === evalResponse) return null;
 
   if ('failure' === evalResponse.status) {
@@ -295,6 +298,38 @@ function Report({ evalResponse }: ReportProps) {
   }
 
   if ('success' === evalResponse.status) {
+
+    if(questionType === 'haystack'){
+      return (
+        <Table size="sm" variant="outlined"
+          sx={{
+            '--TableCell-headBackground': '#f5f5f5',
+            borderRadius: 2,
+            overflow: 'hidden',
+          }}
+        >
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center'}}>Test #</th>
+              <th style={{ textAlign: 'center'}}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {evalResponse.report.map((r, i) => (
+              <tr key={i}>
+                <td style={{ textAlign: 'center'}}>
+                  <Typography>{i + 1}</Typography>
+                </td>
+                <td style={{ textAlign: 'center' }}>
+                  {r.equal ? '✅' : '❌'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      );
+    }
+
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
