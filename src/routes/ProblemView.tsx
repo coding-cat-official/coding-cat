@@ -247,7 +247,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       
         <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
           { 
-            problem.meta.question_type[0] === 'coding' || 'haystack' ? (
+            ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
               <Box flex={1} width="100%">
                 {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
               </Box>
