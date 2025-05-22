@@ -48,8 +48,8 @@ export default function App() {
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
     setActiveProblem(null)
-    if(category === "mutation") setSelectedTab("List")
-    if(category === "coding") setSelectedTab("")
+    if(category === "coding") setSelectedTab("") 
+    else setSelectedTab("List")
   }
 
   function handleSelectedProblem(name: string){
