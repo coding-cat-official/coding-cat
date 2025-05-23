@@ -1,5 +1,8 @@
 import { Problem } from "../types";
 
+/**
+ * Sorts the current list of problems by name, completed status, or difficulty.
+ */
 export default function sortProblems(problemList: Problem[], solvedProblems: string[], order: string, orderBy: string) {
   if (orderBy === "name") {
     problemList?.sort((a, b) => {

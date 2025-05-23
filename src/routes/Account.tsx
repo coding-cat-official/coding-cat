@@ -8,6 +8,10 @@ import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
 
+/**
+ * The `Account` component handles everything related to the profile page.
+ * Additional components used in the profile page are located in `components/profile`.
+ */
 export default function Account({ session }: { session: Session }) {
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])

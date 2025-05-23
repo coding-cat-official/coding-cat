@@ -22,6 +22,7 @@ interface ProblemListProps {
   contractProgress: ContractProgress;
 }
 
+// TODO: selectedTopic here refers to the category. The variable name should probably be changed to reflect that.
 export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);

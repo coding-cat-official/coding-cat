@@ -64,6 +64,11 @@ export default function CategoryList({
 
     const categoryLock = useMemo(() => new CategoryLock(progress), [progress]);
 
+    /**
+     * Maps the string of the category name to the corresponding Lock object.
+     * 
+     * **TODO: This function should probably be moved inside the CategoryLock class.**
+     */
     function mapCategoryToLock(category: string) {
         switch(category) {
             case "Fundamentals": return categoryLock.fundamentals

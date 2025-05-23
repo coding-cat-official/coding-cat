@@ -14,6 +14,8 @@ import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 import getProblemSet from '../utils/getProblemSet';
 
+// TODO: This component is huge and should be broken down into smaller components.
+// The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);

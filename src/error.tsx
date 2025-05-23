@@ -5,6 +5,8 @@ interface RouteError {
   message?: string;
 }
 
+// TODO: improving the error page would be nice, but that would probably be a super stretch goal.
+
 export default function ErrorPage() {
   const error = useRouteError() as RouteError;
   console.error(error);
