@@ -1,8 +1,8 @@
 # Welcome to Coding Cat
 
-In browser IDE with auto-tested problems in Python. Problems are organized around categories that denote their difficulty. This project is inspired by [Coding Bat](https://www.codingbat.com).
+In browser IDE with auto-tested problems in Python. Problems are organized around categories that denote their difficulty. This project is inspired by [CodingBat](https://www.codingbat.com).
 
-The site can be found at [coding-cat.club](https://coding-cat.club).
+The site can be found at https://coding-cat.onrender.com/.
 
 ## Run Locally
 
@@ -11,6 +11,8 @@ To run a local instance of Coding Cat, follow these steps.
 First, you will need to install [jq](https://jqlang.org/). It is recommended to install it using a package manager, like apt for Linux or scoop for Windows. If you simply install the binary, you might have to place it in the usr/bin/ directory in your Git installation folder for it to work.
 
 Then, clone the repo using `--recurse-submodules` to clone all the submodules as well. If you don't have access to the private-problems repository, clone the repo normally, and run `git submodule sync` and `git -c submodule.src/private-problems.update=none submodule update --init --recursive`. This will clone the public-problems submodule, while ignoring private-problems.
+
+Coding Cat uses Supabase as its back-end database, so you will need valid `REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_ANON_KEY` environment variables defined in a `.env.local` file, which needs to be located in the project root.
 
 Run `npm install` to install the dependencies, then run `npm run build` in the project root to set up the list of problems.
 
@@ -24,7 +26,10 @@ To run the tests, use the `npm run test` command in the project root.
 
 To switch the problem set from the public-problems repository to the private-problems one, define an environment variable called `REACT_APP_PROBLEM_SET` and set it to either `public-problems` or `private_problems`. You will have to rebuild the problem list using `npm run build-problems`. If this variable is not defined, it will use `public-problems` by default.
 
+## Modifying the App
+
 ### Modify Contract
+
 - To modify the contract there are two files which needs to be modified the `ContractEdit.tsx` and the `ContractText.tsx`.
 - `ContractText.tsx` is used to display the contract information fetched from the database.
 - `ContractEdit.tsx` is used to get the user information and update the database with what the users wrote in the input boxes.
@@ -34,7 +39,7 @@ To switch the problem set from the public-problems repository to the private-pro
 - `CategoryLock.ts` file needs to be modified to change the rules of what problems are locked and how many problems from the previous category needs to be completed.
 - The file `enabled-problems` (inside the coding cat public problems repo) controls which problems actually get build into `problems.js`. It is a list of problem names, or entire categories, i.e. strings that appear under the `name` or `category` key in `meta.json`
 
-### To Do
+## To Do
 - Enhancing the admin menu so that it allows problem categories to be omitted with the contract sections. ( Currently the admin menu can set topics as true or false and according to that information the contract data would be displayed. We have a separate way to omit problems, the idea is to merge both so that when the admin decides to remove mutation from the menu it stops displaying mutation data in the contract and mutation problems in the problem list ) 
 - Refactor to remove duplicate code in `ContractEdit` and `ContractText`.
 - Finding all problems that rely on problem type and replace them with objects. (Ex: `problem.question_type[0] == "mutation"`). The code will be redundant if we add another problem type like debugging problems.
