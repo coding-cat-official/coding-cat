@@ -1,4 +1,6 @@
-// This function returns the mapping of the passing or failing mutants
+/**
+ * This function returns the mapping of the passing or failing mutants.
+ */
 export function mapMutantResults (evalResponse:any): Map<number, Set<boolean>>{
   const mutantResults = new Map<number, Set<boolean>>();
 
@@ -16,7 +18,9 @@ export function mapMutantResults (evalResponse:any): Map<number, Set<boolean>>{
   return mutantResults;
 }
 
-// This function counts how many mutants are passed and failed (1 pass + 1 fail = 1 pass in progressBar)
+/**
+ * This function counts how many mutants are passed and failed (1 pass + 1 fail = 1 pass in progressBar).
+ */
 export function countPassedMutants(evalResponse:any){
     
   if(evalResponse == null){
@@ -39,7 +43,9 @@ export function countPassedMutants(evalResponse:any){
     
 }
 
-// status of the mutation table column depending on if it passed or failed
+/**
+ * status of the mutation table column depending on if it passed or failed
+ */
 export function getColumnStatuses( evalResponse : any){
 
   if(typeof(evalResponse) == "number") {
