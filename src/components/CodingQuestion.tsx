@@ -1,4 +1,4 @@
-import {Button, Box} from '@mui/joy';
+import {Button, Box, Stack, Typography} from '@mui/joy';
 import ResizableEditor from './ResizableEditor';
 import { useCallback, useEffect, useState } from 'react';
 import { Problem } from '../types';
@@ -55,7 +55,14 @@ export default function CodingQuestion({code, changeCode, problem, runCode, gene
           setTimeout(() => {
             setDisabled(false);
           }, 2000)
-        }}>Run</Button>
+        }}>
+          <Stack direction="column" spacing={0} alignItems="center">
+            <Typography level="body-md" fontFamily="inherit">Run</Typography>
+            <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+              Alt + Enter
+            </Typography>
+          </Stack>
+        </Button>
         <Button
           sx={{ flex: 1 }}
           variant="outlined"

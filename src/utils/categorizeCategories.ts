@@ -1,5 +1,5 @@
 import { Problem } from "../types"
-
+// For general regrouping for Mutation and Haystack categories
 export function categorizeCategories(problem:Problem){
   
   const category = problem.meta.category;

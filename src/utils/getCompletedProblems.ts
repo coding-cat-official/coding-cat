@@ -8,6 +8,9 @@ interface CompletedByCategory {
   }[];
 }
 
+/**
+ * Returns an array of objects containing each category and what problems were completed in it.
+ */
 export function getCompletedProblems(submissions: Submission[]): Progress[] {
   const totalByCategory: Record<string, number> = {};
   const questionTypeByCategory: Record<string, string> = {};

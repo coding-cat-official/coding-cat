@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLoaderData, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
 import { Problem, EvalResponse } from '../types';
-import problems from '../public-problems/problems';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
@@ -17,7 +16,10 @@ import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
-import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
+import getProblemSet from '../utils/getProblemSet';
+import cursedCat from '../assets/cUrSed.png';
+import SolutionCode from '../components/SolutionCode';
+import { getColumnStatuses } from '../utils/mapMutantResults';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -28,6 +30,7 @@ const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
+    const problems = await getProblemSet();
     const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
     if (selected.length !== 1) throw new Error('fuck');
     return selected[0];
@@ -54,11 +57,18 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [question, setQuestion] = useState("");
     const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
+    const [problems, setProblems] = useState<Problem[]>([]);
 
     const { session } = useOutletContext<{ session: Session | null }>();
     const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
     
     const navigate = useNavigate();
+
+    useEffect(() => {
+      (async () => {
+        setProblems(await getProblemSet());
+      })();
+    }, []);
 
     const currCategoryProblems = () => {
       const questionType = problem.meta.question_type[0];
@@ -127,7 +137,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             );
           }
         } else {
-          if(problem.meta.question_type[0] === 'coding'){
+          if(['coding','haystack'].includes(problem.meta.question_type[0])){
             setCode(problem.starter || '');
           }
           else{
@@ -139,7 +149,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
       fetchLatestSubmission();
 
-    }, [problem.meta.name, problem.meta.title, problem.starter, session, setCode]);
+    }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
@@ -148,15 +158,15 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     function handlePreviousProblem(){
       if(currIndex > 0){
-        const prevProblem = currCategoryProblems()[currIndex-1].meta.name;
+        const prevProblem = currProblems[currIndex-1].meta.name;
         setCurrIndex(currIndex-1);
         navigate(`/problems/${prevProblem}`)
       }
     }
 
     function handleNextProblem(){ 
-      if(currIndex < currCategoryProblems().length - 1){
-        const nextProblem = currCategoryProblems()[currIndex+1].meta.name;
+      if(currIndex < currProblems.length - 1){
+        const nextProblem = currProblems[currIndex+1].meta.name;
         setCurrIndex(currIndex+1);
         navigate(`/problems/${nextProblem}`)
       }
@@ -184,10 +194,32 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     let author = problem.meta.author;
     if (author.toLowerCase() === "chatgpt") author = "";
 
+    const statuses = evalResponse?.status === 'success'
+    ? getColumnStatuses(evalResponse)
+    : undefined;
+
     return (
-      <Stack sx={{ width: "100%", height: "100%", p: 3 }} className="problem-container" direction="row" spacing={2} alignItems="flex-start" justifyContent="center">
+      <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
         <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 2, width: "99%", height:"100%", overflowY: "auto", scrollbarWidth: "thin" }} className="hello">
+          <Box className="navigate-problem-btn">
+            <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
+              <Stack direction="column" spacing={0} alignItems="center">
+                <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                  {currProblems[currIndex - 1]?.meta?.title}
+                </Typography>
+              </Stack>
+            </Button>
+            <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
+              <Stack direction="column" spacing={0} alignItems="center">
+                <Typography level="body-md" fontFamily="inherit">Next</Typography>
+                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                  {currProblems[currIndex + 1]?.meta?.title}
+                </Typography>
+              </Stack>
+            </Button>
+          </Box>
+          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%"}}>
             <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
               <Box>
                 <Typography level="title-lg">{problem.meta.title}</Typography>
@@ -198,10 +230,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
                 <Markdown>
                   {problem.description}
                 </Markdown>
-                {problem.meta.question_type[0] === 'coding' ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+                {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
               </Box>
             </Box>
-            { problem.meta.question_type[0] === 'coding' ?
+            { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
               ) : ( 
@@ -209,24 +241,37 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               )
             }
           </Sheet>
-          <Box className="navigate-problem-btn">
-            <ArrowCircleLeft size={50} aria-disabled={currIndex === 0} onClick={handlePreviousProblem}/>
-            <ArrowCircleRight size={50} aria-disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}/>
-          </Box>
-        </Stack>
+          
+      </Stack>
       
-          <Stack sx={{ overflowY: "auto", scrollbarWidth: "thin" }} height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-            { 
-              problem.meta.question_type[0] === 'coding' ? (
-                <Box flex={1} width="100%">
-                  {evalResponse ? <Report evalResponse={evalResponse} /> : <Box></Box>}
-                </Box>
-              ) : <></>
-            }
-            <Box ref={reflectionInput} flex={1} width="100%">
-              {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-            </Box>
+        <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+          { 
+            ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
+              <Box flex={1} width="100%">
+                {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
+              </Box>
+            ) : 
+            (
+              <>
+                <SolutionCode code={problem.solution} title="Problem Solution"/>
+                
+                {statuses &&
+                  problem.mutations?.map((mutCode, idx) =>
+                    statuses.get(idx) === 'pass' ? (
+                      <SolutionCode key={idx} code={mutCode} title={`Mutation M${idx + 1} Code`}/>
+                    ) : null
+                  )}
+              </>
+             
+            )
+          }
+          <Box ref={reflectionInput} flex={1} width="100%">
+            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+          </Box>
+
+
         </Stack>
+
         
       </Stack>
     
@@ -235,9 +280,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
 interface ReportProps {
   evalResponse: EvalResponse | null;
+  questionType: string;
 }
 
-function Report({ evalResponse }: ReportProps) {
+function Report({ evalResponse, questionType }: ReportProps) {
   if (null === evalResponse) return null;
 
   if ('failure' === evalResponse.status) {
@@ -250,6 +296,38 @@ function Report({ evalResponse }: ReportProps) {
   }
 
   if ('success' === evalResponse.status) {
+
+    if(questionType === 'haystack'){
+      return (
+        <Table size="sm" variant="outlined"
+          sx={{
+            '--TableCell-headBackground': '#f5f5f5',
+            borderRadius: 2,
+            overflow: 'hidden',
+          }}
+        >
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center' }}>Input</th>
+              <th style={{ textAlign: 'center' }}>Your output</th>
+              <th style={{ textAlign: 'center' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {evalResponse.report.map((r, i) => (
+              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                <td className="mono" style={{ textAlign: 'center' }}>{r.input}</td>
+                <td className="mono" style={{ textAlign: 'center' }}>{r.actual}</td>
+                <td style={{ textAlign: 'center' }}>
+                  {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      );
+    }
+
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
@@ -273,10 +351,11 @@ function Report({ evalResponse }: ReportProps) {
             </tbody>
           </Table>
           { evalResponse.report.reduce((acc, r) => r.equal && acc, true)
-            ? <Box style={{ textAlign: "center" }} sx={{ borderTop: 1 }} >
-                <Typography sx={{ p: 2 }} level='body-lg'>
+            ? <Box style={{ textAlign: "center"}} sx={{ borderTop: 1 }} >
+                <Typography sx={{ p: 1 }} level='body-lg'>
                   Bravo {ALL_TESTS_PASSED} You completed this problem!
                 </Typography>
+                <img src={cursedCat} alt='cursed coding cat' height="100px"/>
               </Box>
             : null }
         </Stack>

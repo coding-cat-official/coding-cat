@@ -1,34 +1,44 @@
-import { List, ListItemButton, Typography } from '@mui/joy'
+import { List, Box, Typography } from '@mui/joy'
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
-import { Problem, Progress } from '../types';
-import { LockSimple } from '@phosphor-icons/react';
+import { ContractProgress, Problem, Progress } from '../types';
 import CategoryLock from '../utils/CategoryLock';
+import CategoryListItems from './CategoryListItem';
 
 export interface CategoryListProps {
     searchedProblems: Problem[];
     activeCategory: string | null;
     onSelectCategory: (cat: string) => void;
     session: Session | null;
+    contractProgress: ContractProgress;
 }
 
 export default function CategoryList({
     searchedProblems,
     activeCategory,
     onSelectCategory,
-    session
+    session,
+    contractProgress
   }: CategoryListProps) {
     const [error, setError] = useState("");
     const [progress, setProgress] = useState<Progress[]>([]);
 
     // List of categories that show up in search results.
-    const categories = searchedProblems.map((c) => {
-        return c.meta.category;
-    }).filter((c, index, array) => array.indexOf(c) === index);
+    const categories = searchedProblems
+    .map((c) => c.meta.category)
+    .filter((c, index, array) => array.indexOf(c) === index)
+    .sort((a,b) => a.localeCompare(b));
 
-    categories.push("mutation", "haystack");
+    const specialCategories = [];
+    if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
+        specialCategories.push("mutation");
+    }
+    if (searchedProblems.some((c) => c.meta.question_type[0] === 'haystack')) {
+        specialCategories.push("haystack");
+    }
+
 
     useEffect(() => {
         async function fetchProgress() {
@@ -54,6 +64,11 @@ export default function CategoryList({
 
     const categoryLock = useMemo(() => new CategoryLock(progress), [progress]);
 
+    /**
+     * Maps the string of the category name to the corresponding Lock object.
+     * 
+     * **TODO: This function should probably be moved inside the CategoryLock class.**
+     */
     function mapCategoryToLock(category: string) {
         switch(category) {
             case "Fundamentals": return categoryLock.fundamentals
@@ -70,43 +85,39 @@ export default function CategoryList({
         }
     }
 
+    if (error) {
+        return (
+            <Typography>Error fetching categories: {error}</Typography>
+        )
+    }
+
     return (
         <List component="nav" sx={{ py: 2}}>
-            {categories.sort((a,b) => a.localeCompare(b)).map(category => {
-                const summary = progress.find(p => p.category === category) ?? progress.find(p => p.question_type === category)
-                const lock = mapCategoryToLock(category);
-                const unlocked = lock.isUnlocked();
-
-                return (
-                    <ListItemButton 
-                        key = {category}
-                        selected = { category === activeCategory}
-                        onClick={() => {
-                            if(unlocked){
-                                onSelectCategory(category)
-                            } else {
-                                lock.hint();
-                            }
-                        }}
-                        sx = {{
-                            borderRadius: 'md', my: 1, py: 2, px: 2,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: 1,
-                            color: unlocked ? 'inherit' : 'neutral.400',
-                            bgcolor: category === activeCategory ? 'primary.softBg' : 'background.surface',
-                            cursor: unlocked ? 'pointer' : 'not-allowed',
-                            '&:hover': { bgcolor: unlocked ? 'primary.softBgHover' : 'danger.softBgHover' },
-                        }}
-                        >
-                            {!unlocked && <LockSimple size={16}/>}
-                            <Typography>
-                                {category.charAt(0).toUpperCase() + category.slice(1)} - <strong>{summary?.completed ?? 0}/{summary?.total ?? 0}</strong>
-                            </Typography>
-                        </ListItemButton>
-                    )
-                })}
+            <>
+                <CategoryListItems
+                    categories={categories}
+                    type="category"
+                    progress={progress}
+                    mapCategoryToLock={mapCategoryToLock}
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                    session={session}
+                    contractProgress={contractProgress}
+                />
+                <Box>
+                    <hr/>
+                </Box>
+                <CategoryListItems
+                    categories={specialCategories}
+                    type="question_type"
+                    progress={progress}
+                    mapCategoryToLock={mapCategoryToLock}
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                    session={session}
+                    contractProgress={contractProgress}
+                />
+            </>
         </List>
     )
 }

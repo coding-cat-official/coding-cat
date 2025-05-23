@@ -29,6 +29,7 @@ def test_student_function(student_function, tests):
             })
     return report
 
+# runs student input against the solution and all the mutation files and returnns json object with the results
 def test_mutation_function(solution, mutations, tests, function_name):
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
@@ -40,18 +41,19 @@ def test_mutation_function(solution, mutations, tests, function_name):
                 inputs   = [ast.literal_eval(tok) for tok in row['Input']]
                 expected = [ast.literal_eval(row['Expected'])]
                 parsed_tests.append((inputs, expected, None))
-            except SyntaxError as e:
-                tag = "__SYNTAX_ERROR__"
+            except Exception as e:
+                tag = "__ERROR__"
                 err = str(e)
                 parsed_tests.append((tag, err, row['Input']))
+                print()
 
     report = []
     for inputs, expected, raw in parsed_tests:
-        if inputs == "__SYNTAX_ERROR__":
+        if inputs == "__ERROR__":
             report.append({
                 "input": raw,
                 "expected": None,
-                "solution": {"inputs": raw, "actual": f"<syntax error: {expected}>", "equal": False},
+                "solution": {"inputs": raw, "actual": f"<error: {expected}>", "equal": False},
                 "mutations": [{"index": i, "actual": "<skipped due to syntax error>", "equal": False}
                       for i, _ in enumerate(mutation_functions)],
             })
@@ -95,6 +97,7 @@ def respond_success(report):
         "report": report,
     })
 
+# Event that is called when the run button is clicked calls different function if the problem type is mutation
 @bind(self, "message")
 def load_and_test_student_function(e):
     data = e.data
@@ -105,7 +108,7 @@ def load_and_test_student_function(e):
         "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
         "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
     }
-    if data.get("question_type", None) == 'coding':
+    if data.get("question_type", None) in ('coding', 'haystack'):
         try:
             student_function = load_student_function(data['code'], data['name'])
         except Exception as e:
@@ -147,7 +150,5 @@ def load_and_test_student_function(e):
         return respond_success(report)
     else:
         return respond_failure("Question type not supported.")
-
-    print(report)
 
     return respond_success(report)

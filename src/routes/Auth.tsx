@@ -4,6 +4,9 @@ import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
 import { Navigate, useOutletContext } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 
+/**
+ * Login page for the app.
+ */
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");

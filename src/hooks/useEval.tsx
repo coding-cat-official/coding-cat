@@ -18,8 +18,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
             const isMutation = problem.meta.question_type[0] === "mutation";
             const response = (e as CustomEvent).detail;
             setEvalResponse(response);
-            console.log(response);
-    
+            // constructing json submission object to store in the database
             if(response.status === 'success' && session?.user){
                 let numPassed: number
                 let totalTests: number
@@ -27,7 +26,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     totalTests = problem.mutations?.length ?? 0;
                     const mutationResults = new Map<number, Set<boolean>>()
                     for (const row of response.report as any[]){
-                        if(!row.solution?.equal) continue;
+                        if(!row?.solution?.equal) continue;
                         row.mutations.forEach((mutation: any, index: number) => {
                             if(!mutationResults.has(index)) mutationResults.set(index, new Set())
                                 mutationResults.get(index)!.add(mutation.equal)
@@ -59,7 +58,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                     total_tests: totalTests,
                     question_type: problem.meta.question_type[0]
                 };
-    
+                // json object gets stored in the database
                 const { data, error } = await supabase
                     .from('submissions')
                     .select("submission_id, code")
@@ -92,6 +91,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
         };
     }, [problem, session]);
 
+    // function that is ran once the run button is clicked takes you to the worker file
     function runCode(code: string) {
         currentCodeRef.current = code;
         const detail: any = {
