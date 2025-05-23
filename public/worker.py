@@ -29,6 +29,7 @@ def test_student_function(student_function, tests):
             })
     return report
 
+# runs student input against the solution and all the mutation files and returnns json object with the results
 def test_mutation_function(solution, mutations, tests, function_name):
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
@@ -96,6 +97,7 @@ def respond_success(report):
         "report": report,
     })
 
+# Event that is called when the run button is clicked calls different function if the problem type is mutation
 @bind(self, "message")
 def load_and_test_student_function(e):
     data = e.data
