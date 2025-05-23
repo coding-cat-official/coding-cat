@@ -13,6 +13,32 @@ type Lock = {
   hint: () => void;
 }
 
+/**
+ * Object that handles locking problem categories. Each category is represented by a property with the following structure:
+ * 
+ * ```ts
+ * get logic(): Lock {
+    const categoryName = "Logic";
+
+    const required = {
+      "Fundamentals": 0
+    };
+
+    const prereqSolved = {
+      "Fundamentals": this.solved["Fundamentals"]
+    };
+
+    return createLockObject(required, prereqSolved, categoryName);
+  }
+ * ```
+ *
+ * - `categoryName` is the name of the category as written in the problem's meta.json file.
+ * - `required` is an object that contains the name of the prerequisite categories and how many problems need to be solved in them.
+ * - `prereqSolved` is an object that contains the amount of problems that are currently solved for those prequisite categories.
+ * 
+ * To add a new category lock, simply create a new property in the correct format, with the return value calling the `createLockObject` function with the three inputs.
+ * You also have to make sure you map the category name to the correct property with the `mapCategoryToLock` function in `CategoryList.tsx`.
+ */
 export default class CategoryLock {
   solved: Record<string, number> = {};
 
@@ -177,6 +203,11 @@ export default class CategoryLock {
   }
 }
 
+/**
+ * Creates the Lock object for the specified category. Returns an object with the 3 original fields, in addition to
+ * an `isUnlocked` and `hint` method, which compute if the number of problems solved in a prerequisite category is
+ * equal to the required number of problems, as well as display a hint that says how many problems are left to complete.
+ */
 function createLockObject(required: KVPair, prereqSolved: KVPair, catName: string): Lock {
   return {
     category: catName,
