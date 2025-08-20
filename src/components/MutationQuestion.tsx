@@ -1,5 +1,6 @@
-import {Box, Button} from '@mui/joy';
+import {Box, Button, LinearProgress, Stack, Typography} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
+import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
 export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
@@ -22,11 +23,11 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     .slice(0, numOfTableRows)
     .some(row => row.some(val => val.trim() === ""))
   
-  const [expectedRows, setExpectedRows] = useState<string[]>(
+  const [expectedOutputRows, setExpectedOutputRows] = useState<string[]>(
     Array(5).fill('')
   );
 
-  const hasEmptyExpected = expectedRows
+  const hasEmptyExpected = expectedOutputRows
     .slice(0, numOfTableRows)
     .some(row => row === "")
     
@@ -35,14 +36,14 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     setAttemptedRun(false);
     setNumRows(5)
     setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')))
-    setExpectedRows(Array(5).fill(''))
+    setExpectedOutputRows(Array(5).fill(''))
   }, [inputCount, problem.meta.name])
 
   useEffect(() => {
     if (!Array.isArray(code) || code.length === 0) {
       setNumRows(5);
       setInputRows(Array.from({ length: 5 }, () => Array(inputCount).fill('')));
-      setExpectedRows(Array(5).fill(''));
+      setExpectedOutputRows(Array(5).fill(''));
       return;
     }
   
@@ -65,7 +66,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
       })
     );
   
-    setExpectedRows(
+    setExpectedOutputRows(
       rows.map(r => {
         if (typeof (r as any).Expected === 'string') {
           return (r as any).Expected;
@@ -78,55 +79,37 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         return '';
       })
     );
-  }, [code, problem.meta.name]);
+  }, [code, problem.meta.name, inputCount]);
   
-  const handleNewRowClick = () => {
+  function handleNewRow(){
     if(numOfTableRows < maxNumberOfRows){
       setNumRows(numOfTableRows+1);
       setInputRows(rows => [...rows, Array(inputCount).fill('')]);
-      setExpectedRows(rows => [...rows, '']);
+      setExpectedOutputRows(rows => [...rows, '']);
     }
   };
 
+  function handleRemoveRow(){
+    if(numOfTableRows > 1 && (expectedOutputRows[expectedOutputRows.length-1] === "" || inputRows[inputRows.length - 1]?.every(cell => cell === ''))){
+      setNumRows(numOfTableRows-1);
+      setInputRows(rows => rows.slice(0, -1));
+      setExpectedOutputRows(rows => rows.slice(0, -1));
+    }
+  }
 
-  // The progress bar for mutations
-  const countPassedMutants = () => {
-    const mutantResults = new Map<number, Set<boolean>>();
+  const columnStatuses = getColumnStatuses(evalResponse ?? numOfMutations);
 
-    if(evalResponse == null || evalResponse.report[0].mutations == null) return 0
-
-    evalResponse?.report?.forEach((row:any, rowNum:number) => {
-
-      if(row.solution.equal){
-        row.mutations.forEach((mutation:any, index:number) => {
-          if (!mutantResults.has(index)) {
-            mutantResults.set(index, new Set());
-          }
-          mutantResults.get(index)!.add(mutation.equal);  
-        });
-      }
-    });
-
-    let count = 0;
-    mutantResults.forEach((resultSet, index) => {
-      if (resultSet.has(true) && resultSet.has(false)) {
-        count++;
-      }
-    });
-    return count;
-  };
-
-  const handleRun = () => {
+  const handleRun = useCallback(() => {
     setAttemptedRun(true);
     if(hasEmptyInputs || hasEmptyExpected) return;
     const payload = inputRows
       .slice(0, numOfTableRows)
       .map((rowInputs, i) => ({
         Input:    [...rowInputs],       
-        Expected: expectedRows[i],      
+        Expected: expectedOutputRows[i],      
       }));
     setCode(payload);        
-    runCode(payload);        
+    runCode(payload);     
 
     generateQuestion();
 
@@ -136,23 +119,28 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     setTimeout(() => {
       setDisabled(false);
     }, 2000)
-  };
-
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
-    if(event.altKey && event.key === "Enter"){
-      handleRun();
-    }
-  },[handleRun]);
+  }, [expectedOutputRows, generateQuestion, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
 
   useEffect(() => {
+    const handleKeyPress = (event:KeyboardEvent) => {
+      if(event.altKey && event.key === "Enter"){
+        handleRun();
+      }
+    };
+
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [handleKeyPress]);
+  }, [handleRun]);
 
   return(
     <> 
+      <LinearProgress className="mutation-progressBar" determinate value={countPassedMutants(evalResponse)/numOfMutations*100} size="lg" thickness={30}>
+        <Typography level="title-sm" sx={{ fontWeight: 'xl', color:"black", zIndex: "5" }}>
+          You have found {countPassedMutants(evalResponse)}/{numOfMutations} mutations.
+        </Typography>
+      </LinearProgress>
       <table className='mutation-table'>
         <colgroup>
           <col span={1}/>
@@ -185,7 +173,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
               <td>{rowIndex+1}</td>
               <td className='input-box'>
                   {inputRows[rowIndex].map((val, colIndex) => (
-                    <input
+                    <textarea
                       key={colIndex}
                       style= {{
                         marginRight: '3px',
@@ -200,15 +188,23 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                     />
                   ))}
                 </td>
-              {mutations.map((passOrFail:any, index:number) => (
-                <td key={index}>
-                  {passOrFail
-                    ? passOrFail.equal
-                      ? '✅'
-                      : '❌'
-                    : ''}
-                </td>
-              ))}
+              {mutations.map((passOrFail:any, index:number) => {
+                const status = columnStatuses?.get(index);
+                const statusClass =
+                  status === "pass" ? "col-pass" :
+                  status === "fail" ? "col-fail" :
+                  "";
+
+                return (
+                  <td key={index} className={statusClass}>
+                    {passOrFail
+                      ? passOrFail.equal
+                        ? '✅'
+                        : '❌'
+                      : ''}
+                  </td>
+                );
+              })}
               <td style={{ textAlign: 'center' }}>
                 {row?.solution?.equal != null
                   ? row.solution.equal
@@ -217,13 +213,13 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
                   : ''}
               </td>
               <td>
-                  <input
-                    value={expectedRows[rowIndex]}
-                    style={{ border: attemptedRun && expectedRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
+                  <textarea
+                    value={expectedOutputRows[rowIndex]}
+                    style={{ border: attemptedRun && expectedOutputRows[rowIndex].trim() === '' ? '1px solid red' : undefined,}}
                     onChange={e => {
-                      const copy = [...expectedRows];
+                      const copy = [...expectedOutputRows];
                       copy[rowIndex] = e.target.value;
-                      setExpectedRows(copy);
+                      setExpectedOutputRows(copy);
                     }}
                   />
                 </td>
@@ -233,17 +229,27 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
         )}
         </tbody>
       </table>
-      <Button sx={{width:"100%"}} onClick={handleNewRowClick} className='add-mutation-button'>➕</Button>
+      <Box sx={{display: "flex", flexDirection: "row", gap: "10px"}} className="add-rm-mutation-button">
+        <Button sx={{width:"100%"}} onClick={handleNewRow} className='add-mutation-button'>+</Button>
+        <Button sx={{width:"100%"}} onClick={handleRemoveRow} className='add-mutation-button'>-</Button>
+      </Box>
       {attemptedRun && (hasEmptyInputs || hasEmptyExpected) && (
         <Box sx={{ color: 'danger.plainColor', mb: 1 }}>
           Please fill in all input and expected boxes before running.
         </Box>
       )}
-      <Button disabled={disabled} onClick={handleRun}>Run</Button>
+      
+      <Button disabled={disabled} onClick={handleRun}>
+        <Stack direction="column" spacing={0} alignItems="center">
+          <Typography level="body-md" fontFamily="inherit">Run</Typography>
+          <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+            Alt + Enter
+          </Typography>
+        </Stack>
+      </Button>
 
-      <Box className="mutation-results">
-        You have found {countPassedMutants()}/{numOfMutations} mutations.
-      </Box>
+      
+
     </>
   )
 }

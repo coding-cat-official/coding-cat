@@ -46,7 +46,12 @@ export type Progress = {
 export type Reflection = {
     category: string;
     problem_title: string;
-    code: string;
+    code: {
+        code: string;
+    } | {
+        Input: string[];
+        Expected: string;
+    }[];
     reflection: string | {
         question: string;
         answer: string;
@@ -94,4 +99,8 @@ export const BLANK_CONTRACT: ContractData = {
       },
     "Mutation":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' },
     "Haystack":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' }
+}
+
+export type ContractProgress = {
+    [category: string]: number;
 }
