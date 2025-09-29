@@ -3,7 +3,7 @@ import { config } from "dotenv";
 
 config({ path: ".env.local" })
 
-const dir = process.env.REACT_APP_PROBLEM_SET || "public-problems";
+const dir = process.env.REACT_APP_PROBLEM_SET || "problems";
 
 if (!dir) {
   console.error("REACT_APP_PROBLEM_SET not defined in environment.");

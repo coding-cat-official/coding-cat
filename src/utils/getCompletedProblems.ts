@@ -1,4 +1,4 @@
-import problems from "../public-problems/problems";
+import problems from "../problems/problems";
 import { Progress, Submission } from "../types";
 
 interface CompletedByCategory {

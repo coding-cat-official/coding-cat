@@ -1,4 +1,4 @@
-import problems from "../public-problems/problems";
+import problems from "../problems/problems";
 
 // TODO: since mutation and haystack aren't considered categories,
 // the array this function returns doesn't contain them. if the issue
