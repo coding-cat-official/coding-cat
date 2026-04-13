@@ -1,8 +1,13 @@
+# Name of Github Action
 name: Test, build & deploy the Coding Cat app
+
+# Workflow Rules
 on:
+  # Start action on push to main
   push:
     branches: [main]
   
+  # Start action to PR to main or staging
   pull_request:
     branches: [main, staging]
 
@@ -47,6 +52,7 @@ jobs:
       group: "pages"
       cancel-in-progress: false
     environment:
+    # boiler plate to tell where to upload pages
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
