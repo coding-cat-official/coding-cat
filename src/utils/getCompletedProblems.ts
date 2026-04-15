@@ -1,5 +1,7 @@
-import problems from "../problems/problems";
+import chooseQuestionType from "../problems";
 import { Progress, Submission } from "../types";
+
+const {problems} = await chooseQuestionType()
 
 interface CompletedByCategory {
   problems: {
