@@ -32,6 +32,8 @@ jobs:
     name: Build problem list and static files
     needs: test
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_PROBLEM_SET: ${{secrets.REACT_APP_PROBLEM_SET}}
     steps:
       - uses: actions/checkout@v4
       - run: git submodule sync

@@ -1,4 +1,6 @@
-import problems from "../problems/problems";
+import chooseQuestionType from "../problems";
+
+const {problems} = await chooseQuestionType()
 
 // TODO: since mutation and haystack aren't considered categories,
 // the array this function returns doesn't contain them. if the issue
@@ -6,7 +8,7 @@ import problems from "../problems/problems";
 export function getCategoryList() {
   const categories = new Set<string>();
 
-  problems.forEach((p) => {
+  problems.forEach((p: any) => {
     categories.add(p.meta.category);
   });
 
