@@ -89,7 +89,7 @@ def get_category():
 
 def make_snake_case(name: str):
     name = name.lower()
-    # TODO: underscore spaces
+    name = name.replace(" ", "_")
     return name
 
 def make_kebab_case(name: str):
