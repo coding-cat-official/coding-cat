@@ -28,6 +28,16 @@ To switch the problem set from the public-problems repository to the private-pro
 
 ## Modifying the App
 
+### Creating New Problems
+
+To create new problems with all necessary files:
+- Run `python scripts/create-problem.py` from the repository root
+- Follow the program instructions
+- Run `npm run build` to add your problem to its problem suite
+
+*Note: This program is not the best fit for making specifically mutation problems. The finished problem directory will be correctly placed but will be missing the mutation.py files*
+
+
 ### Modify Contract
 
 - To modify the contract there are two files which needs to be modified the `ContractEdit.tsx` and the `ContractText.tsx`.

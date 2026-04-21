@@ -181,7 +181,6 @@ def fill_problem_dir(problem: dict) -> None:
         print("Created starter.py")
 
         # TODO: Create mutation files?
-
     except Exception as e:
         print(f"Something went wrong: {e}")
 
@@ -192,5 +191,7 @@ if __name__ == "__main__":
         fill_problem_dir(new_problem)
         print("Successfully created your new problem! \nPlease ensure your problem has at least 10 test cases and question formatting matches the others!\n\n")
         print("Note: Mutation tests created through this program are missing the \"mutation.py\" files.")
+    except KeyboardInterrupt:
+        print("\nProgram exited via KeyboardInterrupt\n")
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"\nSomething went wrong: {e}\n")
