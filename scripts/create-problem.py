@@ -6,6 +6,8 @@ difficulties = [
     "hard"
 ]
 
+# TODO: Dynamic categories?
+
 categories = [
     {
         "display_name": "Fundamentals",
@@ -66,12 +68,15 @@ def get_problem_props() -> dict:
     }
 
     print("\n~ Welcome to the Coding Cat Problem Creator ~\n")
-    new_problem["title"] = get_user_input("Please enter the title of the problem. This is the display name, it can have caps and spaces:\n", [], True)
+    
+    # TODO: Public / private?
+    
+    new_problem["title"] = get_user_input("Please enter the title of the problem. This is the display name. It should only have alphanumeric characters and may have spaces:\n", [], True)
     new_problem["name"] = make_snake_case(new_problem["title"])
     new_problem["difficulty"] = get_user_input("\nPlease enter the difficulty of the problem:\n", difficulties)
     new_problem["category"] = get_category()
     new_problem["question_type"].append(get_user_input("\nPlease input the problem's question type:\n", question_types))
-    print(f"New Problem: {new_problem}")
+    print(f"\nNew Problem: {new_problem}\n")
     return new_problem
 
 def get_user_input(input_message: str, whitelist: list = [], check_file_path: bool = False) -> str:
@@ -87,16 +92,30 @@ def get_user_input(input_message: str, whitelist: list = [], check_file_path: bo
         
         if is_valid_input(user_input, whitelist, check_file_path):
             break
-    return user_input
+    return user_input.strip()
 
+# is_valid_input() ensures input_str:
+#  - Is not an empty string or None
+#  - Is not only whitespace
+#  - Contains only alphanumeric characters (and spaces)
+#  - Is on the whitelist, if provided
 def is_valid_input(input_str: str, whitelist: list, check_file_path: bool) -> bool:
     if input_str is None or input_str == "":
+        print("\nSorry, input was an empty string or None\n")
+        return False
+    stripped_str = input_str.strip()
+    if stripped_str == "":
+        print("\nSorry, input was only whitespace\n")
+        return False
+    if not stripped_str.replace(" ", "").isalnum():
+        print("\nSorry, input should only be alphanumeric characters and spaces\n")
         return False
     if len(whitelist) > 0:
         if not input_str in whitelist:
+            print("\nSorry, that was not one of the options.\n")
             return False
     if check_file_path and os.path.exists(make_kebab_case(input_str)):
-        print(f"\nSorry, a problem with that name already exists.\n")
+        print("\nSorry, a problem with that name already exists.\n")
         return False
     return True
 
@@ -129,9 +148,9 @@ def get_path_to_problem(problem: dict) -> str:
         # even though haystack and mutation are problem_types,
         # regardless of category, they go in their respective dirs
         if new_problem["question_type"][0] == "haystack":
-            return f"../src/public-problems/haystack/{dir_name}"
+            return f"src/public-problems/haystack/{dir_name}"
         if new_problem["question_type"][0] == "mutation":
-            return f"../src/public-problems/mutation/{dir_name}"
+            return f"src/public-problems/mutation/{dir_name}"
         
         # get snake_case name for category
         category_dir = ""
@@ -139,7 +158,7 @@ def get_path_to_problem(problem: dict) -> str:
             if category["display_name"] == new_problem["category"]:
                 category_dir = category["dir_name"]
                 break
-        return f"../src/public-problems/{category_dir}/{dir_name}"
+        return f"src/public-problems/{category_dir}/{dir_name}"
     except Exception as e:
         print(f"Something went wrong: {e}")
         return ""
