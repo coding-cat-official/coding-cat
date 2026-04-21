@@ -10,6 +10,7 @@ import { Session } from '@supabase/supabase-js';
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -18,28 +19,21 @@ export default function Login() {
     return <Navigate to="/profile" />
   }
 
-  const handleRegister = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: 'example-password',
-      options: {
-        emailRedirectTo: 'https://coding-cat.club/#/profile',
-      },
-    });
-  }
-
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
     setSuccess("");
-
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
 
     if (error) {
       setError(error.message);
     } else {
-      setSuccess('Check your email for the login link!');
+      setSuccess('Success!');
     }
 
     setLoading(false);
@@ -58,6 +52,18 @@ export default function Login() {
             value={email}
             required={true}
             onChange={(e) => setEmail(e.target.value)}
+          />
+          <FormLabel>Password</FormLabel>
+
+          {/* CHANGE LATER FOR THE LOVE OF GOD */}
+          
+          <Input
+            className="inputField"
+            type="password"
+            placeholder="Enter your password..."
+            value={password}
+            required={true}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Box>
         <Button disabled={loading} type="submit">

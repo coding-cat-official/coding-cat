@@ -10,6 +10,7 @@ import { Session } from '@supabase/supabase-js';
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -18,37 +19,33 @@ export default function Register() {
     return <Navigate to="/profile" />
   }
 
-  const handleLogin = async (event: FormEvent) => {
+  const handleRegister = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
     setSuccess("");
-
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ email });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess('Check your email for the login link!');
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: 'password',
+      options: {
+        emailRedirectTo: 'https://coding-cat.club/#/profile',
+      },
+    });
+
+    if(error){
+        setError(error.message);
+    }else{
+        setSuccess('User Registered!');
     }
 
     setLoading(false);
   }
 
-  const handleRegister = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: 'example-password',
-      options: {
-        emailRedirectTo: 'https://coding-cat.club/#/profile',
-      },
-    });
-  }
-
   return (
     <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
       <Typography level="h2">Register</Typography>
-      <form style={{ width: "25%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }} onSubmit={handleLogin}>
+      <form style={{ width: "25%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }} onSubmit={handleRegister}>
         <Box sx={{ width: "100%" }}>
           <FormLabel>Email</FormLabel>
           <Input
@@ -60,17 +57,20 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
+
+          {/* CHANGE LATER FOR THE LOVE OF GOD */}
+          
           <Input
             className="inputField"
             type="password"
             placeholder="Enter your password..."
-            value={email}
+            value={password}
             required={true}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Box>
         <Button disabled={loading} type="submit">
-          {loading ? <span>Loading</span> : <span>Send confirmation link</span>}
+          {loading ? <span>Loading</span> : <span>Register User</span>}
         </Button>
       </form>
       { !!error && <Typography color="danger">{error}</Typography> }
