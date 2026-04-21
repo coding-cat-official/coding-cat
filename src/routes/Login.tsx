@@ -18,6 +18,16 @@ export default function Auth() {
     return <Navigate to="/profile" />
   }
 
+  const handleRegister = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: 'example-password',
+      options: {
+        emailRedirectTo: 'https://coding-cat.club/#/profile',
+      },
+    });
+  }
+
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
