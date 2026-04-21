@@ -11,10 +11,8 @@ import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
 
-import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
-import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
@@ -55,7 +53,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
     const [question, setQuestion] = useState("");
-    const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
