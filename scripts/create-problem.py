@@ -208,8 +208,9 @@ if __name__ == "__main__":
         new_problem = get_problem_props()
         os.mkdir(get_path_to_problem(new_problem))
         fill_problem_dir(new_problem)
-        print("Successfully created your new problem! \nPlease ensure your problem has at least 10 test cases and question formatting matches the others!\n\n")
-        print("Note: Mutation tests created through this program are missing the \"mutation.py\" files.")
+        print(f"\nSuccessfully created your new problem \"{new_problem["title"]}\"!")
+        print(f"\nThe problem has a placeholder description. Please go edit it.")
+        print("\nThe problem also only has a single placeholder test case, please add at least 10 test cases.")
     except KeyboardInterrupt:
         print("\nProgram exited via KeyboardInterrupt\n")
     except Exception as e:
