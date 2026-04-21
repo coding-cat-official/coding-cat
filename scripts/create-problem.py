@@ -190,6 +190,7 @@ if __name__ == "__main__":
         new_problem = get_problem_props()
         os.mkdir(get_path_to_problem(new_problem))
         fill_problem_dir(new_problem)
-        print("Successfully created your new problem! Please ensure your problem has at least 10 test cases and question formatting matches the others!\n")
+        print("Successfully created your new problem! \nPlease ensure your problem has at least 10 test cases and question formatting matches the others!\n\n")
+        print("Note: Mutation tests created through this program are missing the \"mutation.py\" files.")
     except Exception as e:
         print(f"Something went wrong: {e}")
