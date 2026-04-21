@@ -169,25 +169,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       }
     }
 
-    function generateQuestion() {
-      let questionList = reflectionQuestions.success;
-
-      if (evalResponse?.status === "success") {
-        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-  
-        if (!result) questionList = reflectionQuestions.fail;
-      }
-
-      const rand = Math.floor(Math.random() * questionList.length);
-      const question = questionList[rand];
-
-      setQuestion(question);
-
-      setTimeout(() => {
-        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100)
-    }
-
     let author = problem.meta.author;
     if (author.toLowerCase() === "chatgpt") author = "";
 
