@@ -126,10 +126,12 @@ def make_kebab_case(name: str) -> str:
 def get_path_to_problem(problem: dict) -> str:
     try:
         dir_name = make_kebab_case(problem["title"])
-        # even though haystack is a problem_type,
-        # regardless of category, they all go in `public-problems/haystack/`
+        # even though haystack and mutation are problem_types,
+        # regardless of category, they go in their respective dirs
         if new_problem["question_type"][0] == "haystack":
             return f"../src/public-problems/haystack/{dir_name}"
+        if new_problem["question_type"][0] == "mutation":
+            return f"../src/public-problems/mutation/{dir_name}"
         
         # get snake_case name for category
         category_dir = ""
@@ -177,6 +179,8 @@ def fill_problem_dir(problem: dict) -> None:
             file.write("    pass")
         print("Created starter.py")
 
+        # TODO: Create mutation files?
+
     except Exception as e:
         print(f"Something went wrong: {e}")
 
@@ -185,6 +189,6 @@ if __name__ == "__main__":
         new_problem = get_problem_props()
         os.mkdir(get_path_to_problem(new_problem))
         fill_problem_dir(new_problem)
-        print("Successfully created your new problem! Please ensure your problem has at least 10 test cases\n")
+        print("Successfully created your new problem! Please ensure your problem has at least 10 test cases and question formatting matches the others!\n")
     except Exception as e:
         print(f"Something went wrong: {e}")
