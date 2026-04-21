@@ -213,9 +213,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             </Box>
             { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
               (
-                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
+                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
               ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} generateQuestion={generateQuestion}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
               )
             }
           </Sheet>
@@ -243,10 +243,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
              
             )
           }
-          <Box ref={reflectionInput} flex={1} width="100%">
-            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-          </Box>
-
 
         </Stack>
 
