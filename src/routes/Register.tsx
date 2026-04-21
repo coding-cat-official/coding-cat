@@ -35,6 +35,16 @@ export default function Register() {
     setLoading(false);
   }
 
+  const handleRegister = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: 'example-password',
+      options: {
+        emailRedirectTo: 'https://coding-cat.club/#/profile',
+      },
+    });
+  }
+
   return (
     <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
       <Typography level="h2">Register</Typography>
