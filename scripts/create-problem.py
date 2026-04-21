@@ -141,7 +141,8 @@ def get_path_to_problem(problem: dict) -> str:
                 break
         return f"../src/public-problems/{category_dir}/{dir_name}"
     except Exception as e:
-        print(f"Something went wrong: {e}") 
+        print(f"Something went wrong: {e}")
+        return ""
 
 def fill_problem_dir(problem: dict) -> None:
     try:
