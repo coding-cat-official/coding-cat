@@ -1,3 +1,6 @@
+# Made by Luke Weaver before he noticed that 
+# there was already a script for making problems in public-problems :(
+
 import os
 
 difficulties = [
