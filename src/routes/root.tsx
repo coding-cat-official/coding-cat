@@ -222,9 +222,14 @@ export default function App() {
                   )}
                 </>
               ) : (
-                <Link to="/signin">
-                  <Button>Login</Button>
-                </Link>
+                <>
+                  <Link to="/signin">
+                    <Button>Login</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>Register</Button>
+                  </Link>
+                </>
               )}
             </Box>
           </Stack>

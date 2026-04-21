@@ -5,9 +5,9 @@ import { Navigate, useOutletContext } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 
 /**
- * Login page for the app.
+ * Register page for the app.
  */
-export default function Login() {
+export default function Register() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -16,16 +16,6 @@ export default function Login() {
 
   if (session) {
     return <Navigate to="/profile" />
-  }
-
-  const handleRegister = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: 'example-password',
-      options: {
-        emailRedirectTo: 'https://coding-cat.club/#/profile',
-      },
-    });
   }
 
   const handleLogin = async (event: FormEvent) => {
@@ -47,7 +37,7 @@ export default function Login() {
 
   return (
     <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
-      <Typography level="h2">Login</Typography>
+      <Typography level="h2">Register</Typography>
       <form style={{ width: "25%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }} onSubmit={handleLogin}>
         <Box sx={{ width: "100%" }}>
           <FormLabel>Email</FormLabel>
@@ -55,6 +45,15 @@ export default function Login() {
             className="inputField"
             type="email"
             placeholder="Enter your email..."
+            value={email}
+            required={true}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <FormLabel>Password</FormLabel>
+          <Input
+            className="inputField"
+            type="password"
+            placeholder="Enter your password..."
             value={email}
             required={true}
             onChange={(e) => setEmail(e.target.value)}

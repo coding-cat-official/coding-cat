@@ -12,7 +12,8 @@ import ProblemView, { problemLoader } from './routes/ProblemView';
 import ErrorPage from './error';
 import {theme} from './theme';
 
-import Auth from './routes/Auth'
+import Login from './routes/Login';
+import Register from './routes/Register';
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
 import AdminWrapper from './routes/AdminWrapper';
@@ -45,7 +46,11 @@ const router = createHashRouter([
       },
       {
         path: "signin",
-        element: <Auth />
+        element: <Login />
+      },
+      {
+        path: "register",
+        element: <Register />
       },
       {
         path: "profile",
