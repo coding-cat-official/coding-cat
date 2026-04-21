@@ -123,21 +123,68 @@ def make_kebab_case(name: str) -> str:
     name = name.replace(" ", "-")
     return name
 
-if __name__ == "__main__":
-    new_problem = get_problem_props()
+def get_path_to_problem(problem: dict) -> str:
     try:
-        dir_name = make_kebab_case(new_problem["title"])
+        dir_name = make_kebab_case(problem["title"])
         # even though haystack is a problem_type,
         # regardless of category, they all go in `public-problems/haystack/`
         if new_problem["question_type"][0] == "haystack":
-            os.mkdir(f"../src/public-problems/haystack/{dir_name}")
-        else:
-            # get snake_case name for category
-            category_dir = ""
-            for category in categories:
-                if category["display_name"] == new_problem["category"]:
-                    category_dir = category["dir_name"]
-                    break
-            os.mkdir(f"../src/public-problems/{category_dir}/{dir_name}")
+            return f"../src/public-problems/haystack/{dir_name}"
+        
+        # get snake_case name for category
+        category_dir = ""
+        for category in categories:
+            if category["display_name"] == new_problem["category"]:
+                category_dir = category["dir_name"]
+                break
+        return f"../src/public-problems/{category_dir}/{dir_name}"
+    except Exception as e:
+        print(f"Something went wrong: {e}") 
+
+def fill_problem_dir(problem: dict) -> None:
+    try:
+        path_to_dir = get_path_to_problem(problem)
+        with open(f"{path_to_dir}/description.md", "w", encoding="utf-8") as file:
+            file.write(f"Write a function `{problem["name"]}(param_1: type) -> return_type:` that does x, y, z with `param_1` and returns something.\n\n")
+            file.write("For example:\n")
+            file.write(f"- `{problem["name"]}(example_input) ")
+            file.write("\u2192") # "→"
+            file.write(" Example Return`")
+        print("Created description.md")
+
+        with open(f"{path_to_dir}/io.json", "w") as file:
+            file.write("[\n  {\n")
+            file.write("    \"input\": [5],\n")
+            file.write("    \"output\": [10]\n")
+            file.write("  }\n]")
+        print("Created io.json")
+
+        with open(f"{path_to_dir}/meta.json", "w") as file:
+            file.write("{\n")
+            file.write(f"  \"title\": \"{problem["title"]}\",\n")
+            file.write(f"  \"name\": \"{problem["name"]}\",\n")
+            file.write(f"  \"difficulty\": \"{problem["difficulty"]}\",\n")
+            file.write("  \"author\": \"\",\n")
+            file.write(f"  \"category\": \"{problem["category"]}\",\n")
+            file.write("  \"question_type\": [\n")
+            file.write(f"    \"{problem["question_type"][0]}\"\n")
+            file.write("  ]\n}")
+        print("Created meta.json")
+
+        with open(f"{path_to_dir}/starter.py", "w") as file:
+            file.write(f"def {problem["name"]}(param_1: type) -> return_type:\n")
+            file.write("    # Your code here\n")
+            file.write("    pass")
+        print("Created starter.py")
+
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+
+if __name__ == "__main__":
+    try:
+        new_problem = get_problem_props()
+        os.mkdir(get_path_to_problem(new_problem))
+        fill_problem_dir(new_problem)
+        print("Successfully created your new problem! Please ensure your problem has at least 10 test cases\n")
     except Exception as e:
         print(f"Something went wrong: {e}")
