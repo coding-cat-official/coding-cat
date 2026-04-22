@@ -55,9 +55,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
-    const { session, setActiveProblem } = useOutletContext<{
+    const { session, setActiveProblem, refetchProgress } = useOutletContext<{
       session: Session | null,
-      setActiveProblem: (name: string | null) => void
+      setActiveProblem: (name: string | null) => void,
+      refetchProgress: () => void
     }>();
     
     const navigate = useNavigate();
@@ -91,7 +92,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
     }, [setActiveProblem, problem.meta.name, currProblems]);
 
-    const [evalResponse, runCode] = useEval(problem, session);
+    const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
 
     useEffect(() => {
       if (!evalResponse) setHidePrompt(true);

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, ContractData, ContractProgress, Problem } from '../types';
+import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 import {List as ListIcon} from '@phosphor-icons/react';
@@ -29,7 +29,8 @@ export default function App() {
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
-  
+  const [progress, setProgress] = useState<Submission[]>([]);
+
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
   contractProgress["haystack"] = contract.Haystack.problemsToSolve;
@@ -114,6 +115,19 @@ export default function App() {
     })();
   }, [session])
 
+  async function fetchProgress(){
+    if(!session) return;
+    const { data: submissions, error } = await supabase
+      .from('submissions')
+      .select('problem_title, passed_tests, total_tests, question_type')
+      .eq('profile_id', session.user.id);
+    if(!error) setProgress(submissions || []);
+  }
+
+  useEffect(() => {
+    fetchProgress();
+  }, [session]);
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -189,6 +203,7 @@ export default function App() {
                   closeDrawer={() => setOpen(false)}
                   session={session}
                   contractProgress={contractProgress}
+                  progress={progress}
                 />
               </Box>
             </Box>
@@ -245,7 +260,7 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session, isAdmin }} />
+          <Outlet context={{ setActiveProblem, session, isAdmin, refetchProgress: fetchProgress }} />
         </Box>
         
       </Stack>

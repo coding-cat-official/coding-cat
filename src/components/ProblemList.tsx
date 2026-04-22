@@ -1,9 +1,8 @@
 import { Button, Chip, LinearProgress, List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { ContractProgress, Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '../supabaseClient';
 import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
@@ -20,11 +19,11 @@ interface ProblemListProps {
   closeDrawer: () => void;
   session: Session | null;
   contractProgress: ContractProgress;
+  progress: Submission[];
 }
 
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress}: ProblemListProps) {
   const [error, setError] = useState("");
-  const [progress, setProgress] = useState<Submission[]>([]);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("name");
 
@@ -37,26 +36,6 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)) * 100));
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
-
-  useEffect(() => {
-    async function fetchProgress() {
-      if (!session) return;
-      const { user } = session;
-      
-      const {data: submissions, error } = await supabase
-      .from('submissions')
-      .select('problem_title, passed_tests, total_tests, question_type')
-      .eq('profile_id', user.id);
-
-      if(error) {
-        setError(error.message);
-      }
-
-      setProgress(submissions || []);
-    }
-
-    fetchProgress();
-  }, [session]);
 
   const problemsByTopic = searchedProblems.filter(problem => {
     const question_type = problem.meta.question_type[0];
@@ -71,15 +50,21 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return acc;
   }, {});
 
-  const solvedProblems = progress.filter((p) => {
-    return p.passed_tests === p.total_tests;
-  }).map((p) => p.problem_title);
+  const solvedProblems = useMemo(() => 
+    progress
+      .filter((p) => p.passed_tests === p.total_tests)
+      .map((p) => p.problem_title),
+    [progress]
+  );
 
-  const uncompletedProblems = progress.filter((p) => {
-    return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
-  }).map((p) => p.problem_title);
+  const uncompletedProblems = useMemo(() =>
+    progress
+      .filter((p) => p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title))
+      .map((p) => p.problem_title),
+    [progress]
+  );
 
-  sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
+  const sortedProblems = sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
 
   const handleTabChange = (_: any, newValue: any) => {
     if(newValue != null){
@@ -94,7 +79,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     setOrderBy(sortCategory);
   }
 
-  const problemsFound = (problemsByCategory[selectedTab] || problemsByCategory[""])?.length || 0;
+  const problemsFound = sortedProblems?.length || 0;
 
   if (error) {
     return (
@@ -160,7 +145,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
-                { (problemsByCategory[selectedTab] || problemsByCategory[""])?.map((p) => 
+                { sortedProblems?.map((p) => 
                     <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
