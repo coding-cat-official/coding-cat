@@ -51,8 +51,6 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
-    const [hidePrompt, setHidePrompt] = useState(true);
-    const [question, setQuestion] = useState("");
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
@@ -91,14 +89,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session);
-
-    useEffect(() => {
-      if (!evalResponse) setHidePrompt(true);
-
-      if (evalResponse?.status === "success") {
-        setHidePrompt(false);
-      }
-    }, [evalResponse]);
 
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
