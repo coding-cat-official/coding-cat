@@ -22,8 +22,7 @@ interface ProblemListProps {
   contractProgress: ContractProgress;
 }
 
-// TODO: selectedTopic here refers to the category. The variable name should probably be changed to reflect that.
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic: selectedCategory, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
   const [order, setOrder] = useState("asc");
@@ -32,10 +31,10 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   const sortCategories = ["name", "completed", "difficulty"];
   
   const completedProblems = useMemo(() => {
-    return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
-  }, [selectedTopic, progress]);
+    return getCompletedProblems(progress).filter((p) => p.category === selectedCategory)[0];
+  }, [selectedCategory, progress]);
     
-  let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)) * 100));
+  let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)) * 100));
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
@@ -62,7 +61,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   const problemsByTopic = searchedProblems.filter(problem => {
     const question_type = problem.meta.question_type[0];
     const category = question_type === "coding" ? problem.meta.category : question_type;
-    return category === selectedTopic;
+    return category === selectedCategory;
   });
 
   const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
@@ -109,12 +108,12 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
         !!session ? 
         <Stack pr={4} gap={1}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" >
-            <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)}</Typography>
+            <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedCategory ? capitalizeString(selectedCategory) : ""} - {completedProblems?.completed}/{contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)}</Typography>
             <Typography level="h4">{percentageCompleted}%</Typography>
           </Stack>
           <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />
         </Stack> :
-        <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""}</Typography>
+        <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedCategory ? capitalizeString(selectedCategory) : ""}</Typography>
       }
       
       <List component="nav">
