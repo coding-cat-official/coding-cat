@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
 import { Navigate, useOutletContext } from 'react-router-dom';
@@ -10,13 +10,19 @@ import { Session } from '@supabase/supabase-js';
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-
-  // REMOVE LATER
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
+
+  // Clear data on unmount so it doesn't stay in memory
+  useEffect(() => {
+    return () => {
+      setEmail("");
+      setPassword("");
+    };
+  }, []);
 
   if (session) {
     return <Navigate to="/profile" />
@@ -32,14 +38,15 @@ export default function Register() {
       email: email,
       password: password,
       options: {
+        // !! needs to be added to redirect URLs !!
         emailRedirectTo: 'https://coding-cat.club/#/signin',
       },
     });
 
     if(error){
-        setError(error.message);
+      setError(error.message);
     }else{
-        setSuccess('User Registered!');
+      setSuccess('User Registered!');
     }
 
     setLoading(false);

@@ -17,13 +17,15 @@ export default function ReqPasswordChange() {
     setSuccess("");
     setLoading(true);
 
-    try{
-        await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'https://coding-cat.club/#/signin'
-        });
-        setSuccess("Check your email for a password reset link!")
-    }catch(error){
-      setError("AAA"); // CHANGE LATER
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // !! needs to be added to redirect URLs !!
+      redirectTo: 'https://coding-cat.club/#/change-password'
+    });
+    
+    if(error){
+      setError(error.message)
+    }else {
+      setSuccess("Check your email for a password reset link!")
     }
 
     setLoading(false);
