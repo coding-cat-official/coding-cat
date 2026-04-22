@@ -14,7 +14,7 @@ interface ProblemListProps {
   searchedProblems: Problem[];
   selectedTab: string;
   setSelectedTab: (peep: string) => void;
-  selectedTopic: string | null;
+  selectedCategory: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
@@ -22,7 +22,7 @@ interface ProblemListProps {
   contractProgress: ContractProgress;
 }
 
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic: selectedCategory, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Submission[]>([]);
   const [order, setOrder] = useState("asc");

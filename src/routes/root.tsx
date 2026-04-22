@@ -183,7 +183,7 @@ export default function App() {
                   selectedTab={selectedTab}
                   setSelectedTab={setSelectedTab}
                   searchedProblems={searchedProblems}
-                  selectedTopic={activeCategory}
+                  selectedCategory={activeCategory}
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
