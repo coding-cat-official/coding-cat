@@ -47,10 +47,6 @@ interface ProblemIDEProps {
     problem: Problem
 }
 
-interface ProblemIDEOutletContext {
-    setActiveProblem: (name: string | null) => void;
-}
-
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [hidePrompt, setHidePrompt] = useState(true);
@@ -59,8 +55,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
-    const { session } = useOutletContext<{ session: Session | null }>();
-    const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    const { session, setActiveProblem } = useOutletContext<{
+      session: Session | null,
+      setActiveProblem: (name: string | null) => void
+    }>();
     
     const navigate = useNavigate();
 
