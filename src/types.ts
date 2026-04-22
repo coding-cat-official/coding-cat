@@ -43,22 +43,6 @@ export type Progress = {
     }[];
 }
 
-export type Reflection = {
-    category: string;
-    problem_title: string;
-    code: {
-        code: string;
-    } | {
-        Input: string[];
-        Expected: string;
-    }[];
-    reflection: string | {
-        question: string;
-        answer: string;
-    };
-    submitted_at: Date;
-}
-
 export type Submission = {
     problem_title: string;
     passed_tests: number;

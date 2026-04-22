@@ -11,10 +11,8 @@ import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabaseClient';
 
-import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
-import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
@@ -53,9 +51,6 @@ interface ProblemIDEOutletContext {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
-    const [hidePrompt, setHidePrompt] = useState(true);
-    const [question, setQuestion] = useState("");
-    const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
@@ -94,14 +89,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session);
-
-    useEffect(() => {
-      if (!evalResponse) setHidePrompt(true);
-
-      if (evalResponse?.status === "success") {
-        setHidePrompt(false);
-      }
-    }, [evalResponse]);
 
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
@@ -172,25 +159,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       }
     }
 
-    function generateQuestion() {
-      let questionList = reflectionQuestions.success;
-
-      if (evalResponse?.status === "success") {
-        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-  
-        if (!result) questionList = reflectionQuestions.fail;
-      }
-
-      const rand = Math.floor(Math.random() * questionList.length);
-      const question = questionList[rand];
-
-      setQuestion(question);
-
-      setTimeout(() => {
-        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100)
-    }
-
     let author = problem.meta.author;
     if (author.toLowerCase() === "chatgpt") author = "";
 
@@ -235,9 +203,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             </Box>
             { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
               (
-                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} generateQuestion={generateQuestion} />
+                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
               ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} generateQuestion={generateQuestion}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
               )
             }
           </Sheet>
@@ -265,10 +233,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
              
             )
           }
-          <Box ref={reflectionInput} flex={1} width="100%">
-            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-          </Box>
-
 
         </Stack>
 
