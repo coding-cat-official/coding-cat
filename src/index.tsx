@@ -18,6 +18,8 @@ import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
 import AdminWrapper from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
+import ChangePassword from './routes/ChangePassword';
+import ReqPasswordChange from './routes/ReqPasswordChange';
 
 
 
@@ -51,6 +53,14 @@ const router = createHashRouter([
       {
         path: "register",
         element: <Register />
+      },
+      {
+        path: "change-password-req",
+        element: <ReqPasswordChange />
+      },
+      {
+        path: "change-password",
+        element: <ChangePassword />
       },
       {
         path: "profile",

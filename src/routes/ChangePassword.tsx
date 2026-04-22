@@ -25,7 +25,7 @@ export default function ChangePassword() {
     if (error) {
       setError(error.message);
     } else {
-      setSuccess('Password Changed!');
+      setSuccess('Password changed! Go login!');
     }
 
     setLoading(false);

@@ -76,7 +76,7 @@ export default function Login() {
           {loading ? <span>Loading</span> : <span>Login</span>}
         </Button>
       </form>
-      <Link to="/"> {/* IMPLEMENT /reset-password */}
+      <Link to="/change-password-req">
         <Button>Forgot your password?</Button>
       </Link>
       { !!error && <Typography color="danger">{error}</Typography> }
