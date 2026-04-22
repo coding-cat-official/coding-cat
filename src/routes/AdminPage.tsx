@@ -7,9 +7,14 @@ type Feature = {
   activated: boolean
 }
 
+/**
+ * React component that handles the rendering and logic of the admin page
+ * @returns A React Component
+ */
 export default function AdminPage() {
   const [features, setFeatures] = useState<Feature[]>([])
 
+  // Load the toggles from the db for what categories to enable/disables 
   useEffect(() => {
     async function load() {
       const { data, error } = await supabase
@@ -25,6 +30,7 @@ export default function AdminPage() {
     load()
   }, [])
 
+  // Handles changing the value between true or false
   const handleChange = (idx: number, value: string) => {
     setFeatures((f) => {
       const copy = [...f]
@@ -33,6 +39,7 @@ export default function AdminPage() {
     })
   }
 
+  // Handles sending changes to toggles to the db (does not work currently)
   const handleSave = async () => {
     await Promise.all(
       features.map((f) =>
