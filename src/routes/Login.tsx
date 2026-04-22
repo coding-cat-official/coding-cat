@@ -1,7 +1,7 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
-import { Navigate, useOutletContext } from 'react-router-dom';
+import { Link, Navigate, useOutletContext } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 
 /**
@@ -11,9 +11,18 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
+
+  // Clear data on unmount so it doesn't stay in memory
+  useEffect(() => {
+    return () => {
+      setEmail("");
+      setPassword("");
+    };
+  }, []);
 
   if (session) {
     return <Navigate to="/profile" />
@@ -25,7 +34,7 @@ export default function Login() {
     setSuccess("");
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password
     });
@@ -54,9 +63,6 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
-
-          {/* CHANGE LATER FOR THE LOVE OF GOD */}
-          
           <Input
             className="inputField"
             type="password"
@@ -67,9 +73,12 @@ export default function Login() {
           />
         </Box>
         <Button disabled={loading} type="submit">
-          {loading ? <span>Loading</span> : <span>Send confirmation link</span>}
+          {loading ? <span>Loading</span> : <span>Login</span>}
         </Button>
       </form>
+      <Link to="/"> {/* IMPLEMENT /reset-password */}
+        <Button>Forgot your password?</Button>
+      </Link>
       { !!error && <Typography color="danger">{error}</Typography> }
       { !!success && <Typography color="success">{success}</Typography> }
     </Stack>

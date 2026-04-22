@@ -10,7 +10,10 @@ import { Session } from '@supabase/supabase-js';
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+
+  // REMOVE LATER
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -25,11 +28,11 @@ export default function Register() {
     setSuccess("");
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: email,
-      password: 'password',
+      password: password,
       options: {
-        emailRedirectTo: 'https://coding-cat.club/#/profile',
+        emailRedirectTo: 'https://coding-cat.club/#/signin',
       },
     });
 
@@ -57,9 +60,7 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
-
           {/* CHANGE LATER FOR THE LOVE OF GOD */}
-          
           <Input
             className="inputField"
             type="password"
@@ -70,7 +71,7 @@ export default function Register() {
           />
         </Box>
         <Button disabled={loading} type="submit">
-          {loading ? <span>Loading</span> : <span>Register User</span>}
+          {loading ? <span>Loading</span> : <span>Register</span>}
         </Button>
       </form>
       { !!error && <Typography color="danger">{error}</Typography> }
