@@ -4,26 +4,32 @@ import { Problem } from "../types";
  * Sorts the current list of problems by name, completed status, or difficulty.
  */
 export default function sortProblems(problemList: Problem[], solvedProblems: string[], order: string, orderBy: string) {
+  if(!problemList) return [];
+
+  const problems = [...problemList];
+  
   if (orderBy === "name") {
-    problemList?.sort((a, b) => {
+    problems.sort((a, b) => {
       if (order === "asc") return sortByName(a, b);
       else return -sortByName(a, b);
     });
   }
 
   if (orderBy === "completed") {
-    problemList?.sort((a, b) => {
+    problems.sort((a, b) => {
       if (order === "asc") return sortByCompleted(a, b, solvedProblems);
       else return -sortByCompleted(a, b, solvedProblems);
     });
   }
 
   if (orderBy === "difficulty") {
-    problemList?.sort((a, b) => {
+    problems.sort((a, b) => {
       if (order === "asc") return sortByDifficulty(a, b);
       else return -sortByDifficulty(a, b);
     });
   }
+
+  return problems;
 }
 
 function sortByCompleted(a: Problem, b: Problem, solvedProblems: string[]) {

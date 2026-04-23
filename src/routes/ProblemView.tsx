@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -45,17 +45,16 @@ interface ProblemIDEProps {
     problem: Problem
 }
 
-interface ProblemIDEOutletContext {
-    setActiveProblem: (name: string | null) => void;
-}
-
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
-    const { session } = useOutletContext<{ session: Session | null }>();
-    const { setActiveProblem } = useOutletContext<ProblemIDEOutletContext>();
+    const { session, setActiveProblem, refetchProgress } = useOutletContext<{
+      session: Session | null,
+      setActiveProblem: (name: string | null) => void,
+      refetchProgress: () => void
+    }>();
     
     const navigate = useNavigate();
 
@@ -88,7 +87,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
     }, [setActiveProblem, problem.meta.name, currProblems]);
 
-    const [evalResponse, runCode] = useEval(problem, session);
+    const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
 
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
