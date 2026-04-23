@@ -186,7 +186,7 @@ def fill_problem_dir(problem: dict) -> None:
             io = [
                 {
                     "input": [5],
-                    "output": [10]
+                    "output": 10
                 }
             ]
             file.write(json.dumps(io, indent=2))
