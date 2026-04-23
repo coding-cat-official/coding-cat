@@ -120,20 +120,20 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
           <TabList>
-            {Object.keys(problemsByCategory).sort().map((type) => (
-               type ?
-                <Tab key={`${type}-${selectedTab}`} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
+            {Object.keys(problemsByCategory).sort().filter(Boolean).map((type) => (
+              <Tab key={type} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
                 {type}
-              </Tab> : <></>
+              </Tab>
             ))}
           </TabList>
 
           <Stack pl={1} pt={1} pb={1} width="100%" direction="row" gap={2} alignItems="center" className="sort-parent">
             {
-              sortCategories.map((sc) => {
+              sortCategories.map((sc, index) => {
                 const active = orderBy === sc;
 
                 return <Button
+                  key={index}
                   className='problemList-sortButton'
                   variant="plain"
                   onClick={() => handleSort(sc)}
