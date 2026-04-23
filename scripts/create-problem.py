@@ -236,7 +236,8 @@ def fill_problem_dir(problem: dict) -> None:
 if __name__ == "__main__":
     try:
         new_problem = get_problem_props()
-        os.mkdir(get_path_to_problem(new_problem))
+        path = get_path_to_problem(new_problem)
+        os.makedirs(path, exist_ok=False)
         fill_problem_dir(new_problem)
         print(f"\nSuccessfully created your new problem \"{new_problem["title"]}\"!")
         print(f"\nThe problem has a placeholder description. Please go edit it.")
