@@ -1,9 +1,8 @@
 import { Button, Chip, LinearProgress, List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { ContractProgress, Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '../supabaseClient';
 import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
@@ -14,55 +13,33 @@ interface ProblemListProps {
   searchedProblems: Problem[];
   selectedTab: string;
   setSelectedTab: (peep: string) => void;
-  selectedTopic: string | null;
+  selectedCategory: string | null;
   activeProblem: string | null;
   onSelectProblem: (name: string) => void
   closeDrawer: () => void;
   session: Session | null;
   contractProgress: ContractProgress;
+  progress: Submission[];
 }
 
-// TODO: selectedTopic here refers to the category. The variable name should probably be changed to reflect that.
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedTopic, activeProblem, closeDrawer, session, contractProgress}: ProblemListProps) {
-  const [error, setError] = useState("");
-  const [progress, setProgress] = useState<Submission[]>([]);
+export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress}: ProblemListProps) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("name");
 
   const sortCategories = ["name", "completed", "difficulty"];
   
   const completedProblems = useMemo(() => {
-    return getCompletedProblems(progress).filter((p) => p.category === selectedTopic)[0];
-  }, [selectedTopic, progress]);
+    return getCompletedProblems(progress).filter((p) => p.category === selectedCategory)[0];
+  }, [selectedCategory, progress]);
     
-  let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)) * 100));
+  let percentageCompleted = Math.round((completedProblems?.completed / (contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)) * 100));
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
-
-  useEffect(() => {
-    async function fetchProgress() {
-      if (!session) return;
-      const { user } = session;
-      
-      const {data: submissions, error } = await supabase
-      .from('submissions')
-      .select('problem_title, passed_tests, total_tests, question_type')
-      .eq('profile_id', user.id);
-
-      if(error) {
-        setError(error.message);
-      }
-
-      setProgress(submissions || []);
-    }
-
-    fetchProgress();
-  }, [session]);
 
   const problemsByTopic = searchedProblems.filter(problem => {
     const question_type = problem.meta.question_type[0];
     const category = question_type === "coding" ? problem.meta.category : question_type;
-    return category === selectedTopic;
+    return category === selectedCategory;
   });
 
   const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
@@ -72,15 +49,21 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     return acc;
   }, {});
 
-  const solvedProblems = progress.filter((p) => {
-    return p.passed_tests === p.total_tests;
-  }).map((p) => p.problem_title);
+  const solvedProblems = useMemo(() => 
+    progress
+      .filter((p) => p.passed_tests === p.total_tests)
+      .map((p) => p.problem_title),
+    [progress]
+  );
 
-  const uncompletedProblems = progress.filter((p) => {
-    return p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title);
-  }).map((p) => p.problem_title);
+  const unsolvedProblems = useMemo(() =>
+    progress
+      .filter((p) => p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title))
+      .map((p) => p.problem_title),
+    [progress, solvedProblems]
+  );
 
-  sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
+  const sortedProblems = sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
 
   const handleTabChange = (_: any, newValue: any) => {
     if(newValue != null){
@@ -95,13 +78,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     setOrderBy(sortCategory);
   }
 
-  const problemsFound = (problemsByCategory[selectedTab] || problemsByCategory[""])?.length || 0;
-
-  if (error) {
-    return (
-      <Typography color="danger">Error fetching problems: {error}</Typography>
-    )
-  }
+  const problemsFound = sortedProblems?.length || 0;
 
   return(
     <Stack gap={1} className="stack-problemList">
@@ -109,12 +86,12 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
         !!session ? 
         <Stack pr={4} gap={1}>
           <Stack direction="row" justifyContent="space-between" alignItems="center" >
-            <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""} - {completedProblems?.completed}/{contractProgress[selectedTopic!!] || (completedProblems?.total ?? 0)}</Typography>
+            <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedCategory ? capitalizeString(selectedCategory) : ""} - {completedProblems?.completed}/{contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)}</Typography>
             <Typography level="h4">{percentageCompleted}%</Typography>
           </Stack>
           <LinearProgress className="problemList-progressBar" determinate value={percentageCompleted} size="lg" thickness={15} />
         </Stack> :
-        <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedTopic ? capitalizeString(selectedTopic) : ""}</Typography>
+        <Typography level="h1" sx={{fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt"}}>{selectedCategory ? capitalizeString(selectedCategory) : ""}</Typography>
       }
       
       <List component="nav">
@@ -161,7 +138,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
-                { (problemsByCategory[selectedTab] || problemsByCategory[""])?.map((p) => 
+                { sortedProblems?.map((p) => 
                     <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
                         component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
                         <Stack width="100%" direction="row" justifyContent="space-between">
@@ -171,7 +148,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                               solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
                             }
                             {
-                              uncompletedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
+                              unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
                             }
                             <DifficultyChip difficulty={p.meta.difficulty} />
                           </Stack>

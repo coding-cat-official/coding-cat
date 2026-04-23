@@ -7,7 +7,7 @@ import { supabase } from '../supabaseClient';
 
 export type Eval = [EvalResponse | null, (code: string) => void];
 
-export default function useEval(problem: Problem, session: Session | null): Eval {
+export default function useEval(problem: Problem, session: Session | null, refetchProgress: () => void): Eval {
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
     const currentCodeRef = useRef<string>('');
 
@@ -77,10 +77,12 @@ export default function useEval(problem: Problem, session: Session | null): Eval
                         .from('submissions')
                         .update({ 'submitted_at': new Date().toISOString() })
                         .eq('submission_id', json.submission_id)
-                    console.error(error);
+                    if(error) console.error(error);
+                    else refetchProgress();
                 } else {
                     const { error } = await supabase.from('submissions').insert([submission]);
-                    console.error(error);
+                    if(error) console.error(error);
+                    else refetchProgress();
                 }
             }
         };
@@ -89,7 +91,7 @@ export default function useEval(problem: Problem, session: Session | null): Eval
         return () => {
             document.removeEventListener('eval_finished', onEvalFinished);
         };
-    }, [problem, session]);
+    }, [problem, session, refetchProgress]);
 
     // function that is ran once the run button is clicked takes you to the worker file
     function runCode(code: string) {
