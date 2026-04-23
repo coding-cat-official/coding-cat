@@ -162,7 +162,9 @@ def make_kebab_case(name: str) -> str:
 def get_path_to_problem(problem: dict) -> str:
     try:
         dir_name = make_kebab_case(problem["title"])
-        base_path = os.path.join("src", "public-problems")
+        # parent of scripts dir, the repo root
+        root_path = os.path.dirname(os.path.dirname(__file__))
+        base_path = os.path.join(root_path, "src", "public-problems")
         
         # even though haystack and mutation are problem_types,
         # regardless of category, they go in their respective dirs
@@ -238,9 +240,11 @@ if __name__ == "__main__":
         new_problem = get_problem_props()
         path = get_path_to_problem(new_problem)
         os.makedirs(path, exist_ok=False)
+
         fill_problem_dir(new_problem)
+        
         print(f"\nSuccessfully created your new problem \"{new_problem["title"]}\"!")
-        print(f"\nThe problem has a placeholder description. Please go edit it.")
+        print(f"\nThe problem has a placeholder description and starter code. Please go edit them.")
         print("\nThe problem also only has a single placeholder test case, please add at least 10 test cases.")
     except KeyboardInterrupt:
         print("\nProgram exited via KeyboardInterrupt\n")
