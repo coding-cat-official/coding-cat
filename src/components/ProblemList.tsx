@@ -57,7 +57,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     [progress]
   );
 
-  const uncompletedProblems = useMemo(() =>
+  const unsolvedProblems = useMemo(() =>
     progress
       .filter((p) => p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title))
       .map((p) => p.problem_title),
@@ -155,7 +155,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
                               solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
                             }
                             {
-                              uncompletedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
+                              unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
                             }
                             <DifficultyChip difficulty={p.meta.difficulty} />
                           </Stack>
