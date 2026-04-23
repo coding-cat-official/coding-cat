@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react' ;
+import { useCallback, useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, ContractData, ContractProgress, Problem } from '../types';
+import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 import {List as ListIcon} from '@phosphor-icons/react';
@@ -29,7 +29,8 @@ export default function App() {
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
-  
+  const [progress, setProgress] = useState<Submission[]>([]);
+
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
   contractProgress["haystack"] = contract.Haystack.problemsToSolve;
@@ -109,9 +110,23 @@ export default function App() {
         .order("updated_at", { ascending: false })
         .limit(1);
 
-      if (data) setContract(data[0].data);
+      if (data?.[0]?.data) setContract(data[0].data);
+      else setContract(BLANK_CONTRACT)
     })();
   }, [session])
+
+  const fetchProgress = useCallback(async () => {
+    if(!session) return;
+    const { data: submissions, error } = await supabase
+      .from('submissions')
+      .select('problem_title, passed_tests, total_tests, question_type')
+      .eq('profile_id', session.user.id);
+    if(!error) setProgress(submissions || []);
+  }, [session]);
+
+  useEffect(() => {
+    fetchProgress();
+  }, [fetchProgress]);
 
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
@@ -193,12 +208,13 @@ export default function App() {
                   selectedTab={selectedTab}
                   setSelectedTab={setSelectedTab}
                   searchedProblems={searchedProblems}
-                  selectedTopic={activeCategory}
+                  selectedCategory={activeCategory}
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
                   session={session}
                   contractProgress={contractProgress}
+                  progress={progress}
                 />
               </Box>
             </Box>
@@ -233,9 +249,11 @@ export default function App() {
                   )}
                 </>
               ) : (
-                <Link to="/signin">
-                  <Button>Login</Button>
-                </Link>
+                <>
+                  <Link to="/signin">
+                    <Button>Login</Button>
+                  </Link>
+                </>
               )}
             </Box>
           </Stack>
@@ -250,7 +268,7 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session, isAdmin }} />
+          <Outlet context={{ setActiveProblem, session, isAdmin, refetchProgress: fetchProgress }} />
         </Box>
         
       </Stack>
