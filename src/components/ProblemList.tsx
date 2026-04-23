@@ -23,7 +23,6 @@ interface ProblemListProps {
 }
 
 export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress}: ProblemListProps) {
-  const [error, setError] = useState("");
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("name");
 
@@ -61,7 +60,7 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
     progress
       .filter((p) => p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title))
       .map((p) => p.problem_title),
-    [progress]
+    [progress, solvedProblems]
   );
 
   const sortedProblems = sortProblems(problemsByCategory[selectedTab] || problemsByCategory[""], solvedProblems, order, orderBy);
@@ -80,12 +79,6 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
   }
 
   const problemsFound = sortedProblems?.length || 0;
-
-  if (error) {
-    return (
-      <Typography color="danger">Error fetching problems: {error}</Typography>
-    )
-  }
 
   return(
     <Stack gap={1} className="stack-problemList">

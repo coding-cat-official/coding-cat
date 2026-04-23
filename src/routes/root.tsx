@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react' ;
+import { useCallback, useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
@@ -115,18 +115,18 @@ export default function App() {
     })();
   }, [session])
 
-  async function fetchProgress(){
+  const fetchProgress = useCallback(async () => {
     if(!session) return;
     const { data: submissions, error } = await supabase
       .from('submissions')
       .select('problem_title, passed_tests, total_tests, question_type')
       .eq('profile_id', session.user.id);
     if(!error) setProgress(submissions || []);
-  }
+  }, [session]);
 
   useEffect(() => {
     fetchProgress();
-  }, [session]);
+  }, [fetchProgress]);
 
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>

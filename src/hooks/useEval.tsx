@@ -91,7 +91,7 @@ export default function useEval(problem: Problem, session: Session | null, refet
         return () => {
             document.removeEventListener('eval_finished', onEvalFinished);
         };
-    }, [problem, session]);
+    }, [problem, session, refetchProgress]);
 
     // function that is ran once the run button is clicked takes you to the worker file
     function runCode(code: string) {
