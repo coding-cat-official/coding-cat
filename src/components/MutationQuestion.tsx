@@ -2,7 +2,7 @@ import {Box, Button, LinearProgress, Stack, Typography} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
 import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
-export default function MutationQuestion({runCode, evalResponse, problem, code, setCode}: any) {
+export default function MutationQuestion({runCode, evalResponse, problem, code, setCode, generateQuestion}: any) {
 
   const [numOfTableRows, setNumRows] = useState(5);
   const [disabled, setDisabled] = useState(false);
@@ -111,13 +111,15 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     setCode(payload);        
     runCode(payload);     
 
+    generateQuestion();
+
     setDisabled(true);
     
     // disable the button for 2 seconds to prevent spamming it
     setTimeout(() => {
       setDisabled(false);
     }, 2000)
-  }, [expectedOutputRows, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
+  }, [expectedOutputRows, generateQuestion, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
 
   useEffect(() => {
     const handleKeyPress = (event:KeyboardEvent) => {
