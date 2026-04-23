@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react' ;
+import { useCallback, useEffect, useMemo, useState } from 'react' ;
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, ContractData, ContractProgress, Problem } from '../types';
+import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient'
 import type { Session } from '@supabase/supabase-js'
 import {List as ListIcon} from '@phosphor-icons/react';
@@ -29,7 +29,8 @@ export default function App() {
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
-  
+  const [progress, setProgress] = useState<Submission[]>([]);
+
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
   contractProgress["haystack"] = contract.Haystack.problemsToSolve;
@@ -114,6 +115,19 @@ export default function App() {
     })();
   }, [session])
 
+  const fetchProgress = useCallback(async () => {
+    if(!session) return;
+    const { data: submissions, error } = await supabase
+      .from('submissions')
+      .select('problem_title, passed_tests, total_tests, question_type')
+      .eq('profile_id', session.user.id);
+    if(!error) setProgress(submissions || []);
+  }, [session]);
+
+  useEffect(() => {
+    fetchProgress();
+  }, [fetchProgress]);
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -141,7 +155,18 @@ export default function App() {
         className="desktop-bar"
         onClick={() => setOpen(true)}
       />
-      <Drawer open={open} onClose={() => setOpen(false)} size="xl">
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        size="lg"
+        // Temporary fix for: https://github.com/coding-cat-official/coding-cat/pull/56
+        sx={{
+          "--ModalClose-inset": "1rem",
+          "--Drawer-verticalSize": "clamp(500px, 60%, 100%)",
+          "--Drawer-horizontalSize": "100vw",
+          "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)",
+        }}
+      >
         <ModalClose />
           <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{alignItems: "center"}}>
             <DialogTitle level='h1'  sx={{ fontFamily: '"Silkscreen", monospace', padding: "5px", fontSize: "30pt"}}>
@@ -183,12 +208,13 @@ export default function App() {
                   selectedTab={selectedTab}
                   setSelectedTab={setSelectedTab}
                   searchedProblems={searchedProblems}
-                  selectedTopic={activeCategory}
+                  selectedCategory={activeCategory}
                   activeProblem={activeProblem}
                   onSelectProblem={handleSelectedProblem}
                   closeDrawer={() => setOpen(false)}
                   session={session}
                   contractProgress={contractProgress}
+                  progress={progress}
                 />
               </Box>
             </Box>
@@ -245,7 +271,7 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session, isAdmin }} />
+          <Outlet context={{ setActiveProblem, session, isAdmin, refetchProgress: fetchProgress }} />
         </Box>
         
       </Stack>
