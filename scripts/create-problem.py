@@ -1,6 +1,6 @@
-# Made by Luke Weaver before he noticed that 
-# there was already a script for making problems in public-problems :(
+# Made by Luke Weaver before he noticed that there was already a script for making problems in public-problems :(
 
+import json
 import os
 
 difficulties = [
@@ -72,8 +72,6 @@ def get_problem_props() -> dict:
 
     print("\n~ Welcome to the Coding Cat Problem Creator ~\n")
     
-    # TODO: Public / private?
-    
     new_problem["title"] = get_user_input("Please enter the title of the problem. This is the display name. It should only have alphanumeric characters and may have spaces:\n", [], True)
     new_problem["name"] = make_snake_case(new_problem["title"])
     new_problem["difficulty"] = get_user_input("\nPlease enter the difficulty of the problem:\n", difficulties)
@@ -82,6 +80,8 @@ def get_problem_props() -> dict:
     print(f"\nNew Problem: {new_problem}\n")
     return new_problem
 
+# Gets a string from the user after printing the input_message
+# Uses is_valid_input to ensure no empty, None or only whitespace input
 def get_user_input(input_message: str, whitelist: list = [], check_file_path: bool = False) -> str:
     user_input = None
     while True: # emulates do while loop
@@ -97,7 +97,7 @@ def get_user_input(input_message: str, whitelist: list = [], check_file_path: bo
             break
     return user_input.strip()
 
-# is_valid_input() ensures input_str:
+# Ensures input_str:
 #  - Is not an empty string or None
 #  - Is not only whitespace
 #  - Contains only alphanumeric characters (and spaces)
@@ -122,6 +122,7 @@ def is_valid_input(input_str: str, whitelist: list, check_file_path: bool) -> bo
         return False
     return True
 
+# gets the category from user input using the categories dict
 def get_category() -> str:
     category_inputs = []
 
@@ -145,6 +146,7 @@ def make_kebab_case(name: str) -> str:
     name = name.replace(" ", "-")
     return name
 
+# returns the filepath to the passed problem directory
 def get_path_to_problem(problem: dict) -> str:
     try:
         dir_name = make_kebab_case(problem["title"])
@@ -166,6 +168,7 @@ def get_path_to_problem(problem: dict) -> str:
         print(f"Something went wrong: {e}")
         return ""
 
+# creates all the problem files (description.md, io.json, meta.json and starter.py)
 def fill_problem_dir(problem: dict) -> None:
     try:
         path_to_dir = get_path_to_problem(problem)
@@ -178,22 +181,29 @@ def fill_problem_dir(problem: dict) -> None:
         print("Created description.md")
 
         with open(f"{path_to_dir}/io.json", "w") as file:
-            file.write("[\n  {\n")
-            file.write("    \"input\": [5],\n")
-            file.write("    \"output\": [10]\n")
-            file.write("  }\n]")
+            # TODO: json.dumps formats this with newline around the test cases
+            # ideally io.json should be formatted as below
+            io = [
+                {
+                    "input": [5],
+                    "output": [10]
+                }
+            ]
+            file.write(json.dumps(io, indent=2))
         print("Created io.json")
 
         with open(f"{path_to_dir}/meta.json", "w") as file:
-            file.write("{\n")
-            file.write(f"  \"title\": \"{problem["title"]}\",\n")
-            file.write(f"  \"name\": \"{problem["name"]}\",\n")
-            file.write(f"  \"difficulty\": \"{problem["difficulty"]}\",\n")
-            file.write("  \"author\": \"\",\n")
-            file.write(f"  \"category\": \"{problem["category"]}\",\n")
-            file.write("  \"question_type\": [\n")
-            file.write(f"    \"{problem["question_type"][0]}\"\n")
-            file.write("  ]\n}")
+            meta = {
+                "title": problem["title"],
+                "name": problem["name"],
+                "difficulty": problem["difficulty"],
+                "author": "",
+                "category": problem["category"],
+                "question_type": [
+                    problem["question_type"][0]
+                ]
+            }
+            file.write(json.dumps(meta, indent=2))
         print("Created meta.json")
 
         with open(f"{path_to_dir}/starter.py", "w") as file:
