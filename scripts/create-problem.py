@@ -181,7 +181,7 @@ def fill_problem_dir(problem: dict) -> None:
         print("Created description.md")
 
         with open(f"{path_to_dir}/io.json", "w") as file:
-            # TODO: json.dumps formats this with newline around the test cases
+            # TODO (issue #198): json.dumps formats this with newline around the test cases
             # ideally io.json should be formatted as below
             io = [
                 {
