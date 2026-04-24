@@ -5,6 +5,16 @@ import { Button, Stack, Typography } from '@mui/joy';
 import UserInfo from '../components/profile/UserInfo';
 import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
+import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
+import { getCompletedProblems } from '../utils/getCompletedProblems';
+
+interface CategoryData {
+    category: string;
+    completed: number;
+    total: number;
+    problems: object[];
+    question_type: string;
+}
 
 /**
  * The `Account` component handles everything related to the profile page.
@@ -14,7 +24,8 @@ export default function Account({ session }: { session: Session }) {
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [passingStamps, setPassingStamps] = useState<string[]>([])
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
-
+  const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
+  
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("activity");
   const [error, setError] = useState("");
@@ -22,10 +33,10 @@ export default function Account({ session }: { session: Session }) {
   useEffect(() => {
     async function fetchProgress() {
       const { data: submissions, error } = await supabase
-      .from('submissions')
-      .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
-      .eq('profile_id', session.user.id)
-      .order('submitted_at', { ascending: false });
+        .from('submissions')
+        .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
+        .eq('profile_id', session.user.id)
+        .order('submitted_at', { ascending: false });
 
       if(error) {
         setError(error.message);
@@ -33,17 +44,18 @@ export default function Account({ session }: { session: Session }) {
 
       const all = (submissions || []).map((r) => r.submitted_at)
       const pass = (submissions || [])
-      .filter((r) => r.passed_tests === r.total_tests)
-      .map((r) => r.submitted_at);
+        .filter((r) => r.passed_tests === r.total_tests)
+        .map((r) => r.submitted_at);
 
       setActivityStamps(all);
       setPassingStamps(pass);
+      setCategoriesData(getCompletedProblems(submissions || []));
     }
 
     setUserStartDate(new Date(session.user.created_at) || new Date());
 
     fetchProgress();
-  }, [session, setUserStartDate]);
+  }, [session, setUserStartDate, setCategoriesData]);
 
   if (error) {
     return (
@@ -65,6 +77,7 @@ export default function Account({ session }: { session: Session }) {
         </Stack>
 
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
+        { view === "activity" && <CategoriesBarGraph categoriesData={categoriesData}/> }
     </Stack>
   </Stack>
   )
