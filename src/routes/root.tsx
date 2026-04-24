@@ -12,7 +12,7 @@ import whitePawHover from '../assets/white_paw_hover.webp';
 import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
-import chooseQuestionType from '../problems';
+import chooseQuestionType from '../utils/getProblemSet';
 
 // TODO: This component is huge and should be broken down into smaller components.
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.

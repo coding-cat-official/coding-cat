@@ -1,4 +1,4 @@
-import chooseQuestionType from "../problems";
+import chooseQuestionType from "./getProblemSet";
 
 const problems = await chooseQuestionType()
 

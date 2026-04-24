@@ -17,7 +17,7 @@ import Tutorial from '../components/MutationTutorial';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
-import chooseQuestionType from '../problems';
+import chooseQuestionType from '../utils/getProblemSet';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';

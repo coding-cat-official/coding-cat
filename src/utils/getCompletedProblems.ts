@@ -1,4 +1,4 @@
-import chooseQuestionType from "../problems";
+import chooseQuestionType from "./getProblemSet";
 import { Progress, Submission } from "../types";
 
 const problems = await chooseQuestionType()
