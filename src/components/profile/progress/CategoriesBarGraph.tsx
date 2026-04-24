@@ -52,7 +52,6 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
           width={40} 
           allowDecimals={false}
           tickCount={10}
-          // 10% margin above the tallest bar
           domain={[0, 'dataMax']}
         />
         <Tooltip isAnimationActive={false}
