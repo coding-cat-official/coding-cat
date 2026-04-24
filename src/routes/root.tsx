@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react' ;
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router';
 import { Link } from 'react-router-dom';
 import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
-import { supabase } from '../supabaseClient'
-import type { Session } from '@supabase/supabase-js'
-import {List as ListIcon} from '@phosphor-icons/react';
-import {Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
+import { supabase } from '../supabaseClient';
+import type { Session } from '@supabase/supabase-js';
+import { List as ListIcon } from '@phosphor-icons/react';
+import { Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
 import whitePaw from '../assets/white_paw.webp';
 import whitePawHover from '../assets/white_paw_hover.webp';
 import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
-import getProblemSet from '../utils/getProblemSet';
+import chooseQuestionType from '../problems';
 
 // TODO: This component is huge and should be broken down into smaller components.
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
@@ -276,5 +276,5 @@ export default function App() {
 )};
 
 export async function problemListLoader(): Promise<Problem[]> {
-  return await getProblemSet() as Problem[];
+  return await chooseQuestionType() as Problem[];
 }

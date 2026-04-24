@@ -8,16 +8,16 @@ import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
 import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
-import type { Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import Tutorial from '../components/MutationTutorial';
-import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
+import chooseQuestionType from '../problems';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -28,7 +28,7 @@ const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
-    const problems = await getProblemSet();
+    const problems = await chooseQuestionType();
     const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
     if (selected.length !== 1) throw new Error('fuck');
     return selected[0];
@@ -60,7 +60,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     useEffect(() => {
       (async () => {
-        setProblems(await getProblemSet());
+        setProblems(await chooseQuestionType());
       })();
     }, []);
 
