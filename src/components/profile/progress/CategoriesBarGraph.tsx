@@ -10,6 +10,8 @@ interface CategoryData {
 }
 
 export default function CategoriesBarGraph({ categoriesData }: { categoriesData: CategoryData[] }) {
+  // TODO: Contract remaining bar?
+  
   const graphData = categoriesData
     .map(category => {
       return {
