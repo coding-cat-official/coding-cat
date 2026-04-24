@@ -8,7 +8,7 @@ type Feature = {
 };
 
 interface Status {
-  type: "success" | "danger" | null;
+  color: "success" | "danger" | null;
   value: string;
 }
 
@@ -20,7 +20,7 @@ export default function AdminPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [originalFeatures, setOriginalFeatures] = useState<Feature[]>([]);
   const [updateStatus, setUpdateStatus] = useState<Status>({
-    type: null,
+    color: null,
     value: "",
   });
 
@@ -76,13 +76,13 @@ export default function AdminPage() {
     const hasErrors = results.some((err) => err !== null);
     if (hasErrors) {
       setUpdateStatus({
-        type: "danger",
+        color: "danger",
         value: "Failed to update some settings. Please try again.",
       });
       return;
     }
 
-    setUpdateStatus({ type: "success", value: "Updated Successfully!" });
+    setUpdateStatus({ color: "success", value: "Updated Successfully!" });
     setOriginalFeatures(features);
   };
 
@@ -103,8 +103,8 @@ export default function AdminPage() {
       <Button variant="solid" onClick={handleSave} sx={{ mt: 2 }}>
         Update
       </Button>
-      {updateStatus.type && (
-        <Typography color={updateStatus.type} sx={{ mt: 2 }}>
+      {updateStatus.color && (
+        <Typography color={updateStatus.color} sx={{ mt: 2 }}>
           {updateStatus.value}
         </Typography>
       )}
