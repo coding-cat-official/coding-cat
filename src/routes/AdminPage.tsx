@@ -7,6 +7,11 @@ type Feature = {
   activated: boolean;
 };
 
+interface Status {
+  type: "success" | "danger" | null;
+  value: string;
+}
+
 /**
  * React component that handles the rendering and logic of the admin page
  * @returns A React Component
@@ -14,6 +19,10 @@ type Feature = {
 export default function AdminPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [originalFeatures, setOriginalFeatures] = useState<Feature[]>([]);
+  const [updateStatus, setUpdateStatus] = useState<Status>({
+    type: null,
+    value: "",
+  });
 
   // Load the toggles from the db for what categories to enable/disables
   useEffect(() => {
@@ -53,12 +62,27 @@ export default function AdminPage() {
       return;
     }
 
-    await Promise.all(
-      changed.map((f) =>
-        supabase.from("activated").update({ activated: f.activated }).eq("topic", f.topic),
-      ),
+    const results = await Promise.all(
+      changed.map(async (f) => {
+        const { error } = await supabase
+          .from("activated")
+          .update({ activated: f.activated })
+          .eq("topic", f.topic);
+
+        return error;
+      }),
     );
 
+    const hasErrors = results.some((err) => err !== null);
+    if (hasErrors) {
+      setUpdateStatus({
+        type: "danger",
+        value: "Failed to update some settings. Please try again.",
+      });
+      return;
+    }
+
+    setUpdateStatus({ type: "success", value: "Updated Successfully!" });
     setOriginalFeatures(features);
   };
 
@@ -79,6 +103,11 @@ export default function AdminPage() {
       <Button variant="solid" onClick={handleSave} sx={{ mt: 2 }}>
         Update
       </Button>
+      {updateStatus.type && (
+        <Typography color={updateStatus.type} sx={{ mt: 2 }}>
+          {updateStatus.value}
+        </Typography>
+      )}
     </Box>
   );
 }
