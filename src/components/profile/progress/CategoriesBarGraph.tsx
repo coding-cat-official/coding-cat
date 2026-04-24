@@ -10,15 +10,6 @@ interface CategoryData {
 }
 
 export default function CategoriesBarGraph({ categoriesData }: { categoriesData: CategoryData[] }) {
-  /* Expected categoriesData example:
-  {
-    category: "Logic",
-    completed: 8,
-    total: 12,
-    problems: [{...}, {...}, ...],
-    question_type: "coding",
-  }
-  */
   const graphData = categoriesData
     .map(category => {
       return {
@@ -28,6 +19,7 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
         remaining: category.total - category.completed
       }
     })
+    // sort alphabetically
     .sort((a, b) => a.name.localeCompare(b.name));
     
 
