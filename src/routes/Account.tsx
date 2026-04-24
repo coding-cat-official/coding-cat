@@ -13,6 +13,7 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 export default function Account({ session }: { session: Session }) {
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [passingStamps, setPassingStamps] = useState<string[]>([])
+  const [userStartDate, setUserStartDate] = useState<Date>(new Date());
 
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("activity");
@@ -20,12 +21,10 @@ export default function Account({ session }: { session: Session }) {
 
   useEffect(() => {
     async function fetchProgress() {
-      const { user } = session;
-      
-      const {data: submissions, error } = await supabase
+      const { data: submissions, error } = await supabase
       .from('submissions')
       .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
-      .eq('profile_id', user.id)
+      .eq('profile_id', session.user.id)
       .order('submitted_at', { ascending: false });
 
       if(error) {
@@ -41,8 +40,10 @@ export default function Account({ session }: { session: Session }) {
       setPassingStamps(pass);
     }
 
+    setUserStartDate(new Date(session.user.created_at) || new Date());
+
     fetchProgress();
-  }, [session]);
+  }, [session, setUserStartDate]);
 
   if (error) {
     return (
@@ -63,7 +64,7 @@ export default function Account({ session }: { session: Session }) {
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps}/> }
+        { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
     </Stack>
   </Stack>
   )
