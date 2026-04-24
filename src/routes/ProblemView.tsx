@@ -17,7 +17,7 @@ import Tutorial from '../components/MutationTutorial';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
-import chooseQuestionType from '../utils/getProblemSet';
+import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -28,7 +28,7 @@ const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
-    const problems = await chooseQuestionType();
+    const problems = await getProblemSet();
     const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
     if (selected.length !== 1) throw new Error('fuck');
     return selected[0];
@@ -60,7 +60,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     useEffect(() => {
       (async () => {
-        setProblems(await chooseQuestionType());
+        setProblems(await getProblemSet());
       })();
     }, []);
 

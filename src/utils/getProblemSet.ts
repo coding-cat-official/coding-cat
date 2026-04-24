@@ -7,7 +7,7 @@ const questionTypeList = ["private-problems", "public-problems"];
  * Depending on the REACT_APP_PROBLEM_SET, it returns am ESM module based off that ones
  * @returns ESM Module Import for the different problems
  */
-async function chooseQuestionType() {
+async function getProblemSet() {
   const questionType = process.env.REACT_APP_PROBLEM_SET;
 
   if (questionTypeList.includes(questionType!)) {
@@ -17,4 +17,4 @@ async function chooseQuestionType() {
   }
 }
 
-export default chooseQuestionType;
+export default getProblemSet;
