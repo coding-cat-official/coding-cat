@@ -59,7 +59,7 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
                     width={40} 
                     allowDecimals={false}
                     // 10% margin above the tallest bar
-                    domain={[0, (dataMax: number) => Math.ceil(dataMax)]}
+                    domain={[0, 'dataMax']}
                 />
                 <Tooltip isAnimationActive={false}
                     labelFormatter={(label) => `Category: ${label}`}
