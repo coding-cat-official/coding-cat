@@ -67,7 +67,9 @@ export default function useEval(problem: Problem, session: Session | null, refet
                     .order('submitted_at', { ascending: false})
                     .limit(1);
 
-                console.error(error);
+                if(error) {
+                    throw Error(error.details)
+                }
 
                 const json = data?.[0] || null;
 
