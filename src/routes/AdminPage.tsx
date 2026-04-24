@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, Button, Switch } from "@mui/joy";
-import { supabase } from "../supabaseClient";
+import { useEffect, useState } from 'react';
+import { Box, Typography, Button, Switch } from '@mui/joy';
+import { supabase } from '../supabaseClient';
 
 type Feature = {
   topic: string;
