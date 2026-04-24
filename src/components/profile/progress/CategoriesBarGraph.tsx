@@ -19,14 +19,17 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
     question_type: "coding",
   }
   */
-  const graphData = categoriesData.map(category => {
-    return {
-      name: category.category,
-      completed: category.completed,
-      total: category.total,
-      remaining: category.total - category.completed
-    }
-  });
+  const graphData = categoriesData
+    .map(category => {
+      return {
+        name: category.category,
+        completed: category.completed,
+        total: category.total,
+        remaining: category.total - category.completed
+      }
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+    
 
   return (
   <Stack gap={2}>
@@ -48,6 +51,7 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
         <YAxis 
           width={40} 
           allowDecimals={false}
+          tickCount={10}
           // 10% margin above the tallest bar
           domain={[0, 'dataMax']}
         />
