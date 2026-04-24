@@ -1,7 +1,7 @@
 import chooseQuestionType from "../problems";
 import { Progress, Submission } from "../types";
 
-const {problems} = await chooseQuestionType()
+const problems = await chooseQuestionType()
 
 interface CompletedByCategory {
   problems: {

@@ -1,6 +1,6 @@
 import chooseQuestionType from "../problems";
 
-const {problems} = await chooseQuestionType()
+const problems = await chooseQuestionType()
 
 // TODO: since mutation and haystack aren't considered categories,
 // the array this function returns doesn't contain them. if the issue
