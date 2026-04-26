@@ -26,8 +26,9 @@ export default function CodingQuestion({code, changeCode, problem, runCode, gene
     const handleKeyPress = useCallback((event:KeyboardEvent) => {
         if(event.altKey && event.key === "Enter"){
           runCode(code);
+          generateQuestion()
         }
-      },[code, runCode]);
+      },[code, runCode, generateQuestion]);
   
       useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
