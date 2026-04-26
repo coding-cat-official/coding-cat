@@ -1,6 +1,6 @@
-# Made by Luke Weaver before he noticed that 
-# there was already a script for making problems in public-problems :(
+# Made by Luke Weaver before he noticed that there was already a script for making problems in public-problems :(
 
+import json
 import os
 
 difficulties = [
@@ -72,32 +72,37 @@ def get_problem_props() -> dict:
 
     print("\n~ Welcome to the Coding Cat Problem Creator ~\n")
     
-    # TODO: Public / private?
-    
     new_problem["title"] = get_user_input("Please enter the title of the problem. This is the display name. It should only have alphanumeric characters and may have spaces:\n", [], True)
     new_problem["name"] = make_snake_case(new_problem["title"])
     new_problem["difficulty"] = get_user_input("\nPlease enter the difficulty of the problem:\n", difficulties)
     new_problem["category"] = get_category()
     new_problem["question_type"].append(get_user_input("\nPlease input the problem's question type:\n", question_types))
+    
     print(f"\nNew Problem: {new_problem}\n")
+    
     return new_problem
 
+# Gets a string from the user after printing the input_message
+# Uses is_valid_input to ensure no empty, None or only whitespace input
 def get_user_input(input_message: str, whitelist: list = [], check_file_path: bool = False) -> str:
     user_input = None
     while True: # emulates do while loop
         if len(whitelist) > 0: # reads out possible answers if a whitelist exists
             input_message += "Possible answers:"
+            
             for option in whitelist:
                 input_message += f"\n     - {option}"
+            
             input_message += "\n"
         
         user_input = input(input_message)
         
         if is_valid_input(user_input, whitelist, check_file_path):
             break
+    
     return user_input.strip()
 
-# is_valid_input() ensures input_str:
+# Ensures input_str:
 #  - Is not an empty string or None
 #  - Is not only whitespace
 #  - Contains only alphanumeric characters (and spaces)
@@ -106,22 +111,29 @@ def is_valid_input(input_str: str, whitelist: list, check_file_path: bool) -> bo
     if input_str is None or input_str == "":
         print("\nSorry, input was an empty string or None\n")
         return False
+    
     stripped_str = input_str.strip()
+    
     if stripped_str == "":
         print("\nSorry, input was only whitespace\n")
         return False
+    
     if not stripped_str.replace(" ", "").isalnum():
         print("\nSorry, input should only be alphanumeric characters and spaces\n")
         return False
+    
     if len(whitelist) > 0:
         if not input_str in whitelist:
             print("\nSorry, that was not one of the options.\n")
             return False
+    
     if check_file_path and os.path.exists(make_kebab_case(input_str)):
         print("\nSorry, a problem with that name already exists.\n")
         return False
+    
     return True
 
+# gets the category from user input using the categories dict
 def get_category() -> str:
     category_inputs = []
 
@@ -133,6 +145,7 @@ def get_category() -> str:
     for category in categories:
         if category["input_name"] == category_input_name:
             return category["display_name"]
+    
     return "huh?"
 
 def make_snake_case(name: str) -> str:
@@ -145,15 +158,21 @@ def make_kebab_case(name: str) -> str:
     name = name.replace(" ", "-")
     return name
 
+# returns the filepath to the passed problem directory
 def get_path_to_problem(problem: dict) -> str:
     try:
         dir_name = make_kebab_case(problem["title"])
+        # parent of scripts dir, the repo root
+        root_path = os.path.dirname(os.path.dirname(__file__))
+        base_path = os.path.join(root_path, "src", "public-problems")
+        
         # even though haystack and mutation are problem_types,
         # regardless of category, they go in their respective dirs
         if new_problem["question_type"][0] == "haystack":
-            return f"src/public-problems/haystack/{dir_name}"
+            return os.path.join(base_path, "haystack", dir_name)
+        
         if new_problem["question_type"][0] == "mutation":
-            return f"src/public-problems/mutation/{dir_name}"
+            return os.path.join(base_path, "mutation", dir_name)
         
         # get snake_case name for category
         category_dir = ""
@@ -161,11 +180,14 @@ def get_path_to_problem(problem: dict) -> str:
             if category["display_name"] == new_problem["category"]:
                 category_dir = category["dir_name"]
                 break
-        return f"src/public-problems/{category_dir}/{dir_name}"
+        
+        return os.path.join(base_path, category_dir, dir_name)
+    
     except Exception as e:
         print(f"Something went wrong: {e}")
         return ""
 
+# creates all the problem files (description.md, io.json, meta.json and starter.py)
 def fill_problem_dir(problem: dict) -> None:
     try:
         path_to_dir = get_path_to_problem(problem)
@@ -178,22 +200,29 @@ def fill_problem_dir(problem: dict) -> None:
         print("Created description.md")
 
         with open(f"{path_to_dir}/io.json", "w") as file:
-            file.write("[\n  {\n")
-            file.write("    \"input\": [5],\n")
-            file.write("    \"output\": [10]\n")
-            file.write("  }\n]")
+            # TODO (issue #198): json.dumps formats this with newline around the test cases
+            # ideally io.json should be formatted as below
+            io = [
+                {
+                    "input": [5],
+                    "output": 10
+                }
+            ]
+            file.write(json.dumps(io, indent=2))
         print("Created io.json")
 
         with open(f"{path_to_dir}/meta.json", "w") as file:
-            file.write("{\n")
-            file.write(f"  \"title\": \"{problem["title"]}\",\n")
-            file.write(f"  \"name\": \"{problem["name"]}\",\n")
-            file.write(f"  \"difficulty\": \"{problem["difficulty"]}\",\n")
-            file.write("  \"author\": \"\",\n")
-            file.write(f"  \"category\": \"{problem["category"]}\",\n")
-            file.write("  \"question_type\": [\n")
-            file.write(f"    \"{problem["question_type"][0]}\"\n")
-            file.write("  ]\n}")
+            meta = {
+                "title": problem["title"],
+                "name": problem["name"],
+                "difficulty": problem["difficulty"],
+                "author": "",
+                "category": problem["category"],
+                "question_type": [
+                    problem["question_type"][0]
+                ]
+            }
+            file.write(json.dumps(meta, indent=2))
         print("Created meta.json")
 
         with open(f"{path_to_dir}/starter.py", "w") as file:
@@ -209,10 +238,13 @@ def fill_problem_dir(problem: dict) -> None:
 if __name__ == "__main__":
     try:
         new_problem = get_problem_props()
-        os.mkdir(get_path_to_problem(new_problem))
+        path = get_path_to_problem(new_problem)
+        os.makedirs(path, exist_ok=False)
+
         fill_problem_dir(new_problem)
+        
         print(f"\nSuccessfully created your new problem \"{new_problem["title"]}\"!")
-        print(f"\nThe problem has a placeholder description. Please go edit it.")
+        print(f"\nThe problem has a placeholder description and starter code. Please go edit them.")
         print("\nThe problem also only has a single placeholder test case, please add at least 10 test cases.")
     except KeyboardInterrupt:
         print("\nProgram exited via KeyboardInterrupt\n")
