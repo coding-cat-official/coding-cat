@@ -8,10 +8,9 @@ interface CodingProps {
   changeCode: (e: string | undefined) => void;
   problem: Problem;
   runCode: (code: string) => void;
-  generateQuestion: () => void;
 }
 
-export default function CodingQuestion({code, changeCode, problem, runCode, generateQuestion}: CodingProps){
+export default function CodingQuestion({code, changeCode, problem, runCode}: CodingProps){
   const [fontSize, setFontSize] = useState(14);
   const [disabled, setDisabled] = useState(false);
 
@@ -26,9 +25,8 @@ export default function CodingQuestion({code, changeCode, problem, runCode, gene
     const handleKeyPress = useCallback((event:KeyboardEvent) => {
         if(event.altKey && event.key === "Enter"){
           runCode(code);
-          generateQuestion()
         }
-      },[code, runCode, generateQuestion]);
+      },[code, runCode]);
   
       useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
@@ -49,7 +47,6 @@ export default function CodingQuestion({code, changeCode, problem, runCode, gene
       <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
         <Button sx={{ flex: 4 }} disabled={disabled} onClick={() => {
           runCode(code);
-          generateQuestion();
           setDisabled(true);
 
           // disable the button for 2 seconds to prevent spamming it
