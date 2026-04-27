@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 
 export default function AuthCallback() {
   const [redirectTo, setRedirectTo] = useState<string | null>(null)
+  const [tokens, setTokens] = useState<{ access_token: string, refresh_token: string } | null >(null);
 
   useEffect(() => {
     // hash should give something like ex:
@@ -23,17 +24,18 @@ export default function AuthCallback() {
 
       if (access_token && refresh_token) {
         supabase.auth.setSession({ access_token, refresh_token }).then(() => {
+          setTokens({ access_token, refresh_token });
           if (type === 'recovery') {
             setRedirectTo('/change-password');
           } else {
-            setRedirectTo('/');
+            setRedirectTo('/profile');
           }
         });
       }
     }
   }, []);
 
-  if (redirectTo) return <Navigate to={redirectTo} replace />;
+  if (redirectTo) return <Navigate to={redirectTo} state={tokens} replace />;
 
   return <p>Confirming your account...</p>;
 }
