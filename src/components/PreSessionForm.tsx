@@ -1,4 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, TextArea, Typography } from "@mui/joy";
+
+interface QuestionOption {
+  label: string;
+  value: string;
+}
+
+interface Question {
+  id: string;
+  text: string;
+  type: "radio" | "checkbox" | "number" | "textarea";
+  options?: QuestionOption[];
+  placeholder?: string;
+  min?: number;
+  randomizable?: boolean;
+}
+
+interface FormAnswers {
+  [questionId: string]: string | string[] | number;
+}
 
 /**
  * This component is meant to be used in the pre-session reflection 
@@ -9,18 +29,218 @@ import { useState } from "react";
  * @returns 
  */
 export default function PreSessionForm() {
-    const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<FormAnswers>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    async function fetchQuestions(){
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
+  async function fetchQuestions() {
+    try {
+      setLoading(true);
+      const response = await fetch("/presession-questions.json");
+      if (!response.ok) throw new Error("Failed to fetch questions");
+      
+      let questionsData: Question[] = await response.json();
+      questionsData = randomizeQuestions(questionsData);
+      
+      setQuestions(questionsData);
+      
+      // Initialize empty answers for all questions
+      const initialAnswers: FormAnswers = {};
+      questionsData.forEach(q => {
+        initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
+      });
+      setAnswers(initialAnswers);
+      
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    function randomizeQuestions(){
+  function randomizeQuestions(questionsData: Question[]): Question[] {
+    return questionsData.map(q => {
+      if (q.randomizable && q.options) {
+        const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+        return { ...q, options: shuffled };
+      }
+      return q;
+    });
+  }
 
+  const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+  };
+
+  const handleCheckboxChange = (questionId: string, optionValue: string) => {
+    setAnswers(prev => {
+      const currentValues = Array.isArray(prev[questionId]) ? prev[questionId] : [];
+      const newValues = currentValues.includes(optionValue)
+        ? currentValues.filter(v => v !== optionValue)
+        : [...currentValues, optionValue];
+      return { ...prev, [questionId]: newValues };
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form answers:", answers);
+    // TODO: Send to API/database
+  };
+
+  const renderQuestion = (question: Question) => {
+    switch (question.type) {
+      case "radio":
+        return (
+          <RadioGroup
+            value={answers[question.id] || ""}
+            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+            sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}
+          >
+            {question.options?.map(option => (
+              <FormLabel key={option.value} sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                {option.label}
+                <Radio value={option.value} />
+              </FormLabel>
+            ))}
+          </RadioGroup>
+        );
+
+      case "checkbox":
+        return (
+          <Stack sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            {question.options?.map(option => (
+              <FormLabel key={option.value} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Checkbox
+                  checked={(answers[question.id] as string[]).includes(option.value)}
+                  onChange={() => handleCheckboxChange(question.id, option.value)}
+                />
+                {option.label}
+              </FormLabel>
+            ))}
+          </Stack>
+        );
+
+      case "number":
+        return (
+          <input
+            type="number"
+            value={answers[question.id] || 0}
+            onChange={(e) => handleAnswerChange(question.id, parseInt(e.target.value) || 0)}
+            min={question.min || 0}
+            style={{
+              padding: "8px 12px",
+              borderRadius: "8px",
+              border: "2px solid black",
+              fontSize: "16px",
+            }}
+          />
+        );
+
+      case "textarea":
+        return (
+          <TextArea
+            value={answers[question.id] || ""}
+            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+            placeholder={question.placeholder || "Write your answer here"}
+            minRows={4}
+            sx={{
+              flex: 1,
+              minWidth: "300px",
+              backgroundColor: "white",
+              borderRadius: "8px",
+              border: "2px solid black",
+            }}
+          />
+        );
+
+      default:
+        return null;
     }
-    return(
-        <div>
-            <h3>Pre-Session Reflection</h3>
-        </div>
-    )
+  };
+
+  if (loading) return <Box sx={{ padding: 4 }}><Typography>Loading questions...</Typography></Box>;
+  if (error) return <Box sx={{ padding: 4 }}><Typography color="danger">{error}</Typography></Box>;
+
+  return (
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        backgroundColor: "#d4ff99",
+        borderRadius: "24px",
+        padding: "40px",
+        height: "calc(100vh - 120px)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+      }}
+    >
+      <Typography level="h1" sx={{ fontWeight: "bold" }}>Pre-session reflection</Typography>
+
+      {/* Scrollable Questions Container */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          paddingRight: "12px",
+          "&::-webkit-scrollbar": {
+            width: "12px",
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "rgba(0,0,0,0.1)",
+            borderRadius: "6px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.3)",
+            borderRadius: "6px",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.5)",
+            },
+          },
+        }}
+      >
+        <Stack spacing={4}>
+          {questions.map(question => (
+            <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
+              <Box sx={{ backgroundColor: "#ffb5a9", padding: "12px 16px", borderRadius: "8px", flex: 0.4, minWidth: "200px" }}>
+                <Typography level="body-md" sx={{ fontWeight: 500 }}>
+                  {question.text}
+                </Typography>
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                {renderQuestion(question)}
+              </Box>
+            </Box>
+          ))}
+        </Stack>
+      </Box>
+
+      {/* Submit Button */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          type="submit"
+          sx={{
+            backgroundColor: "#ffb5a9",
+            paddingX: "32px",
+            paddingY: "12px",
+            borderRadius: "24px",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Submit
+        </Button>
+      </Box>
+    </Box>
+  );
 }
