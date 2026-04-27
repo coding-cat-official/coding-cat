@@ -18,7 +18,8 @@ export default function ReqPasswordChange() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      // !! needs to be added to redirect URLs !!
+      // !! if this is edited, it needs to match with the Supabase redirect URLs !!
+      // check 'Authentication/URL Configuration
       redirectTo: 'https://coding-cat.club/#/change-password'
     });
     
