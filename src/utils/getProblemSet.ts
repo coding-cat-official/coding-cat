@@ -1,10 +1,20 @@
-import { Problem } from "../types";
+/**
+ * Here you define the different types of questions
+ */
+const questionTypeList = ["private-problems", "public-problems"];
 
 /**
- * Returns the current problem set as defined by the `REACT_APP_PROBLEM_SET` environment variable.
- * If no variable is defined, it uses public-problems by default.
+ * Depending on the REACT_APP_PROBLEM_SET, it returns am ESM module based off that ones
+ * @returns ESM Module Import for the different problems
  */
-export default async function getProblemSet(): Promise<Problem[]> {
-  const problemSet = process.env.REACT_APP_PROBLEM_SET || "problems";
-  return (await import(`../${problemSet}/problems`)).default;
+async function getProblemSet() {
+  const questionType = process.env.REACT_APP_PROBLEM_SET;
+
+  if (questionTypeList.includes(questionType!)) {
+    return (await import(`../${questionType}/problems.js`)).default;
+  } else {
+    throw Error("The env REACT_APP_PROBLEM_SET is incorrect or not set");
+  }
 }
+
+export default getProblemSet;

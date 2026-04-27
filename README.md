@@ -28,6 +28,28 @@ To switch the problem set from the public-problems repository to the private-pro
 
 ## Modifying the App
 
+### Creating New Problems
+
+To create new problems with all necessary files:
+- Run `python scripts/create-problem.py` from the repository root
+- Follow the program instructions
+
+Once the program is finished:
+- Edit the placeholder description in `description.md`
+- Edit the placeholder test case in `io.json` and add at least 9 more (10 total)
+- If you wish to change the name post-creation, please ensure consistent naming across `description.md`, `starter.py` and `meta.json` as well as casing:
+    - Directory name must be in **kebab-case**
+    - Function name in `description.md`, `starter.py`, and `meta.json` must be in **snake_case**
+- Run `git submodules --remote --merge` to pull any changes from `public-problems`
+- Run `npm run build` to build all the problems to include your new problem(s)
+- Check on your local deployment if everything looks and runs alright
+- Push your changes to `public-problems`
+- Please, for Eric's sake, make sure you didn't break anything
+
+*Note: This program was primarily made with the intention of making "coding" and "haystack"-type problems.* 
+*If you make mutation problems, the finished problem directory will be placed correctly, **but will be missing the mutation.py files***
+
+
 ### Modify Contract
 
 - To modify the contract there are two files which needs to be modified the `ContractEdit.tsx` and the `ContractText.tsx`.
