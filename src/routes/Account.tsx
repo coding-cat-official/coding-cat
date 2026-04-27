@@ -7,6 +7,7 @@ import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
+import HeatMap from '../components/profile/progress/HeatMap';
 
 interface CategoryData {
     category: string;
@@ -78,6 +79,7 @@ export default function Account({ session }: { session: Session }) {
 
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
         { view === "activity" && <CategoriesBarGraph categoriesData={categoriesData}/> }
+        { view === "activity" && <HeatMap activity={activityStamps} /> }
     </Stack>
   </Stack>
   )
