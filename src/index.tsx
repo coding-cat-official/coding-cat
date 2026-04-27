@@ -20,6 +20,7 @@ import AdminWrapper from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
 import ChangePassword from './routes/ChangePassword';
 import ReqPasswordChange from './routes/ReqPasswordChange';
+import AuthCallback from './routes/AuthCallback';
 
 
 
@@ -74,6 +75,10 @@ const router = createHashRouter([
         ],
       },
     ],
+  },
+  {
+    path: "auth/callback",
+    element: <AuthCallback />
   },
 ],
 {

@@ -38,8 +38,10 @@ export default function Register() {
       email: email,
       password: password,
       options: {
-        // !! needs to be added to redirect URLs !!
-        emailRedirectTo: 'https://coding-cat.club/#/signin',
+        // !! if this is edited, it needs to match with the Supabase redirect URLs !!
+        // check 'Authentication/URL Configuration'
+        // ${window.location.origin} sets it dynamically to localhost or coding-cat.club
+        emailRedirectTo: `${window.location.origin}/#/auth/callback`,
       },
     });
 

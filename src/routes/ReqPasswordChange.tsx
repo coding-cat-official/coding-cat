@@ -20,7 +20,8 @@ export default function ReqPasswordChange() {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       // !! if this is edited, it needs to match with the Supabase redirect URLs !!
       // check 'Authentication/URL Configuration
-      redirectTo: 'https://coding-cat.club/#/change-password'
+      // ${window.location.origin} sets it dynamically to localhost or coding-cat.club
+      redirectTo: `${window.location.origin}/#/auth/callback`
     });
     
     if(error){
@@ -48,7 +49,7 @@ export default function ReqPasswordChange() {
           />
         </Box>
         <Button disabled={loading} type="submit">
-          {loading ? <span>Loading</span> : <span>Register User</span>}
+          {loading ? <span>Loading</span> : <span>Request Password Reset</span>}
         </Button>
       </form>
       { !!error && <Typography color="danger">{error}</Typography> }
