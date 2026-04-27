@@ -8,16 +8,16 @@ import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
 import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
-import type { Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import Tutorial from '../components/MutationTutorial';
-import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
+import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
