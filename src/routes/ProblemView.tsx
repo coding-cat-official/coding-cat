@@ -104,6 +104,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   
         if (!result) questionList = reflectionQuestions.fail;
       }
+      else if(evalResponse?.status === "failure") {
+        // Don't generate reflection prompt
+        return;
+      }
 
       const rand = Math.floor(Math.random() * questionList.length);
       const question = questionList[rand];
@@ -116,7 +120,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [evalResponse]);
 
     useEffect(() => {
-      if (!evalResponse) setHidePrompt(true);
+      if (!evalResponse || evalResponse?.status === 'failure') setHidePrompt(true);
 
       if (evalResponse?.status === "success") {
         setHidePrompt(false);
