@@ -8,9 +8,10 @@ interface ContractEditProps {
   setContract: Dispatch<SetStateAction<ContractData>>;
   onSave: () => Promise<void>;
   featureMap: Record<string,boolean>;
+  problemCountByCategory: Record<string, number>;
 }
 
-export default function ContractEdit({ setIsUpdating, contract, setContract, onSave, featureMap }: ContractEditProps) {
+export default function ContractEdit({ setIsUpdating, contract, setContract, onSave, featureMap, problemCountByCategory }: ContractEditProps) {
   const baseCategories = ["Fundamentals", "Logic", "String-1", "List-1: Indexing"];
   const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
   const categoriesToEdit = featureMap["CodingStage2"]
@@ -49,7 +50,7 @@ export default function ContractEdit({ setIsUpdating, contract, setContract, onS
                           variant="plain"
                           size="sm"
                           sx={{ width: "50px", typography: 'body1' }}
-                          slotProps={{ input: { type: "number", min: 0 } }}
+                          slotProps={{ input: { type: "number", min: 0, max: problemCountByCategory[c] ?? 10 } }}
                           placeholder="0"
                           value={contract.Coding.problemsToSolveByCategory[c]}
                           onChange={(e) =>

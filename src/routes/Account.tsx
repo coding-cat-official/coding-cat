@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Stack, Typography } from '@mui/joy';
-import { Reflection } from '../types';
+import { Problem, Reflection } from '../types';
 import UserInfo from '../components/profile/UserInfo';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
@@ -10,13 +10,15 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/HeatMap';
+import getProblemSet from '../utils/getProblemSet';
+import { getProblemCountByCategory } from '../utils/getProblemCountByCategory';
 
 interface CategoryData {
-    category: string;
-    completed: number;
-    total: number;
-    problems: object[];
-    question_type: string;
+  category: string;
+  completed: number;
+  total: number;
+  problems: object[];
+  question_type: string;
 }
 
 /**
@@ -29,7 +31,8 @@ export default function Account({ session }: { session: Session }) {
   const [passingStamps, setPassingStamps] = useState<string[]>([])
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
   const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
-  
+  const [allProblems, setAllProblems] = useState<Problem[]>([]);
+
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("reflections");
   const [error, setError] = useState("");
@@ -66,10 +69,15 @@ export default function Account({ session }: { session: Session }) {
       setCategoriesData(getCompletedProblems(submissions || []));
     }
 
+    async function fetchProblems(){
+      setAllProblems(await getProblemSet());
+    }
+
     setUserStartDate(new Date(session.user.created_at) || new Date());
 
     fetchProgress();
-  }, [session, setUserStartDate, setCategoriesData]);
+    fetchProblems();
+  }, [session, setUserStartDate, setCategoriesData, setAllProblems]);
 
   if (error) {
     return (
@@ -83,7 +91,11 @@ export default function Account({ session }: { session: Session }) {
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
-        <Contract />
+        <Contract 
+          problemCountByCategory={
+            getProblemCountByCategory(allProblems)
+          }
+        />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
