@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Stack, Typography } from '@mui/joy';
-import { Problem, Reflection } from '../types';
+import { Reflection } from '../types';
 import UserInfo from '../components/profile/UserInfo';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
@@ -10,8 +10,6 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/HeatMap';
-import getProblemSet from '../utils/getProblemSet';
-import { getProblemCountByCategory } from '../utils/getProblemCountByCategory';
 
 interface CategoryData {
   category: string;
@@ -31,7 +29,7 @@ export default function Account({ session }: { session: Session }) {
   const [passingStamps, setPassingStamps] = useState<string[]>([])
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
   const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
-  const [allProblems, setAllProblems] = useState<Problem[]>([]);
+  const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string,number>>({});
 
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("reflections");
@@ -69,15 +67,18 @@ export default function Account({ session }: { session: Session }) {
       setCategoriesData(getCompletedProblems(submissions || []));
     }
 
-    async function fetchProblems(){
-      setAllProblems(await getProblemSet());
-    }
-
     setUserStartDate(new Date(session.user.created_at) || new Date());
 
     fetchProgress();
-    fetchProblems();
-  }, [session, setUserStartDate, setCategoriesData, setAllProblems]);
+  }, [session, setUserStartDate, setCategoriesData]);
+
+  // if the categoriesData changes, update the problem count
+  useEffect(() => {
+    const probCountByCat = Object.fromEntries(
+      categoriesData.map(({ category, total }) => [category, total])
+    );
+    setProblemCountByCategory(probCountByCat);
+  }, [categoriesData, setProblemCountByCategory]);
 
   if (error) {
     return (
@@ -92,9 +93,7 @@ export default function Account({ session }: { session: Session }) {
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
         <Contract 
-          problemCountByCategory={
-            getProblemCountByCategory(allProblems)
-          }
+          problemCountByCategory={problemCountByCategory}
         />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">

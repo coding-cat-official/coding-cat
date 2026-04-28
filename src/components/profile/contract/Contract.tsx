@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { BLANK_CONTRACT, ContractData, Problem } from "../../../types";
+import { BLANK_CONTRACT, ContractData } from "../../../types";
 import { IconButton, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 import ContractEdit from "./ContractEdit";
