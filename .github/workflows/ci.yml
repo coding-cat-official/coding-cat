@@ -5,7 +5,7 @@ name: Test & Lint the Coding Cat app
 on:
   # Start action to PR to main or staging
   pull_request:
-    branches: [main, staging, test-staging, test-main]
+    branches: [main, staging]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:  
