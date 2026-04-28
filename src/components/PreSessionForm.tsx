@@ -85,11 +85,14 @@ export default function PreSessionForm() {
   const renderQuestion = (question: Question) => {
     switch (question.type) {
       case "radio":
+        const numOptions = question.options?.length || 0;
+        const columns = numOptions > 5 ? "repeat(5, 1fr)" : "1fr 1fr";
+        
         return (
           <RadioGroup
             value={answers[question.id] || ""}
             onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}
+            sx={{ display: "grid", gridTemplateColumns: columns, gap: 2 }}
           >
             {question.options?.map(option => (
               <FormLabel key={option.value} sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
@@ -141,7 +144,7 @@ export default function PreSessionForm() {
             sx={{
               flex: 1,
               minWidth: "300px",
-              backgroundColor: "white",
+              backgroundColor: "#ffe57d",
               borderRadius: "8px",
               border: "2px solid black",
             }}
@@ -158,18 +161,31 @@ export default function PreSessionForm() {
 
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
       sx={{
-        backgroundColor: "#d4ff99",
-        borderRadius: "24px",
-        padding: "40px",
-        height: "calc(100vh - 120px)",
         display: "flex",
-        flexDirection: "column",
-        gap: 3,
+        justifyContent: "center",
+        alignItems: "flex-start",
+        paddingX: 4,
+        paddingY: 2,
+        minHeight: "100%",
       }}
     >
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          backgroundColor: "#d4ff99",
+          borderRadius: "24px",
+          padding: "40px",
+          width: "100%",
+          maxWidth: "900px",
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          overflowY: "auto",
+        }}
+      >
       <Typography level="h1" sx={{ fontWeight: "bold" }}>Pre-session reflection</Typography>
 
       {/* Scrollable Questions Container */}
@@ -197,7 +213,7 @@ export default function PreSessionForm() {
         <Stack spacing={4}>
           {questions.map(question => (
             <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
-              <Box sx={{ backgroundColor: "#ffb5a9", padding: "12px 16px", borderRadius: "8px", flex: 0.4, minWidth: "200px" }}>
+              <Box sx={{ backgroundColor: "#ffeb9a", padding: "12px 16px", borderRadius: "8px", flex: 0.4, minWidth: "200px" }}>
                 <Typography level="body-md" sx={{ fontWeight: 500 }}>
                   {question.text}
                 </Typography>
@@ -215,7 +231,7 @@ export default function PreSessionForm() {
         <Button
           type="submit"
           sx={{
-            backgroundColor: "#ffb5a9",
+            backgroundColor: "#ffde59",
             paddingX: "32px",
             paddingY: "12px",
             borderRadius: "24px",
@@ -226,6 +242,7 @@ export default function PreSessionForm() {
           Submit
         </Button>
       </Box>
+    </Box>
     </Box>
   );
 }
