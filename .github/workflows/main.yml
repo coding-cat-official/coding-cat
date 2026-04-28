@@ -6,7 +6,7 @@ name: Test, build & deploy the Coding Cat app
 on:
   # Start action on push to main
   push:
-    branches: [main]
+    branches: [main, staging]
   
   # Start action to PR to main or staging
   pull_request:
