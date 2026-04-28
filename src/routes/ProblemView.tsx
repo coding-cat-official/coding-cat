@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -8,16 +8,18 @@ import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
 import { Stack, Sheet, Box, Typography, Table, Button } from '@mui/joy';
 
-import type { Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabaseClient';
 
+import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
+import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
-import getProblemSet from '../utils/getProblemSet';
 import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
+import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
 const TEST_CASE_PASSED = '✅';
@@ -47,6 +49,9 @@ interface ProblemIDEProps {
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
     const [code, setCode] = usePersistentProblemCode(problem);
+    const [hidePrompt, setHidePrompt] = useState(true);
+    const [question, setQuestion] = useState("");
+    const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
 
@@ -88,6 +93,45 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [setActiveProblem, problem.meta.name, currProblems]);
 
     const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
+
+
+  // Function for defining what reflection questions to show to user depending on success status of user code
+    const generateQuestion = useCallback(() => {
+      let questionList = reflectionQuestions.success;
+
+      if (evalResponse?.status === "success") {
+        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
+  
+        if (!result) questionList = reflectionQuestions.fail;
+      }
+      else if(evalResponse?.status === "failure") {
+        // Don't generate reflection prompt
+        return;
+      }
+
+      const rand = Math.floor(Math.random() * questionList.length);
+      const question = questionList[rand];
+
+      setQuestion(question);
+
+      setTimeout(() => {
+        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100)
+    }, [evalResponse]);
+
+    useEffect(() => {
+      if (!evalResponse || evalResponse?.status === 'failure') setHidePrompt(true);
+
+      if (evalResponse?.status === "success") {
+        setHidePrompt(false);
+      }
+    }, [evalResponse]);
+
+    // Generates the question only when evalResponse state has the most up to date response
+    useEffect(() => {
+      if (!evalResponse) return;
+      generateQuestion();
+    }, [evalResponse, generateQuestion]);
 
     const hasFetchedProblems = useRef<Set<string>>(new Set());
 
@@ -204,7 +248,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               (
                 <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
               ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem}/>
+                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
               )
             }
           </Sheet>
@@ -232,6 +276,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
              
             )
           }
+          <Box ref={reflectionInput} flex={1} width="100%">
+            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+          </Box>
+
 
         </Stack>
 

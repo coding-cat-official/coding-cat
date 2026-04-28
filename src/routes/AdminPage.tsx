@@ -1,76 +1,113 @@
-import { useEffect, useState } from 'react'
-import { Box, Typography, Button } from '@mui/joy'
-import { supabase } from '../supabaseClient'
+import { useEffect, useState } from 'react';
+import { Box, Typography, Button, Switch } from '@mui/joy';
+import { supabase } from '../supabaseClient';
 
 type Feature = {
-  topic: string
-  activated: boolean
+  topic: string;
+  activated: boolean;
+};
+
+interface Status {
+  color: "success" | "danger" | null;
+  value: string;
 }
 
+/**
+ * React component that handles the rendering and logic of the admin page
+ * @returns A React Component
+ */
 export default function AdminPage() {
-  const [features, setFeatures] = useState<Feature[]>([])
+  const [features, setFeatures] = useState<Feature[]>([]);
+  const [originalFeatures, setOriginalFeatures] = useState<Feature[]>([]);
+  const [updateStatus, setUpdateStatus] = useState<Status>({
+    color: null,
+    value: "",
+  });
 
+  // Load the toggles from the db for what categories to enable/disables
   useEffect(() => {
     async function load() {
       const { data, error } = await supabase
-        .from('activated')
-        .select('topic, activated')
-        .order('topic', { ascending: true })
+        .from("activated")
+        .select("topic, activated")
+        .order("topic", { ascending: true });
       if (error) {
-        console.error(error)
+        console.error(error);
       } else {
-        setFeatures(data as Feature[])
+        const features = data as Feature[];
+        setFeatures(features);
+        setOriginalFeatures(features);
       }
     }
-    load()
-  }, [])
+    load();
+  }, []);
 
-  const handleChange = (idx: number, value: string) => {
-    setFeatures((f) => {
-      const copy = [...f]
-      copy[idx] = { ...copy[idx], activated: value === 'true' }
-      return copy
-    })
-  }
+  // Handles changing a feature toggle by topic
+  const handleChange = (topic: string, checked: boolean) => {
+    setFeatures((current) =>
+      current.map((feature) =>
+        feature.topic === topic ? { ...feature, activated: checked } : feature,
+      ),
+    );
+  };
 
+  // Handles sending changes to toggles to the db
   const handleSave = async () => {
-    await Promise.all(
-      features.map((f) =>
-        supabase
-          .from('activated')
+    const changed = features.filter(
+      (f) => originalFeatures.find((o) => o.topic === f.topic)?.activated !== f.activated,
+    );
+
+    if (changed.length === 0) {
+      console.log("No changes to save");
+      return;
+    }
+
+    const results = await Promise.all(
+      changed.map(async (f) => {
+        const { error } = await supabase
+          .from("activated")
           .update({ activated: f.activated })
-          .eq('topic', f.topic)
-      )
-    )
-  }
+          .eq("topic", f.topic);
+
+        return error;
+      }),
+    );
+
+    const hasErrors = results.some((err) => err !== null);
+    if (hasErrors) {
+      setUpdateStatus({
+        color: "danger",
+        value: "Failed to update some settings. Please try again.",
+      });
+      return;
+    }
+
+    setUpdateStatus({ color: "success", value: "Updated Successfully!" });
+    setOriginalFeatures(features);
+  };
 
   return (
     <Box sx={{ p: 4 }}>
       <Typography level="h1">Admin Dashboard</Typography>
 
-      {features.map((f, i) => (
-        <Box
-          key={f.topic}
-          sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 1 }}
-        >
+      {features.map((f) => (
+        <Box key={f.topic} sx={{ display: "flex", alignItems: "center", gap: 2, my: 1 }}>
           <Typography sx={{ width: 150 }}>{f.topic}</Typography>
-          <select
-            value={f.activated ? 'true' : 'false'}
-            onChange={(e) => handleChange(i, e.target.value)}
-          >
-            <option value="true">True</option>
-            <option value="false">False</option>
-          </select>
+          <Switch
+            checked={f.activated}
+            onChange={(event) => handleChange(f.topic, event.currentTarget.checked)}
+          />
         </Box>
       ))}
 
-      <Button
-        variant="solid"
-        onClick={handleSave}
-        sx={{ mt: 2 }}
-      >
+      <Button variant="solid" onClick={handleSave} sx={{ mt: 2 }}>
         Update
       </Button>
+      {updateStatus.color && (
+        <Typography color={updateStatus.color} sx={{ mt: 2 }}>
+          {updateStatus.value}
+        </Typography>
+      )}
     </Box>
-  )
+  );
 }

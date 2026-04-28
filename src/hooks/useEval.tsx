@@ -11,13 +11,18 @@ export default function useEval(problem: Problem, session: Session | null, refet
     const [evalResponse, setEvalResponse] = useState<EvalResponse | null>(null)
     const currentCodeRef = useRef<string>('');
 
-    useEffect(() => { setEvalResponse(null); }, [problem]);
+    // Set eval response to null every time the problem changes
+    useEffect(() => { 
+        setEvalResponse(null); 
+    }, [problem]);
 
+    // Registers an event that runs whenever proxy.py responds with eval_finished
     useEffect(() => {
         const onEvalFinished: EventListener = async (e) => {
             const isMutation = problem.meta.question_type[0] === "mutation";
             const response = (e as CustomEvent).detail;
             setEvalResponse(response);
+            
             // constructing json submission object to store in the database
             if(response.status === 'success' && session?.user){
                 let numPassed: number
@@ -44,10 +49,13 @@ export default function useEval(problem: Problem, session: Session | null, refet
                     totalTests = response.report.length;
                 }
 
+
+                // Creates the submission payload and checks to see if it is a mutation first or just a regular question
                 const submissionPayload = isMutation
                     ? currentCodeRef.current
                     : { code: currentCodeRef.current }
     
+                // Submission payload
                 const submission = {
                     problem_title: problem.meta.name,
                     problem_category: problem.meta.category,
@@ -58,7 +66,7 @@ export default function useEval(problem: Problem, session: Session | null, refet
                     total_tests: totalTests,
                     question_type: problem.meta.question_type[0]
                 };
-                // json object gets stored in the database
+                // Retrieve the most recent submission in the db
                 const { data, error } = await supabase
                     .from('submissions')
                     .select("submission_id, code")
@@ -67,8 +75,11 @@ export default function useEval(problem: Problem, session: Session | null, refet
                     .order('submitted_at', { ascending: false})
                     .limit(1);
 
-                console.error(error);
+                if(error) {
+                    throw Error(error.details)
+                }
 
+                //Get the json data of the submission or null if there is none
                 const json = data?.[0] || null;
 
                 // if the most recent submission is the exact same as the new one, don't insert a new one into the db
@@ -87,7 +98,10 @@ export default function useEval(problem: Problem, session: Session | null, refet
             }
         };
 
+        // Subscribes to the eval_finished event
         document.addEventListener('eval_finished', onEvalFinished);
+
+        // Removes event listener on unmounting
         return () => {
             document.removeEventListener('eval_finished', onEvalFinished);
         };

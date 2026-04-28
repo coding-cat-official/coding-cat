@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Stack, Typography } from '@mui/joy';
+import { Reflection } from '../types';
 import UserInfo from '../components/profile/UserInfo';
+import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
 
@@ -11,11 +13,10 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
  * Additional components used in the profile page are located in `components/profile`.
  */
 export default function Account({ session }: { session: Session }) {
+  const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [passingStamps, setPassingStamps] = useState<string[]>([])
-
-  // Change "reflections" into something else
-  const [view, setView] = useState<"reflections" | "activity">("activity");
+  const [view, setView] = useState<"reflections" | "activity">("reflections");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -32,6 +33,16 @@ export default function Account({ session }: { session: Session }) {
         setError(error.message);
       }
 
+      const reflections: Reflection[] = (submissions || [])
+        .filter((r) => r.reflection != null)
+        .map((r) => ({
+          category: r.problem_category,
+          problem_title: r.problem_title,
+          reflection: r.reflection,
+          submitted_at: r.submitted_at,
+          code: r.code
+        }));
+      setReflections(reflections)
       const all = (submissions || []).map((r) => r.submitted_at)
       const pass = (submissions || [])
       .filter((r) => r.passed_tests === r.total_tests)
@@ -60,9 +71,11 @@ export default function Account({ session }: { session: Session }) {
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
+          <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
+        { view === "reflections" && <Reflections reflections = {reflections} /> }
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps}/> }
     </Stack>
   </Stack>
