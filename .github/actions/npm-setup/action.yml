@@ -1,0 +1,17 @@
+name: Set up npm dependencies
+description: Restore the npm cache and install dependencies
+runs:
+  using: composite
+  steps:
+    - name: Cache node modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.npm
+          node_modules
+        key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          npm-${{ runner.os }}-
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
