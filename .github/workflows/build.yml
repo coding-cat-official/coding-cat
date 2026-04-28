@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_PROBLEM_SET: ${{secrets.REACT_APP_PROBLEM_SET}}
+      REACT_APP_SUPABASE_ANON_KEY: ${{secrets.REACT_APP_SUPABASE_ANON_KEY}}
+      REACT_APP_SUPABASE_URL: ${{secrets.REACT_APP_SUPABASE_URL}}
       PUBLIC_URL: /coding-cat
     steps:
       - uses: actions/checkout@v4
