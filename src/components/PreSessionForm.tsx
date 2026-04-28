@@ -1,24 +1,6 @@
 import { useState, useEffect } from "react";
-import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, TextArea, Typography } from "@mui/joy";
-
-interface QuestionOption {
-  label: string;
-  value: string;
-}
-
-interface Question {
-  id: string;
-  text: string;
-  type: "radio" | "checkbox" | "number" | "textarea";
-  options?: QuestionOption[];
-  placeholder?: string;
-  min?: number;
-  randomizable?: boolean;
-}
-
-interface FormAnswers {
-  [questionId: string]: string | string[] | number;
-}
+import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
+import { Question, FormAnswers } from "../types";
 
 /**
  * This component is meant to be used in the pre-session reflection 
@@ -83,7 +65,12 @@ export default function PreSessionForm() {
 
   const handleCheckboxChange = (questionId: string, optionValue: string) => {
     setAnswers(prev => {
-      const currentValues = Array.isArray(prev[questionId]) ? prev[questionId] : [];
+
+      //ensure currentValues is always an array
+      const currentValues = Array.isArray(prev[questionId])
+      ? (prev[questionId] as string[])
+      : [];
+      
       const newValues = currentValues.includes(optionValue)
         ? currentValues.filter(v => v !== optionValue)
         : [...currentValues, optionValue];
@@ -94,7 +81,7 @@ export default function PreSessionForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form answers:", answers);
-    // TODO: Send to API/database
+    // TODO: Send to database
   };
 
   const renderQuestion = (question: Question) => {
@@ -148,7 +135,7 @@ export default function PreSessionForm() {
 
       case "textarea":
         return (
-          <TextArea
+          <Textarea
             value={answers[question.id] || ""}
             onChange={(e) => handleAnswerChange(question.id, e.target.value)}
             placeholder={question.placeholder || "Write your answer here"}

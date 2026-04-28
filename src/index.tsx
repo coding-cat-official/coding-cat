@@ -16,6 +16,7 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
+import PreSessionForm from './components/PreSessionForm';
 import AdminWrapper from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
 import ChangePassword from './routes/ChangePassword';
@@ -42,6 +43,10 @@ const router = createHashRouter([
       {
         index: true,
         element: <MainTutorial/>,
+      },
+      {
+        path: "session",
+        element: <PreSessionForm/>,
       },
       {
         path: "/problems/:problemName",
