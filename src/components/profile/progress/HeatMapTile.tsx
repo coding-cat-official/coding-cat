@@ -22,7 +22,11 @@ export default function HeatMapTile({ date, contributions }: { date: string, con
         data-tooltip-id="date-tooltip"
         data-tooltip-content={`${contributions} contributions on ${date}`}
         data-tooltip-place="left"
-        sx={{ backgroundColor: `${heatmapColor}`, padding: "5px" }}
+        sx={{ 
+          backgroundColor: `${heatmapColor}`,
+          padding: "5px",
+          borderRadius: 3
+        }}
       >
         
       </Box>
