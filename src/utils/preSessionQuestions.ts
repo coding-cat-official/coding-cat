@@ -1,56 +1,54 @@
+import { Question } from "../types";
+
 export const preSessionQuestions = [
     {
-        question: "How are you feeling as you begin your session?",
+        id: "mood-1",
+        text: "How are you feeling as you begin your session?",
         type: "checkbox",
         options: [
-            "Neutral",
-            "Happy",
-            "Curious",
-            "Productive",
-            "Excited",
-            "Calm",
-            "Tired",
-            "Confused",
-            "Overwhelmed",
-            "Frustrated",
-            "Stressed out"
+            { label: "Neutral", value: "neutral" },
+            { label: "Happy", value: "happy" },
+            { label: "Curious", value: "curious" },
+            { label: "Productive", value: "productive" },
+            { label: "Excited", value: "excited" },
+            { label: "Calm", value: "calm" },
+            { label: "Tired", value: "tired" },
+            { label: "Confused", value: "confused" },
+            { label: "Overwhelmed", value: "overwhelmed" },
+            { label: "Frustrated", value: "frustrated" },
+            { label: "Stressed out", value: "stressed" }
         ],
         category: "mood",
         randomizeable: true
     },
     {
-        question: "How focused are you feeling today on a scale of 1-10? It’s okay to not always feel focused! Keep in mind this rating as you plan today’s study session.",
+        id: "mood-2",
+        text: "How focused are you feeling today on a scale of 1-10? It’s okay to not always feel focused! Keep in mind this rating as you plan today’s study session.",
         type: "radio",
-        options: [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-        ],
+        options: Array.from({ length: 10}, (_, i) => ({
+            label: String(i + 1),
+            value: String(i + 1)
+        })),
         category: "mood",
         randomizeable: true
     },
     {
-        question: "What do you currently need to support your focus and energy?",
+        id: "focus-1",
+        text: "What do you currently need to support your focus and energy?",
         type: "checkbox",
         options: [
-            "Water break",
-            "Take a walk",
-            "Rest a little",
-            "Eat something",
-            "Music",
+            { label: "Water break", value: "water-break" },
+            { label: "Take a walk", value: "walk" },
+            { label: "Rest a little", value: "rest" },
+            { label: "Eat something", value: "eat" },
+            { label: "Music", value: "music" },
         ],
         category: "focus",
         randomizeable: false
     },
     {
-        question: "How much time (in minutes) are you going to spend on CodingCat this session?",
+        id: "goals-1",
+        text: "How much time (in minutes) are you going to spend on CodingCat this session?",
         type: "number",
         min: 10,
         max: 180,
@@ -58,7 +56,8 @@ export const preSessionQuestions = [
         randomizeable: false
     },
     {
-        question: "How many exercises do you want to work on this session?",
+        id: "goals-2",
+        text: "How many exercises do you want to work on this session?",
         type: "number",
         min: 1,
         max: 20,
@@ -66,52 +65,56 @@ export const preSessionQuestions = [
         randomizeable: false
     },
     {
-        question: "Which categories of exercises do you want to target this session?",
+        id: "goals-3",
+        text: "Which categories of exercises do you want to target this session?",
         type: "checkbox",
         options: [
-            "Fundamentals",
-            "Logic",
-            "List-1",
-            "String-1",
-            "List-2",
-            "String-2",
-            "List-3",
-            "String-3"
+            { label: "Fundamentals", value: "fundamentals" },
+            { label: "Logic", value: "logic" },
+            { label: "List-1", value: "list-1" },
+            { label: "String-1", value: "string-1" },
+            { label: "List-2", value: "list-2" },
+            { label: "String-2", value: "string-2" },
+            { label: "List-3", value: "list-3" },
+            { label: "String-3", value: "string-3" }
         ],
         category: "goals",
         randomizeable: false
     },
     {
-        question: "Name 3 things you can do when you encounter bugs today before going to the teacher for help.",
-        type: "text",
+        id: "debugging-1",
+        text: "Name 3 things you can do when you encounter bugs today before going to the teacher for help.",
+        type: "textarea",
         category: "debugging",
         randomizeable: false
     },
     {
-        question: "Which of the following do you think might be a distraction to you during this study session?",
+        id: "distractions-1",
+        text: "Which of the following do you think might be a distraction to you during this study session?",
         type: "checkbox",
         options: [
-            "Phone",
-            "Peers",
-            "Hunger",
-            "Thirst",
-            "Bathroom",
-            "Stress",
-            "Boredom",
-            "Noise",
-            "Daydreaming",
-            "Fatigue",
-            "Lack of motivation",
-            "Conditions in the lab room",
-            "Other",
+            { label: "Phone", value: "phone" },
+            { label: "Peers", value: "peers" },
+            { label: "Hunger", value: "hunger" },
+            { label: "Thirst", value: "thirst" },
+            { label: "Bathroom", value: "bathroom" },
+            { label: "Stress", value: "stress" },
+            { label: "Boredom", value: "boredom" },
+            { label: "Noise", value: "noise" },
+            { label: "Daydreaming", value: "daydreaming" },
+            { label: "Fatigue", value: "fatigue" },
+            { label: "Lack of motivation", value: "motivation" },
+            { label: "Conditions in the lab room", value: "conditions" },
+            { label: "Other", value: "other" }
         ],
         category: "distractions",
         randomizeable: false
     },
     {
-        question: "In 1-2 sentences, what kind of strategy can you use to manage those distractions?",
-        type: "text",
+        id: "distractions-2",
+        text: "In 1-2 sentences, what kind of strategy can you use to manage those distractions?",
+        type: "textarea",
         category: "distractions",
         randomizeable: false
     },
-]
+] satisfies Question[];

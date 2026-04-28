@@ -105,7 +105,6 @@ export type ContractProgress = {
     [category: string]: number;
 }
 
-// Session-related types
 export interface QuestionOption {
   label: string;
   value: string;
@@ -116,10 +115,11 @@ export interface Question {
   text: string;
   type: "radio" | "checkbox" | "number" | "textarea";
   options?: QuestionOption[];
+  category: string;
   placeholder?: string;
   min?: number;
   max?: number;
-  randomizable?: boolean;
+  randomizeable?: boolean;
 }
 
 export interface FormAnswers {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
+import { preSessionQuestions } from "../utils/preSessionQuestions";
 
 /**
  * This component is meant to be used in the pre-session reflection 
@@ -23,11 +24,8 @@ export default function PreSessionForm() {
   async function fetchQuestions() {
     try {
       setLoading(true);
-      const response = await fetch("/presession-questions.json");
-      if (!response.ok) throw new Error("Failed to fetch questions");
-      
-      let questionsData: Question[] = await response.json();
-      questionsData = randomizeQuestions(questionsData);
+
+      let questionsData: Question[] = randomizeQuestions(preSessionQuestions);
       
       setQuestions(questionsData);
       
@@ -48,7 +46,7 @@ export default function PreSessionForm() {
 
   function randomizeQuestions(questionsData: Question[]): Question[] {
     return questionsData.map(q => {
-      if (q.randomizable && q.options) {
+      if (q.randomizeable && q.options) {
         const shuffled = [...q.options].sort(() => Math.random() - 0.5);
         return { ...q, options: shuffled };
       }
