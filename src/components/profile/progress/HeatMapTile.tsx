@@ -16,6 +16,8 @@ export default function HeatMapTile({ date, contributions }: { date: string, con
     }
   }
 
+  // TODO: Maybe use mui/joy tooltip for consistency? one less dependency
+
   return (
     <div>
       <Box id={date}
