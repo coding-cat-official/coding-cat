@@ -18,6 +18,7 @@ import getProblemSet from '../utils/getProblemSet';
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
@@ -79,6 +80,11 @@ export default function App() {
       }
     });
     supabase.auth.onAuthStateChange((_event, session) => {
+      if(_event === 'PASSWORD_RECOVERY'){
+        setIsRecoverySession(true);
+        return;
+      }
+      setIsRecoverySession(false);
       setSession(session);
       if (session?.user) {
         supabase
@@ -234,7 +240,7 @@ export default function App() {
               <ListIcon size={20} />
             </Button>
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
-              {session ? (
+              {session && !isRecoverySession ? (
                 <>
                   <Link to="/profile">
                     <Button>Profile</Button>

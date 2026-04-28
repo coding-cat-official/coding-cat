@@ -7,6 +7,8 @@ export default function AuthCallback() {
   const [tokens, setTokens] = useState<{ access_token: string, refresh_token: string } | null >(null);
 
   useEffect(() => {
+    // parsing the URL for the access and refresh tokens
+
     // hash should give something like ex:
     // #/auth/callback#access_token=...&type=recovery
     const hash = window.location.hash;

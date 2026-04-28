@@ -1,11 +1,17 @@
 import { FormEvent, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
+import { useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 /**
  * Change Password page for the app.
  */
 export default function ChangePassword() {
+  const location = useLocation();
+
+  const [done, setDone] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
 
@@ -18,18 +24,27 @@ export default function ChangePassword() {
     setSuccess("");
     setLoading(true);
 
+    const { access_token, refresh_token } = location.state || {};
+    if (access_token && refresh_token) {
+      await supabase.auth.setSession({ access_token, refresh_token });
+    }
+
     const { error } = await supabase.auth.updateUser({
       password: newPassword
     });
 
     if (error) {
       setError(error.message);
+      setLoading(false);
     } else {
-      setSuccess('Password changed! Go login!');
+      await supabase.auth.signOut();
+      setDone(true);
     }
-
     setLoading(false);
   }
+
+  // On success, navigate to signin
+  if(done) return <Navigate to='/signin' />
 
   return (
     <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
