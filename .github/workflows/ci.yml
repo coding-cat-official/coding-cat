@@ -29,4 +29,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
+      - name: Set up npm dependencies
+        uses: ./.github/actions/npm-setup
       - run: npm run test
