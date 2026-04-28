@@ -10,15 +10,15 @@ interface CategoryData {
 }
 
 export default function CategoriesBarGraph({ categoriesData }: { categoriesData: CategoryData[] }) {
-  // TODO: Contract remaining bar?
+  // TODO: Pie chart of total questions remaining from contract
   
   const graphData = categoriesData
     .map(category => {
       return {
         name: category.category,
-        completed: category.completed,
+        Completed: category.completed,
         total: category.total,
-        remaining: category.total - category.completed
+        "Incomplete / Not Started": category.total - category.completed
       }
     })
     // sort alphabetically
@@ -51,7 +51,7 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
         <Tooltip isAnimationActive={false}
           labelFormatter={(label) => `Category: ${label}`}
         />
-        <Bar dataKey="completed" stackId="a" radius={[0, 0, 0, 0]}>
+        <Bar dataKey="Completed" stackId="a" radius={[0, 0, 0, 0]}>
           {graphData.map((category) => (
             <Cell
               key={category.name}
@@ -59,7 +59,7 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
             />
           ))}
         </Bar>
-        <Bar dataKey="remaining" stackId="a" fill="#e0e0e0" radius={[10, 10, 0, 0]} />
+        <Bar dataKey="Incomplete / Not Started" stackId="a" fill="#e0e0e0" radius={[10, 10, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
     </Card>
