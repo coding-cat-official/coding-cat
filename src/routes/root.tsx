@@ -66,18 +66,16 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user){
-        if (session?.user) {
-          supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('profile_id', session.user.id)
-            .single()
-            .then(({ data, error }) => {
-              if (!error && data) {
-                setIsAdmin(data.is_admin);
-              }
-            });
-        }
+        supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('profile_id', session.user.id)
+          .single()
+          .then(({ data, error }) => {
+            if (!error && data) {
+              setIsAdmin(data.is_admin);
+            }
+          });
       }
     });
     supabase.auth.onAuthStateChange((_event, session) => {
