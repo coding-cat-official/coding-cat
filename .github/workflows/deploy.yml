@@ -31,8 +31,6 @@ jobs:
     name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_URL: /coding-cat
 
     # Run if merging into staging
     if: github.ref == 'refs/heads/test-staging'

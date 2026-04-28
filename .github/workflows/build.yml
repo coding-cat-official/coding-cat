@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REACT_APP_PROBLEM_SET: ${{secrets.REACT_APP_PROBLEM_SET}}
+      PUBLIC_URL: /coding-cat
     steps:
       - uses: actions/checkout@v4
       - run: git submodule sync
