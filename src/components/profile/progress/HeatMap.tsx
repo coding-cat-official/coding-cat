@@ -87,14 +87,40 @@ export default function HeatMap({ activity }: { activity: string[] }) {
             <Stack key={i} direction="column" gap={0.5}>
               {week.map(({ date, contributions }) => (
                 <HeatMapTile
-                  date={date}
-                  contributions={contributions}
+                  title={`${contributions} contributions on ${date}`}
                   heatmapColour={getTileColour(contributions)}
                   key={date}
                 />
               ))}
             </Stack>
           ))}
+        </Stack>
+        <Stack direction="row-reverse" gap={0.25}>
+          <HeatMapTile
+            title=""
+            heatmapColour={getTileColour(max)}
+            key="100%"
+          />
+          <HeatMapTile
+            title=""
+            heatmapColour={getTileColour(max * 0.74)}
+            key="75%"
+          />
+          <HeatMapTile
+            title=""
+            heatmapColour={getTileColour(max * 0.5)}
+            key="50%"
+          />
+          <HeatMapTile
+            title=""
+            heatmapColour={getTileColour(max * 0.24)}
+            key="25%"
+          />
+          <HeatMapTile
+            title=""
+            heatmapColour={getTileColour(0)}
+            key="0%"
+          />
         </Stack>
       </Card>
     </Stack>

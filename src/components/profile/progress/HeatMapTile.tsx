@@ -1,14 +1,14 @@
 import { Box, Tooltip } from "@mui/joy";
 
-export default function HeatMapTile({ date, contributions, heatmapColour }: { date: string, contributions: number, heatmapColour: string }){
+export default function HeatMapTile({ title, heatmapColour }: { title: string, heatmapColour: string }){
   return (
     <Tooltip 
-      title={`${contributions} contributions on ${date}`}
+      title={title}
       variant="soft"
       placement="right"
       disableInteractive
     >
-      <Box id={date}
+      <Box id={title}
         sx={{ 
           backgroundColor: `${heatmapColour || "grey"}`,
           padding: "5px",
