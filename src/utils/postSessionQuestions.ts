@@ -90,4 +90,4 @@ export const postSessionQuestions = [
         category: "summary",
         randomizeable: false
     },
-] as const satisfies readonly Question[];
+] satisfies Question[];
