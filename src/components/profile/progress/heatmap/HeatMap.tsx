@@ -3,8 +3,6 @@ import HeatMapTile from "./HeatMapTile";
 import HeatMapLegend from "./HeatMapLegend";
 
 export default function HeatMap({ activity }: { activity: string[] }) {
-  // make it total problems touched, ie unique problems submitted for
-
   const submissions: Record<string, number> = {}
 
   activity.forEach((iso) => {
