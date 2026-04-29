@@ -17,8 +17,6 @@ export default function HeatMapTile({ date, contributions }: { date: string, con
     }
   }
 
-  // TODO: Maybe use mui/joy tooltip for consistency? one less dependency
-
   return (
     <Tooltip 
       title={`${contributions} contributions on ${date}`}
