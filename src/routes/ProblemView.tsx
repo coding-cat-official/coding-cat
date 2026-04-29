@@ -98,42 +98,31 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
 
   // Function for defining what reflection questions to show to user depending on success status of user code
-  const generateQuestion = useCallback(() => {
-    let questionList = reflectionQuestions.success;
-
-    if (evalResponse?.status === "success") {
-      const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-
-      if (!result) questionList = reflectionQuestions.fail;
-    }
-    else if(evalResponse?.status === "failure") {
-      // Don't generate reflection prompt
+  useEffect(() => {
+    if(!evalResponse || evalResponse?.status === "failure") {
+      setHidePrompt(true);
       return;
     }
-
-    const rand = Math.floor(Math.random() * questionList.length);
-    const question = questionList[rand];
-
-    setQuestion(question);
-
-    setTimeout(() => {
-      reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100)
-  }, [evalResponse]);
-
-  useEffect(() => {
-    if (!evalResponse || evalResponse?.status === 'failure') setHidePrompt(true);
-
-    if (evalResponse?.status === "success") {
+    if (evalResponse.status === "success") {
       setHidePrompt(false);
+
+      const allPassed = evalResponse.report.every((r) => r.equal);
+      // if allPassed, give success questions
+      // if not, give fail questions
+      const questionList = allPassed
+        ? reflectionQuestions.success
+        : reflectionQuestions.fail;
+
+      const rand = Math.floor(Math.random() * questionList.length);
+      const question = questionList[rand];
+
+      setQuestion(question);
+
+      setTimeout(() => {
+        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100)
     }
   }, [evalResponse]);
-
-  // Generates the question only when evalResponse state has the most up to date response
-  useEffect(() => {
-    if (!evalResponse) return;
-    generateQuestion();
-  }, [evalResponse, generateQuestion]);
 
   const hasFetchedProblems = useRef<Set<string>>(new Set());
 

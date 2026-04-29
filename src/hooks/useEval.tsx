@@ -122,8 +122,8 @@ export default function useEval(problem: Problem, session: Session | null, refet
         }
 
     document.dispatchEvent(new CustomEvent('eval', { detail }));
-  }
+    }
 
-  return [evalResponse, runCode];
+    return [evalResponse, runCode];
 }
 
