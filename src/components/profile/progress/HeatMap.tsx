@@ -22,6 +22,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     const day = d.getDay(); 
     // subtract days to go back to Sunday
     d.setDate(d.getDate() - day);
+    // set to midnight to be safe
     d.setHours(0, 0, 0, 0);
     return d;
   }
@@ -51,6 +52,32 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     });
   });
 
+  var max = 0;
+  // get max to determine quartiles for colour thresholds
+  for(const [_, contribs] of Object.entries(submissions)){
+    if(contribs > max) max = contribs;
+  }
+
+  function getTileColour(contribs: number): string{
+    // colours colour-picked from GitHub
+    var colours = ["#151B23", "#033A16", "#196C2E", "#2EA043", "#56D364"];
+
+    if(contribs === 0){
+      return colours[0];
+    }
+    if(contribs < (max * 0.25)){ // lowest 25%
+      return colours[1];
+    }
+    if(contribs < (max * 0.5)){ // 25-50%
+      return colours[2];
+    }
+    if(contribs < (max * 0.75)){ // 50-75%
+      return colours[3];
+    }
+    // top 25%
+    return colours[4];
+  }
+
   return (
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
@@ -62,6 +89,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
                 <HeatMapTile
                   date={date}
                   contributions={contributions}
+                  heatmapColour={getTileColour(contributions)}
                   key={date}
                 />
               ))}
