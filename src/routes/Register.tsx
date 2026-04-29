@@ -8,6 +8,7 @@ import { Session } from '@supabase/supabase-js';
  * Register page for the app.
  */
 export default function Register() {
+  // TODO: on register the user should be able to write their contract
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
