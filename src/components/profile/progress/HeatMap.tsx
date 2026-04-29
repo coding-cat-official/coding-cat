@@ -1,5 +1,6 @@
 import { Card, Stack, Typography } from "@mui/joy";
 import HeatMapTile from "./HeatMapTile";
+import HeatMapLegendTile from "./HeatMapLegendTile";
 
 export default function HeatMap({ activity }: { activity: string[] }) {
   // make it total problems touched, ie unique problems submitted for
@@ -27,6 +28,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     return d;
   }
   
+  // activity is in reverse-chronological order
   const firstCont = activity[activity.length - 1];
   const firstWeek = getSundayOfWeek(new Date(firstCont));
 
@@ -58,14 +60,14 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     if(contribs > max) max = contribs;
   }
 
+  // colours colour-picked from GitHub
+  // ordered from least to most
+  const colours = ["#151B23", "#033A16", "#196C2E", "#2EA043", "#56D364"];
   function getTileColour(contribs: number): string{
-    // colours colour-picked from GitHub
-    var colours = ["#151B23", "#033A16", "#196C2E", "#2EA043", "#56D364"];
-
     if(contribs === 0){
       return colours[0];
     }
-    if(contribs < (max * 0.25)){ // lowest 25%
+    if(contribs < (max * 0.25)){ // 1-25%
       return colours[1];
     }
     if(contribs < (max * 0.5)){ // 25-50%
@@ -85,42 +87,41 @@ export default function HeatMap({ activity }: { activity: string[] }) {
         <Stack direction="row" gap={0.5}>
           {weeks.map((week, i) => (
             <Stack key={i} direction="column" gap={0.5}>
-              {week.map(({ date, contributions }) => (
-                <HeatMapTile
-                  title={`${contributions} contributions on ${date}`}
-                  heatmapColour={getTileColour(contributions)}
-                  key={date}
-                />
-              ))}
+              {
+                week.map(({ date, contributions }) => (
+                  <HeatMapTile
+                    title={`${contributions} contributions on ${date}`}
+                    heatmapColour={getTileColour(contributions)}
+                    tooltipPlacement="right"
+                    key={date}
+                  />
+                ))
+              }
             </Stack>
           ))}
         </Stack>
-        <Stack direction="row-reverse" gap={0.25}>
-          <HeatMapTile
-            title=""
-            heatmapColour={getTileColour(max)}
-            key="100%"
+        <Stack direction="row-reverse" alignItems="center" gap={0.25}>
+          <HeatMapLegendTile
+            title="75-100% of most active day"
+            heatmapColour={colours[4]}
           />
-          <HeatMapTile
-            title=""
-            heatmapColour={getTileColour(max * 0.74)}
-            key="75%"
+          <HeatMapLegendTile
+            title="50-74% of most active day"
+            heatmapColour={colours[3]}
           />
-          <HeatMapTile
-            title=""
-            heatmapColour={getTileColour(max * 0.5)}
-            key="50%"
+          <HeatMapLegendTile
+            title="25-49% of most active day"
+            heatmapColour={colours[2]}
           />
-          <HeatMapTile
-            title=""
-            heatmapColour={getTileColour(max * 0.24)}
-            key="25%"
+          <HeatMapLegendTile
+            title="0-24% of most active day"
+            heatmapColour={colours[1]}
           />
-          <HeatMapTile
-            title=""
-            heatmapColour={getTileColour(0)}
-            key="0%"
+          <HeatMapLegendTile
+            title="No contributions"
+            heatmapColour={colours[0]}
           />
+          <Typography level="body-sm" sx={{ marginRight: "5px" }}>Legend:</Typography>
         </Stack>
       </Card>
     </Stack>

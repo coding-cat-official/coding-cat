@@ -1,11 +1,11 @@
-import { Box, Tooltip, TooltipProps } from "@mui/joy";
+import { Box, Tooltip } from "@mui/joy";
 
-export default function HeatMapTile({ title, heatmapColour, tooltipPlacement }: { title: string, heatmapColour: string, tooltipPlacement: TooltipProps["placement"] }){
+export default function HeatMapTile({ title, heatmapColour }: { title: string, heatmapColour: string }){
   return (
     <Tooltip 
       title={title}
       variant="soft"
-      placement={tooltipPlacement}
+      placement="top"
       disableInteractive
     >
       <Box id={title}
