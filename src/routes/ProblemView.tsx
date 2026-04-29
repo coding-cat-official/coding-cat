@@ -30,117 +30,119 @@ const PASS_COLOR = '#caffc5';
 const FAIL_COLOR = '#f4cbca';
 
 export async function problemLoader({params}: any): Promise<Problem> {
-    const problems = await getProblemSet();
-    const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
-    if (selected.length !== 1) throw new Error('fuck');
-    return selected[0];
+  const problems = await getProblemSet();
+  const selected = (problems as Problem[]).filter((p) => p.meta.name === params.problemName);
+  if (selected.length !== 1) throw new Error('fuck');
+  return selected[0];
 }
 
 export default function ProblemView() {
-    const problem = useLoaderData() as Problem;
-    return <>
-        <ProblemIDE problem={problem} />
-    </>;
+  const problem = useLoaderData() as Problem;
+  return (
+    <>
+      <ProblemIDE problem={problem} />
+    </>
+  );
 }
 
 interface ProblemIDEProps {
-    problem: Problem
+  problem: Problem
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
-    const [code, setCode] = usePersistentProblemCode(problem);
-    const [hidePrompt, setHidePrompt] = useState(true);
-    const [question, setQuestion] = useState("");
-    const reflectionInput = useRef<HTMLElement>(null);
-    const [isTourOpen, setTourOpen] = useState(false);
-    const [problems, setProblems] = useState<Problem[]>([]);
+  const [code, setCode] = usePersistentProblemCode(problem);
+  const [hidePrompt, setHidePrompt] = useState(true);
+  const [question, setQuestion] = useState("");
+  const reflectionInput = useRef<HTMLElement>(null);
+  const [isTourOpen, setTourOpen] = useState(false);
+  const [problems, setProblems] = useState<Problem[]>([]);
 
-    const { session, setActiveProblem, refetchProgress } = useOutletContext<{
-      session: Session | null,
-      setActiveProblem: (name: string | null) => void,
-      refetchProgress: () => void
-    }>();
-    
-    const navigate = useNavigate();
+  const { session, setActiveProblem, refetchProgress } = useOutletContext<{
+    session: Session | null,
+    setActiveProblem: (name: string | null) => void,
+    refetchProgress: () => void
+  }>();
+  
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      (async () => {
-        setProblems(await getProblemSet());
-      })();
-    }, []);
+  useEffect(() => {
+    (async () => {
+      setProblems(await getProblemSet());
+    })();
+  }, []);
 
-    const currCategoryProblems = () => {
-      const questionType = problem.meta.question_type[0];
-      if(questionType.includes("mutation") || questionType.includes("haystack")){
-        return problems.filter(p => p.meta.question_type.includes(questionType))
-      }
-      else{
-        return problems.filter(p => {
-          const questionType = p.meta.question_type[0];
-          const exclude = questionType.includes("mutation") || questionType.includes("haystack");
-          return p.meta.category === problem.meta.category && !exclude;
-        })
-      }
-    };
+  const currCategoryProblems = () => {
+    const questionType = problem.meta.question_type[0];
+    if(questionType.includes("mutation") || questionType.includes("haystack")){
+      return problems.filter(p => p.meta.question_type.includes(questionType))
+    }
+    else{
+      return problems.filter(p => {
+        const questionType = p.meta.question_type[0];
+        const exclude = questionType.includes("mutation") || questionType.includes("haystack");
+        return p.meta.category === problem.meta.category && !exclude;
+      })
+    }
+  };
 
-    const currProblems = currCategoryProblems();
-    const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
+  const currProblems = currCategoryProblems();
+  const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
 
 
-    useEffect(() => {
-      setActiveProblem(problem.meta.name);
-      setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
-    }, [setActiveProblem, problem.meta.name, currProblems]);
+  useEffect(() => {
+    setActiveProblem(problem.meta.name);
+    setCurrIndex(currProblems.findIndex(p => p.meta.name === problem.meta.name))
+  }, [setActiveProblem, problem.meta.name, currProblems]);
 
-    const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
+  const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
 
 
   // Function for defining what reflection questions to show to user depending on success status of user code
-    const generateQuestion = useCallback(() => {
-      let questionList = reflectionQuestions.success;
+  const generateQuestion = useCallback(() => {
+    let questionList = reflectionQuestions.success;
 
-      if (evalResponse?.status === "success") {
-        const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
-  
-        if (!result) questionList = reflectionQuestions.fail;
-      }
-      else if(evalResponse?.status === "failure") {
-        // Don't generate reflection prompt
-        return;
-      }
+    if (evalResponse?.status === "success") {
+      const result = evalResponse.report.reduce((acc, r) => r.equal && acc, true);
 
-      const rand = Math.floor(Math.random() * questionList.length);
-      const question = questionList[rand];
+      if (!result) questionList = reflectionQuestions.fail;
+    }
+    else if(evalResponse?.status === "failure") {
+      // Don't generate reflection prompt
+      return;
+    }
 
-      setQuestion(question);
+    const rand = Math.floor(Math.random() * questionList.length);
+    const question = questionList[rand];
 
-      setTimeout(() => {
-        reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100)
-    }, [evalResponse]);
+    setQuestion(question);
 
-    useEffect(() => {
-      if (!evalResponse || evalResponse?.status === 'failure') setHidePrompt(true);
+    setTimeout(() => {
+      reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100)
+  }, [evalResponse]);
 
-      if (evalResponse?.status === "success") {
-        setHidePrompt(false);
-      }
-    }, [evalResponse]);
+  useEffect(() => {
+    if (!evalResponse || evalResponse?.status === 'failure') setHidePrompt(true);
 
-    // Generates the question only when evalResponse state has the most up to date response
-    useEffect(() => {
-      if (!evalResponse) return;
-      generateQuestion();
-    }, [evalResponse, generateQuestion]);
+    if (evalResponse?.status === "success") {
+      setHidePrompt(false);
+    }
+  }, [evalResponse]);
 
-    const hasFetchedProblems = useRef<Set<string>>(new Set());
+  // Generates the question only when evalResponse state has the most up to date response
+  useEffect(() => {
+    if (!evalResponse) return;
+    generateQuestion();
+  }, [evalResponse, generateQuestion]);
 
-    useEffect(() => {
-      async function fetchLatestSubmission() {
-        if (!session?.user) return;
-        if (hasFetchedProblems.current.has(problem.meta.name)) return;
+  const hasFetchedProblems = useRef<Set<string>>(new Set());
 
-        const { data, error } = await supabase
+  useEffect(() => {
+    async function fetchLatestSubmission() {
+      if (!session?.user) return;
+      if (hasFetchedProblems.current.has(problem.meta.name)) return;
+
+      const { data, error } = await supabase
         .from('submissions')
         .select('code')
         .eq('profile_id', session.user.id)
@@ -148,145 +150,141 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         .order('submitted_at', { ascending: false})
         .limit(1);
 
-        const json = data?.[0] || null;
+      const json = data?.[0] || null;
 
-        if (error) {
-          console.warn('Could not load latest submission: ', error.message);
-          return;
-        }
-        
-        if (json){
-          if (problem.meta.question_type[0] === 'mutation') {
-            setCode(json.code);
-          } else {
-            const stored = json.code;
-            setCode(
-              typeof stored === 'object' && stored !== null && 'code' in stored
-                ? (stored as any).code
-                : (stored as string)
-            );
-          }
+      if (error) {
+        console.warn('Could not load latest submission: ', error.message);
+        return;
+      }
+      
+      if (json){
+        if (problem.meta.question_type[0] === 'mutation') {
+          setCode(json.code);
         } else {
-          if(['coding','haystack'].includes(problem.meta.question_type[0])){
-            setCode(problem.starter || '');
-          }
-          else{
-            setCode('');
-          }
+          const stored = json.code;
+          setCode(
+            typeof stored === 'object' && stored !== null && 'code' in stored
+              ? (stored as any).code
+              : (stored as string)
+          );
         }
-        hasFetchedProblems.current.add(problem.meta.name);
+      } else {
+        if(['coding','haystack'].includes(problem.meta.question_type[0])){
+          setCode(problem.starter || '');
+        }
+        else{
+          setCode('');
+        }
       }
-
-      fetchLatestSubmission();
-
-    }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
-
-    function changeCode(e: string | undefined) {
-      setCode(e ?? '')
+      hasFetchedProblems.current.add(problem.meta.name);
     }
 
+    fetchLatestSubmission();
 
-    function handlePreviousProblem(){
-      if(currIndex > 0){
-        const prevProblem = currProblems[currIndex-1].meta.name;
-        setCurrIndex(currIndex-1);
-        navigate(`/problems/${prevProblem}`)
-      }
+  }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
+
+  function changeCode(e: string | undefined) {
+    setCode(e ?? '')
+  }
+
+
+  function handlePreviousProblem(){
+    if(currIndex > 0){
+      const prevProblem = currProblems[currIndex-1].meta.name;
+      setCurrIndex(currIndex-1);
+      navigate(`/problems/${prevProblem}`)
     }
+  }
 
-    function handleNextProblem(){ 
-      if(currIndex < currProblems.length - 1){
-        const nextProblem = currProblems[currIndex+1].meta.name;
-        setCurrIndex(currIndex+1);
-        navigate(`/problems/${nextProblem}`)
-      }
+  function handleNextProblem(){ 
+    if(currIndex < currProblems.length - 1){
+      const nextProblem = currProblems[currIndex+1].meta.name;
+      setCurrIndex(currIndex+1);
+      navigate(`/problems/${nextProblem}`)
     }
+  }
 
-    let author = problem.meta.author;
-    if (author.toLowerCase() === "chatgpt") author = "";
+  let author = problem.meta.author;
+  if (author.toLowerCase() === "chatgpt") author = "";
 
-    const statuses = evalResponse?.status === 'success'
+  const statuses = evalResponse?.status === 'success'
     ? getColumnStatuses(evalResponse)
     : undefined;
 
-    return (
-      <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
-        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-          <Box className="navigate-problem-btn">
-            <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
-              <Stack direction="column" spacing={0} alignItems="center">
-                <Typography level="body-md" fontFamily="inherit">Prev</Typography>
-                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                  {currProblems[currIndex - 1]?.meta?.title}
-                </Typography>
-              </Stack>
-            </Button>
-            <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
-              <Stack direction="column" spacing={0} alignItems="center">
-                <Typography level="body-md" fontFamily="inherit">Next</Typography>
-                <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                  {currProblems[currIndex + 1]?.meta?.title}
-                </Typography>
-              </Stack>
-            </Button>
-          </Box>
-          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%"}}>
-            <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
-              <Box>
-                <Typography level="title-lg">{problem.meta.title}</Typography>
-                { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
-              </Box>
+  return (
+    <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
+      <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
+        <Box className="navigate-problem-btn">
+          <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
+            <Stack direction="column" spacing={0} alignItems="center">
+              <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                {currProblems[currIndex - 1]?.meta?.title}
+              </Typography>
+            </Stack>
+          </Button>
+          <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
+            <Stack direction="column" spacing={0} alignItems="center">
+              <Typography level="body-md" fontFamily="inherit">Next</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                {currProblems[currIndex + 1]?.meta?.title}
+              </Typography>
+            </Stack>
+          </Button>
+        </Box>
 
-              <Box sx={{display:"flex", alignItems: "flex-end"}}>
-                <Markdown>
-                  {problem.description}
-                </Markdown>
-                {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
-              </Box>
+        <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%"}}>
+          <Box sx={{ width: "100%",  flexDirection: "column", gap: 1 }}>
+            <Box>
+              <Typography level="title-lg">{problem.meta.title}</Typography>
+              { !!author && <Typography level="body-sm">Authored by {problem.meta.author}</Typography> }
             </Box>
-            { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
-              (
-                <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
-              ) : ( 
-                <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
-              )
-            }
-          </Sheet>
-          
-      </Stack>
-      
-        <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
-          { 
-            ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
-              <Box flex={1} width="100%">
-                {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
-              </Box>
-            ) : 
+
+            <Box sx={{display:"flex", alignItems: "flex-end"}}>
+              <Markdown>
+                {problem.description}
+              </Markdown>
+              {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+            </Box>
+          </Box>
+          { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
             (
-              <>
-                <SolutionCode code={problem.solution} title="Problem Solution"/>
-                
-                {statuses &&
-                  problem.mutations?.map((mutCode, idx) =>
-                    statuses.get(idx) === 'pass' ? (
-                      <SolutionCode key={idx} code={mutCode} title={`Mutation M${idx + 1} Code`}/>
-                    ) : null
-                  )}
-              </>
-             
+              <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
+            ) : ( 
+              <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
             )
           }
-          <Box ref={reflectionInput} flex={1} width="100%">
-            {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
-          </Box>
-
-
-        </Stack>
-
-        
+        </Sheet>
       </Stack>
-    
-    );
+      
+      <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
+        { 
+          ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
+            <Box flex={1} width="100%">
+              {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
+            </Box>
+          ) : 
+          (
+            <>
+              <SolutionCode code={problem.solution} title="Problem Solution"/>
+              
+              {statuses &&
+                problem.mutations?.map((mutCode, idx) =>
+                  statuses.get(idx) === 'pass' ? (
+                    <SolutionCode key={idx} code={mutCode} title={`Mutation M${idx + 1} Code`}/>
+                  ) : null
+                )
+              }
+            </>
+            
+          )
+        }
+        <Box ref={reflectionInput} flex={1} width="100%">
+          {evalResponse ? <ReflectionInput hide={hidePrompt} problemName={problem.meta.name} question={question} /> : <Box></Box>}
+        </Box>
+      </Stack>
+    </Stack>
+  );
 }
 
 interface ReportProps {
