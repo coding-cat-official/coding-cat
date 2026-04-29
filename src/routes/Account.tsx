@@ -9,7 +9,7 @@ import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
-import HeatMap from '../components/profile/progress/HeatMap';
+import HeatMap from '../components/profile/progress/heatmap/HeatMap';
 
 interface CategoryData {
   category: string;

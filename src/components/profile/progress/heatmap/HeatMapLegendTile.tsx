@@ -1,6 +1,6 @@
 import { Box, Tooltip } from "@mui/joy";
 
-export default function HeatMapTile({ title, heatmapColour }: { title: string, heatmapColour: string }){
+export default function HeatMapLegendTile({ title, heatmapColour }: { title: string, heatmapColour: string }){
   return (
     <Tooltip 
       title={title}
