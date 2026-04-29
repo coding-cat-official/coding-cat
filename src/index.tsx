@@ -21,6 +21,7 @@ import AdminPage from './routes/AdminPage';
 import ChangePassword from './routes/ChangePassword';
 import ReqPasswordChange from './routes/ReqPasswordChange';
 import AuthCallback from './routes/AuthCallback';
+import Auth from './routes/Auth';
 
 
 
@@ -56,14 +57,6 @@ const router = createHashRouter([
         element: <Register />
       },
       {
-        path: "change-password-req",
-        element: <ReqPasswordChange />
-      },
-      {
-        path: "change-password",
-        element: <ChangePassword />
-      },
-      {
         path: "profile",
         element: <AccountWrapper />
       },
@@ -77,9 +70,25 @@ const router = createHashRouter([
     ],
   },
   {
-    path: "auth/callback",
-    element: <AuthCallback />
-  },
+    path: "/auth",
+    element: <Auth />,
+    loader: problemListLoader,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "callback",
+        element: <AuthCallback />
+      },      
+      {
+        path: "change-password-req",
+        element: <ReqPasswordChange />
+      },
+      {
+        path: "change-password",
+        element: <ChangePassword />
+      }
+    ]
+  }
 ],
 {
   basename: '/',

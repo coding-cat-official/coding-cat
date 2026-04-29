@@ -28,7 +28,7 @@ export default function AuthCallback() {
         supabase.auth.setSession({ access_token, refresh_token }).then(() => {
           setTokens({ access_token, refresh_token });
           if (type === 'recovery') {
-            setRedirectTo('/change-password');
+            setRedirectTo('/auth/change-password');
           } else {
             setRedirectTo('/profile');
           }
