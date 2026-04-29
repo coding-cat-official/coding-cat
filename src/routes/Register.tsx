@@ -69,7 +69,6 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
-          {/* CHANGE LATER FOR THE LOVE OF GOD */}
           <Input
             className="inputField"
             type="password"
