@@ -64,21 +64,6 @@ export default function App() {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user){
-        supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('profile_id', session.user.id)
-          .single()
-          .then(({ data, error }) => {
-            if (!error && data) {
-              setIsAdmin(data.is_admin);
-            }
-          });
-      }
-    });
     supabase.auth.onAuthStateChange((_event, session) => {
       if(_event === 'PASSWORD_RECOVERY'){
         setIsRecoverySession(true);
@@ -101,6 +86,23 @@ export default function App() {
         setIsAdmin(false);
       }
     });
+    if(!isRecoverySession){
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+        if (session?.user){
+          supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('profile_id', session.user.id)
+            .single()
+            .then(({ data, error }) => {
+              if (!error && data) {
+                setIsAdmin(data.is_admin);
+              }
+            });
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
