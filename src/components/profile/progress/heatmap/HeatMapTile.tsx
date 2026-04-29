@@ -8,12 +8,14 @@ export default function HeatMapTile({ title, heatmapColour, tooltipPlacement }: 
       placement={tooltipPlacement}
       disableInteractive
     >
-      <Box id={title}
+      <Box
+        id={title}
         sx={{ 
-          maxHeight: "5px",
+          height: "10px",
+          width: "10px",
+          flexShrink: 0,
           backgroundColor: `${heatmapColour || "grey"}`,
-          padding: "5px",
-          borderRadius: 3
+          borderRadius: "3px"
         }}
       />
     </Tooltip>

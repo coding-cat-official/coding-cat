@@ -84,9 +84,9 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
       <Card sx={{ p: 2, width: "90%", height: "100%", marginBottom: "20px" }}>
-        <Stack direction="row" gap={0.5}>
+        <Stack direction="row" gap={0.5} alignItems="flex-start">
           {weeks.map((week, i) => (
-            <Stack key={i} direction="column" gap={0.5}>
+            <Stack key={i} direction="column" gap={0.5} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
               {
                 week.map(({ date, contributions }) => (
                   <HeatMapTile
