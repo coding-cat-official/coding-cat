@@ -1,8 +1,9 @@
-import { Box } from "@mui/joy";
+import { Box, Tooltip } from "@mui/joy";
 
 export default function HeatMapTile({ date, contributions }: { date: string, contributions: number }){
   var heatmapColor = "gray";
   // if there are MORE contributions than 'num', Block is 'color'
+  // TODO: GitHub-style gradient
   const thresholds = [
     { num: 0, color: "red" },
     { num: 3, color: "yellow" },
@@ -19,11 +20,13 @@ export default function HeatMapTile({ date, contributions }: { date: string, con
   // TODO: Maybe use mui/joy tooltip for consistency? one less dependency
 
   return (
-    <div>
+    <Tooltip 
+      title={`${contributions} contributions on ${date}`}
+      variant="soft"
+      placement="right"
+      disableInteractive
+    >
       <Box id={date}
-        data-tooltip-id="date-tooltip"
-        data-tooltip-content={`${contributions} contributions on ${date}`}
-        data-tooltip-place="left"
         sx={{ 
           backgroundColor: `${heatmapColor}`,
           padding: "5px",
@@ -32,6 +35,6 @@ export default function HeatMapTile({ date, contributions }: { date: string, con
       >
         
       </Box>
-    </div>
+    </Tooltip>
   )
 }

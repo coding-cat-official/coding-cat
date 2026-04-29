@@ -1,5 +1,4 @@
 import { Card, Stack, Typography } from "@mui/joy";
-import { Tooltip } from "react-tooltip";
 import HeatMapTile from "./HeatMapTile";
 
 export default function HeatMap({ activity }: { activity: string[] }) {
@@ -69,7 +68,6 @@ export default function HeatMap({ activity }: { activity: string[] }) {
             </Stack>
           ))}
         </Stack>
-        <Tooltip id="date-tooltip" />
       </Card>
     </Stack>
   )
