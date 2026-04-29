@@ -120,6 +120,7 @@ export interface Question {
   min?: number;
   max?: number;
   randomizeable?: boolean;
+  relies_on?: string;
 }
 
 export interface FormAnswers {
