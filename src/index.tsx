@@ -51,6 +51,10 @@ const router = createHashRouter([
       {
         path: "signin",
         element: <Login />
+      },      
+      {
+        path: "change-password-req",
+        element: <ReqPasswordChange />
       },
       {
         path: "register",
@@ -78,10 +82,6 @@ const router = createHashRouter([
       {
         path: "callback",
         element: <AuthCallback />
-      },      
-      {
-        path: "change-password-req",
-        element: <ReqPasswordChange />
       },
       {
         path: "change-password",
