@@ -1,0 +1,34 @@
+name: Cache and Build
+
+# ////// WORKFLOW RULES //////
+
+on:
+  # Reuse job logic in different pipelines
+  workflow_call:
+
+# ////// JOBS //////
+
+jobs:
+
+# ////// BUILD //////
+
+  build:
+    name: Build problem list and static files
+    runs-on: ubuntu-latest
+    env:
+      REACT_APP_PROBLEM_SET: ${{secrets.REACT_APP_PROBLEM_SET}}
+      REACT_APP_SUPABASE_ANON_KEY: ${{secrets.REACT_APP_SUPABASE_ANON_KEY}}
+      REACT_APP_SUPABASE_URL: ${{secrets.REACT_APP_SUPABASE_URL}}
+      PUBLIC_URL: /coding-cat
+    steps:
+      - uses: actions/checkout@v4
+      - run: git submodule sync
+      - run: git -c submodule.src/private-problems.update=none submodule update --init --recursive
+
+      - name: Set up npm dependencies
+        uses: ./.github/actions/npm-setup
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
