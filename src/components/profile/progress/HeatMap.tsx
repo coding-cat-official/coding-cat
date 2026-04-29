@@ -55,7 +55,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   return (
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
-      <Card sx={{ p: 2, width: "90%", height: "100%" }}>
+      <Card sx={{ p: 2, width: "90%", height: "100%", marginBottom: "20px" }}>
         <Stack direction="row" gap={0.5}>
           {weeks.map((week, i) => (
             <Stack key={i} direction="column" gap={0.5}>
