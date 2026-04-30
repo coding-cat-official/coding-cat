@@ -25,7 +25,7 @@ export default function OtherStats({ activity }: { activity: string[] }){
       busiestDaysOfWeek = [];
       highestWeekdayContribs = contribs;
       busiestDaysOfWeek.push({ day: day, contribs: contribs });
-    }else if(contribs == highestWeekdayContribs){
+    }else if(contribs === highestWeekdayContribs){
       busiestDaysOfWeek.push({ day: day, contribs: contribs });
     }
   }
@@ -36,7 +36,7 @@ export default function OtherStats({ activity }: { activity: string[] }){
     if(subs > busiestDateSubs){
       busiestDates = [{ day: day, subs: subs }];
       busiestDateSubs = subs;
-    }else if(subs == busiestDateSubs){
+    }else if(subs === busiestDateSubs){
       busiestDates.push({ day: day, subs: subs });
     }
   }

@@ -13,7 +13,7 @@ export default function BusiestDates({ busiestDates }: { busiestDates: { day: st
         Busiest days overall:
         { 
           busiestDates.map(({day, subs}, i) => {
-            const atEnd = i == busiestDates.length - 1;
+            const atEnd = i === busiestDates.length - 1;
             var text = ` ${day}`;
             if(!atEnd){
               text += ", ";

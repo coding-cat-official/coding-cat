@@ -13,7 +13,7 @@ export default function BusiestDayOfWeek({ busiestDaysOfWeek }: { busiestDaysOfW
         Busiest days of the week, on average:
         { 
           busiestDaysOfWeek.map(({day, contribs}, i) => {
-            const atEnd = i == busiestDaysOfWeek.length - 1;
+            const atEnd = i === busiestDaysOfWeek.length - 1;
             var text = ` ${day}`;
             if(!atEnd){
               text += ", ";
