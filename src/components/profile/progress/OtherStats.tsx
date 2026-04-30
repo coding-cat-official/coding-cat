@@ -25,7 +25,7 @@ export default function OtherStats({ activity }: { activity: string[] }){
   return (
     <Stack gap={2}>
     <Typography level="h2">Other Stats</Typography>
-      <Card sx={{ p: 2, width: "90%", height: "100%" }}>
+      <Card sx={{ p: 2, width: "90%", height: "100%", marginBottom: "20px" }}>
         { highestContribs > 0 && mostProdDays.length === 1 &&
           <Typography level="body-md">
             Most productive day of the week: {mostProdDays[0]["day"]} ({highestContribs} contributions)
