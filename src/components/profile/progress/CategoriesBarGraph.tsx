@@ -1,5 +1,5 @@
 import { Card, Stack, Typography } from "@mui/joy";
-import { BarChart, CartesianGrid, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
+import { BarChart, CartesianGrid, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface CategoryData {
   category: string;

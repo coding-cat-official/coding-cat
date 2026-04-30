@@ -37,13 +37,13 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   const msSinceFirstWeek = now.getTime() - firstWeek.getTime();
   const totalWeeks = Math.floor(msSinceFirstWeek / (1000 * 60 * 60 * 24 * 7)) + 1;
 
-  const weeks = Array.from({ length: totalWeeks }, (_, i) => {
+  const weeks = Array.from({ length: totalWeeks }, (_unused, i) => {
     const weekStart = new Date(firstWeek);
 
     // get first day of every week
     weekStart.setDate(firstWeek.getDate() + i * 7);
 
-    return Array.from({ length: 7 }, (_, j) => {
+    return Array.from({ length: 7 }, (_unused, j) => {
       const day = new Date(weekStart);
       // iterate every day based on weekStart
       day.setDate(weekStart.getDate() + j);
@@ -84,7 +84,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   function getMonth(week: { date: string, submissions: number }[]): string{
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for(const day of week){
-      if(day.date.slice(8) == "01"){
+      if(day.date.slice(8) === "01"){
         const month = parseInt(day.date.slice(5,7), 10) - 1;
         return months[month];
       }
