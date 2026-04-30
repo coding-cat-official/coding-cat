@@ -1,6 +1,6 @@
 import { Box, Tooltip, TooltipProps } from "@mui/joy";
 
-export default function HeatMapTile({ title, heatmapColour, tooltipPlacement }: { title: string, heatmapColour: string, tooltipPlacement: TooltipProps["placement"] }){
+export default function HeatMapTile({ tileSize, gapSize, title, heatmapColour, tooltipPlacement }: { tileSize: number, gapSize: number, title: string, heatmapColour: string, tooltipPlacement: TooltipProps["placement"] }){
   return (
     <Tooltip 
       title={title}
@@ -11,8 +11,8 @@ export default function HeatMapTile({ title, heatmapColour, tooltipPlacement }: 
       <Box
         id={title}
         sx={{ 
-          height: "10px",
-          width: "10px",
+          height: `${tileSize}px`,
+          width: `${tileSize}px`,
           flexShrink: 0,
           backgroundColor: `${heatmapColour || "grey"}`,
           borderRadius: "3px"

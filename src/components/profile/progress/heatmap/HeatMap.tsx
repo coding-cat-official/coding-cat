@@ -1,4 +1,4 @@
-import { Card, Stack, Typography } from "@mui/joy";
+import { Box, Card, Stack, Typography } from "@mui/joy";
 import HeatMapTile from "./HeatMapTile";
 import HeatMapLegend from "./HeatMapLegend";
 
@@ -27,7 +27,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   }
   
   // activity is in reverse-chronological order
-  const firstCont = activity[activity.length - 1];
+  const firstCont = activity[0];
   const firstWeek = getSundayOfWeek(new Date(firstCont));
 
   const now = new Date();
@@ -78,27 +78,67 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     return colours[4];
   }
 
+  function getMonth(week: { date: string, contributions: number }[]): string{
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    for(const day of week){
+      if(day.date.slice(8) == "01"){
+        const month = parseInt(day.date.slice(5,7), 10) - 1;
+        return months[month];
+      }
+    }
+    return "";
+  }
+
+  // get month label positions
+  const monthLabels: { label: string, weekIndex: number }[] = [];
+  weeks.forEach((week, i) => {
+    const label = getMonth(week);
+    if (label) monthLabels.push({ label, weekIndex: i });
+  });
+
+  const TILE_SIZE = 10;
+  // gap={0.5} = 4px
+  const GAP = 4; 
+  const CELL = TILE_SIZE + GAP;
+
   return (
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
-      <Card sx={{ p: 2, width: "90%", height: "100%" }}>
+      <Card sx={{ p: 2, width: "90%", height: "100%", minWidth: 0 }}>
         <Typography level="title-md">{activity.length} total submissions</Typography>
-        <Stack direction="row" gap={0.5} alignItems="flex-start">
-          {weeks.map((week, i) => (
-            <Stack key={i} direction="column" gap={0.5} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
-              {
-                week.map(({ date, contributions }) => (
-                  <HeatMapTile
-                    title={`${contributions} contributions on ${date}`}
-                    heatmapColour={getTileColour(contributions)}
-                    tooltipPlacement="right"
-                    key={date}
-                  />
-                ))
-              }
-            </Stack>
-          ))}
-        </Stack>
+        <Box sx={{ overflowX: "auto", paddingBottom: "15px" }}>
+          <Box sx={{ position: "relative", height: "16px", mb: 0.5 }}>
+            {
+              monthLabels.map(({ label, weekIndex }) => (
+                <Typography
+                  key={label}
+                  level="body-xs"
+                  sx={{ position: "absolute", left: weekIndex * CELL }}
+                >
+                  {label}
+                </Typography>
+              ))
+            }
+          </Box>
+          <Stack direction="row" gap={GAP / 8} alignItems="flex-start">
+            {weeks.map((week, i) => (
+              <Stack key={i} direction="column" gap={GAP / 8} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
+                {
+                  week.map(({ date, contributions }) => (
+                    <HeatMapTile
+                      tileSize={TILE_SIZE}
+                      gapSize={GAP}
+                      title={`${contributions} contributions on ${date}`}
+                      heatmapColour={getTileColour(contributions)}
+                      tooltipPlacement="right"
+                      key={date}
+                    />
+                  ))
+                }
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
         <HeatMapLegend colours={colours}/>
       </Card>
     </Stack>

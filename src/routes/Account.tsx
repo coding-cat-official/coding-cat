@@ -66,6 +66,17 @@ export default function Account({ session }: { session: Session }) {
         .map((r) => r.submitted_at);
 
       setActivityStamps(all);
+      const testActivity:string[] = [];
+      const now = new Date();
+      const oneYearAgo = new Date(now);
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+      for (let d = new Date(oneYearAgo); d <= now; d.setDate(d.getDate() + 1)) {
+        const count = Math.random() < 0.4 ? 0 : Math.floor(Math.random() * 5) + 1;
+        for (let i = 0; i < count; i++) {
+          testActivity.push(d.toISOString());
+        }
+      }
+      setActivityStamps(testActivity);
       setPassingStamps(pass);
       setCategoriesData(getCompletedProblems(submissions || []));
     }
