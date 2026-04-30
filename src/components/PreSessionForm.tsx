@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
 import { preSessionQuestions } from "../utils/preSessionQuestions";
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
+import { Session } from "@supabase/supabase-js";
+
 
 /**
  * This component is meant to be used in the pre-session reflection 
@@ -16,6 +21,8 @@ export default function PreSessionForm() {
   const [answers, setAnswers] = useState<FormAnswers>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { session } = useOutletContext<{ session: Session | null }>();
 
   useEffect(() => {
     fetchQuestions();
@@ -25,7 +32,7 @@ export default function PreSessionForm() {
     try {
       setLoading(true);
 
-      let questionsData: Question[] = randomizeQuestions(preSessionQuestions);
+      let questionsData: Question[] = selectQuestionsByCategory(preSessionQuestions);
       
       setQuestions(questionsData);
       
@@ -44,14 +51,34 @@ export default function PreSessionForm() {
     }
   }
 
-  function randomizeQuestions(questionsData: Question[]): Question[] {
-    return questionsData.map(q => {
-      if (q.randomizeable && q.options) {
-        const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-        return { ...q, options: shuffled };
+  function selectQuestionsByCategory(questionsData: Question[]): Question[] {
+    const grouped: Record<string, Question[]> = {};
+
+    // Group by category
+    questionsData.forEach(q => {
+      if (!grouped[q.category]) {
+        grouped[q.category] = [];
       }
-      return q;
+      grouped[q.category].push(q);
     });
+
+    const result: Question[] = [];
+
+    Object.values(grouped).forEach(group => {
+      const randomizeable = group.filter(q => q.randomizeable);
+      const nonRandomizeable = group.filter(q => !q.randomizeable);
+
+      // Always include non-randomizable questions
+      result.push(...nonRandomizeable);
+
+      // If there are randomizable ones, pick ONE
+      if (randomizeable.length > 0) {
+        const randomIndex = Math.floor(Math.random() * randomizeable.length);
+        result.push(randomizeable[randomIndex]);
+      }
+    });
+
+    return result;
   }
 
   const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
@@ -76,10 +103,28 @@ export default function PreSessionForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form answers:", answers);
-    // TODO: Send to database
+    const { user } = session!!;
+
+    const { data, error} = await supabase
+      .from('sessions')
+      .insert([{
+        profile_id: user.id,
+        start_time: new Date().toISOString(),
+        pre_session_reflection: answers,
+        exercise_goals: Number(answers["goals-2"] || 0),
+        exercise_categories: answers['goals-3'] || [],
+      }])
+      .select()
+      .single();
+
+    if(error) {
+      setError("Error submitting session data. Please try again.");
+      console.error("Supabase insert error:", error);
+    } else {
+      navigate('/', { state: { sessionId: data.id } });
+    }
   };
 
   const renderQuestion = (question: Question) => {
