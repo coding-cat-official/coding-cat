@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 import { Link, Outlet } from "react-router-dom";
 import logo from '../assets/coding-cat.png';
 

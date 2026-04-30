@@ -103,7 +103,7 @@ export default function App() {
         }
       });
     }
-  }, []);
+  }, [isRecoverySession]);
 
   useEffect(() => {
     (async () => {

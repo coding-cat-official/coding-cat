@@ -24,10 +24,10 @@ export default function Account({ session }: { session: Session }) {
       const { user } = session;
       
       const {data: submissions, error } = await supabase
-      .from('submissions')
-      .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
-      .eq('profile_id', user.id)
-      .order('submitted_at', { ascending: false });
+        .from('submissions')
+        .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
+        .eq('profile_id', user.id)
+        .order('submitted_at', { ascending: false });
 
       if(error) {
         setError(error.message);
@@ -45,8 +45,8 @@ export default function Account({ session }: { session: Session }) {
       setReflections(reflections)
       const all = (submissions || []).map((r) => r.submitted_at)
       const pass = (submissions || [])
-      .filter((r) => r.passed_tests === r.total_tests)
-      .map((r) => r.submitted_at);
+        .filter((r) => r.passed_tests === r.total_tests)
+        .map((r) => r.submitted_at);
 
       setActivityStamps(all);
       setPassingStamps(pass);
@@ -55,16 +55,17 @@ export default function Account({ session }: { session: Session }) {
     fetchProgress();
   }, [session]);
 
-  if (error) {
-    return (
-      <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
-        <Typography color="danger">Error fetching profile: {error}</Typography>
-      </Stack>
-    )
-  }
+  // if (error) {
+  //   return (
+  //     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+  //       <Typography color="danger">Error fetching profile: {error}</Typography>
+  //     </Stack>
+  //   )
+  // }
 
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+      <Typography color="danger">Error: {error}</Typography>
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
         <Contract />
