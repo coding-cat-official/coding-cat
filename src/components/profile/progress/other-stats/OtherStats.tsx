@@ -1,4 +1,5 @@
 import { Card, Stack, Typography } from "@mui/joy";
+import MostProdDay from "./MostProdDay";
 
 export default function OtherStats({ activity }: { activity: string[] }){
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -26,28 +27,7 @@ export default function OtherStats({ activity }: { activity: string[] }){
     <Stack gap={2}>
     <Typography level="h2">Other Stats</Typography>
       <Card sx={{ p: 2, width: "90%", height: "100%", marginBottom: "20px" }}>
-        { highestContribs > 0 && mostProdDays.length === 1 &&
-          <Typography level="body-md">
-            Most productive day of the week: {mostProdDays[0]["day"]} ({highestContribs} contributions)
-          </Typography>
-        }
-        { highestContribs > 0 && mostProdDays.length > 1 &&
-          <Typography level="body-md">
-            Most productive days of the week:
-            { 
-              mostProdDays.map(({day, contribs}, i) => {
-                const atEnd = i == mostProdDays.length - 1;
-                var text = `${day} (${contribs} contributions)`;
-                if(!atEnd){
-                  text += ", ";
-                }else{
-                  text = "and " + text;
-                }
-                return (text);
-              })
-            }
-          </Typography>
-        }
+        { highestContribs > 0 && <MostProdDay mostProdDays={mostProdDays} /> }
       </Card>
     </Stack>
   );

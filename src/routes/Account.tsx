@@ -10,7 +10,7 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/heatmap/HeatMap';
-import OtherStats from '../components/profile/progress/OtherStats';
+import OtherStats from '../components/profile/progress/other-stats/OtherStats';
 
 interface CategoryData {
   category: string;
