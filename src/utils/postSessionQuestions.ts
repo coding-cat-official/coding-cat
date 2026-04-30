@@ -1,4 +1,4 @@
-export const preSessionQuestions = [
+export const postSessionQuestions = [
     {
         question: "How do you feel after today's session?",
         type: "checkbox",

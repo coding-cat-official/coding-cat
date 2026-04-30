@@ -104,3 +104,44 @@ export const BLANK_CONTRACT: ContractData = {
 export type ContractProgress = {
     [category: string]: number;
 }
+
+export interface QuestionOption {
+  label: string;
+  value: string;
+}
+
+export interface Question {
+  id: string;
+  text: string;
+  type: "radio" | "checkbox" | "number" | "textarea";
+  options?: QuestionOption[];
+  category: string;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  randomizeable?: boolean;
+}
+
+export interface FormAnswers {
+  [questionId: string]: string | string[] | number;
+}
+
+export interface Session {
+  session_id: string;
+  profile_id: string;
+  started_at: Date;
+  ended_at?: Date;
+  planned_duration_minutes: number;
+  planned_exercise_count: number;
+  planned_categories: string[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface SessionReflection {
+  reflection_id: string;
+  session_id: string;
+  reflection_type: "pre" | "post";
+  form_data: FormAnswers;
+  created_at: Date;
+}
