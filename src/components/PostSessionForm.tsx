@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
 import { preSessionQuestions } from "../utils/preSessionQuestions";
@@ -11,45 +12,44 @@ import type { Session } from "@supabase/supabase-js";
  * and display them to the user. 
  */
 export default function PostSessionForm() {
+  const navigate = useNavigate();
+  const { session } = useOutletContext<{ session: Session | null }>();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<FormAnswers>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [preSessionReflection, setPreSessionReflection] = useState<FormAnswers | null>(null);
 
-  useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        setLoading(true);
+  const fetchQuestions = useCallback(async () => {
+    try {
+      setLoading(true);
 
-        let questionsData: Question[] = selectQuestionsByCategory(postSessionQuestions);
-        
-        setQuestions(questionsData);
-        
-        // Initialize empty answers for all questions
-        const initialAnswers: FormAnswers = {};
-        questionsData.forEach(q => {
-          initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
-        });
-        setAnswers(initialAnswers);
-        
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
-      }
+      let questionsData: Question[] = selectQuestionsByCategory(postSessionQuestions);
+      
+      setQuestions(questionsData);
+      
+      // Initialize empty answers for all questions
+      const initialAnswers: FormAnswers = {};
+      questionsData.forEach(q => {
+        initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
+      });
+      setAnswers(initialAnswers);
+      
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
     }
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        fetchPreSessionReflection(session.user.id);
-      }
-    });
-    fetchQuestions();
   }, []);
+
+  useEffect(() => {
+    fetchQuestions();
+    if (session?.user) {
+      fetchPreSessionReflection(session.user.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   async function fetchPreSessionReflection(profileId: string) {
     try {
@@ -150,6 +150,7 @@ export default function PostSessionForm() {
       }
       console.log("Form answers submitted:", answers);
       setError(null);
+      navigate("/");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setError(errorMessage);

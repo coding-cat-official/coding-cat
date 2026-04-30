@@ -17,6 +17,7 @@ import Register from './routes/Register';
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
 import PreSessionForm from './components/PreSessionForm';
+import PostSessionForm from './components/PostSessionForm';
 import AdminWrapper from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
 import ChangePassword from './routes/ChangePassword';
@@ -46,6 +47,10 @@ const router = createHashRouter([
       {
         path: "session",
         element: <PreSessionForm/>,
+      },
+      {
+        path: "post-session",
+        element: <PostSessionForm/>,
       },
       {
         path: "/problems/:problemName",
