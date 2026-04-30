@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
 import { preSessionQuestions } from "../utils/preSessionQuestions";
@@ -54,7 +54,7 @@ export default function PreSessionForm() {
     return result;
   }
 
-  async function fetchQuestions() {
+  const fetchQuestions = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -75,10 +75,11 @@ export default function PreSessionForm() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
