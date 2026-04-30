@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
+import { preSessionQuestions } from "../utils/preSessionQuestions";
 import { postSessionQuestions } from "../utils/postSessionQuestions";
+import { supabase } from "../supabaseClient";
+import type { Session } from "@supabase/supabase-js";
 
 /**
  * This component is used in the post-session reflection of the session . It will fetch a list of questions from a json file 
@@ -12,10 +15,44 @@ export default function PostSessionForm() {
   const [answers, setAnswers] = useState<FormAnswers>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [preSessionReflection, setPreSessionReflection] = useState<FormAnswers | null>(null);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchPreSessionReflection(session.user.id);
+      }
+    });
     fetchQuestions();
   }, []);
+
+  async function fetchPreSessionReflection(profileId: string) {
+    try {
+      const { data, error: fetchError } = await supabase
+        .from("sessions")
+        .select("pre_session_reflection")
+        .eq("profile_id", profileId)
+        .order("start_time", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (fetchError) {
+        console.warn("Could not fetch pre-session reflection:", fetchError);
+        return;
+      }
+      if (data && typeof data === 'object' && "pre_session_reflection" in data) {
+        const reflection = (data as Record<string, unknown>)["pre_session_reflection"];
+        if (reflection) {
+          setPreSessionReflection(reflection as FormAnswers);
+        }
+      }
+    } catch (err) {
+      console.warn("Error fetching pre-session reflection:", err);
+    }
+  }
 
   async function fetchQuestions() {
     try {
@@ -92,10 +129,51 @@ export default function PostSessionForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form answers:", answers);
-    // TODO: Send to database
+    if (!session?.user) {
+      setError("User session not found. Please log in.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const { error: dbError } = await supabase
+        .from("sessions")
+        .update([
+          {
+            end_time: new Date().toISOString(),
+            "post_session_reflection": answers,
+          },
+        ])
+        .eq("profile_id", session.user.id);
+      if (dbError) {
+        throw dbError;
+      }
+      console.log("Form answers submitted:", answers);
+      setError(null);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      setError(errorMessage);
+      console.error("Error submitting form:", err);
+    }
+  };
+
+  const getReliesOnDisplay = (question: Question): string | null => {
+    if (!question.relies_on || !preSessionReflection) return null;
+
+    const relatedQuestions = preSessionQuestions.filter(
+      preSessionQuestion => preSessionQuestion.category === question.relies_on
+    );
+
+    const relatedAnswers = relatedQuestions
+      .map(preSessionQuestion => preSessionReflection[preSessionQuestion.id])
+      .filter(answer => answer !== undefined && answer !== null && answer !== "")
+      .map(answer => Array.isArray(answer) ? answer.join(", ") : String(answer));
+
+    if (relatedAnswers.length === 0) return null;
+
+    return relatedAnswers.join(" | ");
   };
 
   const renderQuestion = (question: Question) => {
@@ -227,18 +305,28 @@ export default function PostSessionForm() {
         }}
       >
         <Stack spacing={4}>
-          {questions.map(question => (
-            <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
-              <Box sx={{ backgroundColor: "#ffeb9a", padding: "12px 16px", borderRadius: "8px", flex: 0.4, minWidth: "200px" }}>
-                <Typography level="body-md" sx={{ fontWeight: 500 }}>
-                  {question.text}
-                </Typography>
+          {questions.map(question => {
+            const reliesOnDisplay = getReliesOnDisplay(question);
+            return (
+              <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
+                <Box sx={{ backgroundColor: "#ffeb9a", padding: "12px 16px", borderRadius: "8px", flex: 0.4, minWidth: "200px" }}>
+                  {reliesOnDisplay && (
+                    <Box sx={{ marginBottom: 2 }}>
+                      <Typography level="body-sm" sx={{ fontWeight: "bold", color: "#333" }}>
+                        <strong>Your {question.relies_on} response:</strong> {reliesOnDisplay}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Typography level="body-md" sx={{ fontWeight: 500 }}>
+                    {question.text}
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  {renderQuestion(question)}
+                </Box>
               </Box>
-              <Box sx={{ flex: 1 }}>
-                {renderQuestion(question)}
-              </Box>
-            </Box>
-          ))}
+            );
+          })}
         </Stack>
       </Box>
 

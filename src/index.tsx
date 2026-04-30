@@ -25,7 +25,6 @@ import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
 
 
-
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {
     xl: true
