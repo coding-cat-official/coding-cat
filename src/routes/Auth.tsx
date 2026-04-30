@@ -1,61 +1,36 @@
-import { FormEvent, useState } from 'react'
-import { supabase } from '../supabaseClient'
-import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
-import { Navigate, useOutletContext } from 'react-router-dom';
-import { Session } from '@supabase/supabase-js';
+import { Box, Stack, Typography } from "@mui/joy";
+import { Link, Outlet } from "react-router-dom";
+import logo from '../assets/coding-cat.png';
 
-/**
- * Login page for the app.
- */
-export default function Auth() {
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const { session } = useOutletContext<{ session: Session | null }>();
+export default function Auth(){
+  return(
+    <Stack
+      className= 'main'
+      direction="column"
+      sx={{
+        width: '100%',
+        minHeight: "100%",
+        height: "100%",
+        justifyContent: "start",
+        alignItems: "center",
+        overflowY: "scroll"
+      }} >
+        <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
+          <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns"></Box>
+        </Stack>
+      
+      <Stack sx={{ width: '100%' }} direction="row" alignItems="center" justifyContent="center"  className="logo">
+        <Link to="/">
+          <Box component="img" src={logo} sx={{ maxHeight: "80px", marginTop: "5px", marginRight:"15px" }}/>
+        </Link>
+          <Typography sx={{ fontFamily: '"Silkscreen", monospace', fontSize: "35pt"}} level="h1">
+            Coding Cat!
+          </Typography>
+      </Stack>
 
-  if (session) {
-    return <Navigate to="/profile" />
-  }
-
-  const handleLogin = async (event: FormEvent) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
-
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ email });
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess('Check your email for the login link!');
-    }
-
-    setLoading(false);
-  }
-
-  return (
-    <Stack sx={{ flex: 3, width: "100%", marginBottom: "150px" }} direction="column" spacing="20px" justifyContent="center" alignItems="center">
-      <Typography level="h2">Login</Typography>
-      <form style={{ width: "25%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }} onSubmit={handleLogin}>
-        <Box sx={{ width: "100%" }}>
-          <FormLabel>Email</FormLabel>
-          <Input
-            className="inputField"
-            type="email"
-            placeholder="Enter your email..."
-            value={email}
-            required={true}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Box>
-        <Button disabled={loading} type="submit">
-          {loading ? <span>Loading</span> : <span>Send confirmation link</span>}
-        </Button>
-      </form>
-      { !!error && <Typography color="danger">{error}</Typography> }
-      { !!success && <Typography color="success">{success}</Typography> }
+      <Box width="100%" height="100%">
+        <Outlet />
+      </Box>
     </Stack>
-  )
+  );
 }
