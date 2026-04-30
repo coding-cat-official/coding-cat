@@ -12,7 +12,10 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   });
 
   function toDateStr(date: Date): string {
-    return date.toISOString().slice(0,10);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   }
 
   function getSundayOfWeek(date: Date): Date {
@@ -27,7 +30,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   }
   
   // activity is in reverse-chronological order
-  const firstCont = activity[0];
+  const firstCont = activity[activity.length - 1];
   const firstWeek = getSundayOfWeek(new Date(firstCont));
 
   const now = new Date();
