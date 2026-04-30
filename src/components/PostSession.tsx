@@ -16,10 +16,32 @@ export default function PostSessionForm() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [preSessionReflection, setPreSessionReflection] = useState<FormAnswers | null>(null);
 
   useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        setLoading(true);
+
+        let questionsData: Question[] = selectQuestionsByCategory(postSessionQuestions);
+        
+        setQuestions(questionsData);
+        
+        // Initialize empty answers for all questions
+        const initialAnswers: FormAnswers = {};
+        questionsData.forEach(q => {
+          initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
+        });
+        setAnswers(initialAnswers);
+        
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -51,29 +73,6 @@ export default function PostSessionForm() {
       }
     } catch (err) {
       console.warn("Error fetching pre-session reflection:", err);
-    }
-  }
-
-  async function fetchQuestions() {
-    try {
-      setLoading(true);
-
-      let questionsData: Question[] = selectQuestionsByCategory(postSessionQuestions);
-      
-      setQuestions(questionsData);
-      
-      // Initialize empty answers for all questions
-      const initialAnswers: FormAnswers = {};
-      questionsData.forEach(q => {
-        initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
-      });
-      setAnswers(initialAnswers);
-      
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -137,7 +136,6 @@ export default function PostSessionForm() {
     }
 
     try {
-      setSubmitting(true);
       const { error: dbError } = await supabase
         .from("sessions")
         .update([
