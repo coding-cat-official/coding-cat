@@ -96,48 +96,77 @@ export default function HeatMap({ activity }: { activity: string[] }) {
     if (label) monthLabels.push({ label, weekIndex: i });
   });
 
+  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const shownDays = [1, 3, 5];
+
   const TILE_SIZE = 10;
   // gap={0.5} = 4px
   const GAP = 4; 
   const CELL = TILE_SIZE + GAP;
+  // space for day labels
+  const LEFT_OFFSET = 30;
 
   return (
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
       <Card sx={{ p: 2, width: "90%", height: "100%", minWidth: 0 }}>
         <Typography level="title-md">{activity.length} total submissions</Typography>
-        <Box sx={{ overflowX: "auto", paddingBottom: "15px" }}>
-          <Box sx={{ position: "relative", height: "16px", mb: 0.5 }}>
-            {
-              monthLabels.map(({ label, weekIndex }) => (
-                <Typography
-                  key={label}
-                  level="body-xs"
-                  sx={{ position: "absolute", left: weekIndex * CELL }}
-                >
-                  {label}
-                </Typography>
-              ))
-            }
-          </Box>
-          <Stack direction="row" gap={GAP / 8} alignItems="flex-start">
-            {weeks.map((week, i) => (
-              <Stack key={i} direction="column" gap={GAP / 8} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
-                {
-                  week.map(({ date, contributions }) => (
-                    <HeatMapTile
-                      tileSize={TILE_SIZE}
-                      gapSize={GAP}
-                      title={`${contributions} contributions on ${date}`}
-                      heatmapColour={getTileColour(contributions)}
-                      tooltipPlacement="right"
-                      key={date}
-                    />
-                  ))
-                }
-              </Stack>
+        {/* Container for all labels and grid */}
+        <Box sx={{ display: "flex", flexDirection: "row", minWidth: 0 }}>
+          { /* Day labels */}
+          <Box sx={{ position: "relative", width: `${LEFT_OFFSET}px`, flexShrink: 0, mt: "20px" }}>
+            {shownDays.map((dayIndex) => (
+              <Typography
+                key={dayIndex}
+                level="body-xs"
+                sx={{
+                  position: "absolute",
+                  top: dayIndex * CELL,
+                  right: 4,
+                  lineHeight: `${TILE_SIZE}px`,
+                }}
+              >
+                {dayLabels[dayIndex]}
+              </Typography>
             ))}
-          </Stack>
+          </Box>
+          {/* Scrolling box */}
+          <Box sx={{ overflowX: "auto", paddingBottom: "15px", position: "relative", ml: "2px" }}>
+            {/* Month labels */}
+            <Box sx={{ position: "relative", height: "16px", mb: 0.5 }}>
+              {
+                monthLabels.map(({ label, weekIndex }) => (
+                  <Typography
+                    key={label}
+                    level="body-xs"
+                    sx={{ position: "absolute", left: weekIndex * CELL }}
+                  >
+                    {label}
+                  </Typography>
+                ))
+              }
+            </Box>
+
+            { /* Grid */ }
+            <Stack direction="row" gap={GAP / 8} alignItems="flex-start">
+              {weeks.map((week, i) => (
+                <Stack key={i} direction="column" gap={GAP / 8} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
+                  {
+                    week.map(({ date, contributions }) => (
+                      <HeatMapTile
+                        tileSize={TILE_SIZE}
+                        gapSize={GAP}
+                        title={`${contributions} contributions on ${date}`}
+                        heatmapColour={getTileColour(contributions)}
+                        tooltipPlacement="right"
+                        key={date}
+                      />
+                    ))
+                  }
+                </Stack>
+              ))}
+            </Stack>
+          </Box>
         </Box>
         <HeatMapLegend colours={colours}/>
       </Card>
