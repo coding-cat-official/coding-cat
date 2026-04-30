@@ -37,10 +37,12 @@ export default function Account({ session }: { session: Session }) {
 
   useEffect(() => {
     async function fetchProgress() {
-      const { data: submissions, error } = await supabase
+      const { user } = session;
+      
+      const {data: submissions, error } = await supabase
         .from('submissions')
         .select('problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at')
-        .eq('profile_id', session.user.id)
+        .eq('profile_id', user.id)
         .order('submitted_at', { ascending: false });
 
       if(error) {
@@ -80,16 +82,9 @@ export default function Account({ session }: { session: Session }) {
     setProblemCountByCategory(probCountByCat);
   }, [categoriesData, setProblemCountByCategory]);
 
-  if (error) {
-    return (
-      <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
-        <Typography color="danger">Error fetching profile: {error}</Typography>
-      </Stack>
-    )
-  }
-
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+      { !!error && <Typography color="danger">Error: {error}</Typography> }
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
         <Contract 

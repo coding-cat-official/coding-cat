@@ -18,6 +18,7 @@ import getProblemSet from '../utils/getProblemSet';
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
@@ -63,24 +64,12 @@ export default function App() {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user){
-        if (session?.user) {
-          supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('profile_id', session.user.id)
-            .single()
-            .then(({ data, error }) => {
-              if (!error && data) {
-                setIsAdmin(data.is_admin);
-              }
-            });
-        }
-      }
-    });
     supabase.auth.onAuthStateChange((_event, session) => {
+      if(_event === 'PASSWORD_RECOVERY'){
+        setIsRecoverySession(true);
+        return;
+      }
+      setIsRecoverySession(false);
       setSession(session);
       if (session?.user) {
         supabase
@@ -97,7 +86,24 @@ export default function App() {
         setIsAdmin(false);
       }
     });
-  }, []);
+    if(!isRecoverySession){
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+        if (session?.user){
+          supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('profile_id', session.user.id)
+            .single()
+            .then(({ data, error }) => {
+              if (!error && data) {
+                setIsAdmin(data.is_admin);
+              }
+            });
+        }
+      });
+    }
+  }, [isRecoverySession]);
 
   useEffect(() => {
     (async () => {
@@ -236,7 +242,7 @@ export default function App() {
               <ListIcon size={20} />
             </Button>
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
-              {session ? (
+              {session && !isRecoverySession ? (
                 <>
                   <Link to="/profile">
                     <Button>Profile</Button>
@@ -252,6 +258,9 @@ export default function App() {
                 <>
                   <Link to="/signin">
                     <Button>Login</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>Register</Button>
                   </Link>
                 </>
               )}
