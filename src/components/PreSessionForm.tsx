@@ -24,33 +24,6 @@ export default function PreSessionForm() {
   const navigate = useNavigate();
   const { session } = useOutletContext<{ session: Session | null }>();
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  async function fetchQuestions() {
-    try {
-      setLoading(true);
-
-      let questionsData: Question[] = selectQuestionsByCategory(preSessionQuestions);
-      
-      setQuestions(questionsData);
-      
-      // Initialize empty answers for all questions
-      const initialAnswers: FormAnswers = {};
-      questionsData.forEach(q => {
-        initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
-      });
-      setAnswers(initialAnswers);
-      
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   function selectQuestionsByCategory(questionsData: Question[]): Question[] {
     const grouped: Record<string, Question[]> = {};
 
@@ -80,6 +53,33 @@ export default function PreSessionForm() {
 
     return result;
   }
+
+  async function fetchQuestions() {
+    try {
+      setLoading(true);
+
+      let questionsData: Question[] = selectQuestionsByCategory(preSessionQuestions);
+      
+      setQuestions(questionsData);
+      
+      // Initialize empty answers for all questions
+      const initialAnswers: FormAnswers = {};
+      questionsData.forEach(q => {
+        initialAnswers[q.id] = q.type === "checkbox" ? [] : "";
+      });
+      setAnswers(initialAnswers);
+      
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
     setAnswers(prev => ({
