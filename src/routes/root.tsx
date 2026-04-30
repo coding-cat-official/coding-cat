@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Outlet, useLoaderData } from 'react-router';
+import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient';
@@ -17,9 +17,11 @@ import getProblemSet from '../utils/getProblemSet';
 // TODO: This component is huge and should be broken down into smaller components.
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
+  const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeSession, setActiveSession] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
@@ -244,6 +246,19 @@ export default function App() {
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
               {session && !isRecoverySession ? (
                 <>
+                  <Button 
+                    onClick={() => {
+                      if (activeSession) {
+                        // TODO: Implement end session logic
+                        setActiveSession(false);
+                      } else {
+                        navigate('/session');
+                      }
+                    }}
+                    sx={{ backgroundColor: activeSession ? '#ffb5a9' : '#d4ff99' }}
+                  >
+                    {activeSession ? 'Ongoing Session' : 'Start Session'}
+                  </Button>
                   <Link to="/profile">
                     <Button>Profile</Button>
                   </Link>
