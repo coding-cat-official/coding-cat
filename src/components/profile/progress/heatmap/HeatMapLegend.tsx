@@ -21,7 +21,7 @@ export default function HeatMapLegend({ colours }: { colours: string[] }){
             heatmapColour={colours[1]}
           />
           <HeatMapLegendTile
-            title="No contributions"
+            title="No submissions"
             heatmapColour={colours[0]}
           />
           <Typography level="body-sm" sx={{ marginRight: "5px" }}>Legend:</Typography>
