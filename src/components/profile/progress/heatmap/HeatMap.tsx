@@ -30,8 +30,8 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   }
   
   // activity is in reverse-chronological order
-  const firstCont = activity[activity.length - 1];
-  const firstWeek = getSundayOfWeek(new Date(firstCont));
+  const firstSub = activity[activity.length - 1];
+  const firstWeek = getSundayOfWeek(new Date(firstSub));
 
   const now = new Date();
   const msSinceFirstWeek = now.getTime() - firstWeek.getTime();
@@ -50,38 +50,38 @@ export default function HeatMap({ activity }: { activity: string[] }) {
       const dateStr = toDateStr(day);
       return {
         date: dateStr,
-        contributions: submissions[dateStr] ?? 0
+        submissions: submissions[dateStr] ?? 0
       }
     });
   });
 
   var max = 0;
   // get max to determine quartiles for colour thresholds
-  for(const [_, contribs] of Object.entries(submissions)){
-    if(contribs > max) max = contribs;
+  for(const [_, subs] of Object.entries(submissions)){
+    if(subs > max) max = subs;
   }
 
   // colours colour-picked from GitHub
   // ordered from least to most
   const colours = ["#151B23", "#033A16", "#196C2E", "#2EA043", "#56D364"];
-  function getTileColour(contribs: number): string{
-    if(contribs === 0){
+  function getTileColour(subs: number): string{
+    if(subs === 0){
       return colours[0];
     }
-    if(contribs < (max * 0.25)){ // 1-25%
+    if(subs < (max * 0.25)){ // 1-25%
       return colours[1];
     }
-    if(contribs < (max * 0.5)){ // 25-50%
+    if(subs < (max * 0.5)){ // 25-50%
       return colours[2];
     }
-    if(contribs < (max * 0.75)){ // 50-75%
+    if(subs < (max * 0.75)){ // 50-75%
       return colours[3];
     }
     // top 25%
     return colours[4];
   }
 
-  function getMonth(week: { date: string, contributions: number }[]): string{
+  function getMonth(week: { date: string, submissions: number }[]): string{
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for(const day of week){
       if(day.date.slice(8) == "01"){
@@ -155,12 +155,11 @@ export default function HeatMap({ activity }: { activity: string[] }) {
               {weeks.map((week, i) => (
                 <Stack key={i} direction="column" gap={GAP / 8} alignItems="flex-start" sx={{ lineHeight: 0, fontSize: 0 }}>
                   {
-                    week.map(({ date, contributions }) => (
+                    week.map(({ date, submissions }) => (
                       <HeatMapTile
                         tileSize={TILE_SIZE}
-                        gapSize={GAP}
-                        title={`${contributions} contributions on ${date}`}
-                        heatmapColour={getTileColour(contributions)}
+                        title={`${submissions} submissions on ${date}`}
+                        heatmapColour={getTileColour(submissions)}
                         tooltipPlacement="right"
                         key={date}
                       />
