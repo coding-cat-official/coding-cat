@@ -1,5 +1,5 @@
 import { Card, Stack, Typography } from "@mui/joy";
-import MostProdDayOfWeek from "./MostProdDayOfWeek";
+import BusiestDayOfWeek from "./BusiestDayOfWeek";
 import BusiestDates from "./BusiestDates";
 
 export default function OtherStats({ activity }: { activity: string[] }){
@@ -18,15 +18,15 @@ export default function OtherStats({ activity }: { activity: string[] }){
     submissions[iso.slice(0,10)] = (submissions[iso.slice(0,10)] ?? 0) + 1
   });
 
-  var mostProdDays: { day: string, contribs: number }[] = [];
+  var busiestDaysOfWeek: { day: string, contribs: number }[] = [];
   var highestWeekdayContribs = 0;
   for(const [day, contribs] of Object.entries(daysActivity)){
     if(contribs > highestWeekdayContribs){
-      mostProdDays = [];
+      busiestDaysOfWeek = [];
       highestWeekdayContribs = contribs;
-      mostProdDays.push({ day: day, contribs: contribs });
+      busiestDaysOfWeek.push({ day: day, contribs: contribs });
     }else if(contribs == highestWeekdayContribs){
-      mostProdDays.push({ day: day, contribs: contribs });
+      busiestDaysOfWeek.push({ day: day, contribs: contribs });
     }
   }
 
@@ -46,7 +46,7 @@ export default function OtherStats({ activity }: { activity: string[] }){
     <Typography level="h2">Other Stats</Typography>
       <Card sx={{ p: 2, width: "90%", height: "100%", marginBottom: "20px" }}>
         { highestWeekdayContribs > 0 && 
-          <MostProdDayOfWeek mostProdDays={mostProdDays} />
+          <BusiestDayOfWeek busiestDaysOfWeek={busiestDaysOfWeek} />
         }
         { Object.entries(submissions).length > 0 && 
           <BusiestDates busiestDates={busiestDates} />
