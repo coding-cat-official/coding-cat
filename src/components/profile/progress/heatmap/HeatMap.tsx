@@ -109,7 +109,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
   return (
     <Stack gap={2}>
       <Typography level="h2">Activity Heat Map</Typography>
-      <Card sx={{ p: 2, width: "90%", height: "100%", minWidth: 0 }}>
+      <Card sx={{ p: 2, width: "90%", height: "100%" }}>
         <Typography level="title-md">{activity.length} total submissions</Typography>
         {/* Container for all labels and grid */}
         <Box sx={{ display: "flex", flexDirection: "row", minWidth: 0 }}>
@@ -131,7 +131,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
             ))}
           </Box>
           {/* Scrolling box */}
-          <Box sx={{ overflowX: "auto", paddingBottom: "15px", position: "relative", ml: "2px" }}>
+          <Box sx={{ overflowX: "auto", paddingBottom: "15px", position: "relative", ml: "2px", flex: 1, minWidth: 0 }}>
             {/* Month labels */}
             <Box sx={{ position: "relative", height: "16px", mb: 0.5 }}>
               {
