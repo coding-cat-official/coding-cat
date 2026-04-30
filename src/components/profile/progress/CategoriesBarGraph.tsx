@@ -51,15 +51,42 @@ export default function CategoriesBarGraph({ categoriesData }: { categoriesData:
         <Tooltip isAnimationActive={false}
           labelFormatter={(label) => `Category: ${label}`}
         />
-        <Bar dataKey="Completed" stackId="a" radius={[0, 0, 0, 0]}>
-          {graphData.map((category) => (
-            <Cell
-              key={category.name}
-              fill={"green"}
-            />
-          ))}
-        </Bar>
-        <Bar dataKey="Incomplete / Not Started" stackId="a" fill="#e0e0e0" radius={[10, 10, 0, 0]} />
+        <Bar
+          dataKey="Completed"
+          stackId="a"
+          shape={(props: any) => {
+            const { x, y, width, height, name } = props;
+            const category = graphData.find(d => d.name === name);
+            const isFull = category && category.Completed === category.total;
+            const radius = isFull ? 10 : 0;
+            return (
+              // draws a rectangle with the top edges rounded if the green bar is full (category full-clear)
+              // imagine a pen that you're giving the instructions to:
+              // M - Move pen to
+              // L - Line to
+              // Q - Quadratic Bezier (curve)
+              // Z - Close path
+              <path
+                d={
+                  `M${x},${y + height}
+                   L${x},${y + radius}
+                   Q${x},${y} ${x + radius},${y}
+                   L${x + width - radius},${y}
+                   Q${x + width},${y} ${x + width},${y + radius}
+                   L${x + width},${y + height}
+                   Z`
+                }
+                fill="green"
+              />
+            );
+          }}
+        />
+        <Bar 
+          dataKey="Incomplete / Not Started" 
+          stackId="a" 
+          fill="#e0e0e0" 
+          radius={[10, 10, 0, 0]} 
+        />
       </BarChart>
     </ResponsiveContainer>
     </Card>
