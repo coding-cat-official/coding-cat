@@ -57,7 +57,7 @@ export default function HeatMap({ activity }: { activity: string[] }) {
 
   var max = 0;
   // get max to determine quartiles for colour thresholds
-  for(const [_unused, subs] of Object.entries(submissions)){
+  for(const subs of Object.values(submissions)){
     if(subs > max) max = subs;
   }
 
