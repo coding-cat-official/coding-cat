@@ -10,13 +10,15 @@ export default function OtherStats({ activity }: { activity: string[] }){
     daysActivity[daysOfWeek[date.getDay()]] = (daysActivity[daysOfWeek[date.getDay()]] ?? 0) + 1
   });
 
-  console.log(daysActivity);
-
-  var [mostProdDay, highestContribs] = ["", 0];
+  var mostProdDays: { day: string, contribs: number }[] = [];
+  var highestContribs = 0;
   for(const [day, contribs] of Object.entries(daysActivity)){
     if(contribs > highestContribs){
+      mostProdDays = [];
       highestContribs = contribs;
-      mostProdDay = day;
+      mostProdDays.push({ day: day, contribs: contribs });
+    }else if(contribs == highestContribs){
+      mostProdDays.push({ day: day, contribs: contribs });
     }
   }
 
@@ -24,9 +26,26 @@ export default function OtherStats({ activity }: { activity: string[] }){
     <Stack gap={2}>
     <Typography level="h2">Other Stats</Typography>
       <Card sx={{ p: 2, width: "90%", height: "100%" }}>
-        { highestContribs > 0 && 
+        { highestContribs > 0 && mostProdDays.length === 1 &&
           <Typography level="body-md">
-            Most productive day of the week: {mostProdDay} ({highestContribs} total contributions!)
+            Most productive day of the week: {mostProdDays[0]["day"]} ({highestContribs} contributions)
+          </Typography>
+        }
+        { highestContribs > 0 && mostProdDays.length > 1 &&
+          <Typography level="body-md">
+            Most productive days of the week:
+            { 
+              mostProdDays.map(({day, contribs}, i) => {
+                const atEnd = i == mostProdDays.length - 1;
+                var text = `${day} (${contribs} contributions)`;
+                if(!atEnd){
+                  text += ", ";
+                }else{
+                  text = "and " + text;
+                }
+                return (text);
+              })
+            }
           </Typography>
         }
       </Card>
