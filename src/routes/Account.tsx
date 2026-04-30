@@ -10,6 +10,7 @@ import ActivityGraph from '../components/profile/progress/ActivityGraph';
 import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/heatmap/HeatMap';
+import OtherStats from '../components/profile/progress/OtherStats';
 
 interface CategoryData {
   category: string;
@@ -100,6 +101,7 @@ export default function Account({ session }: { session: Session }) {
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
         { view === "activity" && <CategoriesBarGraph categoriesData={categoriesData}/> }
         { view === "activity" && <HeatMap activity={activityStamps} /> }
+        { view === "activity" && <OtherStats activity={activityStamps} /> }
         { view === "reflections" && <Reflections reflections={reflections} /> }
     </Stack>
   </Stack>
