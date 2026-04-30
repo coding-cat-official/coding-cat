@@ -65,6 +65,8 @@ export default function PostSessionForm() {
         console.warn("Could not fetch pre-session reflection:", fetchError);
         return;
       }
+      //If we successfully got data from the database and it contains pre_session_reflection 
+      //then extract it and store it in state so we can use it later.
       if (data && typeof data === 'object' && "pre_session_reflection" in data) {
         const reflection = (data as Record<string, unknown>)["pre_session_reflection"];
         if (reflection) {
@@ -158,28 +160,22 @@ export default function PostSessionForm() {
     }
   };
 
-    const getReliesOnDisplay = (question: Question) => {
-        if (!question.relies_on || !preSessionReflection) return null;
+  const getReliesOnDisplay = (question: Question) => {
+    if (!question.relies_on || !preSessionReflection) return null;
 
-        const relatedQuestions = preSessionQuestions.filter(
-            q => q.category === question.relies_on
-        );
+    const relatedQuestions = preSessionQuestions.filter(
+        q => q.category === question.relies_on
+    );
+    return relatedQuestions.map(q => {
+      const raw = preSessionReflection[q.id];
 
-        return relatedQuestions.map(q => {
-            const raw = preSessionReflection[q.id];
+      if (!raw) return null;
 
-            if (!raw) return null;
+      const value = Array.isArray(raw)? raw.join(", "): String(raw);
 
-            const value = Array.isArray(raw)
-            ? raw.join(", ")
-            : String(raw);
-
-            return {
-            label: q.text,
-            value
-            };
-        }).filter((item): item is { label: string; value: string } => item !== null);
-    };
+      return {label: q.text, value};
+    }).filter((item): item is { label: string; value: string } => item !== null);
+  };
 
   const renderQuestion = (question: Question) => {
     switch (question.type) {
