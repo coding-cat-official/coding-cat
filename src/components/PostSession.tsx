@@ -159,22 +159,28 @@ export default function PostSessionForm() {
     }
   };
 
-  const getReliesOnDisplay = (question: Question): string | null => {
-    if (!question.relies_on || !preSessionReflection) return null;
+    const getReliesOnDisplay = (question: Question) => {
+        if (!question.relies_on || !preSessionReflection) return null;
 
-    const relatedQuestions = preSessionQuestions.filter(
-      preSessionQuestion => preSessionQuestion.category === question.relies_on
-    );
+        const relatedQuestions = preSessionQuestions.filter(
+            q => q.category === question.relies_on
+        );
 
-    const relatedAnswers = relatedQuestions
-      .map(preSessionQuestion => preSessionReflection[preSessionQuestion.id])
-      .filter(answer => answer !== undefined && answer !== null && answer !== "")
-      .map(answer => Array.isArray(answer) ? answer.join(", ") : String(answer));
+        return relatedQuestions.map(q => {
+            const raw = preSessionReflection[q.id];
 
-    if (relatedAnswers.length === 0) return null;
+            if (!raw) return null;
 
-    return relatedAnswers.join(" | ");
-  };
+            const value = Array.isArray(raw)
+            ? raw.join(", ")
+            : String(raw);
+
+            return {
+            label: q.text,
+            value
+            };
+        }).filter((item): item is { label: string; value: string } => item !== null);
+    };
 
   const renderQuestion = (question: Question) => {
     switch (question.type) {
@@ -313,7 +319,19 @@ export default function PostSessionForm() {
                   {reliesOnDisplay && (
                     <Box sx={{ marginBottom: 2 }}>
                       <Typography level="body-sm" sx={{ fontWeight: "bold", color: "#333" }}>
-                        <strong>Your {question.relies_on} response:</strong> {reliesOnDisplay}
+                        {reliesOnDisplay && (
+                            <Box sx={{ marginBottom: 2 }}>
+                                <Typography level="body-sm" sx={{ fontWeight: "bold", mb: 1 }}>
+                                Earlier in this session:
+                                </Typography>
+                                {reliesOnDisplay.map((item, index) => (
+                                <Box key={index} sx={{ mb: 1 }}>
+                                    <Typography level="body-xs" sx={{ color: "#555" }}>{item.label} </Typography>
+                                    <Typography level="body-sm" sx={{ fontWeight: 500 }}>{item.value}</Typography>
+                                </Box>
+                                ))}
+                            </Box>
+                            )}
                       </Typography>
                     </Box>
                   )}
