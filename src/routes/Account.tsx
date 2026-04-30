@@ -57,7 +57,7 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
-      <Typography color="danger">Error: {error}</Typography>
+      { !!error && <Typography color="danger">Error: {error}</Typography> }
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
         <Contract />
