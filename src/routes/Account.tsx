@@ -55,14 +55,6 @@ export default function Account({ session }: { session: Session }) {
     fetchProgress();
   }, [session]);
 
-  // if (error) {
-  //   return (
-  //     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
-  //       <Typography color="danger">Error fetching profile: {error}</Typography>
-  //     </Stack>
-  //   )
-  // }
-
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Typography color="danger">Error: {error}</Typography>
