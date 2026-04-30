@@ -5,20 +5,20 @@ export default function MostProdDay({ mostProdDays }: { mostProdDays: { day: str
     <>
     { mostProdDays.length === 1 &&
       <Typography level="body-md">
-        Most productive day of the week: {mostProdDays[0]["day"]} ({mostProdDays[0]["contribs"]} contributions)
+        Busiest day of the week, on average: {mostProdDays[0]["day"]} ({mostProdDays[0]["contribs"]} submissions)
       </Typography>
     }
     { mostProdDays.length > 1 &&
       <Typography level="body-md">
-        Most productive days of the week:
+        Busiest days of the week, on average:
         { 
           mostProdDays.map(({day, contribs}, i) => {
             const atEnd = i == mostProdDays.length - 1;
-            var text = `${day} (${contribs} contributions)`;
+            var text = ` ${day}`;
             if(!atEnd){
               text += ", ";
             }else{
-              text = "and " + text;
+              text = "and " + text + ` (tied at ${contribs} submissions)`;
             }
             return (text);
           })
