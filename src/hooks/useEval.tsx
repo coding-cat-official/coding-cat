@@ -120,8 +120,7 @@ export default function useEval(problem: Problem, session: Session | null, refet
             if (problem.solution)  detail.solution  = problem.solution;
             if (problem.mutations) detail.mutations = problem.mutations;
         }
-
-    document.dispatchEvent(new CustomEvent('eval', { detail }));
+        document.dispatchEvent(new CustomEvent('eval', { detail }));
     }
 
     return [evalResponse, runCode];
