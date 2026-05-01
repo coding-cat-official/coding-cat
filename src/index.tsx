@@ -12,12 +12,18 @@ import ProblemView, { problemLoader } from './routes/ProblemView';
 import ErrorPage from './error';
 import {theme} from './theme';
 
-import Auth from './routes/Auth'
+import Login from './routes/Login';
+import Register from './routes/Register';
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
+import PreSessionForm from './components/PreSessionForm';
+import PostSessionForm from './components/PostSessionForm';
 import AdminWrapper from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
-
+import ChangePassword from './routes/ChangePassword';
+import ReqPasswordChange from './routes/ReqPasswordChange';
+import AuthCallback from './routes/AuthCallback';
+import Auth from './routes/Auth';
 
 
 declare module "@mui/joy/Drawer" {
@@ -39,13 +45,29 @@ const router = createHashRouter([
         element: <MainTutorial/>,
       },
       {
+        path: "session",
+        element: <PreSessionForm/>,
+      },
+      {
+        path: "post-session",
+        element: <PostSessionForm/>,
+      },
+      {
         path: "/problems/:problemName",
         element: <ProblemView />,
         loader: problemLoader,
       },
       {
         path: "signin",
-        element: <Auth />
+        element: <Login />
+      },      
+      {
+        path: "change-password-req",
+        element: <ReqPasswordChange />
+      },
+      {
+        path: "register",
+        element: <Register />
       },
       {
         path: "profile",
@@ -60,6 +82,22 @@ const router = createHashRouter([
       },
     ],
   },
+  {
+    path: "/auth",
+    element: <Auth />,
+    loader: problemListLoader,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "callback",
+        element: <AuthCallback />
+      },
+      {
+        path: "change-password",
+        element: <ChangePassword />
+      }
+    ]
+  }
 ],
 {
   basename: '/',
