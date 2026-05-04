@@ -2,39 +2,43 @@ import { Card, Stack, Typography } from "@mui/joy";
 import { useMemo } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-export default function ActivityGraph({ activityStamps, passingStamps }: { activityStamps: string[], passingStamps: string[] }) {
+export default function ActivityGraph({ activityStamps, passingStamps, startDate }: { activityStamps: string[], passingStamps: string[], startDate: Date }) {
   const activityData = useMemo(() => {
     
-    const counts: Record<string, number> = {}
-    const passCounts: Record<string, number> = {}
+    const submissions: Record<string, number> = {}
+    const passes: Record<string, number> = {}
 
     activityStamps.forEach((iso) => {
+      // YYYY-MM-DD
       const date = iso.slice(0,10)
-      counts[date] = (counts[date] ?? 0) + 1
+      submissions[date] = (submissions[date] ?? 0) + 1
     })
 
     passingStamps.forEach((iso) => {
+      // YYYY-MM-DD
       const date = iso.slice(0,10)
-      passCounts[date] = (passCounts[date] ?? 0) + 1
+      passes[date] = (passes[date] ?? 0) + 1
     })
-
+    
     const end = new Date();
-    const start = new Date(end);
-    start.setDate(end.getDate() -29);
+    const start = new Date(startDate);
+    start.setDate(start.getDate() - 1)
 
     const allDays: { x: string; y: number; cumulative: number }[] = [];
     let runningPassTotal = 0;
     
+    // for every day since 'start', add the activity to allDays
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      // YYYY-MM-DD
       const iso = d.toISOString().slice(0, 10);
-      const daily = counts[iso] || 0;
-      const dailyPass = passCounts[iso] || 0;
+      const daily = submissions[iso] || 0;
+      const dailyPass = passes[iso] || 0;
       runningPassTotal += dailyPass
       allDays.push({ x: iso, y: daily, cumulative: runningPassTotal });
     }
     
     return allDays;
-  }, [activityStamps, passingStamps]);
+  }, [activityStamps, passingStamps, startDate]);
 
   return (
     <Stack gap={2}>

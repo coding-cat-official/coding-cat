@@ -7,6 +7,18 @@ import UserInfo from '../components/profile/UserInfo';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
 import ActivityGraph from '../components/profile/progress/ActivityGraph';
+import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGraph';
+import { getCompletedProblems } from '../utils/getCompletedProblems';
+import HeatMap from '../components/profile/progress/heatmap/HeatMap';
+import OtherStats from '../components/profile/progress/other-stats/OtherStats';
+
+interface CategoryData {
+  category: string;
+  completed: number;
+  total: number;
+  problems: object[];
+  question_type: string;
+}
 
 /**
  * The `Account` component handles everything related to the profile page.
@@ -16,6 +28,11 @@ export default function Account({ session }: { session: Session }) {
   const [reflections, setReflections] = useState<Reflection[]>([])
   const [activityStamps, setActivityStamps] = useState<string[]>([])
   const [passingStamps, setPassingStamps] = useState<string[]>([])
+  const [userStartDate, setUserStartDate] = useState<Date>(new Date());
+  const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
+  const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string,number>>({});
+
+  // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("reflections");
   const [error, setError] = useState("");
 
@@ -50,17 +67,30 @@ export default function Account({ session }: { session: Session }) {
 
       setActivityStamps(all);
       setPassingStamps(pass);
+      setCategoriesData(getCompletedProblems(submissions || []));
     }
 
+    setUserStartDate(new Date(session.user.created_at) || new Date());
+
     fetchProgress();
-  }, [session]);
+  }, [session, setUserStartDate, setCategoriesData]);
+
+  // if the categoriesData changes, update the problem count
+  useEffect(() => {
+    const probCountByCat = Object.fromEntries(
+      categoriesData.map(({ category, total }) => [category, total])
+    );
+    setProblemCountByCategory(probCountByCat);
+  }, [categoriesData, setProblemCountByCategory]);
 
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       { !!error && <Typography color="danger">Error: {error}</Typography> }
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
         <UserInfo />
-        <Contract />
+        <Contract 
+          problemCountByCategory={problemCountByCategory}
+        />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
@@ -68,8 +98,11 @@ export default function Account({ session }: { session: Session }) {
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
         </Stack>
 
-        { view === "reflections" && <Reflections reflections = {reflections} /> }
-        { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps}/> }
+        { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
+        { view === "activity" && <CategoriesBarGraph categoriesData={categoriesData}/> }
+        { view === "activity" && <HeatMap activity={activityStamps} /> }
+        { view === "activity" && <OtherStats activity={activityStamps} /> }
+        { view === "reflections" && <Reflections reflections={reflections} /> }
     </Stack>
   </Stack>
   )
