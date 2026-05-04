@@ -7,7 +7,6 @@ interface AdminPageModalProps {
   modalTitle: string;
   modalDesc: string;
   switchLabel?: string;
-  children?: React.ReactNode;
 }
 
 // Style for modal itself
@@ -36,7 +35,6 @@ export default function AdminPageModal({
   handleClose,
   modalTitle,
   modalDesc,
-  children,
   switchLabel,
 }: AdminPageModalProps) {
   return (
@@ -58,8 +56,6 @@ export default function AdminPageModal({
             {switchLabel}
           </Typography>
         )}
-
-        {children}
       </Box>
     </Modal>
   );

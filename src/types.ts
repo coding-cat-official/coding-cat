@@ -1,5 +1,10 @@
 import { getCategoryList } from "./utils/getCategoryList";
 
+export interface AdminSwitch {
+    switchLabel: string
+    switchAction: () => {};
+}
+
 export interface IOPair {
     input: any[];
     output: any;
