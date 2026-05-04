@@ -5,6 +5,13 @@ import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/jo
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
+import ChangePfpPopup from "./ChangePfpPopup";
+
+export interface CustomPfp{
+  bg: number,
+  face: number,
+  accessory: number
+}
 
 export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -13,6 +20,12 @@ export default function UserInfo() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
+  const [showPfpEdit, setShowPfpEdit] = useState(false);
+  const [usingCustomPfp, setUsingCustomPfp] = useState(false);
+  const [premadePfp, setPremadePfp] = useState("");
+  const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
 
   const { session } = useOutletContext<{ session: Session | null }>();
 
@@ -26,7 +39,8 @@ export default function UserInfo() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`username, student_id`)
+        .select(`username, student_id`) 
+        // TODO: add pfp fields, whether using custom, if yes which layers, if not what premade
         .eq('profile_id', user.id)
         .single();
 
@@ -75,6 +89,11 @@ export default function UserInfo() {
     setLoading(false);
   }
 
+  function updatePfp(isCustom: boolean, pfpFileName: string = "", customPfpLayers: CustomPfp = defaultCustomPfp){
+    setUsingCustomPfp(isCustom);
+    if(!isCustom) setPremadePfp(pfpFileName);
+  }
+
   return (
     <Stack alignItems="center" className="account">
       {
@@ -114,7 +133,24 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <ProfileAvatar avatarFileName="bongo-coding-pfp.png"/>
+          <ProfileAvatar 
+            isCustom={usingCustomPfp}
+            onClickFn={() => setShowPfpEdit(true)}
+            avatarFileName={premadePfp}
+            customPfpLayers={customPfpLayers}
+          />
+          { 
+            showPfpEdit ? 
+            <ChangePfpPopup 
+              onConfirmPremade={
+                (pfpFileName: string) => updatePfp(false, pfpFileName, defaultCustomPfp)
+              } 
+              onConfirmCustom={
+                (customPfpLayers: CustomPfp) => updatePfp(true, "", customPfpLayers)
+              }
+            />
+            : <></>
+          }
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>
