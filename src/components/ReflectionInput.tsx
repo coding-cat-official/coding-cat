@@ -33,19 +33,47 @@ export default function ReflectionInput({ hide, problemName, question }: Reflect
       answer: text
     }
 
-    const { error } = await supabase
+    // get all submissions for this user on this problem
+    const { data: fetchData, error: fetchError } = await supabase
       .from("submissions")
-      .update({ "reflection": reflection })
+      .select()
       .eq('profile_id', user.id)
       .eq('problem_title', problemName)
-      .order('submitted_at', { ascending: false})
-      .limit(1)
-      .select();
+      .order('submitted_at', { ascending: false });
 
-    if (error) setError("Error submitting reflection.");
-    else setSuccess("Successfully submitted reflection!");
+    if(!fetchData || fetchError){
+      setError("Error submitting reflection.");
+      return;
+    }
+
+    // gets the submission(s) without reflections
+    const noReflSubs = fetchData.filter((sub) => {
+      return sub["reflection"] === null;
+    });
+
+    var subToUpdateID;
+
+    if(noReflSubs.length > 0){
+      subToUpdateID = noReflSubs[0]["submission_id"];
+    }else{
+      // this means there was no new submission, 
+      // likely a second reflection "Submit" press
+      // update the last submission's reflection instead
+      subToUpdateID = fetchData[0]["submission_id"]
+    }
+
+    const { error: updateError } = await supabase
+      .from("submissions")
+      .update({ "reflection": reflection })
+      .eq('submission_id', subToUpdateID);
 
     setLoading(false);
+
+    if(updateError){
+      setError("Error submitting reflection.");
+    }else{
+      setSuccess("Successfully submitted reflection!");
+    }
   }
 
   return (
