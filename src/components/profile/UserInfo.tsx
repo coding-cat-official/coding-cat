@@ -1,9 +1,10 @@
 import { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { Avatar, Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
+import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
+import ProfileAvatar from "./ProfileAvatar";
 
 export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -113,7 +114,7 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <Avatar color="primary" size="lg">{(name || "").charAt(0)}</Avatar>
+          <ProfileAvatar avatarFileName="bongo-coding-pfp.png"/>
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>
