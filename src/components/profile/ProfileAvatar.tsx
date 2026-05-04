@@ -13,6 +13,7 @@ export default function ProfileAvatar({ avatarFileName }: { avatarFileName: stri
   return (
     <Avatar
       src={ pfp }
+      size="lg"
     />
   )
 }
