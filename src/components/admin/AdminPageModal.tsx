@@ -1,11 +1,13 @@
-import { Modal, Box, Typography } from "@mui/joy";
+import { Modal, Box, Typography, Switch } from "@mui/joy";
 
 // Interface for Modal Props
 interface AdminPageModalProps {
   open: boolean;
   handleClose: () => void;
-  modalTitle : string;
-  modalDesc : string;
+  modalTitle: string;
+  modalDesc: string;
+  switchLabel?: string;
+  children?: React.ReactNode;
 }
 
 // Style for modal itself
@@ -29,7 +31,14 @@ const styles = {
  * @param modalDesc String that defines the description of the modal
  * @returns <AdminPageModal {...props} />
  */
-export default function AdminPageModal({ open, handleClose, modalTitle, modalDesc }: AdminPageModalProps) {
+export default function AdminPageModal({
+  open,
+  handleClose,
+  modalTitle,
+  modalDesc,
+  children,
+  switchLabel,
+}: AdminPageModalProps) {
   return (
     <Modal
       open={open}
@@ -41,9 +50,16 @@ export default function AdminPageModal({ open, handleClose, modalTitle, modalDes
         <Typography id="modal-modal-title" component="h2">
           {modalTitle}
         </Typography>
-        <Typography id="modal-modal-description">
-          {modalDesc}
-        </Typography>
+
+        <Typography id="modal-modal-description">{modalDesc}</Typography>
+
+        {switchLabel && (
+          <Typography component="label" endDecorator={<Switch />}>
+            {switchLabel}
+          </Typography>
+        )}
+
+        {children}
       </Box>
     </Modal>
   );
