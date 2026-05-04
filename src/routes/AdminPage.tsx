@@ -2,9 +2,11 @@ import { Box, Typography, Link, Card } from "@mui/joy";
 import { useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
 
+// Defines the data in the modal
 interface ModalMetaData {
   title: string;
   desc: string;
+  switchLabel?: string;
 }
 
 // CSS styles of links
@@ -19,10 +21,12 @@ const links: ModalMetaData[] = [
   {
     title: "Toggle Public/Test Questions",
     desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
+    switchLabel: "Enable Test Categories",
   },
   {
     title: "Modify Global Contract Permissions",
     desc: "Below is a switch that toggles the contract to be read-only globally. This does not apply for student who have contract overrides enabled.",
+    switchLabel: "Toggle Read-Only Mode",
   },
 ];
 
@@ -72,6 +76,7 @@ export default function AdminPage() {
             handleClose={handleClose}
             modalTitle={open.title}
             modalDesc={open.desc}
+            switchLabel={open.switchLabel}
           />
         )}
       </Card>
