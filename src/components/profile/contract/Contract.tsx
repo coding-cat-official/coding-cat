@@ -8,7 +8,7 @@ import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
 
-export default function Contract() {
+export default function Contract({ problemCountByCategory }: { problemCountByCategory: Record<string,number> }) {
   const [open, setOpen] = useState(false);
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -49,7 +49,7 @@ export default function Contract() {
         setLastUpdated(new Date(data.updated_at));
       }
     })();
-  }, [session])
+  }, [session]);
 
   async function handleContractSave() {
     const now = new Date()
@@ -99,7 +99,14 @@ export default function Contract() {
         </Typography>
       </Stack>
 
-      <ContractModal open={open} setOpen={setOpen} contract={contract} lastUpdated={lastUpdated} onSave={handleContractSave} setContract={setContract} featureMap={featureMap}/>
+      <ContractModal 
+        open={open} setOpen={setOpen} 
+        contract={contract} lastUpdated={lastUpdated} 
+        onSave={handleContractSave} 
+        setContract={setContract} 
+        featureMap={featureMap} 
+        problemCountByCategory={problemCountByCategory}
+      />
     </>
   )
 }
@@ -112,9 +119,10 @@ interface ContractModalProps {
   lastUpdated: Date | null;
   onSave: () => Promise<void>;
   featureMap: Record<string, boolean>;
+  problemCountByCategory: Record<string, number>;
 }
 
-function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap }: ContractModalProps) {
+function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap, problemCountByCategory }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
     
   return (
@@ -126,7 +134,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
           isUpdating ? 
           // To add a new question to the contract, make sure to add it to both the edit and the normal view.
           // Possible TODO: the 2 contract views have a lot of code duplication, so it would be nice to figure out how to combine them into a single component.
-          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} featureMap={featureMap} /> :
+          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} featureMap={featureMap} problemCountByCategory={problemCountByCategory} /> :
           <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} featureMap={featureMap} />
         }
       </ModalDialog>

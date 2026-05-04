@@ -101,7 +101,7 @@ function ReflectionTitle({ query, setQuery, category, setCategory }: SearchProps
       <Stack direction="row" gap={2}>
         <Select sx={{ width: "150px", fontFamily: "Silkscreen" }} placeholder="Category" value={category} onChange={(e, newValue) => setCategory(newValue || "")}>
           <Option sx={{ fontFamily: "Silkscreen"}} value="all">All</Option>
-          { categories.map((c) => <Option value={c} sx={{ fontFamily: "Silkscreen"}}>{c}</Option>) }
+          { categories.map((c) => <Option key={c} value={c} sx={{ fontFamily: "Silkscreen"}}>{c}</Option>) }
         </Select>
         <CustomSearch query={query} setQuery={setQuery} placeholder="Search for reflections..." />
       </Stack>
