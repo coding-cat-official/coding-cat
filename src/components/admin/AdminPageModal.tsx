@@ -1,4 +1,5 @@
 import { Modal, Box, Typography, Switch } from "@mui/joy";
+import { ReactNode } from "react";
 
 // Interface for Modal Props
 interface AdminPageModalProps {
@@ -7,6 +8,7 @@ interface AdminPageModalProps {
   modalTitle: string;
   modalDesc: string;
   switchLabel?: string;
+  extraNode: ReactNode;
 }
 
 // Style for modal itself
@@ -36,6 +38,7 @@ export default function AdminPageModal({
   modalTitle,
   modalDesc,
   switchLabel,
+  extraNode
 }: AdminPageModalProps) {
   return (
     <Modal
@@ -56,6 +59,7 @@ export default function AdminPageModal({
             {switchLabel}
           </Typography>
         )}
+        {extraNode}
       </Box>
     </Modal>
   );
