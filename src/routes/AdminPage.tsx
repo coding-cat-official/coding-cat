@@ -1,14 +1,15 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
-import { ElementType, useState } from "react";
+import { ReactNode, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
 import { AdminSwitch } from "../types";
+import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 
 // Defines the data in the modal
 interface ModalMetaData {
   title: string;
   desc: string;
   switch?: AdminSwitch;
-  extraNode?: ElementType;
+  extraNode?: ReactNode;
 }
 
 // CSS styles of links
@@ -24,6 +25,7 @@ const links: ModalMetaData[] = [
     title: "Toggle Public/Test Questions",
     desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
     switch: { switchLabel: "Enable Test Categories", switchAction: () => ({}) },
+    extraNode: <CategoryPasswordForm />
   },
   {
     title: "Modify Global Contract Permissions",
@@ -79,6 +81,7 @@ export default function AdminPage() {
             modalTitle={open.title}
             modalDesc={open.desc}
             switchLabel={open.switch?.switchLabel}
+            extraNode={open.extraNode}
           />
         )}
       </Card>
