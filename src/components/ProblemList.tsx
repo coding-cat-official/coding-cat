@@ -9,7 +9,7 @@ import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { capitalizeString } from '../utils/capitalizeString';
 import sortProblems from '../utils/sortProblems';
 
-interface ProblemListProps {
+export interface ProblemListProps {
   searchedProblems: Problem[];
   selectedTab: string;
   setSelectedTab: (peep: string) => void;
