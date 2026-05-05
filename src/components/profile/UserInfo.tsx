@@ -7,7 +7,7 @@ import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
 
 // TODO: maybe get these dynamically?
-const ALL_PFPS = [
+export const ALL_PFPS = [
   "coding-cat-pfp.png", // this one first to default to it
   "bongo-coding-pfp.png",
   "coding-cat-mugshot-pfp.png",
@@ -28,6 +28,9 @@ export default function UserInfo() {
   const [tempPfp, setTempPfp] = useState(pfpFileName);
 
   const { session } = useOutletContext<{ session: Session | null }>();
+
+  const pfpHeight = 100;
+  const pfpWidth = 100;
 
   useEffect(() => {
     let ignore = false;
@@ -114,7 +117,11 @@ export default function UserInfo() {
           <Stack direction="column" gap={1} alignItems="center">
             <Typography level="h2">Edit Profile</Typography>
             <FormLabel>Profile Picture</FormLabel>
-            <ProfileAvatar fileName={tempPfp} />
+            <ProfileAvatar 
+              fileName={tempPfp}
+              height={pfpHeight}
+              width={pfpWidth}
+            />
             <Stack flexDirection="row" gap={0.5}>
               <Button onClick={() => iteratePfp(-1)}>Prev</Button>
               <Button onClick={() => iteratePfp(1)}>Next</Button>
@@ -145,7 +152,11 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <ProfileAvatar fileName={pfpFileName} />
+          <ProfileAvatar 
+            fileName={pfpFileName}
+            height={pfpHeight}
+            width={pfpWidth}
+          />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>

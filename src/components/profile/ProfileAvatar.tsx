@@ -1,6 +1,6 @@
 import { Avatar, Stack } from "@mui/joy"
 
-export default function ProfileAvatar({ fileName = "coding-cat-pfp.png" }: { fileName: string }){
+export default function ProfileAvatar({ fileName = "coding-cat-pfp.png", height = 100, width = 100 }: { fileName: string, height: number, width: number }){
   var pfp;
 
   try{
@@ -13,7 +13,7 @@ export default function ProfileAvatar({ fileName = "coding-cat-pfp.png" }: { fil
     <Stack alignItems={"center"} gap={0.5}>
       <Avatar
         src={ pfp }
-        sx={{ width: 100, height: 100 }}
+        sx={{ height: height, width: width }}
       />
     </Stack>
   )
