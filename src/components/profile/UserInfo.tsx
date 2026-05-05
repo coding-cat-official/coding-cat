@@ -116,7 +116,7 @@ export default function UserInfo() {
     if(newPos > allPremadePfps.length - 1){
       newPos = 0;
     }else if(newPos < 0){
-      newPos = allPremadePfps.length;
+      newPos = allPremadePfps.length - 1;
     }
     console.log(newPos);
     console.log(allPremadePfps[newPos]);
