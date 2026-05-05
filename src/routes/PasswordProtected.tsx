@@ -1,5 +1,6 @@
 import { Box, Button, Card, Input, Typography } from "@mui/joy";
-import { Butterfly } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import ProblemList, { ProblemListProps } from "../components/ProblemList";
 
 const containerStyles = {
   minHeight: "100vh",
@@ -20,16 +21,75 @@ const headingStyles = {
   mb: 2,
 };
 
-export default function PasswordProtected() {
+export default function PasswordProtected({
+  selectedTab,
+  setSelectedTab,
+  searchedProblems,
+  selectedCategory,
+  activeProblem,
+  closeDrawer,
+  session,
+  contractProgress,
+  progress,
+  onSelectProblem,
+}: ProblemListProps) {
+  const [passwordValue, setPasswordValue] = useState("");
+  const [error, setError] = useState("");
+  const [locked, setLocked] = useState(true);
+  
+  const handleClick = () => {
+    //Change to actual db check
+    if (passwordValue === "abc123") {
+      handleUnlock();
+    } else {
+      setError("Incorrect password. Please try again.");
+    }
+  };
+  
+  const handleUnlock = () => setLocked(false);
+  
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordValue(e.target.value);
+    setError("");
+  };
+
   return (
-    <Box sx={containerStyles}>
-      <Card sx={cardStyles}>
-        <Typography level="h4" sx={headingStyles}>
-          Enter the Password that your teacher has given you
-        </Typography>
-        <Input type="password" placeholder="Enter Password" />
-        <Button> Enter </Button>
-      </Card>
-    </Box>
+    <>
+      {locked ? (
+        <Box sx={containerStyles}>
+          <Card sx={cardStyles}>
+            <Typography level="h4" sx={headingStyles}>
+              Enter the Password that your teacher has given you
+            </Typography>
+            <Input 
+              value={passwordValue} 
+              type="password" 
+              placeholder="Enter Password" 
+              onChange={handlePasswordChange}
+              error={!!error}
+            />
+            {error && (
+              <Typography level="body-sm" sx={{ color: "danger.main", mt: 1 }}>
+                {error}
+              </Typography>
+            )}
+            <Button onClick={handleClick} sx={{ mt: 2 }}> Enter </Button>
+          </Card>
+        </Box>
+      ) : (
+        <ProblemList
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          searchedProblems={searchedProblems}
+          selectedCategory={selectedCategory}
+          activeProblem={activeProblem}
+          closeDrawer={closeDrawer}
+          session={session}
+          contractProgress={contractProgress}
+          progress={progress}
+          onSelectProblem={onSelectProblem}
+        />
+      )}
+    </>
   );
 }
