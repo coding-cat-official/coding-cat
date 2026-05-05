@@ -11,10 +11,8 @@ export default function OtherStats({ activity }: { activity: string[] }){
   const submissions: Record<string, number> = {}
   
   activity.forEach((iso) => {
-    // YYYY-MM-DD
-    const date = new Date(iso.slice(0,10));
-
-    daysActivity[daysOfWeek[date.getDay()]] = (daysActivity[daysOfWeek[date.getDay()]] ?? 0) + 1
+    daysActivity[daysOfWeek[new Date(iso).getDay()]] = (daysActivity[daysOfWeek[new Date(iso).getDay()]] ?? 0) + 1
+    // iso.slice(0,10) => YYYY-MM-DD
     submissions[iso.slice(0,10)] = (submissions[iso.slice(0,10)] ?? 0) + 1
   });
 
