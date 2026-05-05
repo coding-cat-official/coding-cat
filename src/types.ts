@@ -152,4 +152,5 @@ export interface BlogPost {
   title: string;
   blog_text: string;
   blog_id: string;
+  editor: string;
 }

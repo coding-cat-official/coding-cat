@@ -1,6 +1,9 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import getBlogPosts from "../utils/getBlogPosts";
 import { BlogPost } from "../types";
+import Markdown from "markdown-to-jsx";
+import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
+import { useState } from "react";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
     const blogPosts = getBlogPosts();
@@ -11,5 +14,63 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 
 export default function BlogPostView() {
     const result = useLoaderData() as BlogPost
-    return (<p>{result.blog_text}</p>);
+    const allBlogs = getBlogPosts();
+    const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.blog_id === result.blog_id));
+
+    const navigate = useNavigate();
+
+    function handlePreviousBlog() {
+        if (currIndex > 0) {
+            const prevBlog = allBlogs[currIndex - 1].blog_id;
+            setCurrIndex(currIndex - 1);
+            navigate(`/blogs/${prevBlog}`)
+        }
+    }
+
+    function handleNextBlog() {
+        if (currIndex < allBlogs.length - 1) {
+            const nextBlog = allBlogs[currIndex + 1].blog_id;
+            setCurrIndex(currIndex + 1);
+            navigate(`/blogs/${nextBlog}`)
+        }
+    }
+
+    return (
+        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center">
+            <Box className="navigate-problem-btn">
+                <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
+                    <Stack direction="column" spacing={0} alignItems="center">
+                        <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+                        <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                            {allBlogs[currIndex - 1]?.title}
+                        </Typography>
+                    </Stack>
+                </Button>
+                <Button disabled={currIndex >= allBlogs.length - 1} onClick={handleNextBlog}>
+                    <Stack direction="column" spacing={0} alignItems="center">
+                        <Typography level="body-md" fontFamily="inherit">Next</Typography>
+                        <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                            {allBlogs[currIndex + 1]?.title}
+                        </Typography>
+                    </Stack>
+                </Button>
+            </Box>
+
+            <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%" }}>
+                <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
+                    <Box>
+                        <Typography level="h2">{result.title}</Typography>
+                        {!!result.author && <Typography level="body-sm">Authored by {result.author}</Typography>}
+                        {!!result.editor && <Typography level="body-sm">Edited by {result.editor}</Typography>}
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+                        <Markdown>
+                            {result.blog_text}
+                        </Markdown>
+                    </Box>
+                </Box>
+            </Sheet>
+        </Stack>
+    );
 }
