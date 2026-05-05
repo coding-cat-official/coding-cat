@@ -118,8 +118,6 @@ export default function UserInfo() {
     }else if(newPos < 0){
       newPos = allPremadePfps.length - 1;
     }
-    console.log(newPos);
-    console.log(allPremadePfps[newPos]);
     setTempPremadePfpPos(newPos);
   }
 
