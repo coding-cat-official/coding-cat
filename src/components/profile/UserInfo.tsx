@@ -5,13 +5,6 @@ import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/jo
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
 import PremadeProfileAvatar from "./avatar/PremadeProfileAvatar";
-import CustomProfileAvatar from "./avatar/CustomProfileAvatar";
-
-// export interface CustomPfp{
-//   bg: number,
-//   face: number,
-//   accessory: number
-// }
 
 export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -21,8 +14,10 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // TODO: maybe get these dynamically?
   const allPremadePfps = [
     "bongo-coding-pfp.png",
+    "coding-cat-mugshot-pfp.png",
     "coding-cat-pfp.png",
     "laptop-pfp.png",
     "thumbs-up-pfp.png"
@@ -30,10 +25,6 @@ export default function UserInfo() {
   const [premadePfp, setPremadePfp] = useState("");
   const [tempPremadePfpPos, setTempPremadePfpPos] = useState(0);
   const [tempPremadePfp, setTempPremadePfp] = useState(premadePfp);
-
-  // const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
-  // const [usingCustomPfp, setUsingCustomPfp] = useState(false);
-  // const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
 
   const { session } = useOutletContext<{ session: Session | null }>();
 
@@ -48,7 +39,6 @@ export default function UserInfo() {
       const { data, error } = await supabase
         .from('profiles')
         .select('username, student_id, pfp_id') 
-        // TODO: add pfp fields, whether using custom, if yes which layers, if not what premade
         .eq('profile_id', user.id)
         .single();
 
@@ -90,7 +80,6 @@ export default function UserInfo() {
       student_id: id,
       updated_at: new Date(),
       pfp_id: tempPremadePfpPos
-      // customPfpLayers: {}
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
@@ -105,11 +94,6 @@ export default function UserInfo() {
     
     setLoading(false);
   }
-
-  // function updatePfp(isCustom: boolean, pfpFileName: string = "", newCustomPfpLayers: CustomPfp = defaultCustomPfp){
-  //   setUsingCustomPfp(isCustom);
-  //   if(!isCustom) setPremadePfp(pfpFileName);
-  // }
 
   const iteratePfp: Function = (num: number) => {
     var newPos = tempPremadePfpPos + num;
