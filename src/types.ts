@@ -146,3 +146,10 @@ export interface SessionReflection {
   form_data: FormAnswers;
   created_at: Date;
 }
+
+export interface BlogPost {
+  author: string;
+  title: string;
+  blog_text: string;
+  blog_id: string;
+}

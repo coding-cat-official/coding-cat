@@ -54,7 +54,7 @@ const router = createHashRouter([
         element: <PostSessionForm />,
       },
       {
-        path: "/blog/:blogTitle",
+        path: "/blog/:blogId",
         element: <BlogPostView />,
         loader: blogPostLoader
       },
