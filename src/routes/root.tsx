@@ -141,11 +141,13 @@ export default function App() {
         .select('username, pfp_id')
         .eq('profile_id', user.id)
         .single();
-      
-      setUserData({
-        name: data?.username,
-        pfp_id: data?.pfp_id
-      });
+
+      if (data && data.username && data.pfp_id) {
+        setUserData({
+          name: data.username,
+          pfp_id: data.pfp_id
+        });
+      }
     })();
   }, [session, setUserData]);
 
@@ -287,18 +289,20 @@ export default function App() {
                   </Button>
                   <Link to="/profile">
                     <Button>
-                      {
-                        userData && userData.name && userData.pfp_id ?
-                          <Stack flexDirection="row" alignItems="center" gap={1}>
+                      <Stack flexDirection="row" alignItems="center" gap={1}>
+                        {
+                          // TODO: Avatar only updates on loss of focus or refresh
+                          // NOTE: BUT DOESN'T UPDATE IF YOU HAVE THE DEFAULT PFP
+                          userData?.pfp_id ?
                             <ProfileAvatar 
                               fileName={ALL_PFPS[userData.pfp_id]}
                               height={25}
                               width={25}
                             />
-                            { userData.name ?? "Profile" }
-                          </Stack> 
-                        : <></>
-                      }
+                          : <></>
+                        }
+                        { userData?.name ?? "Profile" }
+                      </Stack>
                     </Button>
                   </Link>
                   <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
