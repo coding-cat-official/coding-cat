@@ -6,11 +6,11 @@ import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./avatar/ProfileAvatar";
 
-export interface CustomPfp{
-  bg: number,
-  face: number,
-  accessory: number
-}
+// export interface CustomPfp{
+//   bg: number,
+//   face: number,
+//   accessory: number
+// }
 
 export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -20,10 +20,10 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
-  const [usingCustomPfp, setUsingCustomPfp] = useState(false);
+  // const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
+  // const [usingCustomPfp, setUsingCustomPfp] = useState(false);
   const [premadePfp, setPremadePfp] = useState("coding-cat-pfp.png");
-  const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
+  // const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
 
   const { session } = useOutletContext<{ session: Session | null }>();
 
@@ -87,10 +87,10 @@ export default function UserInfo() {
     setLoading(false);
   }
 
-  function updatePfp(isCustom: boolean, pfpFileName: string = "", newCustomPfpLayers: CustomPfp = defaultCustomPfp){
-    setUsingCustomPfp(isCustom);
-    if(!isCustom) setPremadePfp(pfpFileName);
-  }
+  // function updatePfp(isCustom: boolean, pfpFileName: string = "", newCustomPfpLayers: CustomPfp = defaultCustomPfp){
+  //   setUsingCustomPfp(isCustom);
+  //   if(!isCustom) setPremadePfp(pfpFileName);
+  // }
 
   return (
     <Stack alignItems="center" className="account">
@@ -105,12 +105,6 @@ export default function UserInfo() {
               value={name}
               required
               onChange={(e) => setName(e.target.value)}
-            />
-            <FormLabel>Email</FormLabel>
-            <Input
-              value={session?.user.email}
-              required
-              disabled
             />
             <FormLabel>Student ID</FormLabel>
             <Input
@@ -131,16 +125,9 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <ProfileAvatar 
-            isCustom={usingCustomPfp}
-            onEdit={
-              (
-                isCustom: boolean,
-                pfpFileName: string,
-                newCustomPfpLayers: CustomPfp
-              ) => updatePfp(isCustom, pfpFileName, newCustomPfpLayers)}
+          <ProfileAvatar
+            isUpdating={isUpdating}
             premadePfpName={premadePfp}
-            customPfpLayers={customPfpLayers}
           />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>

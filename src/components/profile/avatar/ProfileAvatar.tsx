@@ -1,11 +1,9 @@
-import { Avatar, Button, Stack } from "@mui/joy"
-import { CustomPfp } from "../UserInfo";
-import CustomPfpPopup from "./CustomPfpPopup";
-import { useState } from "react";
+import { Avatar, Stack } from "@mui/joy"
+// import { CustomPfp } from "../UserInfo";
+// import CustomPfpPopup from "./CustomPfpPopup";
 
-export default function ProfileAvatar({ isCustom, onEdit, premadePfpName = "coding-cat-pfp.png", customPfpLayers = {"bg": 0, "face": 0, "accessory": 0} }: { isCustom: boolean, onEdit: Function, premadePfpName: string, customPfpLayers: CustomPfp }){
-  const [isEditing, setIsEditing] = useState(false);
-  if(isCustom) return (<Avatar />);
+export default function ProfileAvatar({ isUpdating, premadePfpName = "coding-cat-pfp.png" }: { isUpdating: boolean, premadePfpName: string }){
+  // if(isCustom) return (<Avatar />);
   
   var pfp;
 
@@ -24,24 +22,15 @@ export default function ProfileAvatar({ isCustom, onEdit, premadePfpName = "codi
         sx={{ width: 100, height: 100 }}
       />
       { 
-        isEditing ? 
+        isUpdating ? 
         <>
-          <Button 
-            onClick={() => setIsEditing(false)} 
-            sx={{ fontSize: 12 }}
-          >
-            Save
-          </Button>
-          <CustomPfpPopup
+          {/* <CustomPfpPopup
             onConfirm={
               (newCustomPfpLayers: CustomPfp) => onEdit(true, premadePfpName, newCustomPfpLayers)
             }
-          />
+          /> */}
         </>
-        : 
-        <Button onClick={() => setIsEditing(true)} sx={{ fontSize: 12 }}>
-          Edit
-        </Button>
+        : <></>
       }
     </Stack>
   )
