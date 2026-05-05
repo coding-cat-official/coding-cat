@@ -1,11 +1,11 @@
 import { Avatar, Stack } from "@mui/joy"
 
-export default function PremadeProfileAvatar({ fileName = "coding-cat-pfp.png" }: { fileName: string }){
+export default function ProfileAvatar({ fileName = "coding-cat-pfp.png" }: { fileName: string }){
   var pfp;
 
   try{
     // TODO: find better way to reach assets
-    pfp = require(`../../../assets/pfp-premade/${fileName}`);
+    pfp = require(`../../assets/pfp-premade/${fileName}`);
   }catch(e){
     return <Avatar />
   }

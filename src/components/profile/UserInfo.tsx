@@ -4,7 +4,7 @@ import { supabase } from "../../supabaseClient";
 import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
-import PremadeProfileAvatar from "./avatar/PremadeProfileAvatar";
+import ProfileAvatar from "./ProfileAvatar";
 
 // TODO: maybe get these dynamically?
 const ALL_PFPS = [
@@ -23,9 +23,9 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const [premadePfp, setPremadePfp] = useState("");
-  const [tempPremadePfpPos, setTempPremadePfpPos] = useState(0);
-  const [tempPremadePfp, setTempPremadePfp] = useState(premadePfp);
+  const [pfpFileName, setPfpFileName] = useState("");
+  const [pfpArrPos, setPfpArrPos] = useState(0);
+  const [tempPfp, setTempPfp] = useState(pfpFileName);
 
   const { session } = useOutletContext<{ session: Session | null }>();
 
@@ -50,8 +50,8 @@ export default function UserInfo() {
         } else if (data) {
           setName(data.username ?? "Unnamed User");
           setId(data.student_id ?? "");
-          setPremadePfp(ALL_PFPS[data.pfp_id] ?? 0);
-          setTempPremadePfpPos(data.pfp_id ?? 0);
+          setPfpFileName(ALL_PFPS[data.pfp_id] ?? 0);
+          setPfpArrPos(data.pfp_id ?? 0);
         }
       }
       setLoading(false);
@@ -63,8 +63,8 @@ export default function UserInfo() {
   }, [session])
 
   useEffect(() => {
-    setTempPremadePfp(ALL_PFPS[tempPremadePfpPos]);
-  }, [tempPremadePfpPos]);
+    setTempPfp(ALL_PFPS[pfpArrPos]);
+  }, [pfpArrPos]);
 
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
@@ -80,7 +80,7 @@ export default function UserInfo() {
       username: name,
       student_id: id,
       updated_at: new Date(),
-      pfp_id: tempPremadePfpPos
+      pfp_id: pfpArrPos
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
@@ -89,7 +89,7 @@ export default function UserInfo() {
       setError(error.message);
     } else {
       setIsUpdating(false);
-      setPremadePfp(tempPremadePfp);
+      setPfpFileName(tempPfp);
       setSuccess("Profile updated successfully!");
     }
     
@@ -97,13 +97,13 @@ export default function UserInfo() {
   }
 
   const iteratePfp: Function = (num: number) => {
-    var newPos = tempPremadePfpPos + num;
+    var newPos = pfpArrPos + num;
     if(newPos > ALL_PFPS.length - 1){
       newPos = 0;
     }else if(newPos < 0){
       newPos = ALL_PFPS.length - 1;
     }
-    setTempPremadePfpPos(newPos);
+    setPfpArrPos(newPos);
   }
 
   return (
@@ -114,7 +114,7 @@ export default function UserInfo() {
           <Stack direction="column" gap={1} alignItems="center">
             <Typography level="h2">Edit Profile</Typography>
             <FormLabel>Profile Picture</FormLabel>
-            <PremadeProfileAvatar fileName={tempPremadePfp} />
+            <ProfileAvatar fileName={tempPfp} />
             <Stack flexDirection="row" gap={0.5}>
               <Button onClick={() => iteratePfp(-1)}>Prev</Button>
               <Button onClick={() => iteratePfp(1)}>Next</Button>
@@ -145,7 +145,7 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <PremadeProfileAvatar fileName={premadePfp} />
+          <ProfileAvatar fileName={pfpFileName} />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>
