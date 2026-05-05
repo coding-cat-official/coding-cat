@@ -21,7 +21,6 @@ export default function UserInfo() {
   const [success, setSuccess] = useState("");
 
   const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
-  const [showPfpEdit, setShowPfpEdit] = useState(false);
   const [usingCustomPfp, setUsingCustomPfp] = useState(false);
   const [premadePfp, setPremadePfp] = useState("coding-cat-pfp.png");
   const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
@@ -140,8 +139,6 @@ export default function UserInfo() {
                 pfpFileName: string,
                 newCustomPfpLayers: CustomPfp
               ) => updatePfp(isCustom, pfpFileName, newCustomPfpLayers)}
-            openEdit={() => setShowPfpEdit(true)}
-            showEdit={showPfpEdit}
             premadePfpName={premadePfp}
             customPfpLayers={customPfpLayers}
           />
