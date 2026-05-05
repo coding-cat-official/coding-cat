@@ -6,6 +6,15 @@ import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
 import PremadeProfileAvatar from "./avatar/PremadeProfileAvatar";
 
+// TODO: maybe get these dynamically?
+const ALL_PFPS = [
+  "coding-cat-pfp.png", // this one first to default to it
+  "bongo-coding-pfp.png",
+  "coding-cat-mugshot-pfp.png",
+  "laptop-pfp.png",
+  "thumbs-up-pfp.png"
+]
+
 export default function UserInfo() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [name, setName] = useState("");
@@ -14,14 +23,6 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // TODO: maybe get these dynamically?
-  const allPremadePfps = [
-    "bongo-coding-pfp.png",
-    "coding-cat-mugshot-pfp.png",
-    "coding-cat-pfp.png",
-    "laptop-pfp.png",
-    "thumbs-up-pfp.png"
-  ]
   const [premadePfp, setPremadePfp] = useState("");
   const [tempPremadePfpPos, setTempPremadePfpPos] = useState(0);
   const [tempPremadePfp, setTempPremadePfp] = useState(premadePfp);
@@ -49,8 +50,8 @@ export default function UserInfo() {
         } else if (data) {
           setName(data.username ?? "Unnamed User");
           setId(data.student_id ?? "");
-          setPremadePfp(allPremadePfps[data.pfp_id]);
-          setTempPremadePfpPos(data.pfp_id);
+          setPremadePfp(ALL_PFPS[data.pfp_id] ?? 0);
+          setTempPremadePfpPos(data.pfp_id ?? 0);
         }
       }
       setLoading(false);
@@ -62,7 +63,7 @@ export default function UserInfo() {
   }, [session])
 
   useEffect(() => {
-    setTempPremadePfp(allPremadePfps[tempPremadePfpPos]);
+    setTempPremadePfp(ALL_PFPS[tempPremadePfpPos]);
   }, [tempPremadePfpPos]);
 
   async function updateProfile(event: FormEvent) {
@@ -97,10 +98,10 @@ export default function UserInfo() {
 
   const iteratePfp: Function = (num: number) => {
     var newPos = tempPremadePfpPos + num;
-    if(newPos > allPremadePfps.length - 1){
+    if(newPos > ALL_PFPS.length - 1){
       newPos = 0;
     }else if(newPos < 0){
-      newPos = allPremadePfps.length - 1;
+      newPos = ALL_PFPS.length - 1;
     }
     setTempPremadePfpPos(newPos);
   }
