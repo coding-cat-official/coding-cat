@@ -4,8 +4,8 @@ import { supabase } from "../../supabaseClient";
 import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
-import ProfileAvatar from "./avatar/ProfileAvatar";
-import EditProfileAvatar from "./avatar/EditProfileAvatar";
+import PremadeProfileAvatar from "./avatar/PremadeProfileAvatar";
+import CustomProfileAvatar from "./avatar/CustomProfileAvatar";
 
 // export interface CustomPfp{
 //   bg: number,
@@ -129,7 +129,7 @@ export default function UserInfo() {
           <Stack direction="column" gap={1} alignItems="center">
             <Typography level="h2">Edit Profile</Typography>
             <FormLabel>Profile Picture</FormLabel>
-            <ProfileAvatar premadePfpName={tempPremadePfp} />
+            <PremadeProfileAvatar fileName={tempPremadePfp} />
             <Stack flexDirection="row" gap={0.5}>
               <Button onClick={() => iteratePfp(-1)}>Prev</Button>
               <Button onClick={() => iteratePfp(1)}>Next</Button>
@@ -160,7 +160,7 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <ProfileAvatar premadePfpName={premadePfp} />
+          <PremadeProfileAvatar fileName={premadePfp} />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>
