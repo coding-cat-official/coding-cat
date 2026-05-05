@@ -5,6 +5,7 @@ import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/jo
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./avatar/ProfileAvatar";
+import EditProfileAvatar from "./avatar/EditProfileAvatar";
 
 // export interface CustomPfp{
 //   bg: number,
@@ -20,9 +21,18 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const allPremadePfps = [
+    "bongo-coding-pfp.png",
+    "coding-cat-pfp.png",
+    "laptop-pfp.png",
+    "thumbs-up-pfp.png"
+  ]
+  const [premadePfp, setPremadePfp] = useState("");
+  const [tempPremadePfpPos, setTempPremadePfpPos] = useState(0);
+  const [tempPremadePfp, setTempPremadePfp] = useState(premadePfp);
+
   // const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
   // const [usingCustomPfp, setUsingCustomPfp] = useState(false);
-  const [premadePfp, setPremadePfp] = useState("coding-cat-pfp.png");
   // const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
 
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -37,7 +47,7 @@ export default function UserInfo() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`username, student_id`) 
+        .select('username, student_id, pfp_id') 
         // TODO: add pfp fields, whether using custom, if yes which layers, if not what premade
         .eq('profile_id', user.id)
         .single();
@@ -49,6 +59,8 @@ export default function UserInfo() {
         } else if (data) {
           setName(data.username ?? "Unnamed User");
           setId(data.student_id ?? "");
+          setPremadePfp(allPremadePfps[data.pfp_id]);
+          setTempPremadePfpPos(data.pfp_id);
         }
       }
       setLoading(false);
@@ -58,6 +70,10 @@ export default function UserInfo() {
       ignore = true;
     }
   }, [session])
+
+  useEffect(() => {
+    setTempPremadePfp(allPremadePfps[tempPremadePfpPos]);
+  }, [tempPremadePfpPos]);
 
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
@@ -73,6 +89,8 @@ export default function UserInfo() {
       username: name,
       student_id: id,
       updated_at: new Date(),
+      pfp_id: tempPremadePfpPos
+      // customPfpLayers: {}
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
@@ -81,9 +99,10 @@ export default function UserInfo() {
       setError(error.message);
     } else {
       setIsUpdating(false);
+      setPremadePfp(tempPremadePfp);
+      setSuccess("Profile updated successfully!");
     }
     
-    setSuccess("Profile updated successfully!");
     setLoading(false);
   }
 
@@ -92,6 +111,18 @@ export default function UserInfo() {
   //   if(!isCustom) setPremadePfp(pfpFileName);
   // }
 
+  const iteratePfp: Function = (num: number) => {
+    var newPos = tempPremadePfpPos + num;
+    if(newPos > allPremadePfps.length - 1){
+      newPos = 0;
+    }else if(newPos < 0){
+      newPos = allPremadePfps.length;
+    }
+    console.log(newPos);
+    console.log(allPremadePfps[newPos]);
+    setTempPremadePfpPos(newPos);
+  }
+
   return (
     <Stack alignItems="center" className="account">
       {
@@ -99,6 +130,12 @@ export default function UserInfo() {
         <form onSubmit={updateProfile} className="form-widget">
           <Stack direction="column" gap={1} alignItems="center">
             <Typography level="h2">Edit Profile</Typography>
+            <FormLabel>Profile Picture</FormLabel>
+            <ProfileAvatar premadePfpName={tempPremadePfp} />
+            <Stack flexDirection="row" gap={0.5}>
+              <Button onClick={() => iteratePfp(-1)}>Prev</Button>
+              <Button onClick={() => iteratePfp(1)}>Next</Button>
+            </Stack>
             <FormLabel>Name</FormLabel>
             <Input
               placeholder="Enter your name..."
@@ -125,10 +162,7 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <ProfileAvatar
-            isUpdating={isUpdating}
-            premadePfpName={premadePfp}
-          />
+          <ProfileAvatar premadePfpName={premadePfp} />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>

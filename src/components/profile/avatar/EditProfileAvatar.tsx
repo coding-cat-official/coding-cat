@@ -1,4 +1,6 @@
-export default function ChangePfpPopup({ onConfirm }: { onConfirm: Function }){
+export default function EditProfileAvatar({ premadePfpName, onConfirm }: { premadePfpName: string, onConfirm: Function }){
+  
+  
   return (
     <></>
   )
