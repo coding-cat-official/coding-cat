@@ -33,7 +33,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build-problems": "node scripts/build-problems.js",
-    "build": "npm run build-problems && react-scripts build",
+    "build": "npm run build-problems && npm run build-app",
+    "build-app": "react-scripts build",
     "test": "react-scripts test",
     "deploy": "rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/",
     "deploy-exam": "rsync -r build/ codingcat@jerrington.me:/srv/http/exam-coding-cat/",
