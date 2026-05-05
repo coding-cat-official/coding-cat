@@ -33,10 +33,11 @@ export default function PasswordProtected({
   progress,
   onSelectProblem,
 }: ProblemListProps) {
+  
   const [passwordValue, setPasswordValue] = useState("");
   const [error, setError] = useState("");
   const [locked, setLocked] = useState(true);
-  
+
   const handleClick = () => {
     //Change to actual db check
     if (passwordValue === "abc123") {
@@ -45,9 +46,9 @@ export default function PasswordProtected({
       setError("Incorrect password. Please try again.");
     }
   };
-  
+
   const handleUnlock = () => setLocked(false);
-  
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordValue(e.target.value);
     setError("");
@@ -61,10 +62,10 @@ export default function PasswordProtected({
             <Typography level="h4" sx={headingStyles}>
               Enter the Password that your teacher has given you
             </Typography>
-            <Input 
-              value={passwordValue} 
-              type="password" 
-              placeholder="Enter Password" 
+            <Input
+              value={passwordValue}
+              type="password"
+              placeholder="Enter Password"
               onChange={handlePasswordChange}
               error={!!error}
             />
@@ -73,7 +74,10 @@ export default function PasswordProtected({
                 {error}
               </Typography>
             )}
-            <Button onClick={handleClick} sx={{ mt: 2 }}> Enter </Button>
+            <Button onClick={handleClick} sx={{ mt: 2 }}>
+              {" "}
+              Enter{" "}
+            </Button>
           </Card>
         </Box>
       ) : (
