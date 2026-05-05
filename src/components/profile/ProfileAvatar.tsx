@@ -4,7 +4,6 @@ export default function ProfileAvatar({ fileName = "coding-cat-pfp.png" }: { fil
   var pfp;
 
   try{
-    // TODO: find better way to reach assets
     pfp = require(`../../assets/pfps/${fileName}`);
   }catch(e){
     return <Avatar />
