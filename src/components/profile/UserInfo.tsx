@@ -4,8 +4,7 @@ import { supabase } from "../../supabaseClient";
 import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
-import ProfileAvatar from "./ProfileAvatar";
-import ChangePfpPopup from "./ChangePfpPopup";
+import ProfileAvatar from "./avatar/ProfileAvatar";
 
 export interface CustomPfp{
   bg: number,
@@ -24,7 +23,7 @@ export default function UserInfo() {
   const defaultCustomPfp: CustomPfp = {"bg": 0, "face": 0, "accessory": 0 };
   const [showPfpEdit, setShowPfpEdit] = useState(false);
   const [usingCustomPfp, setUsingCustomPfp] = useState(false);
-  const [premadePfp, setPremadePfp] = useState("");
+  const [premadePfp, setPremadePfp] = useState("coding-cat-pfp.png");
   const [customPfpLayers, setCustomPfpLayers] = useState<CustomPfp>(defaultCustomPfp);
 
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -89,7 +88,7 @@ export default function UserInfo() {
     setLoading(false);
   }
 
-  function updatePfp(isCustom: boolean, pfpFileName: string = "", customPfpLayers: CustomPfp = defaultCustomPfp){
+  function updatePfp(isCustom: boolean, pfpFileName: string = "", newCustomPfpLayers: CustomPfp = defaultCustomPfp){
     setUsingCustomPfp(isCustom);
     if(!isCustom) setPremadePfp(pfpFileName);
   }
@@ -135,22 +134,17 @@ export default function UserInfo() {
         <>
           <ProfileAvatar 
             isCustom={usingCustomPfp}
-            onClickFn={() => setShowPfpEdit(true)}
-            avatarFileName={premadePfp}
+            onEdit={
+              (
+                isCustom: boolean,
+                pfpFileName: string,
+                newCustomPfpLayers: CustomPfp
+              ) => updatePfp(isCustom, pfpFileName, newCustomPfpLayers)}
+            openEdit={() => setShowPfpEdit(true)}
+            showEdit={showPfpEdit}
+            premadePfpName={premadePfp}
             customPfpLayers={customPfpLayers}
           />
-          { 
-            showPfpEdit ? 
-            <ChangePfpPopup 
-              onConfirmPremade={
-                (pfpFileName: string) => updatePfp(false, pfpFileName, defaultCustomPfp)
-              } 
-              onConfirmCustom={
-                (customPfpLayers: CustomPfp) => updatePfp(true, "", customPfpLayers)
-              }
-            />
-            : <></>
-          }
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>
