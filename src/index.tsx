@@ -80,10 +80,6 @@ const router = createHashRouter([
         children: [
           {index: true, element: <AdminPage />}
         ],
-      },
-      {
-        path: "test/password-protected",
-        element: <PasswordProtected />
       }
     ],
   },
