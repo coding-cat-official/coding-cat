@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
     const blogPosts = getBlogPosts();
-    const selected = (blogPosts as BlogPost[]).filter((b) => b.blog_id === params.blogId);
+    const selected = (blogPosts as BlogPost[]).filter((b) => b.meta.blog_id === params.blogId);
     if (selected.length !== 1) throw new Error("You tried accessing a blog post that does not exist.");
     return selected[0];
 }
@@ -15,13 +15,13 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 export default function BlogPostView() {
     const result = useLoaderData() as BlogPost
     const allBlogs = getBlogPosts();
-    const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.blog_id === result.blog_id));
+    const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
 
     const navigate = useNavigate();
 
     function handlePreviousBlog() {
         if (currIndex > 0) {
-            const prevBlog = allBlogs[currIndex - 1].blog_id;
+            const prevBlog = allBlogs[currIndex - 1].meta.blog_id;
             setCurrIndex(currIndex - 1);
             navigate(`/blogs/${prevBlog}`)
         }
@@ -29,7 +29,7 @@ export default function BlogPostView() {
 
     function handleNextBlog() {
         if (currIndex < allBlogs.length - 1) {
-            const nextBlog = allBlogs[currIndex + 1].blog_id;
+            const nextBlog = allBlogs[currIndex + 1].meta.blog_id;
             setCurrIndex(currIndex + 1);
             navigate(`/blogs/${nextBlog}`)
         }
@@ -42,7 +42,7 @@ export default function BlogPostView() {
                     <Stack direction="column" spacing={0} alignItems="center">
                         <Typography level="body-md" fontFamily="inherit">Prev</Typography>
                         <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                            {allBlogs[currIndex - 1]?.title}
+                            {allBlogs[currIndex - 1]?.meta.title}
                         </Typography>
                     </Stack>
                 </Button>
@@ -50,7 +50,7 @@ export default function BlogPostView() {
                     <Stack direction="column" spacing={0} alignItems="center">
                         <Typography level="body-md" fontFamily="inherit">Next</Typography>
                         <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                            {allBlogs[currIndex + 1]?.title}
+                            {allBlogs[currIndex + 1]?.meta.title}
                         </Typography>
                     </Stack>
                 </Button>
@@ -59,9 +59,9 @@ export default function BlogPostView() {
             <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%" }}>
                 <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
                     <Box>
-                        <Typography level="h2">{result.title}</Typography>
-                        {!!result.author && <Typography level="body-sm">Authored by {result.author}</Typography>}
-                        {!!result.editor && <Typography level="body-sm">Edited by {result.editor}</Typography>}
+                        <Typography level="h2">{result.meta.title}</Typography>
+                        {!!result.meta.author && <Typography level="body-sm">Authored by {result.meta.author}</Typography>}
+                        {!!result.meta.editor && <Typography level="body-sm">Edited by {result.meta.editor}</Typography>}
                     </Box>
 
                     <Box sx={{ display: "flex", alignItems: "flex-end" }}>

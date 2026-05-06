@@ -148,9 +148,11 @@ export interface SessionReflection {
 }
 
 export interface BlogPost {
-  author: string;
-  title: string;
   blog_text: string;
-  blog_id: string;
-  editor: string;
+  meta: {
+    blog_id: string;
+    editor: string;
+    author: string;
+    title: string;
+  };
 }
