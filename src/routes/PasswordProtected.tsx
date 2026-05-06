@@ -21,6 +21,10 @@ const headingStyles = {
   mb: 2,
 };
 
+/**
+ * Wrapper component for the category problem list that password protects it
+ * @returns Either the "Enter Password" component or the actual Problem List
+ */
 export default function PasswordProtected({
   selectedTab,
   setSelectedTab,
@@ -61,6 +65,7 @@ export default function PasswordProtected({
             <Typography level="h4" sx={headingStyles}>
               Enter the Password that your teacher has given you
             </Typography>
+
             <Input
               value={passwordValue}
               type="password"
@@ -68,11 +73,14 @@ export default function PasswordProtected({
               onChange={handlePasswordChange}
               error={!!error}
             />
+
+            {/* Error handling on bad password attempt */}
             {error && (
               <Typography level="body-sm" sx={{ color: "danger.main", mt: 1 }}>
                 {error}
               </Typography>
             )}
+
             <Button onClick={handleClick} sx={{ mt: 2 }}>
               Enter
             </Button>
