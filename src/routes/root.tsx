@@ -131,25 +131,27 @@ export default function App() {
     })();
   }, [session]);
 
+  const fetchProfile = useCallback(async () => {
+    if (!session) return;
+    const { user } = session;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, pfp_id')
+      .eq('profile_id', user.id)
+      .single();
+
+    if (data && data.username && data.pfp_id) {
+      setUserData({
+        name: data.username,
+        pfp_id: data.pfp_id
+      });
+    }
+  }, [session]);
+
   useEffect(() => {
-    (async function getProfile() {
-      if (!session) return;
-      const { user } = session;
-
-      const { data } = await supabase
-        .from('profiles')
-        .select('username, pfp_id')
-        .eq('profile_id', user.id)
-        .single();
-
-      if (data && data.username && data.pfp_id) {
-        setUserData({
-          name: data.username,
-          pfp_id: data.pfp_id
-        });
-      }
-    })();
-  }, [session, setUserData]);
+    fetchProfile();
+  }, [fetchProfile]);
 
   const fetchProgress = useCallback(async () => {
     if(!session) return;
@@ -335,7 +337,17 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session, isAdmin, refetchProgress: fetchProgress }} />
+          <Outlet 
+            context={
+              { 
+                setActiveProblem, 
+                session, 
+                isAdmin, 
+                refetchProgress: fetchProgress,
+                refetchProfile: fetchProfile 
+              }
+            }
+          />
         </Box>
         
       </Stack>

@@ -15,7 +15,7 @@ export const ALL_PFPS = [
   "thumbs-up-pfp.png"
 ]
 
-export default function UserInfo() {
+export default function UserInfo({ refetchProfile }: { refetchProfile: Function }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [name, setName] = useState("");
   const [id, setId] = useState("");
@@ -87,6 +87,7 @@ export default function UserInfo() {
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
+    await refetchProfile();
 
     if (error) {
       setError(error.message);
