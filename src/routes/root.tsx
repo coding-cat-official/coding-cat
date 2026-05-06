@@ -141,7 +141,7 @@ export default function App() {
       .eq('profile_id', user.id)
       .single();
 
-    if (data && data.username && data.pfp_id) {
+    if (data) {
       setUserData({
         name: data.username,
         pfp_id: data.pfp_id
@@ -293,9 +293,7 @@ export default function App() {
                     <Button>
                       <Stack flexDirection="row" alignItems="center" gap={1}>
                         {
-                          // TODO: Avatar only updates on loss of focus or refresh
-                          // NOTE: BUT DOESN'T UPDATE IF YOU HAVE THE DEFAULT PFP
-                          userData?.pfp_id ?
+                          userData?.pfp_id != null ?
                             <ProfileAvatar 
                               fileName={ALL_PFPS[userData.pfp_id]}
                               height={25}
