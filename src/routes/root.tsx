@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient';
-import type { Session } from '@supabase/supabase-js';
+import { type Session } from '@supabase/supabase-js';
 import { List as ListIcon } from '@phosphor-icons/react';
 import { Typography, Box, Stack, Drawer, ModalClose, DialogTitle, DialogContent, Button, Option, Select } from '@mui/joy';
 import CategoryList from '../components/CategoryList';
@@ -13,12 +13,20 @@ import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 import getProblemSet from '../utils/getProblemSet';
+import { ALL_PFPS } from '../components/profile/UserInfo';
+import ProfileAvatar from '../components/profile/ProfileAvatar';
+
+interface UserData{
+  name: string,
+  pfp_id: number
+}
 
 // TODO: This component is huge and should be broken down into smaller components.
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeSession, setActiveSession] = useState(false);
@@ -121,7 +129,29 @@ export default function App() {
       if (data?.[0]?.data) setContract(data[0].data);
       else setContract(BLANK_CONTRACT)
     })();
-  }, [session])
+  }, [session]);
+
+  const fetchProfile = useCallback(async () => {
+    if (!session) return;
+    const { user } = session;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, pfp_id')
+      .eq('profile_id', user.id)
+      .single();
+
+    if (data) {
+      setUserData({
+        name: data.username,
+        pfp_id: data.pfp_id
+      });
+    }
+  }, [session]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const fetchProgress = useCallback(async () => {
     if(!session) return;
@@ -260,7 +290,20 @@ export default function App() {
                     {activeSession ? 'Ongoing Session' : 'Start Session'}
                   </Button>
                   <Link to="/profile">
-                    <Button>Profile</Button>
+                    <Button>
+                      <Stack flexDirection="row" alignItems="center" gap={1}>
+                        {
+                          userData?.pfp_id != null ?
+                            <ProfileAvatar 
+                              fileName={ALL_PFPS[userData.pfp_id]}
+                              height={25}
+                              width={25}
+                            />
+                          : <></>
+                        }
+                        { userData?.name ?? "Profile" }
+                      </Stack>
+                    </Button>
                   </Link>
                   <Button onClick={() => supabase.auth.signOut()}>Sign Out</Button>
                   {isAdmin && (
@@ -292,7 +335,17 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet context={{ setActiveProblem, session, isAdmin, refetchProgress: fetchProgress }} />
+          <Outlet 
+            context={
+              { 
+                setActiveProblem, 
+                session, 
+                isAdmin, 
+                refetchProgress: fetchProgress,
+                refetchProfile: fetchProfile 
+              }
+            }
+          />
         </Box>
         
       </Stack>

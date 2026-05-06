@@ -11,6 +11,7 @@ import CategoriesBarGraph from '../components/profile/progress/CategoriesBarGrap
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/heatmap/HeatMap';
 import OtherStats from '../components/profile/progress/other-stats/OtherStats';
+import { useOutletContext } from 'react-router-dom';
 
 interface CategoryData {
   category: string;
@@ -31,6 +32,8 @@ export default function Account({ session }: { session: Session }) {
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
   const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
   const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string,number>>({});
+
+  const { refetchProfile } = useOutletContext<{ refetchProfile: () => Promise<void> }>();
 
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity">("reflections");
@@ -87,7 +90,7 @@ export default function Account({ session }: { session: Session }) {
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       { !!error && <Typography color="danger">Error: {error}</Typography> }
       <Stack flex={1} alignItems="center" justifyContent="center" gap={5} className="account-wrapper">
-        <UserInfo />
+        <UserInfo refetchProfile={refetchProfile} />
         <Contract 
           problemCountByCategory={problemCountByCategory}
         />
