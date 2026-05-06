@@ -33,7 +33,6 @@ export default function PasswordProtected({
   progress,
   onSelectProblem,
 }: ProblemListProps) {
-  
   const [passwordValue, setPasswordValue] = useState("");
   const [error, setError] = useState("");
   const [locked, setLocked] = useState(true);
@@ -75,8 +74,7 @@ export default function PasswordProtected({
               </Typography>
             )}
             <Button onClick={handleClick} sx={{ mt: 2 }}>
-              {" "}
-              Enter{" "}
+              Enter
             </Button>
           </Card>
         </Box>
