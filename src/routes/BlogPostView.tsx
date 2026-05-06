@@ -3,10 +3,10 @@ import getBlogPosts from "../utils/getBlogPosts";
 import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
-    const blogPosts = getBlogPosts();
+    const blogPosts = await getBlogPosts();
     const selected = (blogPosts as BlogPost[]).filter((b) => b.meta.blog_id === params.blogId);
     if (selected.length !== 1) throw new Error("You tried accessing a blog post that does not exist.");
     return selected[0];
@@ -14,10 +14,15 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 
 export default function BlogPostView() {
     const result = useLoaderData() as BlogPost
-    const allBlogs = getBlogPosts();
+    const [allBlogs, setAllBlogs] = useState<BlogPost[]>([]);
     const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
-
     const navigate = useNavigate();
+
+    useEffect(() => {
+        (async () => {
+            setAllBlogs(await getBlogPosts());
+        })();
+    }, []);
 
     function handlePreviousBlog() {
         if (currIndex > 0) {
