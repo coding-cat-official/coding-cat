@@ -33,6 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build-problems": "node scripts/build-problems.js",
+    "build-blogs": "node scripts/build-blogs.js",
     "build": "npm run build-problems && npm run build-app",
     "build-app": "react-scripts build",
     "test": "react-scripts test",
