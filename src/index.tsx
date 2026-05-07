@@ -24,8 +24,6 @@ import ChangePassword from './routes/ChangePassword';
 import ReqPasswordChange from './routes/ReqPasswordChange';
 import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
-import PasswordProtected from './routes/PasswordProtected';
-
 
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {
