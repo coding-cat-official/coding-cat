@@ -267,13 +267,14 @@ export default function App() {
           height: "100%",
           justifyContent: "start",
           alignItems: "center",
-          overflowY: "scroll"
+          overflowY: "scroll", 
+          position:'relative' 
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
             <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
               <ListIcon size={20} />
             </Button>
-            <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1, zIndex:2 }} className="account-btns">
+            <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
               {session && !isRecoverySession ? (
                 <>
                   <Button 
