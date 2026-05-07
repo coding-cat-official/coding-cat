@@ -150,7 +150,7 @@ export interface SessionReflection {
 export interface BlogPost {
     blog_text: string;
     meta: {
-        blog_id: string;
+        blog_slug: string;
         editor?: string;
         author: string;
         title: string;

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
     const blogPosts = await getBlogPosts();
-    const selected = (blogPosts as BlogPost[]).filter((b) => b.meta.blog_id === params.blogId);
+    const selected = (blogPosts as BlogPost[]).filter((b) => b.meta.blog_slug === params.blogId);
     if (selected.length !== 1) throw new Error("You tried accessing a blog post that does not exist.");
     return selected[0];
 }
@@ -25,12 +25,12 @@ export default function BlogPostView() {
     }, []);
 
     useEffect(() => {
-        setCurrIndex(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
-    }, [allBlogs, result.meta.blog_id])
+        setCurrIndex(allBlogs.findIndex(p => p.meta.blog_slug === result.meta.blog_slug));
+    }, [allBlogs, result.meta.blog_slug])
 
     function handlePreviousBlog() {
         if (currIndex > 0) {
-            const prevBlog = allBlogs[currIndex - 1].meta.blog_id;
+            const prevBlog = allBlogs[currIndex - 1].meta.blog_slug;
             setCurrIndex(currIndex - 1);
             navigate(`/blogs/${prevBlog}`)
         }
@@ -38,14 +38,14 @@ export default function BlogPostView() {
 
     function handleNextBlog() {
         if (currIndex < allBlogs.length - 1) {
-            const nextBlog = allBlogs[currIndex + 1].meta.blog_id;
+            const nextBlog = allBlogs[currIndex + 1].meta.blog_slug;
             setCurrIndex(currIndex + 1);
             navigate(`/blogs/${nextBlog}`)
         }
     }
 
     return (
-        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" >
+        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" zIndex={-2} >
             <Box className="navigate-problem-btn">
                 <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
                     <Stack direction="column" spacing={0} alignItems="center">
@@ -80,6 +80,6 @@ export default function BlogPostView() {
                     </Box>
                 </Box>
             </Sheet>
-        </Stack>
+        </Stack >
     );
 }
