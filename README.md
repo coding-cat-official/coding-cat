@@ -69,9 +69,7 @@ Once the program is finished:
 
 ### Modify Contract
 
-- To modify the contract there are two files which needs to be modified the `ContractEdit.tsx` and the `ContractText.tsx`.
-- `ContractText.tsx` is used to display the contract information fetched from the database.
-- `ContractEdit.tsx` is used to get the user information and update the database with what the users wrote in the input boxes.
+- To modify the contract questions you need to edit `ContractEdit.tsx`. Please ensure the question is wrapped in a check for isUpdating and displays the value otherwise.
 
 ### Omitting certain categories
 - Currently there is a way to lock the categories until a certain number of problems have been solved of the previous category (category locked but still visible to the user). And there is a way to completely omit the categories(categories are not visible to the users on the problem list)
@@ -80,7 +78,6 @@ Once the program is finished:
 
 ## To Do
 - Enhancing the admin menu so that it allows problem categories to be omitted with the contract sections. ( Currently the admin menu can set topics as true or false and according to that information the contract data would be displayed. We have a separate way to omit problems, the idea is to merge both so that when the admin decides to remove mutation from the menu it stops displaying mutation data in the contract and mutation problems in the problem list ) 
-- Refactor to remove duplicate code in `ContractEdit` and `ContractText`.
 - Finding all problems that rely on problem type and replace them with objects. (Ex: `problem.question_type[0] == "mutation"`). The code will be redundant if we add another problem type like debugging problems.
 - Isolate `Drawer` in `root.tsx` into a separate component.
 - There is a crazy amount of re-renders and useEffect. 
