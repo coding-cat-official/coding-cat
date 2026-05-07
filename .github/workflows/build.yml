@@ -27,6 +27,7 @@ jobs:
 
       - name: Set up npm dependencies
         uses: ./.github/actions/npm-setup
+      - run: chmod +rwx src/blog-posts/build-blog
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
