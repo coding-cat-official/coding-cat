@@ -14,8 +14,23 @@ export default function CategoryPasswordForm() {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendPasswordtoDB(testPassword);
+    // If eric wants to add rules to his own password this is where to do it
+    const passwordRules = {
+      minLength: {
+        fn: (password: string) => password.length >= 8,
+        msg: "Password length not greater than 8",
+      },
+    };
+
+    // Catch failed rule
+    const failedRule = Object.values(passwordRules).find((rule) => !rule.fn(testPassword));
+
+    if (!failedRule) {
+      e.preventDefault();
+      sendPasswordtoDB(testPassword);
+    } else {
+      setStatus({ value: failedRule.msg, statusSx: { color: "red", mt: 1 } });
+    }
   };
 
   // Update query to update test-password to the new password
