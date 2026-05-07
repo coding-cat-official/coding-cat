@@ -1,4 +1,6 @@
 import ast
+# browser is a Brython-specific module that exists in the browser runtime
+# 'type: ignore' is telling the linter to skip it and stop giving a warning
 from browser import bind, self # type: ignore
 
 # global print capture buffer - reset before each code run
