@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { BLANK_CONTRACT, ContractData } from "../../../types";
-import { IconButton, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
-import { ArrowSquareOut } from "@phosphor-icons/react";
+import { Button, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
 import ContractEdit from "./ContractEdit";
 import ContractText from "./ContractText";
 import { supabase } from "../../../supabaseClient";
@@ -85,9 +84,6 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
       <Stack alignItems="center">
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography level="h2">Contract</Typography>
-          <IconButton onClick={() => setOpen(true)}>
-            <ArrowSquareOut size={23} />
-          </IconButton>
         </Stack>
         <Typography>Last Modified:{' '} 
         {lastUpdated
@@ -97,6 +93,9 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
             })}`
           : '—'}
         </Typography>
+        <Button onClick={() => setOpen(true)}>
+          Edit
+        </Button>
       </Stack>
 
       <ContractModal 

@@ -163,7 +163,7 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
             <Typography>#{id}</Typography>
             <Typography color="success">{success}</Typography>
             <Button onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
-              Edit Profile
+              Edit
             </Button>
           </Stack>
         </>
