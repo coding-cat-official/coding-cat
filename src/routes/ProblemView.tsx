@@ -360,14 +360,14 @@ function Report({ evalResponse, questionType }: ReportProps) {
                   <td className="mono"> {r.expected} </td>
                   <td className="mono"> {r.actual} </td>
                 </tr>
-                { r.printed != "" ? 
+                { r.printed !== "" ? 
                   <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                     <td className="mono" colSpan={3}>
                       <span
                         onClick={() => toggleCollapsible(i)}
                         style={{ cursor: 'pointer', userSelect: 'none' }}
                       >
-                        { collapsibleStateList[i] ? '▾' : '▸' } Print output
+                        { collapsibleStateList[i] ? '▾' : '▸' } Show print output
                       </span>
                       { collapsibleStateList[i] &&
                         // pre allows the printed `\n`s to work as newlines
