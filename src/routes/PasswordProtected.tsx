@@ -1,6 +1,7 @@
 import { Box, Button, Card, Input, Typography } from "@mui/joy";
 import { useState } from "react";
 import ProblemList, { ProblemListProps } from "../components/ProblemList";
+import { supabase } from "../supabaseClient";
 
 const containerStyles = {
   minHeight: "100vh",
@@ -41,9 +42,16 @@ export default function PasswordProtected({
   const [error, setError] = useState("");
   const [locked, setLocked] = useState(true);
 
-  const handleClick = () => {
-    //Change to actual db check
-    if (passwordValue === "abc123") {
+  const handleClick = async () => {
+    //Get password from db and compare. (NOTE: Will change to compare hash)
+    const { data, error } = await supabase.from("settings").select();
+
+    if (error) {
+      setError("Failed to fetch password. Please try again.");
+      return;
+    }
+
+    if (passwordValue === data?.[0]?.value) {
       handleUnlock();
     } else {
       setError("Incorrect password. Please try again.");
