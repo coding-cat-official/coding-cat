@@ -370,8 +370,8 @@ function Report({ evalResponse, questionType }: ReportProps) {
                         { collapsibleStateList[i] ? '▾' : '▸' } Print output
                       </span>
                       { collapsibleStateList[i] &&
-                        // pre is to allow the printed `\n`s to work as newlines
-                        <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap' }}>
+                        // pre allows the printed `\n`s to work as newlines
+                        <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
                           {r.printed}
                         </pre>
                       }
