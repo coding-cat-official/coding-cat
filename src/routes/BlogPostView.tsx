@@ -13,7 +13,7 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 }
 
 export default function BlogPostView() {
-    const result = useLoaderData() as BlogPost
+    const result = useLoaderData() as BlogPost;
     const [allBlogs, setAllBlogs] = useState<BlogPost[]>([]);
     const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
     const navigate = useNavigate();
@@ -23,6 +23,10 @@ export default function BlogPostView() {
             setAllBlogs(await getBlogPosts());
         })();
     }, []);
+
+    useEffect(() => {
+        setCurrIndex(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
+    }, [allBlogs])
 
     function handlePreviousBlog() {
         if (currIndex > 0) {
@@ -41,7 +45,7 @@ export default function BlogPostView() {
     }
 
     return (
-        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center">
+        <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" >
             <Box className="navigate-problem-btn">
                 <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
                     <Stack direction="column" spacing={0} alignItems="center">
@@ -61,7 +65,7 @@ export default function BlogPostView() {
                 </Button>
             </Box>
 
-            <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "99%" }}>
+            <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "75%" }}>
                 <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
                     <Box>
                         <Typography level="h2">{result.meta.title}</Typography>
