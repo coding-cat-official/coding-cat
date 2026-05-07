@@ -39,9 +39,9 @@ const links: ModalMetaData[] = [
  * @returns <AdminPage />
  */
 export default function AdminPage() {
-  const [open, setOpen] = useState<ModalMetaData | null>(null);
-  const handleOpen = (data: ModalMetaData) => setOpen(data);
-  const handleClose = () => setOpen(null);
+  const [modal, setModal] = useState<ModalMetaData | null>(null);
+  const handleOpen = (data: ModalMetaData) => setModal(data);
+  const handleClose = () => setModal(null);
 
   return (
     <Box
@@ -74,14 +74,14 @@ export default function AdminPage() {
         ))}
 
         {/* Renders different modals data depending on what link was clicked */}
-        {open && (
+        {modal && (
           <AdminPageModal
             open
             handleClose={handleClose}
-            modalTitle={open.title}
-            modalDesc={open.desc}
-            switchLabel={open.switch?.switchLabel}
-            extraNode={open.extraNode}
+            modalTitle={modal.title}
+            modalDesc={modal.desc}
+            switchLabel={modal.switch?.switchLabel}
+            extraNode={modal.extraNode}
           />
         )}
       </Card>
