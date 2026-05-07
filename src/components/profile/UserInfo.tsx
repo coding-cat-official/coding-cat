@@ -1,11 +1,21 @@
 import { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { Avatar, Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
+import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { NotePencil } from "@phosphor-icons/react";
 import { useOutletContext } from "react-router-dom";
+import ProfileAvatar from "./ProfileAvatar";
 
-export default function UserInfo() {
+// TODO: maybe get these dynamically?
+export const ALL_PFPS = [
+  "coding-cat-pfp.png", // this one first to default to it
+  "bongo-coding-pfp.png",
+  "coding-cat-mugshot-pfp.png",
+  "laptop-pfp.png",
+  "thumbs-up-pfp.png"
+]
+
+export default function UserInfo({ refetchProfile }: { refetchProfile: Function }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [name, setName] = useState("");
   const [id, setId] = useState("");
@@ -13,7 +23,14 @@ export default function UserInfo() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [pfpFileName, setPfpFileName] = useState("");
+  const [pfpArrPos, setPfpArrPos] = useState(0);
+  const [tempPfp, setTempPfp] = useState(pfpFileName);
+
   const { session } = useOutletContext<{ session: Session | null }>();
+
+  const pfpHeight = 100;
+  const pfpWidth = 100;
 
   useEffect(() => {
     let ignore = false;
@@ -25,7 +42,7 @@ export default function UserInfo() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`username, student_id`)
+        .select('username, student_id, pfp_id') 
         .eq('profile_id', user.id)
         .single();
 
@@ -36,6 +53,8 @@ export default function UserInfo() {
         } else if (data) {
           setName(data.username ?? "Unnamed User");
           setId(data.student_id ?? "");
+          setPfpFileName(ALL_PFPS[data.pfp_id] ?? 0);
+          setPfpArrPos(data.pfp_id ?? 0);
         }
       }
       setLoading(false);
@@ -45,6 +64,10 @@ export default function UserInfo() {
       ignore = true;
     }
   }, [session])
+
+  useEffect(() => {
+    setTempPfp(ALL_PFPS[pfpArrPos]);
+  }, [pfpArrPos]);
 
   async function updateProfile(event: FormEvent) {
     event.preventDefault();
@@ -60,18 +83,31 @@ export default function UserInfo() {
       username: name,
       student_id: id,
       updated_at: new Date(),
+      pfp_id: pfpArrPos
     };
 
     const { error } = await supabase.from('profiles').upsert(updates);
+    await refetchProfile();
 
     if (error) {
       setError(error.message);
     } else {
       setIsUpdating(false);
+      setPfpFileName(tempPfp);
+      setSuccess("Profile updated successfully!");
     }
     
-    setSuccess("Profile updated successfully!");
     setLoading(false);
+  }
+
+  const iteratePfp: Function = (num: number) => {
+    var newPos = pfpArrPos + num;
+    if(newPos > ALL_PFPS.length - 1){
+      newPos = 0;
+    }else if(newPos < 0){
+      newPos = ALL_PFPS.length - 1;
+    }
+    setPfpArrPos(newPos);
   }
 
   return (
@@ -81,18 +117,22 @@ export default function UserInfo() {
         <form onSubmit={updateProfile} className="form-widget">
           <Stack direction="column" gap={1} alignItems="center">
             <Typography level="h2">Edit Profile</Typography>
+            <FormLabel>Profile Picture</FormLabel>
+            <ProfileAvatar 
+              fileName={tempPfp}
+              height={pfpHeight}
+              width={pfpWidth}
+            />
+            <Stack flexDirection="row" gap={0.5}>
+              <Button onClick={() => iteratePfp(-1)}>Prev</Button>
+              <Button onClick={() => iteratePfp(1)}>Next</Button>
+            </Stack>
             <FormLabel>Name</FormLabel>
             <Input
               placeholder="Enter your name..."
               value={name}
               required
               onChange={(e) => setName(e.target.value)}
-            />
-            <FormLabel>Email</FormLabel>
-            <Input
-              value={session?.user.email}
-              required
-              disabled
             />
             <FormLabel>Student ID</FormLabel>
             <Input
@@ -113,7 +153,11 @@ export default function UserInfo() {
           </Stack>
         </form> :
         <>
-          <Avatar color="primary" size="lg">{(name || "").charAt(0)}</Avatar>
+          <ProfileAvatar 
+            fileName={pfpFileName}
+            height={pfpHeight}
+            width={pfpWidth}
+          />
           <Stack alignItems="center">
             <Stack direction="row" justifyContent="center" gap={1}>
               <Typography level="h2">{name || "Unnamed User"}</Typography>

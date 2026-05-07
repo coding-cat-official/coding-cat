@@ -2,7 +2,6 @@
   "name": "coding-cat",
   "version": "0.1.0",
   "homepage": ".",
-  "type": "module",
   "private": true,
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
@@ -34,7 +33,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build-problems": "node scripts/build-problems.js",
-    "build": "npm run build-problems && react-scripts build",
+    "build-blogs": "node scripts/build-blogs.js",
+    "build": "npm run build-problems && npm run build-blogs && npm run build-app",
+    "build-app": "react-scripts build",
     "test": "react-scripts test",
     "deploy": "rsync -r build/ codingcat@jerrington.me:/srv/http/coding-cat/",
     "deploy-exam": "rsync -r build/ codingcat@jerrington.me:/srv/http/exam-coding-cat/",
@@ -57,5 +58,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }
