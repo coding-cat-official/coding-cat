@@ -57,6 +57,11 @@ export default function PasswordProtected({
     setError("");
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleClick();
+  };
+
   return (
     <>
       {locked ? (
@@ -66,24 +71,26 @@ export default function PasswordProtected({
               Enter the Password that your teacher has given you
             </Typography>
 
-            <Input
-              value={passwordValue}
-              type="password"
-              placeholder="Enter Password"
-              onChange={handlePasswordChange}
-              error={!!error}
-            />
+            <Box component="form" onSubmit={handleSubmit}>
+              <Input
+                value={passwordValue}
+                type="password"
+                placeholder="Enter Password"
+                onChange={handlePasswordChange}
+                error={!!error}
+              />
 
-            {/* Error handling on bad password attempt */}
-            {error && (
-              <Typography level="body-sm" sx={{ color: "danger.main", mt: 1 }}>
-                {error}
-              </Typography>
-            )}
+              {/* Error handling on bad password attempt */}
+              {error && (
+                <Typography level="body-sm" sx={{ color: "danger.main", mt: 1 }}>
+                  {error}
+                </Typography>
+              )}
 
-            <Button onClick={handleClick} sx={{ mt: 2 }}>
-              Enter
-            </Button>
+              <Button type="submit" sx={{ mt: 2 }}>
+                Enter
+              </Button>
+            </Box>
           </Card>
         </Box>
       ) : (
