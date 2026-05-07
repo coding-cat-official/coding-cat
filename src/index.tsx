@@ -10,7 +10,7 @@ import CssBaseline from '@mui/joy/CssBaseline';
 import App, { problemListLoader } from './routes/root';
 import ProblemView, { problemLoader } from './routes/ProblemView';
 import ErrorPage from './error';
-import {theme} from './theme';
+import { theme } from './theme';
 
 import Login from './routes/Login';
 import Register from './routes/Register';
@@ -24,13 +24,14 @@ import ChangePassword from './routes/ChangePassword';
 import ReqPasswordChange from './routes/ReqPasswordChange';
 import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
+import BlogPostView, { blogPostLoader } from './routes/BlogPostView';
 
 
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {
     xl: true
   }
-} 
+}
 
 
 const router = createHashRouter([
@@ -42,15 +43,20 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <MainTutorial/>,
+        element: <MainTutorial />,
       },
       {
         path: "session",
-        element: <PreSessionForm/>,
+        element: <PreSessionForm />,
       },
       {
         path: "post-session",
-        element: <PostSessionForm/>,
+        element: <PostSessionForm />,
+      },
+      {
+        path: "/blogs/:blogId",
+        element: <BlogPostView />,
+        loader: blogPostLoader
       },
       {
         path: "/problems/:problemName",
@@ -60,7 +66,7 @@ const router = createHashRouter([
       {
         path: "signin",
         element: <Login />
-      },      
+      },
       {
         path: "change-password-req",
         element: <ReqPasswordChange />
@@ -77,7 +83,7 @@ const router = createHashRouter([
         path: "admin",
         element: <AdminWrapper />,
         children: [
-          {index: true, element: <AdminPage />}
+          { index: true, element: <AdminPage /> }
         ],
       },
     ],
@@ -99,9 +105,9 @@ const router = createHashRouter([
     ]
   }
 ],
-{
-  basename: '/',
-}
+  {
+    basename: '/',
+  }
 );
 
 const root = ReactDOM.createRoot(

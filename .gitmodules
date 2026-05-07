@@ -4,3 +4,6 @@
 [submodule "src/private-problems"]
 	path = src/private-problems
 	url = https://github.com/coding-cat-official/coding-cat-private
+[submodule "src/blog-posts"]
+	path = src/blog-posts
+	url = https://github.com/coding-cat-official/blog-posts.git
