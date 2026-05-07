@@ -6,10 +6,10 @@ export interface IOPair {
 }
 
 export interface Report {
-  input: string;
-  expected: string;
-  actual: string;
-  equal: boolean;
+    input: string;
+    expected: string;
+    actual: string;
+    equal: boolean;
 }
 
 export type EvalResponse
@@ -79,7 +79,7 @@ export interface CodingContract {
     reflectionPlan: string;
 }
 
-export type ContractData ={
+export type ContractData = {
     Coding: CodingContract;
     Haystack: GenericContract;
     Mutation: GenericContract;
@@ -88,17 +88,17 @@ export type ContractData ={
 const codingCategories = getCategoryList();
 
 export const BLANK_CONTRACT: ContractData = {
-    "Coding":{
+    "Coding": {
         gradeWanted: "",
         problemsToSolveByCategory: codingCategories.reduce(
-          (acc, cat) => ({ ...acc, [cat]: 0 }),
-          {}
+            (acc, cat) => ({ ...acc, [cat]: 0 }),
+            {}
         ),
         codeDescription: "",
         reflectionPlan: "",
-      },
-    "Mutation":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' },
-    "Haystack":  { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' }
+    },
+    "Mutation": { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' },
+    "Haystack": { gradeWanted: "", problemsToSolve: 0, codeDescription: '', reflectionPlan: '' }
 }
 
 export type ContractProgress = {
@@ -106,43 +106,53 @@ export type ContractProgress = {
 }
 
 export interface QuestionOption {
-  label: string;
-  value: string;
+    label: string;
+    value: string;
 }
 
 export interface Question {
-  id: string;
-  text: string;
-  type: "radio" | "checkbox" | "number" | "textarea";
-  options?: QuestionOption[];
-  category: string;
-  placeholder?: string;
-  min?: number;
-  max?: number;
-  randomizeable?: boolean;
-  relies_on?: string;
+    id: string;
+    text: string;
+    type: "radio" | "checkbox" | "number" | "textarea";
+    options?: QuestionOption[];
+    category: string;
+    placeholder?: string;
+    min?: number;
+    max?: number;
+    randomizeable?: boolean;
+    relies_on?: string;
 }
 
 export interface FormAnswers {
-  [questionId: string]: string | string[] | number;
+    [questionId: string]: string | string[] | number;
 }
 
 export interface Session {
-  session_id: string;
-  profile_id: string;
-  started_at: Date;
-  ended_at?: Date;
-  planned_duration_minutes: number;
-  planned_exercise_count: number;
-  planned_categories: string[];
-  created_at: Date;
-  updated_at: Date;
+    session_id: string;
+    profile_id: string;
+    started_at: Date;
+    ended_at?: Date;
+    planned_duration_minutes: number;
+    planned_exercise_count: number;
+    planned_categories: string[];
+    created_at: Date;
+    updated_at: Date;
 }
 
 export interface SessionReflection {
-  reflection_id: string;
-  session_id: string;
-  reflection_type: "pre" | "post";
-  form_data: FormAnswers;
-  created_at: Date;
+    reflection_id: string;
+    session_id: string;
+    reflection_type: "pre" | "post";
+    form_data: FormAnswers;
+    created_at: Date;
+}
+
+export interface BlogPost {
+    blog_text: string;
+    meta: {
+        blog_slug: string;
+        editor?: string;
+        author: string;
+        title: string;
+    };
 }
