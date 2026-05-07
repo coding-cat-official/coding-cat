@@ -26,7 +26,7 @@ export default function BlogPostView() {
 
     useEffect(() => {
         setCurrIndex(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
-    }, [allBlogs])
+    }, [allBlogs, result.meta.blog_id])
 
     function handlePreviousBlog() {
         if (currIndex > 0) {
