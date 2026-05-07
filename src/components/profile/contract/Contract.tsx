@@ -129,13 +129,16 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
       <ModalDialog sx={{ width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
-        {
-          isUpdating ? 
-          // To add a new question to the contract, make sure to add it to both the edit and the normal view.
-          // Possible TODO: the 2 contract views have a lot of code duplication, so it would be nice to figure out how to combine them into a single component.
-          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} featureMap={featureMap} problemCountByCategory={problemCountByCategory} /> :
-          <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} featureMap={featureMap} />
-        }
+        <ContractEdit 
+          contract={contract} 
+          setContract={setContract} 
+          isUpdating={isUpdating}
+          setIsUpdating={setIsUpdating} 
+          onSave={onSave} 
+          lastUpdated={lastUpdated} 
+          featureMap={featureMap} 
+          problemCountByCategory={problemCountByCategory} 
+        />
       </ModalDialog>
     </Modal>
   )
