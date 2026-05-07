@@ -4,11 +4,13 @@ import { supabase } from "../../supabaseClient";
 
 export default function CategoryPasswordForm() {
   const [testPassword, setTestPassword] = useState("");
-  const [status, setStatus] = useState("");
+
+  const statusDefault = { value: "", statusSx: {} as Record<string, any> };
+  const [status, setStatus] = useState(statusDefault);
 
   const handleTestPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTestPassword(e.target.value);
-    setStatus("")
+    setStatus(statusDefault);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,16 +20,22 @@ export default function CategoryPasswordForm() {
 
   // Update query to update test-password to the new password
   const sendPasswordtoDB = async (password: string) => {
-    const { error } = await supabase
+    let { error } = await supabase
       .from("settings")
       .update({ value: password })
       .eq("key", "test-password")
       .select();
 
     if (error) {
-      setStatus(`An error occurred, ${error}`);
+      setStatus({
+        value: `An error occurred, ${error.message}`,
+        statusSx: { color: "red", mt: 1 },
+      });
     } else {
-      setStatus("Success! The password was updated");
+      setStatus({
+        value: "Success! The password was updated",
+        statusSx: { color: "green", mt: 1 },
+      });
     }
   };
 
@@ -38,7 +46,7 @@ export default function CategoryPasswordForm() {
         placeholder="Enter Category Password"
         onChange={handleTestPassword}
       />
-      <Typography sx={{ color: "danger.main", mt: 1 }}>{status}</Typography>
+      <Typography sx={status.statusSx}>{status.value}</Typography>
       <Button color="success" onClick={handleSubmit}>
         Save
       </Button>
