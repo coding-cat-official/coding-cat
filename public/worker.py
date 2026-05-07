@@ -1,5 +1,5 @@
 import ast
-from browser import bind, self
+from browser import bind, self # type: ignore
 
 # global print capture buffer - reset before each code run
 _print_output = []
@@ -51,6 +51,7 @@ def test_mutation_function(solution, mutations, tests, function_name):
     global _print_output
     solution_function = load_student_function(solution, function_name)
     mutation_functions = [ load_student_function(mutant, function_name) for mutant in mutations ]
+    parsed_tests = []
 
     if isinstance(tests, list) and tests and isinstance(tests[0], dict) and 'Input' in tests[0]:
         parsed_tests = []
