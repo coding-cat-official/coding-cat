@@ -282,6 +282,20 @@ interface ReportProps {
 }
 
 function Report({ evalResponse, questionType }: ReportProps) {
+  const [collapsibleStateList, setCollapsibleStateList] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    if(evalResponse?.status === 'success'){
+      setCollapsibleStateList(evalResponse.report.map(() => false));
+    }
+  }, [evalResponse]);
+
+  const toggleCollapsible = (i: number) => {
+    setCollapsibleStateList(prev => 
+      prev.map((open, index) => index === i ? !open : open)
+    );
+  }
+
   if (null === evalResponse) return null;
 
   if ('failure' === evalResponse.status) {
@@ -341,14 +355,26 @@ function Report({ evalResponse, questionType }: ReportProps) {
             <tbody>
             { evalResponse.report.map((r, i) =>
               <>
-                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   <td className="mono"> {r.input} </td>
                   <td className="mono"> {r.expected} </td>
                   <td className="mono"> {r.actual} </td>
                 </tr>
                 { r.printed != "" ? 
-                  <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                    <td className="mono" colSpan={3}> Printed output: {r.printed} </td>
+                  <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                    <td className="mono" colSpan={3}>
+                      <span
+                        onClick={() => toggleCollapsible(i)}
+                      >
+                        { collapsibleStateList[i] ? 'V' : '>' } Print output
+                      </span>
+                      { collapsibleStateList[i] &&
+                        // pre is to allow the printed `\n`s to work as newlines
+                        <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap' }}>
+                          {r.printed}
+                        </pre>
+                      }
+                    </td>
                   </tr>
                   : <></>
                 }
