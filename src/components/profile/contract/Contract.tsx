@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { BLANK_CONTRACT, ContractData } from "../../../types";
 import { Button, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
 import ContractEdit from "./ContractEdit";
-import ContractText from "./ContractText";
 import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
