@@ -15,7 +15,7 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 export default function BlogPostView() {
     const result = useLoaderData() as BlogPost;
     const [allBlogs, setAllBlogs] = useState<BlogPost[]>([]);
-    const [currIndex, setCurrIndex] = useState(allBlogs.findIndex(p => p.meta.blog_id === result.meta.blog_id));
+    const [currIndex, setCurrIndex] = useState(-1);
     const navigate = useNavigate();
 
     useEffect(() => {
