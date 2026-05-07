@@ -340,11 +340,19 @@ function Report({ evalResponse, questionType }: ReportProps) {
             </thead>
             <tbody>
             { evalResponse.report.map((r, i) =>
+              <>
                 <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   <td className="mono"> {r.input} </td>
                   <td className="mono"> {r.expected} </td>
                   <td className="mono"> {r.actual} </td>
-                </tr>)
+                </tr>
+                { r.printed != "" ? 
+                  <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                    <td className="mono" colSpan={3}> Printed output: {r.printed} </td>
+                  </tr>
+                  : <></>
+                }
+              </>)
             }
             </tbody>
           </Table>

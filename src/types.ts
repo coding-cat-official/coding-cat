@@ -10,6 +10,7 @@ export interface Report {
   expected: string;
   actual: string;
   equal: boolean;
+  printed: string;
 }
 
 export type EvalResponse
