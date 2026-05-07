@@ -365,8 +365,9 @@ function Report({ evalResponse, questionType }: ReportProps) {
                     <td className="mono" colSpan={3}>
                       <span
                         onClick={() => toggleCollapsible(i)}
+                        style={{ cursor: 'pointer', userSelect: 'none' }}
                       >
-                        { collapsibleStateList[i] ? 'V' : '>' } Print output
+                        { collapsibleStateList[i] ? '▾' : '▸' } Print output
                       </span>
                       { collapsibleStateList[i] &&
                         // pre is to allow the printed `\n`s to work as newlines
