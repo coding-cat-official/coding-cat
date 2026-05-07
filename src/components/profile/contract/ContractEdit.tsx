@@ -36,9 +36,9 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                   }))
                 }
               >
-                <Option value="proficient">Proficient</Option>
-                <Option value="approaching_mastery">Approaching Mastery</Option>
-                <Option value="mastery">Mastery</Option>
+                <Option value="Proficient">Proficient</Option>
+                <Option value="Approaching Mastery">Approaching Mastery</Option>
+                <Option value="Mastery">Mastery</Option>
               </Select>
             : <Typography><strong>{contract.Coding.gradeWanted}</strong></Typography>
           }
@@ -130,9 +130,9 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                       }))
                     }
                   >
-                    <Option value="proficient">Proficient</Option>
-                    <Option value="approaching_mastery">Approaching Mastery</Option>
-                    <Option value="mastery">Mastery</Option>
+                    <Option value="Proficient">Proficient</Option>
+                    <Option value="Approaching Mastery">Approaching Mastery</Option>
+                    <Option value="Mastery">Mastery</Option>
                   </Select>
                 : <Typography><strong>{contract.Haystack.gradeWanted}</strong></Typography>
               }
@@ -198,9 +198,9 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                         Mutation: { ...c.Mutation, gradeWanted: v as string },
                       }))
                     }>
-                    <Option value="proficient">Proficient</Option>
-                    <Option value="approaching_mastery">Approaching Mastery</Option>
-                    <Option value="mastery">Mastery</Option>
+                    <Option value="Proficient">Proficient</Option>
+                    <Option value="Approaching Mastery">Approaching Mastery</Option>
+                    <Option value="Mastery">Mastery</Option>
                   </Select>
                 : <Typography><strong>{contract.Mutation.gradeWanted}</strong></Typography>
               }
@@ -254,18 +254,22 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
       </Stack>
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
-        <Typography level="body-xs">
-          Last Modified: 
-          {
-            lastUpdated ? 
-              `${lastUpdated.toLocaleDateString()} 
-              ${lastUpdated.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}` 
-            : '—'
-          }
-        </Typography>
+        {
+          !isUpdating ?
+            <Typography level="body-xs">
+              Last Modified: 
+              {
+                lastUpdated ? 
+                  ` ${lastUpdated.toLocaleDateString()} 
+                  ${lastUpdated.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}` 
+                : '—'
+              }
+            </Typography>
+          : <></>
+        }
         {
           isUpdating ?
             <>
