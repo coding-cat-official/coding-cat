@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
+import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
 import { List as ListIcon } from '@phosphor-icons/react';
@@ -13,8 +13,11 @@ import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 import getProblemSet from '../utils/getProblemSet';
+import PasswordProtected from './PasswordProtected';
 import { ALL_PFPS } from '../components/profile/UserInfo';
 import ProfileAvatar from '../components/profile/ProfileAvatar';
+import BlogList from '../components/BlogList';
+import getBlogPosts from '../utils/getBlogPosts';
 
 interface UserData{
   name: string,
@@ -38,6 +41,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
+  const [searchedBlogs, setSearchedBlogs] = useState<BlogPost[]>([]);
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
@@ -59,6 +63,14 @@ export default function App() {
   useEffect(() => {
     setSearchedProblems(filteredProblems);
   }, [filteredProblems])
+
+  
+  useEffect(() => {
+    (async () => {
+      const posts = await getBlogPosts();
+      setSearchedBlogs(posts);
+    })();
+  })
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -166,6 +178,28 @@ export default function App() {
     fetchProgress();
   }, [fetchProgress]);
 
+  const problemListProps = {
+    selectedTab,
+    setSelectedTab,
+    searchedProblems,
+    selectedCategory: activeCategory,
+    activeProblem,
+    onSelectProblem: handleSelectedProblem,
+    closeDrawer: () => setOpen(false),
+    session,
+    contractProgress,
+    progress
+  };
+  
+  const blogListProps = {
+    searchedBlogs: searchedBlogs,
+    selectedTab,
+    setSelectedTab,
+    selectedCategory: activeCategory,
+    activeBlog: activeProblem,
+    closeDrawer: () => setOpen(false)
+  };
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -242,18 +276,13 @@ export default function App() {
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
-                <ProblemList
-                  selectedTab={selectedTab}
-                  setSelectedTab={setSelectedTab}
-                  searchedProblems={searchedProblems}
-                  selectedCategory={activeCategory}
-                  activeProblem={activeProblem}
-                  onSelectProblem={handleSelectedProblem}
-                  closeDrawer={() => setOpen(false)}
-                  session={session}
-                  contractProgress={contractProgress}
-                  progress={progress}
-                />
+                {activeCategory === 'test-questions' ? (
+                  <PasswordProtected {...problemListProps}/>
+                ) : activeCategory === 'blogs' ? (
+                  <BlogList {...blogListProps}/>
+                ): (
+                  <ProblemList {...problemListProps} />
+                )}
               </Box>
             </Box>
         </DialogContent>
@@ -267,7 +296,8 @@ export default function App() {
           height: "100%",
           justifyContent: "start",
           alignItems: "center",
-          overflowY: "scroll"
+          overflowY: "scroll", 
+          position:'relative' 
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
             <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">

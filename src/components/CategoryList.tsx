@@ -6,6 +6,7 @@ import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { ContractProgress, Problem, Progress } from '../types';
 import CategoryLock from '../utils/CategoryLock';
 import CategoryListItems from './CategoryListItem';
+import BlogMenuButton from './BlogMenuButton';
 
 export interface CategoryListProps {
     searchedProblems: Problem[];
@@ -21,15 +22,15 @@ export default function CategoryList({
     onSelectCategory,
     session,
     contractProgress
-  }: CategoryListProps) {
+}: CategoryListProps) {
     const [error, setError] = useState("");
     const [progress, setProgress] = useState<Progress[]>([]);
 
     // List of categories that show up in search results.
     const categories = searchedProblems
-    .map((c) => c.meta.category)
-    .filter((c, index, array) => array.indexOf(c) === index)
-    .sort((a,b) => a.localeCompare(b));
+        .map((c) => c.meta.category)
+        .filter((c, index, array) => array.indexOf(c) === index)
+        .sort((a, b) => a.localeCompare(b));
 
     const specialCategories = [];
     if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
@@ -44,13 +45,13 @@ export default function CategoryList({
         async function fetchProgress() {
             if (!session) return;
             const { user } = session;
-            
-            const {data: submissions, error } = await supabase
-            .from('submissions')
-            .select('problem_title, passed_tests, total_tests, question_type')
-            .eq('profile_id', user.id);
 
-            if(error) {
+            const { data: submissions, error } = await supabase
+                .from('submissions')
+                .select('problem_title, passed_tests, total_tests, question_type')
+                .eq('profile_id', user.id);
+
+            if (error) {
                 setError(error.message);
             }
 
@@ -70,7 +71,7 @@ export default function CategoryList({
      * **TODO: This function should probably be moved inside the CategoryLock class.**
      */
     function mapCategoryToLock(category: string) {
-        switch(category) {
+        switch (category) {
             case "Fundamentals": return categoryLock.fundamentals
             case "Logic": return categoryLock.logic
             case "String-1": return categoryLock.string_1
@@ -92,8 +93,16 @@ export default function CategoryList({
     }
 
     return (
-        <List component="nav" sx={{ py: 2}}>
+        <List component="nav" sx={{ py: 2 }}>
             <>
+                <BlogMenuButton
+                    category='blogs'
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                />
+                <Box>
+                    <hr />
+                </Box>
                 <CategoryListItems
                     categories={categories}
                     type="category"
@@ -105,7 +114,7 @@ export default function CategoryList({
                     contractProgress={contractProgress}
                 />
                 <Box>
-                    <hr/>
+                    <hr />
                 </Box>
                 <CategoryListItems
                     categories={specialCategories}

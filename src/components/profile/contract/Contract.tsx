@@ -1,9 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { BLANK_CONTRACT, ContractData } from "../../../types";
-import { IconButton, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
-import { ArrowSquareOut } from "@phosphor-icons/react";
+import { Button, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
 import ContractEdit from "./ContractEdit";
-import ContractText from "./ContractText";
 import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
@@ -85,9 +83,6 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
       <Stack alignItems="center">
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography level="h2">Contract</Typography>
-          <IconButton onClick={() => setOpen(true)}>
-            <ArrowSquareOut size={23} />
-          </IconButton>
         </Stack>
         <Typography>Last Modified:{' '} 
         {lastUpdated
@@ -97,6 +92,9 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
             })}`
           : '—'}
         </Typography>
+        <Button onClick={() => setOpen(true)}>
+          Edit
+        </Button>
       </Stack>
 
       <ContractModal 
@@ -130,13 +128,16 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
       <ModalDialog sx={{ width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
-        {
-          isUpdating ? 
-          // To add a new question to the contract, make sure to add it to both the edit and the normal view.
-          // Possible TODO: the 2 contract views have a lot of code duplication, so it would be nice to figure out how to combine them into a single component.
-          <ContractEdit contract={contract} setIsUpdating={setIsUpdating} setContract={setContract} onSave={onSave} featureMap={featureMap} problemCountByCategory={problemCountByCategory} /> :
-          <ContractText contract={contract} setIsUpdating={setIsUpdating} lastUpdated={lastUpdated} featureMap={featureMap} />
-        }
+        <ContractEdit 
+          contract={contract} 
+          setContract={setContract} 
+          isUpdating={isUpdating}
+          setIsUpdating={setIsUpdating} 
+          onSave={onSave} 
+          lastUpdated={lastUpdated} 
+          featureMap={featureMap} 
+          problemCountByCategory={problemCountByCategory} 
+        />
       </ModalDialog>
     </Modal>
   )
