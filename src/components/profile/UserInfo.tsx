@@ -1,8 +1,7 @@
 import { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { Button, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
-import { NotePencil } from "@phosphor-icons/react";
+import { Button, FormLabel, Input, Stack, Typography } from "@mui/joy";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
 
@@ -159,15 +158,13 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
             width={pfpWidth}
           />
           <Stack alignItems="center">
-            <Stack direction="row" justifyContent="center" gap={1}>
-              <Typography level="h2">{name || "Unnamed User"}</Typography>
-              <IconButton onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
-                <NotePencil size={23} />
-              </IconButton>
-            </Stack>
+            <Typography level="h2">{name || "Unnamed User"}</Typography>
             <Typography>{session?.user.email}</Typography>
             <Typography>#{id}</Typography>
             <Typography color="success">{success}</Typography>
+            <Button onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
+              Edit
+            </Button>
           </Stack>
         </>
       }
