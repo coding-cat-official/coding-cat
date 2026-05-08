@@ -15,17 +15,21 @@ interface ContractEditProps {
 }
 
 export default function ContractEdit({ contract, setContract, isUpdating, setIsUpdating, onSave, lastUpdated, featureMap, problemCountByCategory }: ContractEditProps) {
-  const baseCategories = ["Fundamentals", "Logic", "String-1", "List-1: Indexing"];
   const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
-  // REMOVE LATER
-  featureMap = {
-    "CodingStage2": true,
-    "Haystack": true,
-    "Mutation": true
-  }
-  const categoriesToEdit = featureMap["CodingStage2"]
-    ? allCategories
-    : baseCategories.filter((c) => allCategories.includes(c));
+  console.log(featureMap);
+  var displayedCategories: string[] = [];
+  allCategories.forEach((c) => {
+    if(c === "haystack" && !featureMap["Haystack"]){
+      return;
+    }
+    else if(c === "mutation" && !featureMap["Mutation"]){
+      return;
+    }
+    else if(!featureMap["CodingStage2"]){
+      return;
+    }
+    displayedCategories.push(c);
+  });
 
   const rowStyle: SxProps = {
     display: "flex",
@@ -46,8 +50,11 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
   }
 
   return (
+    <>
+    { !featureMap["CodingStage2"] && !featureMap["Haystack"] &&!featureMap["Mutation"] &&
+      <Typography>All feature maps are disabled. Please try again later or contact Eric.</Typography> }
     <Box sx={{ display: "flex", flexDirection: "column", overflowY: "scroll" }}>
-      <Box sx={sectionStyle}>
+      { featureMap["CodingStage2"] && <Box sx={sectionStyle}>
         <Typography level="h3">Coding</Typography>
 
         <Box sx={rowStyle}>
@@ -74,48 +81,20 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} >
-          <ContractQuestion question={"How many problems of each category will you solve?"} />
-          <Table sx={{ display: "flex", justifyContent: "center" }}>
-            <tr>
-              {
-                categoriesToEdit.map((c) => {
-                  return (
-                    <td style={{ display: "inline-block" }}>
-                      <Stack direction="row" alignItems="center" gap={1}>
-                        <Typography>{c}: </Typography>
-                        {
-                          isUpdating ?
-                            <Input
-                              variant="plain"
-                              size="sm"
-                              sx={{ width: "50px", typography: 'body1' }}
-                              slotProps={{ input: { type: "number", min: 0, max: problemCountByCategory[c] ?? 10 } }}
-                              placeholder="0"
-                              value={contract.Coding.problemsToSolveByCategory[c]}
-                              onChange={(e) =>
-                                setContract((cat) => ({
-                                  ...cat,
-                                  Coding: {
-                                    ...cat.Coding,
-                                    problemsToSolveByCategory: {
-                                      ...cat.Coding.problemsToSolveByCategory,
-                                      [c]: +e.target.value,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          : <Typography><strong>{contract.Coding.problemsToSolveByCategory[c]}/{problemCountByCategory[c]}</strong></Typography>
-                        }
-                      </Stack>
-                    </td>
-                  )
-                })
-              }
-            </tr>
-          </Table>
-        </Box>
+        {
+          displayedCategories.length > 0 ?
+          <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} >
+            <ContractQuestion question={"How many problems of each category will you solve?"} />
+            <ContractCategoriesInput 
+              isUpdating={isUpdating}
+              categories={displayedCategories}
+              problemCountByCategory={problemCountByCategory}
+              contract={contract}
+              setContract={setContract}
+            />
+          </Box>
+          : <></>
+        }
         
         <Box sx={rowStyle}>
           <ContractQuestion
@@ -156,9 +135,9 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
             }
           />
         </Box>
-      </Box>
+      </Box> }
 
-      {featureMap["Haystack"] && (
+      { featureMap["Haystack"] && (
         <Box sx={sectionStyle}>
           <Typography level="h3">Haystack</Typography>
           <Box sx={rowStyle}>
@@ -246,9 +225,9 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
             />
           </Box>
         </Box>
-      )}
+      ) }
 
-      {featureMap["Mutation"] && (
+      { featureMap["Mutation"] && (
         <Box sx={sectionStyle}>
           <Typography level="h3">Mutation Testing</Typography>
           
@@ -335,7 +314,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
             />
           </Box>
         </Box>
-      )}
+      ) }
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
         {
@@ -364,6 +343,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
         }
       </Stack>
     </Box>
+    </>
   )
 }
 
@@ -414,5 +394,57 @@ function ContractInput({ isUpdating, answer, element }: { isUpdating: boolean, a
       </Box>
     }
     </>
+  )
+}
+
+function ContractCategoriesInput({ isUpdating, categories, problemCountByCategory, contract, setContract }: { isUpdating: boolean, categories: string[], problemCountByCategory: Record<string,number>, contract: ContractData, setContract: Dispatch<SetStateAction<ContractData>> }){
+  return (
+    <Table 
+      sx={{ 
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "white",
+        borderRadius: "10px",
+        marginTop: "10px"
+      }}
+    >
+      <tr>
+      {
+        categories.map((c) => {
+          return (
+            <td style={{ display: "inline-block" }}>
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Typography>{c}: </Typography>
+                {
+                  isUpdating ?
+                    <Input
+                      variant="plain"
+                      size="sm"
+                      sx={{ width: "50px", typography: 'body1' }}
+                      slotProps={{ input: { type: "number", min: 0, max: problemCountByCategory[c] ?? 10 } }}
+                      placeholder="0"
+                      value={contract.Coding.problemsToSolveByCategory[c]}
+                      onChange={(e) =>
+                        setContract((cat) => ({
+                          ...cat,
+                          Coding: {
+                            ...cat.Coding,
+                            problemsToSolveByCategory: {
+                              ...cat.Coding.problemsToSolveByCategory,
+                              [c]: +e.target.value,
+                            },
+                          },
+                        }))
+                      }
+                    />
+                  : <Typography><strong>{contract.Coding.problemsToSolveByCategory[c]}/{problemCountByCategory[c]}</strong></Typography>
+                }
+              </Stack>
+            </td>
+          )
+        })
+      }
+      </tr>
+    </Table>
   )
 }
