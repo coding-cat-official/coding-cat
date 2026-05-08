@@ -1,6 +1,7 @@
 import { List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 import { BlogPost } from "../types";
+import { capitalizeString } from "../utils/capitalizeString";
 
 
 export interface BlogListProps {
@@ -30,16 +31,12 @@ export default function BlogList({
 
     return (
         <Stack gap={1} className="stack-problemList">
+
+            <Typography level="h1" sx={{ fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt" }}>
+                {selectedCategory ? capitalizeString(selectedCategory) : ""}
+            </Typography>
             <List component="nav">
                 <Tabs value={selectedTab} onChange={handleTabChange}>
-                    <TabList>
-                        {Object.keys(searchedBlogs).sort().filter(Boolean).map((type) => (
-                            <Tab key={type} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen" }}>
-                                {type}
-                            </Tab>
-                        ))}
-                    </TabList>
-
                     <TabPanel className="problemList-list" value={selectedTab} sx={{ overflowY: 'auto', height: "60vh", pt: 0 }}>
                         <List sx={{ pt: 0 }}>
                             {searchedBlogs?.map((b) =>
