@@ -5,6 +5,7 @@ from browser import bind, self # type: ignore
 
 # global print capture buffer - reset before each code run
 _print_output = []
+_student_code = ""
 
 def captured_print(*args, **kwargs):
     # support print's sep and end keywords
@@ -14,6 +15,9 @@ def captured_print(*args, **kwargs):
     _print_output.append(line)
 
 def load_student_function(code, name):
+    global _student_code
+    _student_code = code
+
     # stores student code in a box
     HARNESS_CODE = f'box["fn"] = {name}'
     box = {}
@@ -46,6 +50,16 @@ def test_student_function(student_function, tests):
                 "error": f"{type(e).__name__}: {e}",
                 "printed": "".join(_print_output)
             })
+    # Final test for if the code contains print statements
+    contains_print = ("print(" in _student_code)
+    report.append({
+        "input": "N/A",
+        "expected": "No print statements",
+        "actual": "Print statement found" if contains_print else "No print statements",
+        "equal": not contains_print,
+        "error": None,
+        "printed": ""
+    })
     return report
 
 # runs student input against the solution and all the mutation files and returnns json object with the results
