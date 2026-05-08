@@ -396,7 +396,7 @@ function ContractInput({ isUpdating, answer, element }: { isUpdating: boolean, a
     {
       isUpdating ?
         element
-      : <Typography><strong>{answer}</strong></Typography>
+      : <Typography><strong>{answer !== "" ? answer : "Not answered"}</strong></Typography>
     }
     </Box>
   )
