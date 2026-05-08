@@ -106,7 +106,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                                 }))
                               }
                             />
-                          : <Typography><strong>{contract.Coding.problemsToSolveByCategory[c]}</strong></Typography>
+                          : <Typography><strong>{contract.Coding.problemsToSolveByCategory[c]}/{problemCountByCategory[c]}</strong></Typography>
                         }
                       </Stack>
                     </td>
