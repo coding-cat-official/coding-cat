@@ -178,3 +178,10 @@ export interface ProblemLog {
   last_attempt_at: string;
   code: unknown;
 }
+
+export interface ProblemSessionStats{
+    elapsedTimeSeconds: number;
+    completed: boolean;
+    passedTests: number;
+    totalTests: number;
+}

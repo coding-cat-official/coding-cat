@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, Submission } from '../types';
+import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, ProblemSessionStats, Submission } from '../types';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
 import { List as ListIcon } from '@phosphor-icons/react';
@@ -52,6 +52,7 @@ export default function App() {
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
+  const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -223,6 +224,7 @@ export default function App() {
     setSessionStartTime(null);
     setSessionDuration(0);
     setSessionRemainingSeconds(0);
+    setProblemSessionStats({});
   };
 
   const formatTime = (seconds: number): string => {
@@ -469,7 +471,9 @@ export default function App() {
             sessionId,
             sessionRemainingSeconds,
             sessionDuration,
-            plannedExerciseCount
+            plannedExerciseCount,
+            problemSessionStats,
+            setProblemSessionStats
           }} />
         </Box>
         

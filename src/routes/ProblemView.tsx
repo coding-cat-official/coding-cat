@@ -66,7 +66,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       refetchProgress,
       activeSession,
       sessionDuration,
-      plannedExerciseCount
+      plannedExerciseCount,
+      problemSessionStats,
+      setProblemSessionStats
     } = useOutletContext<{
       session: Session | null,
       setActiveProblem: (name: string | null) => void,
@@ -75,7 +77,21 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       sessionId: string | null,
       sessionRemainingSeconds: number,
       sessionDuration: number,
-      plannedExerciseCount: number
+      plannedExerciseCount: number,
+      problemSessionStats: Record<string, {
+        elapsedTimeSeconds: number;
+        completed: boolean;
+        passedTests: number;
+        totalTests: number;
+      }>,
+      setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, {
+        elapsedTimeSeconds: number;
+        completed: boolean;
+        passedTests: number;
+        totalTests: number;
+      }>
+      >
+      >
     }>();
     
     const navigate = useNavigate();
@@ -190,22 +206,46 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
   }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
-    // Problem timer - starts when problem loads
+    // Problem timer, starts when problem loads
     useEffect(() => {
+      if (!activeSession) return;
+
+      const existingStats = problemSessionStats[problem.meta.name];
+
+      //we don't want to restart already completed problems
+      if (existingStats?.completed){
+        setProblemElapsedSeconds(existingStats.elapsedTimeSeconds);
+        return;
+      }
+
       problemStartRef.current = Date.now();
-      setProblemElapsedSeconds(0);
-      setProblemAlertStage(null);
 
       problemTimerRef.current = setInterval(() => {
-        if (!problemStartRef.current) return;
-        const elapsed = Math.floor((Date.now() - problemStartRef.current) / 1000);
-        setProblemElapsedSeconds(elapsed);
+        const startElapsed = existingStats?.elapsedTimeSeconds ?? 0;
+        const currentElapsed = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
+
+        setProblemElapsedSeconds(startElapsed + currentElapsed);
       }, 1000);
 
       return () => {
-        if (problemTimerRef.current) clearInterval(problemTimerRef.current);
-      };
-    }, [problem.meta.name]);
+        if (problemTimerRef.current) {
+          clearInterval(problemTimerRef.current);
+        }
+
+        const additionalElapsed = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
+
+        setProblemSessionStats(prev => ({
+          ...prev,
+          [problem.meta.name]: {
+            elapsedTimeSeconds: (prev[problem.meta.name]?.elapsedTimeSeconds ?? 0) + additionalElapsed,
+            completed: false,
+            passedTests: prev[problem.meta.name]?.passedTests ?? 0,
+            totalTests: prev[problem.meta.name]?.totalTests ?? 0,
+          }
+        }))
+      }
+
+    }, [problem.meta.name, activeSession, problemSessionStats, setProblemSessionStats]);
 
     // Alert user if taking too long on a problem
     useEffect(() => {
@@ -225,10 +265,37 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       }
     }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, activeSession, problemAlertStage]);
 
+    // We want to stop the timer permanently when all the tests pass
+    useEffect(() => {
+      if (!evalResponse || evalResponse.status !== 'success') return;
+
+      const allPassed = evalResponse.report.every(r => r.equal);
+      if (!allPassed) return;
+
+      //stop the timer
+      if(problemTimerRef.current) {
+        clearInterval(problemTimerRef.current);
+        problemTimerRef.current = null;
+      }
+
+      //then calculate the final elapsed time
+      const additionalElapsed  = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
+      setProblemSessionStats(prev => ({
+        ...prev,
+        [problem.meta.name]: {
+          elapsedTimeSeconds: (prev[problem.meta.name]?.elapsedTimeSeconds ?? 0) + additionalElapsed,
+          completed: true,
+          passedTests: evalResponse.report.filter(r => r.equal).length,
+          totalTests: evalResponse.report.length,
+        }
+      }));
+
+      setProblemElapsedSeconds(prev => prev + additionalElapsed);
+    }, [evalResponse, problem.meta.name, setProblemSessionStats]);
+
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
     }
-
 
   function handlePreviousProblem(){
     if(currIndex > 0){
@@ -289,7 +356,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
             </Box>
 
-            {activeSession && (
+            {activeSession && !problemSessionStats[problem.meta.name]?.completed && (
               hideExerciseTimer ? (
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <Button
