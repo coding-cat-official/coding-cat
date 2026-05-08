@@ -32,8 +32,8 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
     flexDirection: "row",
     justifyContent: "flex-start",
     width: "100%",
-    marginTop: "10px",
-    marginBottom: "10px"
+    margin: "10px",
+    marginLeft: "0"
   }
 
   const sectionStyle: SxProps = {
@@ -377,8 +377,7 @@ function ContractQuestion({ question }: { question: string }) {
         backgroundColor: "#FFEB9A",
         padding: "10px",
         borderRadius: "10px",
-        minWidth: "30%",
-        width: "50%"
+        width: "45%"
       }}
     >
       <Typography>{question}</Typography>
@@ -390,7 +389,8 @@ function ContractInput({ isUpdating, answer, element }: { isUpdating: boolean, a
   return (
     <Box 
       sx={{
-        maxWidth: "50%"
+        maxWidth: "45%",
+        padding: "10px"
       }}
     >
     {
