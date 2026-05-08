@@ -13,6 +13,7 @@ import logo from '../assets/coding-cat.png';
 import ProblemList from '../components/ProblemList';
 import CustomSearch from '../components/ProblemSearch';
 import getProblemSet from '../utils/getProblemSet';
+import PasswordProtected from './PasswordProtected';
 import { ALL_PFPS } from '../components/profile/UserInfo';
 import ProfileAvatar from '../components/profile/ProfileAvatar';
 
@@ -166,6 +167,19 @@ export default function App() {
     fetchProgress();
   }, [fetchProgress]);
 
+  const problemListProps = {
+    selectedTab,
+    setSelectedTab,
+    searchedProblems,
+    selectedCategory: activeCategory,
+    activeProblem,
+    onSelectProblem: handleSelectedProblem,
+    closeDrawer: () => setOpen(false),
+    session,
+    contractProgress,
+    progress
+  };
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -242,18 +256,11 @@ export default function App() {
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
-                <ProblemList
-                  selectedTab={selectedTab}
-                  setSelectedTab={setSelectedTab}
-                  searchedProblems={searchedProblems}
-                  selectedCategory={activeCategory}
-                  activeProblem={activeProblem}
-                  onSelectProblem={handleSelectedProblem}
-                  closeDrawer={() => setOpen(false)}
-                  session={session}
-                  contractProgress={contractProgress}
-                  progress={progress}
-                />
+                {activeCategory === 'test-questions' ? (
+                  <PasswordProtected {...problemListProps}/>
+                ) : (
+                  <ProblemList {...problemListProps} />
+                )}
               </Box>
             </Box>
         </DialogContent>

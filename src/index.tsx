@@ -26,7 +26,6 @@ import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
 import BlogPostView, { blogPostLoader } from './routes/BlogPostView';
 
-
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {
     xl: true
@@ -85,7 +84,7 @@ const router = createHashRouter([
         children: [
           { index: true, element: <AdminPage /> }
         ],
-      },
+      }
     ],
   },
   {
