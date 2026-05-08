@@ -53,7 +53,10 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
     <>
     { !featureMap["CodingStage2"] && !featureMap["Haystack"] &&!featureMap["Mutation"] &&
       <Typography>All feature maps are disabled. Please try again later or contact Eric.</Typography> }
+    
     <Box sx={{ display: "flex", flexDirection: "column", overflowY: "scroll" }}>
+      
+      { /* Coding Questions ("CodingStage2") */ }
       { featureMap["CodingStage2"] && <Box sx={sectionStyle}>
         <Typography level="h3">Coding</Typography>
 
@@ -137,202 +140,198 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
         </Box>
       </Box> }
 
-      { featureMap["Haystack"] && (
-        <Box sx={sectionStyle}>
-          <Typography level="h3">Haystack</Typography>
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"What grade do you want to get?"}
-            />
-            <ContractInput
-              answer={contract.Haystack.gradeWanted ?? "Not answered"}
-              isUpdating={isUpdating}
-              element={
-                <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
-                  onChange={(_, v) =>
-                    setContract(c => ({
-                      ...c,
-                      Haystack: { ...c.Haystack, gradeWanted: v as string },
-                    }))
-                  }
-                >
-                  <Option value="Proficient">Proficient</Option>
-                  <Option value="Approaching Mastery">Approaching Mastery</Option>
-                  <Option value="Mastery">Mastery</Option>
-                </Select>
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"How many haystack problems will you solve?"}
-            />
-            <ContractInput
-              answer={contract.Haystack.problemsToSolve}
-              isUpdating={isUpdating}
-              element={
-                <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
-                    }))
-                  } sx={{ width: "4em" }} placeholder="0"
-                />
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
-            />
-            <ContractInput
-              answer={contract.Haystack.codeDescription}
-              isUpdating={isUpdating}
-              element={
-                <Input placeholder="Enter your answer..." value={contract.Haystack.codeDescription} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Haystack: { ...c.Haystack, codeDescription: e.target.value },
-                    }))
-                  }
-                />
-
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
-            />
-            <ContractInput
-              answer={contract.Haystack.reflectionPlan}
-              isUpdating={isUpdating}
-              element={
-                <Input placeholder="Enter your answer..." value={contract.Haystack.reflectionPlan} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Haystack: { ...c.Haystack, reflectionPlan: e.target.value },
-                    }))
-                  }
-                />
-              }
-            />
-          </Box>
+      { /* Haystack Questions */ }
+      { featureMap["Haystack"] && <Box sx={sectionStyle}>
+        <Typography level="h3">Haystack</Typography>
+        
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"What grade do you want to get?"}
+          />
+          <ContractInput
+            answer={contract.Haystack.gradeWanted ?? "Not answered"}
+            isUpdating={isUpdating}
+            element={
+              <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
+                onChange={(_, v) =>
+                  setContract(c => ({
+                    ...c,
+                    Haystack: { ...c.Haystack, gradeWanted: v as string },
+                  }))
+                }
+              >
+                <Option value="Proficient">Proficient</Option>
+                <Option value="Approaching Mastery">Approaching Mastery</Option>
+                <Option value="Mastery">Mastery</Option>
+              </Select>
+            }
+          />
         </Box>
-      ) }
 
-      { featureMap["Mutation"] && (
-        <Box sx={sectionStyle}>
-          <Typography level="h3">Mutation Testing</Typography>
-          
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"What grade do you want to get?"}
-            />
-            <ContractInput
-              answer={contract.Mutation.gradeWanted ?? "Not answered"}
-              isUpdating={isUpdating}
-              element={
-                <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
-                  onChange={(_, v) =>
-                    setContract(c => ({
-                      ...c,
-                      Mutation: { ...c.Mutation, gradeWanted: v as string },
-                    }))
-                  }>
-                  <Option value="Proficient">Proficient</Option>
-                  <Option value="Approaching Mastery">Approaching Mastery</Option>
-                  <Option value="Mastery">Mastery</Option>
-                </Select>
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"How many mutation testing problems will you solve?"}
-            />
-            <ContractInput
-              answer={contract.Mutation.problemsToSolve}
-              isUpdating={isUpdating}
-              element={
-                <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Mutation: { ...c.Mutation, problemsToSolve: +e.target.value },
-                    }))
-                  }
-                />
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
-            />
-            <ContractInput 
-              answer={contract.Mutation.codeDescription}
-              isUpdating={isUpdating}
-              element={
-                <Input placeholder="Enter your answer..." value={contract.Mutation.codeDescription} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Mutation: { ...c.Mutation, codeDescription: e.target.value },
-                    }))
-                  }
-                />
-              }
-            />
-          </Box>
-
-          <Box sx={rowStyle}>
-            <ContractQuestion
-              question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
-            />
-            <ContractInput 
-              answer={contract.Mutation.reflectionPlan}
-              isUpdating={isUpdating}
-              element={
-                <Input placeholder="Enter your answer..." value={contract.Mutation.reflectionPlan} 
-                  onChange={(e) =>
-                    setContract((c) => ({
-                      ...c,
-                      Mutation: { ...c.Mutation, reflectionPlan: e.target.value },
-                    }))
-                  }
-                />
-              }
-            />
-          </Box>
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"How many haystack problems will you solve?"}
+          />
+          <ContractInput
+            answer={contract.Haystack.problemsToSolve}
+            isUpdating={isUpdating}
+            element={
+              <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
+                  }))
+                } sx={{ width: "4em" }} placeholder="0"
+              />
+            }
+          />
         </Box>
-      ) }
 
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
+          />
+          <ContractInput
+            answer={contract.Haystack.codeDescription}
+            isUpdating={isUpdating}
+            element={
+              <Input placeholder="Enter your answer..." value={contract.Haystack.codeDescription} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Haystack: { ...c.Haystack, codeDescription: e.target.value },
+                  }))
+                }
+              />
+            }
+          />
+        </Box>
+
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
+          />
+          <ContractInput
+            answer={contract.Haystack.reflectionPlan}
+            isUpdating={isUpdating}
+            element={
+              <Input placeholder="Enter your answer..." value={contract.Haystack.reflectionPlan} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Haystack: { ...c.Haystack, reflectionPlan: e.target.value },
+                  }))
+                }
+              />
+            }
+          />
+        </Box>
+      </Box> }
+
+      { /* Mutation Questions */ }
+      { featureMap["Mutation"] && <Box sx={sectionStyle}>
+        <Typography level="h3">Mutation Testing</Typography>
+        
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"What grade do you want to get?"}
+          />
+          <ContractInput
+            answer={contract.Mutation.gradeWanted ?? "Not answered"}
+            isUpdating={isUpdating}
+            element={
+              <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
+                onChange={(_, v) =>
+                  setContract(c => ({
+                    ...c,
+                    Mutation: { ...c.Mutation, gradeWanted: v as string },
+                  }))
+                }>
+                <Option value="Proficient">Proficient</Option>
+                <Option value="Approaching Mastery">Approaching Mastery</Option>
+                <Option value="Mastery">Mastery</Option>
+              </Select>
+            }
+          />
+        </Box>
+
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"How many mutation testing problems will you solve?"}
+          />
+          <ContractInput
+            answer={contract.Mutation.problemsToSolve}
+            isUpdating={isUpdating}
+            element={
+              <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Mutation: { ...c.Mutation, problemsToSolve: +e.target.value },
+                  }))
+                }
+              />
+            }
+          />
+        </Box>
+
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
+          />
+          <ContractInput 
+            answer={contract.Mutation.codeDescription}
+            isUpdating={isUpdating}
+            element={
+              <Input placeholder="Enter your answer..." value={contract.Mutation.codeDescription} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Mutation: { ...c.Mutation, codeDescription: e.target.value },
+                  }))
+                }
+              />
+            }
+          />
+        </Box>
+
+        <Box sx={rowStyle}>
+          <ContractQuestion
+            question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
+          />
+          <ContractInput 
+            answer={contract.Mutation.reflectionPlan}
+            isUpdating={isUpdating}
+            element={
+              <Input placeholder="Enter your answer..." value={contract.Mutation.reflectionPlan} 
+                onChange={(e) =>
+                  setContract((c) => ({
+                    ...c,
+                    Mutation: { ...c.Mutation, reflectionPlan: e.target.value },
+                  }))
+                }
+              />
+            }
+          />
+        </Box>
+      </Box> }
+
+      { /* Last Edit Date and Buttons */ }
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
-        {
-          !isUpdating ?
-            <Typography level="body-xs">
-              Last Modified: 
-              {
-                lastUpdated ? 
-                  ` ${lastUpdated.toLocaleDateString()} 
-                  ${lastUpdated.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}` 
-                : '—'
-              }
-            </Typography>
-          : <></>
-        }
+        { !isUpdating &&
+          <Typography level="body-xs">
+            Last Modified: 
+            {
+              lastUpdated ? 
+                ` ${lastUpdated.toLocaleDateString()} 
+                ${lastUpdated.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}` 
+              : '—'
+            }
+          </Typography> }
         {
           isUpdating ?
             <>
