@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import { ContractData } from "../../../types";
-import { Button, Input, Option, Select, Stack, Table, Typography } from "@mui/joy";
+import { Box, Button, Input, Option, Select, Stack, Table, Typography } from "@mui/joy";
 
 interface ContractEditProps {
   contract: ContractData;
@@ -22,13 +22,24 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
 
   return (
     <>
-      <Stack sx={{ overflowY: "scroll" }} gap={2}>
+      <Box 
+        sx={{ 
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "scroll",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          paddingX: 4,
+          paddingY: 2
+        }}
+      >
         <Typography level="h3">Coding</Typography>
-        <Stack direction="row" alignItems="center" gap={2}>
-          <Typography>What grade do you want to get?</Typography>
-          {
-            isUpdating ?
-              <Select placeholder="Grade" value={contract.Coding.gradeWanted}
+        <Question 
+          question={"What grade do you want to get?"}
+          answer={contract.Coding.gradeWanted}
+          isUpdating={isUpdating}
+          input={
+            <Select placeholder="Grade" value={contract.Coding.gradeWanted}
                 onChange={(_, v) =>                          
                   setContract(c => ({
                     ...c,
@@ -39,13 +50,12 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                 <Option value="Proficient">Proficient</Option>
                 <Option value="Approaching Mastery">Approaching Mastery</Option>
                 <Option value="Mastery">Mastery</Option>
-              </Select>
-            : <Typography><strong>{contract.Coding.gradeWanted}</strong></Typography>
+            </Select>
           }
-        </Stack>
+        />
 
-        <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
-        <Stack justifyContent="center" direction="row" columnGap={20} rowGap={2} flexWrap="wrap">
+        <Box sx={{ display: "flex", flexDirection: "column", flexWrap: "wrap" }} >
+          <Typography sx={{ whiteSpace: "pre-line" }}>How many problems of each category will you solve?</Typography>
           <Table sx={{ display: "flex", justifyContent: "center" }}>
             <tr>
               {
@@ -85,25 +95,29 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
               }
             </tr>
           </Table>
-        </Stack>
+        </Box>
 
-        <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-        {
-          isUpdating ?
-          <Input value={contract.Coding.codeDescription} 
-            onChange={(e) =>
-              setContract((c) => ({
-                ...c,
-                Coding: { ...c.Coding, codeDescription: e.target.value },
-              }))
-            } placeholder="Enter your answer..."
-          />
-          : <Typography><strong>{contract.Coding.codeDescription}</strong></Typography>
-        }
+        <Question
+          question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
+          answer={contract.Coding.codeDescription}
+          isUpdating={isUpdating}
+          input={
+            <Input value={contract.Coding.codeDescription} 
+              onChange={(e) =>
+                setContract((c) => ({
+                  ...c,
+                  Coding: { ...c.Coding, codeDescription: e.target.value },
+                }))
+              } placeholder="Enter your answer..."
+            />
+          }
+        />
 
-        <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-        { 
-          isUpdating ?
+        <Question
+          question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
+          answer={contract.Coding.reflectionPlan}
+          isUpdating={isUpdating}
+          input={
             <Input value={contract.Coding.reflectionPlan} 
               onChange={(e) =>
                 setContract((c) => ({
@@ -112,51 +126,53 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                 }))
               } placeholder="Enter your answer..."
             />
-          : <Typography><strong>{contract.Coding.reflectionPlan}</strong></Typography>
-        }
+          }
+        />
 
         {featureMap["Haystack"] && (
           <>
             <Typography level="h3">Haystack</Typography>
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Typography>What grade do you want to get?</Typography>
-              {
-                isUpdating ?
-                  <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
-                    onChange={(_, v) =>
-                      setContract(c => ({
-                        ...c,
-                        Haystack: { ...c.Haystack, gradeWanted: v as string },
-                      }))
-                    }
-                  >
-                    <Option value="Proficient">Proficient</Option>
-                    <Option value="Approaching Mastery">Approaching Mastery</Option>
-                    <Option value="Mastery">Mastery</Option>
-                  </Select>
-                : <Typography><strong>{contract.Haystack.gradeWanted}</strong></Typography>
+            <Question
+              question={"What grade do you want to get?"}
+              answer={contract.Haystack.gradeWanted}
+              isUpdating={isUpdating}
+              input={
+                <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
+                  onChange={(_, v) =>
+                    setContract(c => ({
+                      ...c,
+                      Haystack: { ...c.Haystack, gradeWanted: v as string },
+                    }))
+                  }
+                >
+                  <Option value="Proficient">Proficient</Option>
+                  <Option value="Approaching Mastery">Approaching Mastery</Option>
+                  <Option value="Mastery">Mastery</Option>
+                </Select>
               }
-            </Stack>
+            />
 
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Typography>How many haystack problems will you solve?</Typography>
-              { 
-                isUpdating ?
-                  <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
-                    onChange={(e) =>
-                      setContract((c) => ({
-                        ...c,
-                        Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
-                      }))
-                    } sx={{ width: "4em" }} placeholder="0"
-                  />
-                : <Typography><strong>{contract.Haystack.problemsToSolve}</strong></Typography>
+            <Question
+              question={"How many haystack problems will you solve?"}
+              answer={contract.Haystack.problemsToSolve}
+              isUpdating={isUpdating}
+              input={
+                <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
+                  onChange={(e) =>
+                    setContract((c) => ({
+                      ...c,
+                      Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
+                    }))
+                  } sx={{ width: "4em" }} placeholder="0"
+                />
               }
-            </Stack>
+            />
 
-            <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-            {
-              isUpdating ?
+            <Question
+              question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
+              answer={contract.Haystack.codeDescription}
+              isUpdating={isUpdating}
+              input={
                 <Input placeholder="Enter your answer..." value={contract.Haystack.codeDescription} 
                   onChange={(e) =>
                     setContract((c) => ({
@@ -165,12 +181,15 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                     }))
                   }
                 />
-              : <Typography><strong>{contract.Haystack.codeDescription}</strong></Typography>
-            }
 
-            <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-            {
-              isUpdating ?
+              }
+            />
+
+            <Question
+              question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
+              answer={contract.Haystack.reflectionPlan}
+              isUpdating={isUpdating}
+              input={
                 <Input placeholder="Enter your answer..." value={contract.Haystack.reflectionPlan} 
                   onChange={(e) =>
                     setContract((c) => ({
@@ -179,52 +198,54 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                     }))
                   }
                 />
-              : <Typography><strong>{contract.Haystack.reflectionPlan}</strong></Typography>
-            }
-            </>
+              }
+            />
+          </>
         )}
 
         {featureMap["Mutation"] && (
           <>
             <Typography level="h3">Mutation Testing</Typography>
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Typography>What grade do you want to get?</Typography>
-              {
-                isUpdating ?
-                  <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
-                    onChange={(_, v) =>
-                      setContract(c => ({
-                        ...c,
-                        Mutation: { ...c.Mutation, gradeWanted: v as string },
-                      }))
-                    }>
-                    <Option value="Proficient">Proficient</Option>
-                    <Option value="Approaching Mastery">Approaching Mastery</Option>
-                    <Option value="Mastery">Mastery</Option>
-                  </Select>
-                : <Typography><strong>{contract.Mutation.gradeWanted}</strong></Typography>
+            <Question
+              question={"What grade do you want to get?"}
+              answer={contract.Mutation.gradeWanted}
+              isUpdating={isUpdating}
+              input={
+                <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
+                  onChange={(_, v) =>
+                    setContract(c => ({
+                      ...c,
+                      Mutation: { ...c.Mutation, gradeWanted: v as string },
+                    }))
+                  }>
+                  <Option value="Proficient">Proficient</Option>
+                  <Option value="Approaching Mastery">Approaching Mastery</Option>
+                  <Option value="Mastery">Mastery</Option>
+                </Select>
               }
-            </Stack>
+            />
 
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Typography>How many mutation testing problems will you solve?</Typography>
-              {
-                isUpdating ? 
-                  <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
-                    onChange={(e) =>
-                      setContract((c) => ({
-                        ...c,
-                        Mutation: { ...c.Mutation, problemsToSolve: +e.target.value },
-                      }))
-                    }
-                  />
-                : <Typography><strong>{contract.Mutation.problemsToSolve}</strong></Typography>
-              } 
-            </Stack>
+            <Question
+              question={"How many mutation testing problems will you solve?"}
+              answer={contract.Mutation.problemsToSolve}
+              isUpdating={isUpdating}
+              input={
+                <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+                  onChange={(e) =>
+                    setContract((c) => ({
+                      ...c,
+                      Mutation: { ...c.Mutation, problemsToSolve: +e.target.value },
+                    }))
+                  }
+                />
+              }
+            />
 
-            <Typography>Give a qualitative description of what your code will look like in order to achieve your desired grade.</Typography>
-            {
-              isUpdating ?
+            <Question
+              question={"Give a qualitative description of what your code will look like in order to achieve your desired grade."}
+              answer={contract.Mutation.codeDescription}
+              isUpdating={isUpdating}
+              input={
                 <Input placeholder="Enter your answer..." value={contract.Mutation.codeDescription} 
                   onChange={(e) =>
                     setContract((c) => ({
@@ -233,12 +254,14 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                     }))
                   }
                 />
-              : <Typography>{contract.Mutation.codeDescription}</Typography>
-            }
+              }
+            />
 
-            <Typography>How many reflections will you do in order to reach your desired grade and how in depth will you go with them?</Typography>
-            {
-              isUpdating ?
+            <Question
+              question={"How many reflections will you do in order to reach your desired grade and how in depth will you go with them?"}
+              answer={contract.Mutation.reflectionPlan}
+              isUpdating={isUpdating}
+              input={
                 <Input placeholder="Enter your answer..." value={contract.Mutation.reflectionPlan} 
                   onChange={(e) =>
                     setContract((c) => ({
@@ -247,11 +270,11 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
                     }))
                   }
                 />
-              : <Typography><strong>{contract.Mutation.reflectionPlan}</strong></Typography>
-            }
-            </>
+              }
+            />
+          </>
         )}
-      </Stack>
+      </Box>
 
       <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
         {
@@ -280,5 +303,18 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
         }
       </Stack>
     </>
+  )
+}
+
+function Question({ question, answer, isUpdating, input }: { question: string, answer: string | number, isUpdating: boolean, input: ReactNode }) {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", flexWrap: "wrap" }}>
+      <Typography>{question}</Typography>
+      {
+        isUpdating ?
+          input
+        : <Typography><strong>{answer ?? ""}</strong></Typography>
+      }
+    </Box>
   )
 }
