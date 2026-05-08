@@ -1,4 +1,4 @@
-import { List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
+import { List, ListItemButton, Stack, TabPanel, Tabs, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 import { BlogPost } from "../types";
 import { capitalizeString } from "../utils/capitalizeString";
