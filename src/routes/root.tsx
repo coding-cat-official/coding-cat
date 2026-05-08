@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLoaderData, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, ContractData, ContractProgress, Problem, Submission } from '../types';
+import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, Submission } from '../types';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
 import { List as ListIcon } from '@phosphor-icons/react';
@@ -16,6 +16,8 @@ import getProblemSet from '../utils/getProblemSet';
 import PasswordProtected from './PasswordProtected';
 import { ALL_PFPS } from '../components/profile/UserInfo';
 import ProfileAvatar from '../components/profile/ProfileAvatar';
+import BlogList from '../components/BlogList';
+import getBlogPosts from '../utils/getBlogPosts';
 
 interface UserData{
   name: string,
@@ -39,6 +41,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
+  const [searchedBlogs, setSearchedBlogs] = useState<BlogPost[]>([]);
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
@@ -60,6 +63,14 @@ export default function App() {
   useEffect(() => {
     setSearchedProblems(filteredProblems);
   }, [filteredProblems])
+
+  
+  useEffect(() => {
+    (async () => {
+      const posts = await getBlogPosts();
+      setSearchedBlogs(posts);
+    })();
+  })
 
   function handleSelectedCategory(category: string){
     setActiveCategory(category)
@@ -179,6 +190,15 @@ export default function App() {
     contractProgress,
     progress
   };
+  
+  const blogListProps = {
+    searchedBlogs: searchedBlogs,
+    selectedTab,
+    setSelectedTab,
+    selectedCategory: activeCategory,
+    activeBlog: activeProblem,
+    closeDrawer: () => setOpen(false)
+  };
 
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
@@ -258,7 +278,9 @@ export default function App() {
               <Box sx={{ flex: 3}} className="parent-problemList">
                 {activeCategory === 'test-questions' ? (
                   <PasswordProtected {...problemListProps}/>
-                ) : (
+                ) : activeCategory === 'blogs' ? (
+                  <BlogList {...blogListProps}/>
+                ): (
                   <ProblemList {...problemListProps} />
                 )}
               </Box>
