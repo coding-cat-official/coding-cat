@@ -206,6 +206,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
   }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
+  useEffect(() => {
+  const existingStats = problemSessionStats[problem.meta.name];
+
+  setProblemElapsedSeconds(existingStats?.elapsedTimeSeconds ?? 0);
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [problem.meta.name]);
+
     // Problem timer, starts when problem loads
     useEffect(() => {
       if (!activeSession) return;
@@ -213,11 +221,20 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       const existingStats = problemSessionStats[problem.meta.name];
 
       //we don't want to restart already completed problems
-      if (existingStats?.completed){
+      if (existingStats?.completed === true) {
         setProblemElapsedSeconds(existingStats.elapsedTimeSeconds);
+
+        if (problemTimerRef.current) {
+          clearInterval(problemTimerRef.current);
+          problemTimerRef.current = null;
+        }
+
         return;
       }
 
+      if (problemTimerRef.current) {
+        clearInterval(problemTimerRef.current);
+    }
       problemStartRef.current = Date.now();
 
       problemTimerRef.current = setInterval(() => {
@@ -245,7 +262,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         }))
       }
 
-    }, [problem.meta.name, activeSession, problemSessionStats, setProblemSessionStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [problem.meta.name, activeSession]);
 
     // Alert user if taking too long on a problem
     useEffect(() => {
