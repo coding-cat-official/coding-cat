@@ -161,11 +161,6 @@ export interface BlogPost {
         author: string;
         title: string;
     };
-  reflection_id: string;
-  session_id: string;
-  reflection_type: "pre" | "post";
-  form_data: FormAnswers;
-  created_at: Date;
 }
 
 export interface ProblemLog {

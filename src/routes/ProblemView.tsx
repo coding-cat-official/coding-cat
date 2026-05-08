@@ -65,8 +65,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       setActiveProblem, 
       refetchProgress,
       activeSession,
-      sessionId,
-      sessionRemainingSeconds,
       sessionDuration,
       plannedExerciseCount
     } = useOutletContext<{
