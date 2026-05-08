@@ -5,6 +5,7 @@ from browser import bind, self # type: ignore
 
 # global print capture buffer - reset before each code run
 _print_output = []
+# stores student code to check for print statements after eval
 _student_code = ""
 
 def captured_print(*args, **kwargs):
