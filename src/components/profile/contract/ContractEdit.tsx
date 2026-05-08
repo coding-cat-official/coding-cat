@@ -30,7 +30,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
   const rowStyle: SxProps = {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     width: "100%",
     margin: "10px",
     marginLeft: "0"
@@ -55,7 +55,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
             question={"What grade do you want to get?"}
           />
           <ContractInput
-            answer={contract.Coding.gradeWanted}
+            answer={contract.Coding.gradeWanted ?? "Not answered"}
             isUpdating={isUpdating}
             element={
               <Select placeholder="Grade" value={contract.Coding.gradeWanted} 
@@ -166,7 +166,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
               question={"What grade do you want to get?"}
             />
             <ContractInput
-              answer={contract.Haystack.gradeWanted}
+              answer={contract.Haystack.gradeWanted ?? "Not answered"}
               isUpdating={isUpdating}
               element={
                 <Select placeholder="Grade" value={contract.Haystack.gradeWanted} 
@@ -257,7 +257,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
               question={"What grade do you want to get?"}
             />
             <ContractInput
-              answer={contract.Mutation.gradeWanted}
+              answer={contract.Mutation.gradeWanted ?? "Not answered"}
               isUpdating={isUpdating}
               element={
                 <Select placeholder="Grade" value={contract.Mutation.gradeWanted}
@@ -377,27 +377,42 @@ function ContractQuestion({ question }: { question: string }) {
         backgroundColor: "#FFEB9A",
         padding: "10px",
         borderRadius: "10px",
-        width: "45%"
+        width: "75%"
       }}
     >
-      <Typography>{question}</Typography>
+      <Typography><strong>{question}</strong></Typography>
     </Box>
   )
 }
 
 function ContractInput({ isUpdating, answer, element }: { isUpdating: boolean, answer: string | number, element: ReactNode }){
   return (
-    <Box 
-      sx={{
-        maxWidth: "45%",
-        padding: "10px"
-      }}
-    >
+    <>
     {
       isUpdating ?
-        element
-      : <Typography><strong>{answer !== "" ? answer : "Not answered"}</strong></Typography>
+      <Box 
+        sx={{
+          display: "flex",
+          padding: "10px",
+          width: "100%",
+          marginLeft: "10px"
+        }}
+      >
+        {element}
+      </Box>
+      : <Box 
+        sx={{
+          display: "flex",
+          padding: "10px",
+          backgroundColor: "white",
+          borderRadius: "10px",
+          marginLeft: "10px",
+          width: "100%"
+        }}
+      >
+        <Typography>{answer !== "" ? answer : "Not answered"}</Typography>
+      </Box>
     }
-    </Box>
+    </>
   )
 }
