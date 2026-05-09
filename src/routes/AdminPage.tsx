@@ -15,33 +15,37 @@ interface ModalMetaData {
 // CSS styles of links
 const linkStyle = { marginBottom: 2, color: "black" };
 
-// Meta data for each link
-const links: ModalMetaData[] = [
-  {
-    title: "View Student Information",
-    desc: "Enter the email/student id of the student you want to a detailed view of",
-  },
-  {
-    title: "Toggle Public/Test Questions",
-    desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
-    switch: { switchLabel: "Enable Test Categories", switchAction: () => ({}) },
-    extraNode: <CategoryPasswordForm />
-  },
-  {
-    title: "Modify Global Contract Permissions",
-    desc: "Below is a switch that toggles the contract to be read-only globally. This does not apply for student who have contract overrides enabled.",
-    switch: { switchLabel: "Toggle Read-Only Mode", switchAction: () => ({}) },
-  },
-];
-
 /**
  * Page level component that renders a box of link that render modals that allows the user to make changes to the app itself
  * @returns <AdminPage />
  */
 export default function AdminPage() {
-  const [modal, setModal] = useState<ModalMetaData | null>(null);
-  const handleOpen = (data: ModalMetaData) => setModal(data);
-  const handleClose = () => setModal(null);
+  const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+  const [extraNodeBehavior, setExtraNodeBehavior] = useState(false);
+
+  const handleOpen = (index: number) => setActiveModalIndex(index);
+  const handleClose = () => setActiveModalIndex(null);
+
+  // Meta data for each link
+  const links: ModalMetaData[] = [
+    {
+      title: "View Student Information",
+      desc: "Enter the email/student id of the student you want to a detailed view of",
+    },
+    {
+      title: "Toggle Public/Test Questions",
+      desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
+      switch: { switchLabel: "Enable Test Categories", switchAction: () => {setExtraNodeBehavior(prev => !prev)} },
+      extraNode: <CategoryPasswordForm visibility={extraNodeBehavior} />,
+    },
+    {
+      title: "Modify Global Contract Permissions",
+      desc: "Below is a switch that toggles the contract to be read-only globally. This does not apply for student who have contract overrides enabled.",
+      switch: { switchLabel: "Toggle Read-Only Mode", switchAction: () => ({}) },
+    },
+  ];
+
+  const activeModal = activeModalIndex !== null ? links[activeModalIndex] : null;
 
   return (
     <Box
@@ -68,20 +72,21 @@ export default function AdminPage() {
 
         {/* Dynamically render links */}
         {links.map((elem, index) => (
-          <Link key={index} component="button" sx={linkStyle} onClick={() => handleOpen(elem)}>
+          <Link key={index} component="button" sx={linkStyle} onClick={() => handleOpen(index)}>
             {elem.title}
           </Link>
         ))}
 
         {/* Renders different modals data depending on what link was clicked */}
-        {modal && (
+        {activeModal && (
           <AdminPageModal
             open
             handleClose={handleClose}
-            modalTitle={modal.title}
-            modalDesc={modal.desc}
-            switchLabel={modal.switch?.switchLabel}
-            extraNode={modal.extraNode}
+            modalTitle={activeModal.title}
+            modalDesc={activeModal.desc}
+            switchLabel={activeModal.switch?.switchLabel}
+            switchAction={activeModal.switch?.switchAction}
+            extraNode={activeModal.extraNode}
           />
         )}
       </Card>

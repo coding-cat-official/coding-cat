@@ -2,7 +2,11 @@ import { Box, Button, Input, Typography } from "@mui/joy";
 import { useState } from "react";
 import { supabase } from "../../supabaseClient";
 
-export default function CategoryPasswordForm() {
+interface CategoryPasswordFormProps {
+  visibility : boolean
+}
+
+export default function CategoryPasswordForm({ visibility } : CategoryPasswordFormProps ) {
   const [testPassword, setTestPassword] = useState("");
 
   const statusDefault = { value: "", statusSx: {} as Record<string, any> };
@@ -55,16 +59,18 @@ export default function CategoryPasswordForm() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Input
-        value={testPassword}
-        placeholder="Enter Category Password"
-        onChange={handleTestPassword}
-      />
-      <Typography sx={status.statusSx}>{status.value}</Typography>
-      <Button color="success" onClick={handleSubmit}>
-        Save
-      </Button>
-    </Box>
+    visibility ? (
+      <Box component="form" onSubmit={handleSubmit}>
+        <Input
+          value={testPassword}
+          placeholder="Enter Category Password"
+          onChange={handleTestPassword}
+        />
+        <Typography sx={status.statusSx}>{status.value}</Typography>
+        <Button color="success" onClick={handleSubmit}>
+          Save
+        </Button>
+      </Box>
+    ) : null
   );
 }

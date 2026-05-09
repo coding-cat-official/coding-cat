@@ -2,7 +2,7 @@ import { getCategoryList } from "./utils/getCategoryList";
 
 export interface AdminSwitch {
     switchLabel: string
-    switchAction: () => {};
+    switchAction: () => void;
 }
 
 export interface IOPair {
