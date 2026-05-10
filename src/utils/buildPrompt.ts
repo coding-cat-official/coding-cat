@@ -43,17 +43,21 @@ export function buildPrompt(
     .join("\n");
 
   // 2. System Prompt (Role & Ground Rules)
-  // Extracted the persona and constraints from your prompt. Caches perfectly.
+  // Check if it's a haystack problem and append the specific rule if it is.
+  const haystackInstruction = input.meta.question_type === "haystack"
+    ? "\n\nCRITICAL: This is a 'haystack' problem where a CS concept is hidden inside a story. Your hints MUST help the student recognize the underlying algorithm or data structure without explicitly naming it or solving it for them."
+    : "";
+
   const systemPrompt = [
     {
       type: "text" as const,
       text: `You are an expert Python tutor helping a student.
-Explain what the student should inspect next by asking probing questions, no more than 4 questions. Prefer Socratic hints over direct fixes. Do not provide the final solution or corrected code blocks. Return your answer in clean Markdown.`,
+Explain what the student should inspect next by asking probing questions, no more than 4 questions. Prefer Socratic hints over direct fixes. Do not provide the final solution or corrected code blocks. Return your answer in clean Markdown.${haystackInstruction}`,
       cache_control: { type: "ephemeral" as const },
     },
   ];
 
-  // 3. Static Problem Context Block (Replaces your first and second %s)
+  // 3. Static Problem Context Block
   // Applying the cache marker here saves tokens for the static instructions
   const problemContextBlock = {
     type: "text" as const,
@@ -73,7 +77,7 @@ ${input.description}`,
     specificInstructions = "Use the provided test results to guide your hints, focusing the student's attention on specific inputs that caused their code to fail.";
   }
 
-  // 5. Dynamic Student Data Block (Replaces your third and fourth %s)
+  // 5. Dynamic Student Data Block
   const studentContextBlock = {
     type: "text" as const,
     text: `=== TEST RESULTS (INPUT, EXPECTED OUTPUT, ACTUAL OUTPUT) ===
