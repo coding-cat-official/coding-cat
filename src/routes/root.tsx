@@ -53,6 +53,7 @@ export default function App() {
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
+  const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -215,6 +216,7 @@ export default function App() {
     setSessionStartTime(new Date());
     setSessionRemainingSeconds(durationMinutes * 60);
     setActiveSession(true);
+    setSessionTimerRunning(true);
   };
 
   const endSession = () => {
@@ -225,6 +227,7 @@ export default function App() {
     setSessionDuration(0);
     setSessionRemainingSeconds(0);
     setProblemSessionStats({});
+    setSessionTimerRunning(false);
   };
 
   const formatTime = (seconds: number): string => {
@@ -274,8 +277,16 @@ export default function App() {
 
       if (remaining <= 0) {
         clearInterval(sessionTimerRef.current!);
-        // Session ended so the user should be prompted to post-session
-        // Don't navigate automatically maybe, we should let them finish current problem
+        setActiveSession(false);
+        setSessionStartTime(null);
+        setSessionRemainingSeconds(0);
+        setSessionTimerRunning(false);
+        navigate('/post-session', {
+          state: {
+            sessionId,
+            timerExpired: true
+          }
+        });
       }
     }, 1000);
 
@@ -392,10 +403,12 @@ export default function App() {
                 <>
                   <Button
                     onClick={() => {
-                      if (activeSession) {
+                      if (activeSession && sessionTimerRunning) {
                         endSession();
                         navigate('/post-session', { state: { sessionId } });
-                      } else {
+                      } else if (activeSession && !sessionTimerRunning) {
+                        navigate('/post-session', { state: { sessionId } });
+                      }else {
                         navigate('/session');
                       }
                     }}
@@ -413,7 +426,11 @@ export default function App() {
                     }}
                     title={activeSession ? "Click to end session" : "Start a new session"}
                   >
-                    {activeSession ? `Ongoing session — ${formatTime(sessionRemainingSeconds)} left` : 'Start Session'}
+                  {sessionTimerRunning
+                    ? `Ongoing session — ${formatTime(sessionRemainingSeconds)} left`
+                    : activeSession
+                      ? 'Complete Session Reflection'
+                      : 'Start Session'}
                   </Button>
                   <Link to="/profile">
                     <Button>
@@ -474,7 +491,8 @@ export default function App() {
             plannedExerciseCount,
             problemSessionStats,
             setProblemSessionStats,
-            progress
+            progress,
+            sessionTimerRunning
           }} />
         </Box>
         

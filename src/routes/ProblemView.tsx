@@ -68,12 +68,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       plannedExerciseCount,
       problemSessionStats,
       setProblemSessionStats,
-      progress
-    } = useOutletContext<{
+      progress,
+      sessionTimerRunning
+     } = useOutletContext<{
       session: Session | null,
       setActiveProblem: (name: string | null) => void,
       refetchProgress: () => void,
       activeSession: boolean,
+      sessionTimerRunning: boolean,
       sessionId: string | null,
       sessionRemainingSeconds: number,
       sessionDuration: number,
@@ -99,7 +101,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     stop: stopTimer,
   } = useProblemTimer({
     problemName: problem.meta.name,
-    activeSession,
+    activeSession: sessionTimerRunning,
     problemSessionStats,
     setProblemSessionStats,
     progress,
@@ -234,7 +236,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
  
     // Alert user if taking too long on a problem
     useEffect(() => {
-      if (!activeSession || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
+      if (!sessionTimerRunning || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
 
       const sessionSeconds = sessionDuration * 60;
       const perProblemTarget = Math.max(1, Math.floor(sessionSeconds / Math.max(1, plannedExerciseCount)));
@@ -244,7 +246,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         setHideExerciseTimer(false);
         setAlertMessage(`You've been on this problem for a while 🐱 Consider using your tools, asking for hints or moving on!`);
       }
-    }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, activeSession, problemAlertStage]);
+    }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, sessionTimerRunning, problemAlertStage]);
 
     useEffect(() => {
       setAlertMessage(null);
@@ -342,7 +344,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               </Box>
             )}
 
-            {activeSession && !isCompleted && (
+            {sessionTimerRunning && !isCompleted && (
               hideExerciseTimer ? (
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <Button
