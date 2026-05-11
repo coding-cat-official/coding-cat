@@ -158,7 +158,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
             isUpdating ?
               <>
                 <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
-                <Button sx={{ width: "15%" }} onClick={async() => { await onSave(); setIsUpdating(false);}}>Save Changes</Button>
+                <Button sx={{ width: "15%" }} onClick={async() => { await onSave(); setIsUpdating(false);}}>Save</Button>
               </>
             : <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
           }
