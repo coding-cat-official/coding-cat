@@ -1,18 +1,10 @@
 import { Box, Button, Input, Typography } from "@mui/joy";
 import { useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { hashPassword } from "../../utils/hashPassword";
 
 interface CategoryPasswordFormProps {
   visibility: boolean;
-}
-
-// Create test-password hash via web crypto and sha-256
-async function hashPassword(password: string) {
-  const encodedPassword = new TextEncoder().encode(password);
-  const hashBuffer = await crypto.subtle.digest("sha-256", encodedPassword);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hashHex;
 }
 
 export default function CategoryPasswordForm({ visibility }: CategoryPasswordFormProps) {
