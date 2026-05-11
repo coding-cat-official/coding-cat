@@ -10,15 +10,16 @@ export interface IOPair {
     output: any;
 }
 
-export interface Report {
-    input: string;
-    expected: string;
-    actual: string;
-    equal: boolean;
+export interface EvalResult {
+  input: string;
+  expected: string;
+  actual: string;
+  equal: boolean;
+  printed: string;
 }
 
 export type EvalResponse
-    = { status: 'success'; report: Report[] }
+    = { status: 'success'; report: EvalResult[] }
     | { status: 'failure'; message: string }
 
 export interface Problem {

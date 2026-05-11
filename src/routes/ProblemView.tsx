@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
-import { Problem, EvalResponse } from '../types';
+import { Problem, EvalResponse, EvalResult } from '../types';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
@@ -22,8 +22,6 @@ import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
-const TEST_CASE_PASSED = '✅';
-const TEST_CASE_FAILED = '❌';
 const ALL_TESTS_PASSED = '🎉';
 
 const PASS_COLOR = '#caffc5';
@@ -104,6 +102,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       return;
     }
     if (evalResponse.status === "success") {
+      if(onlyPrintTestFail(evalResponse.report)){
+        setHidePrompt(true);
+        return;
+      }
       setHidePrompt(false);
 
       const allPassed = evalResponse.report.every((r) => r.equal);
@@ -281,6 +283,24 @@ interface ReportProps {
   questionType: string;
 }
 
+/**
+ * A function that checks whether the only failing test case is the print statement check.
+ * This determines whether to show the test case at all.
+ * @param report evalResponse.report to parse
+ * @returns boolean 
+ */
+function onlyPrintTestFail(report: EvalResult[]){
+  for(var i = 0; i < report.length; i++){
+    if(!report[i].equal){
+      if(i === report.length - 1){
+        return true;
+      }
+      return false;
+    }
+  }
+  return false;
+}
+
 function Report({ evalResponse, questionType }: ReportProps) {
   if (null === evalResponse) return null;
 
@@ -295,42 +315,17 @@ function Report({ evalResponse, questionType }: ReportProps) {
 
   if ('success' === evalResponse.status) {
 
-    if(questionType === 'haystack'){
-      return (
-        <Table size="sm" variant="outlined"
-          sx={{
-            '--TableCell-headBackground': '#f5f5f5',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center' }}>Input</th>
-              <th style={{ textAlign: 'center' }}>Your output</th>
-              <th style={{ textAlign: 'center' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evalResponse.report.map((r, i) => (
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.input}</td>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.actual}</td>
-                <td style={{ textAlign: 'center' }}>
-                  {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      );
-    }
+    const tableSx = { borderRadius: 10, border: 2, borderColor: "white" };
+    // changes the font size to small in haystack questions
+    const tableProps = questionType === "haystack"
+      ? { size: "sm" as const, sx: {...tableSx} }
+      : { sx: {...tableSx} };
 
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
           <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
-          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
+          <Table {...tableProps}>
             <thead>
             <tr>
               <th> Input </th>
@@ -340,11 +335,36 @@ function Report({ evalResponse, questionType }: ReportProps) {
             </thead>
             <tbody>
             { evalResponse.report.map((r, i) =>
-                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                  <td className="mono"> {r.input} </td>
-                  <td className="mono"> {r.expected} </td>
-                  <td className="mono"> {r.actual} </td>
-                </tr>)
+              <>
+                <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                  { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
+                    ? <td colSpan={3}> 
+                        Looks like you still have left over debugging print statements in your code! Remove them to complete this problem.
+                      </td>
+                    : <></>
+                  }
+                  { r.input !== "N/A"
+                    ? <>
+                        <td className="mono"> {r.input} </td>
+                        <td className="mono"> {r.expected} </td>
+                        <td className="mono"> {r.actual} </td>
+                      </>
+                    : <></>
+                  }
+                </tr>
+                { r.printed !== "" // check for any printed lines
+                  ? <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                      <td className="mono" colSpan={3}>
+                        Printed output:
+                        { /* pre allows the printed `\n`s to work as newlines */ }
+                        <pre style={{ margin: '4px 0 0 0', padding: '4px', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
+                          {r.printed}
+                        </pre>
+                      </td>
+                    </tr>
+                  : <></>
+                }
+              </>)
             }
             </tbody>
           </Table>
