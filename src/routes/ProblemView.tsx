@@ -104,6 +104,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       return;
     }
     if (evalResponse.status === "success") {
+      if(onlyPrintTestFail(evalResponse.report)){
+        setHidePrompt(true);
+        return;
+      }
       setHidePrompt(false);
 
       const allPassed = evalResponse.report.every((r) => r.equal);
