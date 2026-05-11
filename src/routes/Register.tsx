@@ -35,7 +35,7 @@ export default function Register() {
     setSuccess("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
@@ -46,10 +46,24 @@ export default function Register() {
       },
     });
 
-    if(error){
-      setError(error.message);
+    if(signUpError){
+      setError(signUpError.message);
+    }
+
+    if(signUpData.user){
+      const { error: createProfileError } = await supabase
+        .from('profiles')
+        .insert({
+          created_at: signUpData.user.created_at,
+          profile_id: signUpData.user.id
+        });
+      if(createProfileError){
+        setError(createProfileError.message);
+      }else{
+        setSuccess('User Registered!');
+      }
     }else{
-      setSuccess('User Registered!');
+      setError("Something went wrong registering...");
     }
 
     setLoading(false);
