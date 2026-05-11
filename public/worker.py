@@ -163,10 +163,14 @@ def load_and_test_student_function(e):
                     err_type, err_msg = result["error"].split(":", 1)
                     
                     hint = hints.get(err_type.strip())
+                    if hint == None:
+                        return respond_failure(
+                            f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}"
+                        )
                     return respond_failure(
                         f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}\n\n"
                         f"Tip: {hint}"
-                    )
+                    ) 
             
         except Exception as e:
             err_type = type(e).__name__ 
