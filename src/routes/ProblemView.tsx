@@ -352,7 +352,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
                     <td className="mono" colSpan={3}>
                       Printed output:
                       { /* pre allows the printed `\n`s to work as newlines */ }
-                      <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
+                      <pre style={{ margin: '4px 0 0 0', padding: '4px', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
                         {r.printed}
                       </pre>
                     </td>
