@@ -310,9 +310,9 @@ function Report({ evalResponse, questionType }: ReportProps) {
         sx={{ 
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "salmon",
+          backgroundColor: FAIL_COLOR,
           padding: "10px",
-          border: "2px solid red",
+          border: "2px solid black",
           borderRadius: "10px",
         }}
       >
