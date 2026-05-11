@@ -144,6 +144,7 @@ def load_and_test_student_function(e):
         "KeyError":    "You're trying to access a dictionary key that isn't there.",
         "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
         "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
+        "NameError": "You may be trying to use a variable whose value hasn't been set - make sure all variables are set before referring to them."
     }
     if data.get("question_type", None) in ('coding', 'haystack'):
         try:
