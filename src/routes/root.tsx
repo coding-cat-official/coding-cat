@@ -276,7 +276,7 @@ export default function App() {
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
-                {activeCategory === 'test-questions' ? (
+                {activeCategory?.match(/^test-questions[0-9]*$/) ? (
                   <PasswordProtected {...problemListProps}/>
                 ) : activeCategory === 'blogs' ? (
                   <BlogList {...blogListProps}/>
