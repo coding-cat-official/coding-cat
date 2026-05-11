@@ -3,10 +3,19 @@ import { useState } from "react";
 import { supabase } from "../../supabaseClient";
 
 interface CategoryPasswordFormProps {
-  visibility : boolean
+  visibility: boolean;
 }
 
-export default function CategoryPasswordForm({ visibility } : CategoryPasswordFormProps ) {
+// Create test-password hash via web crypto and sha-256
+async function hashPassword(password: string) {
+  const encodedPassword = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest("sha-256", encodedPassword);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hashHex;
+}
+
+export default function CategoryPasswordForm({ visibility }: CategoryPasswordFormProps) {
   const [testPassword, setTestPassword] = useState("");
 
   const statusDefault = { value: "", statusSx: {} as Record<string, any> };
@@ -17,7 +26,7 @@ export default function CategoryPasswordForm({ visibility } : CategoryPasswordFo
     setStatus(statusDefault);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     // If eric wants to add rules to his own password this is where to do it
     const passwordRules = {
       minLength: {
@@ -31,17 +40,18 @@ export default function CategoryPasswordForm({ visibility } : CategoryPasswordFo
 
     if (!failedRule) {
       e.preventDefault();
-      sendPasswordtoDB(testPassword);
+      const hashedPassword = await hashPassword(testPassword);
+      sendPasswordtoDB(hashedPassword);
     } else {
       setStatus({ value: failedRule.msg, statusSx: { color: "red", mt: 1 } });
     }
   };
 
   // Update query to update test-password to the new password
-  const sendPasswordtoDB = async (password: string) => {
+  const sendPasswordtoDB = async (hashedPassword: string) => {
     let { error } = await supabase
       .from("settings")
-      .update({ value: password })
+      .update({ value: hashedPassword })
       .eq("key", "test-password")
       .select();
 
@@ -58,19 +68,17 @@ export default function CategoryPasswordForm({ visibility } : CategoryPasswordFo
     }
   };
 
-  return (
-    visibility ? (
-      <Box component="form" onSubmit={handleSubmit}>
-        <Input
-          value={testPassword}
-          placeholder="Enter Category Password"
-          onChange={handleTestPassword}
-        />
-        <Typography sx={status.statusSx}>{status.value}</Typography>
-        <Button color="success" onClick={handleSubmit}>
-          Save
-        </Button>
-      </Box>
-    ) : null
-  );
+  return visibility ? (
+    <Box component="form" onSubmit={handleSubmit}>
+      <Input
+        value={testPassword}
+        placeholder="Enter Category Password"
+        onChange={handleTestPassword}
+      />
+      <Typography sx={status.statusSx}>{status.value}</Typography>
+      <Button color="success" onClick={handleSubmit}>
+        Save
+      </Button>
+    </Box>
+  ) : null;
 }
