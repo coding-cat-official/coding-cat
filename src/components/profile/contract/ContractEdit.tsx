@@ -35,7 +35,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
     width: "100%",
     margin: "10px",
     marginBottom: "15px",
-    marginLeft: "0"
+    marginLeft: "0px"
   }
 
   const sectionStyle: SxProps = {
@@ -87,8 +87,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
           <Box 
             sx={{ 
               display: "flex", 
-              flexDirection: "row", 
-              flexWrap: "wrap", 
+              flexDirection: "row",
               margin: "10px", 
               marginLeft: "0px", 
               marginBottom: "15px"
@@ -332,14 +331,14 @@ function ContractQuestion({ question }: { question: string }) {
   return (
     <Box 
       sx={{
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        backgroundColor: "#FFEB9A",
-        padding: "10px",
-        borderRadius: "10px",
-        width: "100%"
-      }}
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      backgroundColor: "#FFEB9A",
+      padding: "10px",
+      borderRadius: "10px",
+      width: "30%"
+    }}
     >
       <Typography><strong>{question}</strong></Typography>
     </Box>
@@ -347,32 +346,33 @@ function ContractQuestion({ question }: { question: string }) {
 }
 
 function ContractInput({ isUpdating, answer, element }: { isUpdating: boolean, answer: string | number, element: ReactNode }){
+  const sxProps: SxProps = isUpdating
+    ? {
+      display: "flex",
+      padding: "10px",
+      borderRadius: "10px",
+      marginLeft: "10px",
+      width: "100%"
+    } : {
+      display: "flex",
+      padding: "10px",
+      borderRadius: "10px",
+      marginLeft: "10px",
+      width: "100%",
+      backgroundColor: "white"
+    }
   return (
     <>
     {
-      isUpdating ?
-      <Box 
-        sx={{
-          display: "flex",
-          padding: "10px",
-          width: "100%",
-          marginLeft: "10px"
-        }}
-      >
-        {element}
-      </Box>
-      : <Box 
-        sx={{
-          display: "flex",
-          padding: "10px",
-          backgroundColor: "white",
-          borderRadius: "10px",
-          marginLeft: "10px",
-          width: "100%"
-        }}
-      >
-        <Typography>{answer !== "" ? answer : "Not answered"}</Typography>
-      </Box>
+      isUpdating 
+      ? <Box sx={sxProps}>
+          {element}
+        </Box>
+      : <Box sx={sxProps}>
+          <Typography>
+            {answer !== "" ? answer : "Not answered"}
+          </Typography>
+        </Box>
     }
     </>
   )
@@ -386,7 +386,8 @@ function ContractCategoriesInput({ isUpdating, categories, problemCountByCategor
         justifyContent: "center",
         backgroundColor: "white",
         borderRadius: "10px",
-        marginTop: "10px"
+        padding: "5px",
+        marginLeft: "10px"
       }}
     >
       <tr>
