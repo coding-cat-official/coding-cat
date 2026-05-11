@@ -185,3 +185,10 @@ export interface ProblemSessionStats{
     passedTests: number;
     totalTests: number;
 }
+
+export interface ProblemArgs{
+    problemName: string;
+    activeSession: boolean;
+    problemSessionStats: Record<string, ProblemSessionStats>;
+    setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, ProblemSessionStats>>>;
+}

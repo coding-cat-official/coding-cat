@@ -20,6 +20,7 @@ import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
+import useProblemTimer from '../hooks/useProblemTimer';
 
 // Emoji rendered in the report
 const ALL_TESTS_PASSED = '🎉';
@@ -54,11 +55,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
-    const [problemElapsedSeconds, setProblemElapsedSeconds] = useState(0);
     const [problemAlertStage, setProblemAlertStage] = useState<null | 'half' | 'twoThirds'>(null);
     const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
-    const problemTimerRef = useRef<NodeJS.Timeout | null>(null);
-    const problemStartRef = useRef<number | null>(null);
 
     const { 
       session, 
@@ -93,6 +91,17 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       >
       >
     }>();
+
+  const {
+    elapsed: problemElapsedSeconds,
+    completed: isCompleted,
+    stop: stopTimer,
+  } = useProblemTimer({
+    problemName: problem.meta.name,
+    activeSession,
+    problemSessionStats,
+    setProblemSessionStats,
+  });
     
     const navigate = useNavigate();
 
@@ -126,6 +135,19 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   }, [setActiveProblem, problem.meta.name, currProblems]);
 
   const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
+
+
+  useEffect(() => {
+    if (!evalResponse || evalResponse?.status !== "success") return;
+
+    const passedTests = evalResponse.report.filter((r) => r.equal).length;
+    const totalTests = evalResponse.report.length;
+    const allPassed = passedTests === totalTests;
+
+    if (allPassed && !isCompleted) {
+      stopTimer({ passedTests, totalTests });
+    }
+  }, [evalResponse, stopTimer, isCompleted]);
 
 
   // Function for defining what reflection questions to show to user depending on success status of user code
@@ -206,65 +228,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
   }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
-  useEffect(() => {
-  const existingStats = problemSessionStats[problem.meta.name];
-
-  setProblemElapsedSeconds(existingStats?.elapsedTimeSeconds ?? 0);
-
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [problem.meta.name]);
-
-    // Problem timer, starts when problem loads
-    useEffect(() => {
-      if (!activeSession) return;
-
-      const existingStats = problemSessionStats[problem.meta.name];
-
-      //we don't want to restart already completed problems
-      if (existingStats?.completed === true) {
-        setProblemElapsedSeconds(existingStats.elapsedTimeSeconds);
-
-        if (problemTimerRef.current) {
-          clearInterval(problemTimerRef.current);
-          problemTimerRef.current = null;
-        }
-
-        return;
-      }
-
-      if (problemTimerRef.current) {
-        clearInterval(problemTimerRef.current);
-    }
-      problemStartRef.current = Date.now();
-
-      problemTimerRef.current = setInterval(() => {
-        const startElapsed = existingStats?.elapsedTimeSeconds ?? 0;
-        const currentElapsed = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
-
-        setProblemElapsedSeconds(startElapsed + currentElapsed);
-      }, 1000);
-
-      return () => {
-        if (problemTimerRef.current) {
-          clearInterval(problemTimerRef.current);
-        }
-
-        const additionalElapsed = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
-
-        setProblemSessionStats(prev => ({
-          ...prev,
-          [problem.meta.name]: {
-            elapsedTimeSeconds: (prev[problem.meta.name]?.elapsedTimeSeconds ?? 0) + additionalElapsed,
-            completed: false,
-            passedTests: prev[problem.meta.name]?.passedTests ?? 0,
-            totalTests: prev[problem.meta.name]?.totalTests ?? 0,
-          }
-        }))
-      }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [problem.meta.name, activeSession]);
-
+ 
     // Alert user if taking too long on a problem
     useEffect(() => {
       if (!activeSession || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
@@ -282,34 +246,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         console.log(`You've spent ${Math.floor(problemElapsedSeconds / 60)} minutes on this problem.`);
       }
     }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, activeSession, problemAlertStage]);
-
-    // We want to stop the timer permanently when all the tests pass
-    useEffect(() => {
-      if (!evalResponse || evalResponse.status !== 'success') return;
-
-      const allPassed = evalResponse.report.every(r => r.equal);
-      if (!allPassed) return;
-
-      //stop the timer
-      if(problemTimerRef.current) {
-        clearInterval(problemTimerRef.current);
-        problemTimerRef.current = null;
-      }
-
-      //then calculate the final elapsed time
-      const additionalElapsed  = Math.floor((Date.now() - (problemStartRef.current ?? Date.now())) / 1000);
-      setProblemSessionStats(prev => ({
-        ...prev,
-        [problem.meta.name]: {
-          elapsedTimeSeconds: (prev[problem.meta.name]?.elapsedTimeSeconds ?? 0) + additionalElapsed,
-          completed: true,
-          passedTests: evalResponse.report.filter(r => r.equal).length,
-          totalTests: evalResponse.report.length,
-        }
-      }));
-
-      setProblemElapsedSeconds(prev => prev + additionalElapsed);
-    }, [evalResponse, problem.meta.name, setProblemSessionStats]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
@@ -374,7 +310,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
             </Box>
 
-            {activeSession && !problemSessionStats[problem.meta.name]?.completed && (
+            {activeSession && !isCompleted && (
               hideExerciseTimer ? (
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <Button
