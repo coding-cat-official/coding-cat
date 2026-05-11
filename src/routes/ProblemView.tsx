@@ -325,42 +325,16 @@ function Report({ evalResponse, questionType }: ReportProps) {
 
   if ('success' === evalResponse.status) {
 
-    if(questionType === 'haystack'){
-      return (
-        <Table size="sm" variant="outlined"
-          sx={{
-            '--TableCell-headBackground': '#f5f5f5',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center' }}>Input</th>
-              <th style={{ textAlign: 'center' }}>Your output</th>
-              <th style={{ textAlign: 'center' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evalResponse.report.map((r, i) => (
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.input}</td>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.actual}</td>
-                <td style={{ textAlign: 'center' }}>
-                  {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      );
-    }
+    const tableSx = { borderRadius: 10, border: 2, borderColor: "white" };
+    const tableProps = questionType === "haystack"
+      ? { size: "sm" as const, sx: {...tableSx} }
+      : { sx: {...tableSx} };
 
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
           <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
-          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
+          <Table {...tableProps}>
             <thead>
             <tr>
               <th> Input </th>
