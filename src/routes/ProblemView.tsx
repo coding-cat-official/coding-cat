@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
-import { Problem, EvalResponse } from '../types';
+import { Problem, EvalResponse, EvalResult } from '../types';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
@@ -281,6 +281,18 @@ interface ReportProps {
   questionType: string;
 }
 
+function onlyPrintTestFail(report: EvalResult[]){
+  for(var i = 0; i < report.length; i++){
+    if(!report[i].equal){
+      if(i === report.length - 1){
+        return true;
+      }
+      return false;
+    }
+  }
+  return false;
+}
+
 function Report({ evalResponse, questionType }: ReportProps) {
   const [collapsibleStateList, setCollapsibleStateList] = useState<boolean[]>([]);
 
@@ -356,9 +368,20 @@ function Report({ evalResponse, questionType }: ReportProps) {
             { evalResponse.report.map((r, i) =>
               <>
                 <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                  <td className="mono"> {r.input} </td>
-                  <td className="mono"> {r.expected} </td>
-                  <td className="mono"> {r.actual} </td>
+                  { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
+                    ? <td colSpan={3}> 
+                      Don't forget to remove print statements once you're done!
+                    </td>
+                    : <></>
+                  }
+                  { r.input !== "N/A"
+                    ? <>
+                      <td className="mono"> {r.input} </td>
+                      <td className="mono"> {r.expected} </td>
+                      <td className="mono"> {r.actual} </td>
+                    </>
+                    : <></>
+                  }
                 </tr>
                 { r.printed !== "" ? 
                   <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>

@@ -10,7 +10,7 @@ export interface IOPair {
     output: any;
 }
 
-export interface Report {
+export interface EvalResult {
   input: string;
   expected: string;
   actual: string;
@@ -19,7 +19,7 @@ export interface Report {
 }
 
 export type EvalResponse
-    = { status: 'success'; report: Report[] }
+    = { status: 'success'; report: EvalResult[] }
     | { status: 'failure'; message: string }
 
 export interface Problem {
