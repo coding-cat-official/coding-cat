@@ -1,20 +1,17 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import { ContractData } from "../../../types";
-import { Box, Button, Input, Option, Select, Stack, Table, Typography } from "@mui/joy";
+import { Box, Input, Option, Select, Stack, Table, Typography } from "@mui/joy";
 import { SxProps } from "@mui/joy/styles/types";
 
 interface ContractEditProps {
   contract: ContractData;
   setContract: Dispatch<SetStateAction<ContractData>>;
   isUpdating: boolean;
-  setIsUpdating: Dispatch<SetStateAction<boolean>>;
-  onSave: () => Promise<void>;
-  lastUpdated: Date | null;
   featureMap: Record<string,boolean>;
   problemCountByCategory: Record<string, number>;
 }
 
-export default function ContractEdit({ contract, setContract, isUpdating, setIsUpdating, onSave, lastUpdated, featureMap, problemCountByCategory }: ContractEditProps) {
+export default function ContractEdit({ contract, setContract, isUpdating, featureMap, problemCountByCategory }: ContractEditProps) {
   const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
 
   var displayedCategories: string[] = [];
@@ -326,31 +323,6 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
           />
         </Box>
       </Box> }
-
-      { /* Last Edit Date and Buttons */ }
-      <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
-        { !isUpdating &&
-          <Typography level="body-xs">
-            Last Modified: 
-            {
-              lastUpdated ? 
-                ` ${lastUpdated.toLocaleDateString()} 
-                ${lastUpdated.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}` 
-              : '—'
-            }
-          </Typography> }
-        {
-          isUpdating ?
-            <>
-              <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
-              <Button sx={{ width: "15%" }} onClick={async() => { await onSave(); setIsUpdating(false);}}>Save Changes</Button>
-            </>
-          : <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
-        }
-      </Stack>
     </Box>
     </>
   )
