@@ -64,7 +64,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       session, 
       setActiveProblem, 
       refetchProgress,
-      activeSession,
       sessionDuration,
       plannedExerciseCount,
       problemSessionStats,
