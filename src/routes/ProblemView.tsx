@@ -306,10 +306,23 @@ function Report({ evalResponse, questionType }: ReportProps) {
 
   if ('failure' === evalResponse.status) {
     return (
-      <Stack direction="column">
-        <Typography> Uh-oh... There was a problem with your submission. </Typography>
-        <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
-      </Stack>
+      <Box 
+        sx={{ 
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: "salmon",
+          padding: "10px",
+          border: "2px solid red",
+          borderRadius: "10px",
+        }}
+      >
+        <Typography>
+          Uh-oh! There was a problem with your submission.
+        </Typography>
+        <Typography sx={{ whiteSpace: 'pre-wrap'}}>
+          {evalResponse.message}
+        </Typography>
+      </Box>
     )
   }
 
