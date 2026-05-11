@@ -283,6 +283,12 @@ interface ReportProps {
   questionType: string;
 }
 
+/**
+ * A function that checks whether the only failing test case is the print statement check.
+ * This determines whether to show the test case at all.
+ * @param report evalResponse.report to parse
+ * @returns boolean 
+ */
 function onlyPrintTestFail(report: EvalResult[]){
   for(var i = 0; i < report.length; i++){
     if(!report[i].equal){
@@ -310,6 +316,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
   if ('success' === evalResponse.status) {
 
     const tableSx = { borderRadius: 10, border: 2, borderColor: "white" };
+    // changes the font size to small in haystack questions
     const tableProps = questionType === "haystack"
       ? { size: "sm" as const, sx: {...tableSx} }
       : { sx: {...tableSx} };
@@ -332,29 +339,29 @@ function Report({ evalResponse, questionType }: ReportProps) {
                 <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
                     ? <td colSpan={3}> 
-                      Looks like you still have left over debugging print statements in your code! Remove them to complete this problem.
-                    </td>
+                        Looks like you still have left over debugging print statements in your code! Remove them to complete this problem.
+                      </td>
                     : <></>
                   }
                   { r.input !== "N/A"
                     ? <>
-                      <td className="mono"> {r.input} </td>
-                      <td className="mono"> {r.expected} </td>
-                      <td className="mono"> {r.actual} </td>
-                    </>
+                        <td className="mono"> {r.input} </td>
+                        <td className="mono"> {r.expected} </td>
+                        <td className="mono"> {r.actual} </td>
+                      </>
                     : <></>
                   }
                 </tr>
-                { r.printed !== "" ? 
-                  <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                    <td className="mono" colSpan={3}>
-                      Printed output:
-                      { /* pre allows the printed `\n`s to work as newlines */ }
-                      <pre style={{ margin: '4px 0 0 0', padding: '4px', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
-                        {r.printed}
-                      </pre>
-                    </td>
-                  </tr>
+                { r.printed !== "" // check for any printed lines
+                  ? <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                      <td className="mono" colSpan={3}>
+                        Printed output:
+                        { /* pre allows the printed `\n`s to work as newlines */ }
+                        <pre style={{ margin: '4px 0 0 0', padding: '4px', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
+                          {r.printed}
+                        </pre>
+                      </td>
+                    </tr>
                   : <></>
                 }
               </>)
