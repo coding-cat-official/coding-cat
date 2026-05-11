@@ -298,20 +298,6 @@ function onlyPrintTestFail(report: EvalResult[]){
 }
 
 function Report({ evalResponse, questionType }: ReportProps) {
-  const [collapsibleStateList, setCollapsibleStateList] = useState<boolean[]>([]);
-
-  useEffect(() => {
-    if(evalResponse?.status === 'success'){
-      setCollapsibleStateList(evalResponse.report.map(() => false));
-    }
-  }, [evalResponse]);
-
-  const toggleCollapsible = (i: number) => {
-    setCollapsibleStateList(prev => 
-      prev.map((open, index) => index === i ? !open : open)
-    );
-  }
-
   if (null === evalResponse) return null;
 
   if ('failure' === evalResponse.status) {
@@ -364,18 +350,11 @@ function Report({ evalResponse, questionType }: ReportProps) {
                 { r.printed !== "" ? 
                   <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                     <td className="mono" colSpan={3}>
-                      <span
-                        onClick={() => toggleCollapsible(i)}
-                        style={{ cursor: 'pointer', userSelect: 'none' }}
-                      >
-                        { collapsibleStateList[i] ? '▾' : '▸' } Show print output
-                      </span>
-                      { collapsibleStateList[i] &&
-                        // pre allows the printed `\n`s to work as newlines
-                        <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
-                          {r.printed}
-                        </pre>
-                      }
+                      Printed output:
+                      { /* pre allows the printed `\n`s to work as newlines */ }
+                      <pre style={{ margin: '4px 0 0 0', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
+                        {r.printed}
+                      </pre>
                     </td>
                   </tr>
                   : <></>
