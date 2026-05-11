@@ -189,7 +189,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
                     ...c,
                     Haystack: { ...c.Haystack, problemsToSolve: +e.target.value },
                   }))
-                } sx={{ width: "4em" }} placeholder="0"
+                } sx={{ width: "4em", backgroundColor: "whitesmoke" }} placeholder="0"
               />
             }
           />
@@ -271,7 +271,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
             answer={contract.Mutation.problemsToSolve}
             isUpdating={isUpdating}
             element={
-              <Input sx={{ width: "4em" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+              <Input sx={{ width: "4em", backgroundColor: "whitesmoke" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
                 onChange={(e) =>
                   setContract((c) => ({
                     ...c,
