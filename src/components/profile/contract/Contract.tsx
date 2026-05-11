@@ -125,7 +125,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
     
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ backgroundColor: "#D4FF99", width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
+      <ModalDialog sx={{ backgroundColor: "#D4FF99", width: "90vw", height: "90vh", display: "flex", justifyContent: "flex-start"}} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
         <ContractEdit 

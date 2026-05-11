@@ -16,7 +16,7 @@ interface ContractEditProps {
 
 export default function ContractEdit({ contract, setContract, isUpdating, setIsUpdating, onSave, lastUpdated, featureMap, problemCountByCategory }: ContractEditProps) {
   const allCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
-  console.log(featureMap);
+
   var displayedCategories: string[] = [];
   allCategories.forEach((c) => {
     if(c === "haystack" && !featureMap["Haystack"]){
@@ -37,6 +37,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
     justifyContent: "space-between",
     width: "100%",
     margin: "10px",
+    marginBottom: "15px",
     marginLeft: "0"
   }
 
@@ -51,8 +52,8 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
 
   return (
     <>
-    { !featureMap["CodingStage2"] && !featureMap["Haystack"] &&!featureMap["Mutation"] &&
-      <Typography>All feature maps are disabled. Please try again later or contact Eric.</Typography> }
+    { !featureMap["CodingStage2"] && !featureMap["Haystack"] &&!featureMap["Mutation"]
+      && <Typography>All feature maps are disabled. Please try again later or contact Eric.</Typography> }
     
     <Box sx={{ display: "flex", flexDirection: "column", overflowY: "scroll" }}>
       
@@ -86,7 +87,16 @@ export default function ContractEdit({ contract, setContract, isUpdating, setIsU
 
         {
           displayedCategories.length > 0 ?
-          <Box sx={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }} >
+          <Box 
+            sx={{ 
+              display: "flex", 
+              flexDirection: "row", 
+              flexWrap: "wrap", 
+              margin: "10px", 
+              marginLeft: "0px", 
+              marginBottom: "15px"
+            }}
+          >
             <ContractQuestion question={"How many problems of each category will you solve?"} />
             <ContractCategoriesInput 
               isUpdating={isUpdating}
@@ -356,7 +366,7 @@ function ContractQuestion({ question }: { question: string }) {
         backgroundColor: "#FFEB9A",
         padding: "10px",
         borderRadius: "10px",
-        width: "75%"
+        width: "100%"
       }}
     >
       <Typography><strong>{question}</strong></Typography>
