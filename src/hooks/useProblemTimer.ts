@@ -17,19 +17,32 @@ export default function useProblemTimer({ problemName, activeSession, problemSes
     const startRef = useRef<number | null>(null);
     const hasStoppedRef = useRef(false);
 
+    const completedRef = useRef(completed);
+    completedRef.current = completed;
+
+    //Reset all the variables states
+    useEffect(() => {
+        hasStoppedRef.current = false;
+        startRef.current = null;
+        setElapsed(problemSessionStats[problemName]?.elapsedTimeSeconds ?? 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [problemName]);
+
     //from the stored state
     useEffect(() => {
         if (!activeSession) return;
-        if (completed) return;
+        const currentProblemCompleted = problemSessionStats[problemName]?.completed ?? alreadySolved;
+
+        if (currentProblemCompleted) return;
 
         //we don't want duplicate intervals
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
         }
+        const base = problemSessionStats[problemName]?.elapsedTimeSeconds ?? 0;
         startRef.current = Date.now();
-        setElapsed(stats?.elapsedTimeSeconds ?? 0);
+
         intervalRef.current = setInterval(() => {
-            const base = stats?.elapsedTimeSeconds ?? 0;
             const delta = Math.floor((Date.now() - (startRef.current ?? Date.now())) / 1000);
             setElapsed(base + delta);
         }, 1000);
@@ -41,8 +54,8 @@ export default function useProblemTimer({ problemName, activeSession, problemSes
             }
 
             if (!activeSession) return; 
-            
             if (hasStoppedRef.current) return;
+
             const delta = Math.floor((Date.now() - (startRef.current ?? Date.now())) / 1000);
 
             setProblemSessionStats(prev => ({
@@ -56,7 +69,7 @@ export default function useProblemTimer({ problemName, activeSession, problemSes
             }));
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [problemName, activeSession, completed]);
+    }, [problemName, activeSession]);
 
     const stop = (data?: Partial<ProblemSessionStats>) => {
         hasStoppedRef.current = true;

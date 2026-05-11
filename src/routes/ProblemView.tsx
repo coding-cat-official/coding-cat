@@ -39,7 +39,7 @@ export default function ProblemView() {
   const problem = useLoaderData() as Problem;
   return (
     <>
-      <ProblemIDE problem={problem} />
+      <ProblemIDE key={problem.meta.name} problem={problem} />
     </>
   );
 }
@@ -149,7 +149,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     if (allPassed && !isCompleted) {
       stopTimer({ passedTests, totalTests });
     }
-  }, [evalResponse, stopTimer, isCompleted]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evalResponse, isCompleted]);
 
 
   // Function for defining what reflection questions to show to user depending on success status of user code
