@@ -22,8 +22,6 @@ import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
 
 // Emoji rendered in the report
-const TEST_CASE_PASSED = '✅';
-const TEST_CASE_FAILED = '❌';
 const ALL_TESTS_PASSED = '🎉';
 
 const PASS_COLOR = '#caffc5';
