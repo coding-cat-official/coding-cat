@@ -13,9 +13,8 @@ export default function useEval(problem: Problem, session: Session | null, refet
 
     // Set eval response to null every time the problem changes
     useEffect(() => { 
-        setEvalResponse(null);
-        currentCodeRef.current = ''; 
-    }, [problem.meta.name]);
+        setEvalResponse(null); 
+    }, [problem]);
 
     // Registers an event that runs whenever proxy.py responds with eval_finished
     useEffect(() => {

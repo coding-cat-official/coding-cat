@@ -17,21 +17,14 @@ export default function useProblemTimer({ problemName, activeSession, problemSes
     const startRef = useRef<number | null>(null);
     const hasStoppedRef = useRef(false);
 
-    const completedRef = useRef(completed);
-    completedRef.current = completed;
-
-    //Reset all the variables states
-    useEffect(() => {
-        hasStoppedRef.current = false;
-        startRef.current = null;
-        setElapsed(problemSessionStats[problemName]?.elapsedTimeSeconds ?? 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [problemName]);
-
     //from the stored state
     useEffect(() => {
         if (!activeSession) return;
-        const currentProblemCompleted = problemSessionStats[problemName]?.completed ?? alreadySolved;
+        hasStoppedRef.current = false;
+        const freshAlreadySolved = progress?.some(
+            s => s.problem_title === problemName && s.passed_tests === s.total_tests
+        ) ?? false;
+        const currentProblemCompleted = problemSessionStats[problemName]?.completed ?? freshAlreadySolved;
 
         if (currentProblemCompleted) return;
 

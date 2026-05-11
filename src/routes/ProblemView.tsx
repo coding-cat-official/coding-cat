@@ -58,6 +58,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const [problemAlertStage, setProblemAlertStage] = useState<null | 'twoThirds'>(null);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
+    const latestProblemNameRef = useRef(problem.meta.name);
 
     const { 
       session, 
@@ -107,7 +108,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     progress,
   });
     
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  latestProblemNameRef.current = problem.meta.name;
 
   useEffect(() => {
     (async () => {
@@ -143,6 +146,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
   useEffect(() => {
     if (!evalResponse || evalResponse?.status !== "success") return;
+    if (latestProblemNameRef.current !== problem.meta.name) return; 
 
     const passedTests = evalResponse.report.filter((r) => r.equal).length;
     const totalTests = evalResponse.report.length;
@@ -152,7 +156,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       stopTimer({ passedTests, totalTests });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evalResponse, isCompleted]);
+  }, [evalResponse, isCompleted, problem.meta.name]);
 
 
   // Function for defining what reflection questions to show to user depending on success status of user code
@@ -192,6 +196,13 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     async function fetchLatestSubmission() {
       if (!session?.user) return;
       if (hasFetchedProblems.current.has(problem.meta.name)) return;
+
+      // If localStorage already has code for the problem we don't overwrite it
+      const localCode = localStorage.getItem(problem.meta.name);
+      if (localCode) {
+        hasFetchedProblems.current.add(problem.meta.name);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('submissions')

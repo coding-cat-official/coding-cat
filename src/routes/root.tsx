@@ -293,6 +293,7 @@ export default function App() {
     return () => {
       if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessionStartTime, sessionDuration]);
 
   return (
