@@ -334,7 +334,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
                 <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
                     ? <td colSpan={3}> 
-                      Looks like you still have left over debugging print statements in your code! Remove them to complete this problem
+                      Looks like you still have left over debugging print statements in your code! Remove them to complete this problem.
                     </td>
                     : <></>
                   }
