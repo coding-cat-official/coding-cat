@@ -401,7 +401,7 @@ function ContractCategoriesInput({ isUpdating, categories, problemCountByCategor
                     <Input
                       variant="plain"
                       size="sm"
-                      sx={{ width: "50px", typography: 'body1' }}
+                      sx={{ width: "50px", typography: 'body1', backgroundColor: "whitesmoke" }}
                       slotProps={{ input: { type: "number", min: 0, max: problemCountByCategory[c] ?? 10 } }}
                       placeholder="0"
                       value={contract.Coding.problemsToSolveByCategory[c]}
