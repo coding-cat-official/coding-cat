@@ -55,7 +55,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     const reflectionInput = useRef<HTMLElement>(null);
     const [isTourOpen, setTourOpen] = useState(false);
     const [problems, setProblems] = useState<Problem[]>([]);
-    const [problemAlertStage, setProblemAlertStage] = useState<null | 'half' | 'twoThirds'>(null);
+    const [problemAlertStage, setProblemAlertStage] = useState<null | 'twoThirds'>(null);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
 
     const { 
@@ -66,7 +67,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       sessionDuration,
       plannedExerciseCount,
       problemSessionStats,
-      setProblemSessionStats
+      setProblemSessionStats,
+      progress
     } = useOutletContext<{
       session: Session | null,
       setActiveProblem: (name: string | null) => void,
@@ -87,9 +89,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         completed: boolean;
         passedTests: number;
         totalTests: number;
-      }>
-      >
-      >
+      }>>>,
+      progress: { problem_title: string; passed_tests: number; total_tests: number }[]
     }>();
 
   const {
@@ -101,6 +102,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     activeSession,
     problemSessionStats,
     setProblemSessionStats,
+    progress,
   });
     
     const navigate = useNavigate();
@@ -239,13 +241,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       if (problemElapsedSeconds >= perProblemTarget * (2/3) && problemAlertStage !== 'twoThirds') {
         setProblemAlertStage('twoThirds');
         setHideExerciseTimer(false);
-        console.warn(`You've been on this problem for ${Math.floor(problemElapsedSeconds / 60)} minutes. Consider using debugging tools or moving on.`);
-      } else if (problemElapsedSeconds >= perProblemTarget / 2 && problemAlertStage !== 'half') {
-        setProblemAlertStage('half');
-        setHideExerciseTimer(false);
-        console.log(`You've spent ${Math.floor(problemElapsedSeconds / 60)} minutes on this problem.`);
+        setAlertMessage(`You've been on this problem for a while 🐱 Consider using your tools, asking for hints or moving on!`);
       }
     }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, activeSession, problemAlertStage]);
+
+    useEffect(() => {
+      setAlertMessage(null);
+      setProblemAlertStage(null);
+    }, [problem.meta.name]);
 
     function changeCode(e: string | undefined) {
       setCode(e ?? '')
@@ -309,6 +312,34 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               </Markdown>
               {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
             </Box>
+
+            {alertMessage && (
+              <Box sx={{
+                width: '100%',
+                mt: 1,
+                p: 1.5,
+                borderRadius: '12px',
+                backgroundColor: '#ffe0b2',
+                border: '#ffb74d',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 2,
+              }}>
+                <Typography level="body-sm" sx={{ color: '#3f2d2d' }}>
+                  {alertMessage}
+                </Typography>
+                <Button
+                  size="sm"
+                  variant="plain"
+                  color="neutral"
+                  onClick={() => setAlertMessage(null)}
+                  sx={{ minWidth: '24px', px: 0, color: '#3f2d2d' }}
+                >
+                  ×
+                </Button>
+              </Box>
+            )}
 
             {activeSession && !isCompleted && (
               hideExerciseTimer ? (

@@ -191,4 +191,5 @@ export interface ProblemArgs{
     activeSession: boolean;
     problemSessionStats: Record<string, ProblemSessionStats>;
     setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, ProblemSessionStats>>>;
+    progress?: Pick<Submission, 'problem_title' | 'passed_tests' | 'total_tests'>[];
 }

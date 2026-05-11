@@ -6,13 +6,16 @@ import { ProblemSessionStats, ProblemArgs } from '../types';
  * It starts a timer when the component mounts and stops it when the user completes the problem or navigates away. 
  * The elapsed time is stored in the parent component's state to be included in the session summary.
  */
-export default function useProblemTimer({ problemName, activeSession, problemSessionStats, setProblemSessionStats } : ProblemArgs) {
+export default function useProblemTimer({ problemName, activeSession, problemSessionStats, setProblemSessionStats, progress } : ProblemArgs) {
+    const alreadySolved = progress?.some(
+        s => s.problem_title === problemName && s.passed_tests === s.total_tests
+    ) ?? false;
+    const stats = problemSessionStats[problemName];
+    const completed = stats?.completed ?? alreadySolved;
     const [elapsed, setElapsed] = useState(problemSessionStats[problemName]?.elapsedTimeSeconds ?? 0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const startRef = useRef<number | null>(null);
     const hasStoppedRef = useRef(false);
-    const stats = problemSessionStats[problemName];
-    const completed = stats?.completed ?? false;
 
     //from the stored state
     useEffect(() => {
@@ -37,6 +40,8 @@ export default function useProblemTimer({ problemName, activeSession, problemSes
                 intervalRef.current = null;
             }
 
+            if (!activeSession) return; 
+            
             if (hasStoppedRef.current) return;
             const delta = Math.floor((Date.now() - (startRef.current ?? Date.now())) / 1000);
 

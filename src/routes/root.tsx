@@ -274,8 +274,8 @@ export default function App() {
 
       if (remaining <= 0) {
         clearInterval(sessionTimerRef.current!);
-        // Session ended - user should be prompted to post-session
-        // Don't navigate automatically, let them finish current problem
+        // Session ended so the user should be prompted to post-session
+        // Don't navigate automatically maybe, we should let them finish current problem
       }
     }, 1000);
 
@@ -473,7 +473,8 @@ export default function App() {
             sessionDuration,
             plannedExerciseCount,
             problemSessionStats,
-            setProblemSessionStats
+            setProblemSessionStats,
+            progress
           }} />
         </Box>
         
