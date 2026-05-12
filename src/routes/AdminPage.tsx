@@ -1,8 +1,9 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
 import { AdminSwitch } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
+import { supabase } from "../supabaseClient";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -21,10 +22,21 @@ const linkStyle = { marginBottom: 2, color: "black" };
  */
 export default function AdminPage() {
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
-  const [extraNodeBehavior, setExtraNodeBehavior] = useState(false);
+  const [switchToggle, setSwitchToggle] = useState(false);
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data } = await supabase.from("settings").select("value").eq("key", "test-questions");
+
+      if (data?.[0]?.value) {
+        setSwitchToggle(true);
+      }
+    };
+    fetchSettings();
+  }, [switchToggle]);
 
   // Meta data for each link
   const links: ModalMetaData[] = [
@@ -35,8 +47,18 @@ export default function AdminPage() {
     {
       title: "Toggle Public/Test Questions",
       desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
-      switch: { switchLabel: "Enable Test Categories", switchAction: () => {setExtraNodeBehavior(prev => !prev)} },
-      extraNode: <CategoryPasswordForm visibility={extraNodeBehavior} />,
+      switch: {
+        switchLabel: "Enable Test Categories",
+        switchAction: async () => {
+          if (switchToggle === true) {
+            await supabase.from("settings").update({ value: "" }).eq("key", "test-password");
+            setSwitchToggle(false);
+          } else {
+            setSwitchToggle(true);
+          }
+        },
+      },
+      extraNode: <CategoryPasswordForm visibility={switchToggle} />,
     },
     {
       title: "Modify Global Contract Permissions",
@@ -81,6 +103,7 @@ export default function AdminPage() {
         {activeModal && (
           <AdminPageModal
             open
+            switchToggle={switchToggle}
             handleClose={handleClose}
             modalTitle={activeModal.title}
             modalDesc={activeModal.desc}
