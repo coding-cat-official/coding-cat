@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { BLANK_CONTRACT, ContractData } from "../../../types";
-import { Button, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
+import { Box, Button, Modal, ModalClose, ModalDialog, Stack, Typography } from "@mui/joy";
 import ContractEdit from "./ContractEdit";
 import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
@@ -122,22 +122,69 @@ interface ContractModalProps {
 
 function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap, problemCountByCategory }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+
+  /**
+   * This function enforces a max and min of submitted values
+   * for completed problems then calls the onSave function
+   */
+  const capProblemsAndSave = async () => {
+    if(featureMap["CodingStage2"]){
+      let codingCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
+
+      codingCategories.forEach((cat, i) => {
+        contract.Coding.problemsToSolveByCategory[cat] = Math.max(0, Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]));
+      });
+    }
+    if(featureMap["Haystack"]){
+      contract.Haystack.problemsToSolve = Math.max(0, Math.min(contract.Haystack.problemsToSolve, problemCountByCategory["haystack"]));
+    }
+    if(featureMap["Mutation"]){
+      contract.Mutation.problemsToSolve = Math.max(0, Math.min(contract.Mutation.problemsToSolve, problemCountByCategory["mutation"]));
+    }
+
+    await onSave();
+  }
     
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ width: "90vw", height: "90vh", display: "flex", justifyContent: "space-between"}} variant="outlined">
+      <ModalDialog sx={{ backgroundColor: "#D4FF99", width: "90vw", height: "90vh", display: "flex", justifyContent: "flex-start" }} variant="outlined">
         <ModalClose />
         <Typography level="h2">Your Contract</Typography>
-        <ContractEdit 
-          contract={contract} 
-          setContract={setContract} 
-          isUpdating={isUpdating}
-          setIsUpdating={setIsUpdating} 
-          onSave={onSave} 
-          lastUpdated={lastUpdated} 
-          featureMap={featureMap} 
-          problemCountByCategory={problemCountByCategory} 
-        />
+        <Box sx={{ overflowY: "scroll" }}>
+          <ContractEdit 
+            contract={contract} 
+            setContract={setContract} 
+            isUpdating={isUpdating}
+            featureMap={featureMap} 
+            problemCountByCategory={problemCountByCategory} 
+          />
+        </Box>
+        { /* Last Edit Date and Buttons */ }
+        <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={2}>
+          { 
+            !isUpdating && 
+            <Typography level="body-xs">
+              Last Modified: 
+              {
+                lastUpdated 
+                ? ` ${lastUpdated.toLocaleDateString()} 
+                  ${lastUpdated.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}`
+                : '—'
+              }
+            </Typography> 
+          }
+          {
+            isUpdating ?
+              <>
+                <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
+                <Button sx={{ width: "15%" }} onClick={async() => { await capProblemsAndSave(); setIsUpdating(false);}}>Save</Button>
+              </>
+            : <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
+          }
+        </Stack>
       </ModalDialog>
     </Modal>
   )
