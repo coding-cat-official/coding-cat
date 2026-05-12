@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Outlet, useLoaderData, useNavigate } from 'react-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Outlet, useLoaderData, useNavigate, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
-import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, Submission } from '../types';
+import { BLANK_CONTRACT, BlogPost, ContractData, ContractProgress, Problem, ProblemSessionStats, Submission } from '../types';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
 import { List as ListIcon } from '@phosphor-icons/react';
@@ -28,11 +28,18 @@ interface UserData{
 // The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [activeSession, setActiveSession] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionDuration, setSessionDuration] = useState<number>(0);
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [sessionRemainingSeconds, setSessionRemainingSeconds] = useState<number>(0);
+  const [plannedExerciseCount, setPlannedExerciseCount] = useState<number>(0);
+  const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activeSession, setActiveSession] = useState(false);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
@@ -45,6 +52,8 @@ export default function App() {
   const [selectedTab, setSelectedTab] = useState("");
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
+  const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
+  const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -200,6 +209,93 @@ export default function App() {
     closeDrawer: () => setOpen(false)
   };
 
+  const startSession = (sessionIdFromState: string, durationMinutes: number, exerciseCount: number) => {
+    setSessionId(sessionIdFromState);
+    setSessionDuration(durationMinutes);
+    setPlannedExerciseCount(exerciseCount);
+    setSessionStartTime(new Date());
+    setSessionRemainingSeconds(durationMinutes * 60);
+    setActiveSession(true);
+    setSessionTimerRunning(true);
+  };
+
+  const endSession = () => {
+    if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
+    setActiveSession(false);
+    setSessionId(null);
+    setSessionStartTime(null);
+    setSessionDuration(0);
+    setSessionRemainingSeconds(0);
+    setProblemSessionStats({});
+    setSessionTimerRunning(false);
+  };
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Handle session start when coming back from PreSessionForm
+  useEffect(() => {
+    const locationState = location.state as any;
+    const sessionIdFromState = locationState?.sessionId;
+    const fromPreSession = locationState?.fromPreSession;
+
+    if (location.pathname !== '/' || !fromPreSession || !session?.user) return;
+
+    const fetchSessionData = async () => {
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('planned_duration_minutes, exercise_goals')
+        .eq('id', sessionIdFromState)
+        .eq('profile_id', session.user.id)
+        .single();
+
+      if (!error && data) {
+        startSession(sessionIdFromState, data.planned_duration_minutes, data.exercise_goals);
+      }
+    };
+    fetchSessionData();
+  }, [location.pathname, location.state, session?.user, navigate]);
+
+  // Handle session reset when coming back from PostSessionForm
+  useEffect(() => {
+    if (location.pathname === '/' && activeSession && (location.state as any)?.fromPostSession) {
+      endSession();
+    }
+  }, [location.pathname, location.state, activeSession]);
+
+  // Session countdown timer
+  useEffect(() => {
+    if (!activeSession || !sessionStartTime) return;
+
+    sessionTimerRef.current = setInterval(() => {
+      const elapsed = Math.floor((new Date().getTime() - sessionStartTime.getTime()) / 1000);
+      const remaining = Math.max(0, sessionDuration * 60 - elapsed);
+      setSessionRemainingSeconds(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(sessionTimerRef.current!);
+        setActiveSession(false);
+        setSessionStartTime(null);
+        setSessionRemainingSeconds(0);
+        setSessionTimerRunning(false);
+        navigate('/post-session', {
+          state: {
+            sessionId,
+            timerExpired: true
+          }
+        });
+      }
+    }, 1000);
+
+    return () => {
+      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSession, sessionStartTime, sessionDuration]);
+
   return (
     <Box sx={{ display:'flex', height: "100%", flex: 1}}>
       <Stack
@@ -293,7 +389,7 @@ export default function App() {
         sx={{
           width: '100%',
           minHeight: "100%",
-          height: "100%",
+          height: "100%", 
           justifyContent: "start",
           alignItems: "center",
           overflowY: "scroll", 
@@ -306,18 +402,36 @@ export default function App() {
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
               {session && !isRecoverySession ? (
                 <>
-                  <Button 
+                  <Button
                     onClick={() => {
-                      if (activeSession) {
-                        // TODO: Implement end session logic
-                        setActiveSession(false);
-                      } else {
+                      if (activeSession && sessionTimerRunning) {
+                        endSession();
+                        navigate('/post-session', { state: { sessionId } });
+                      } else if (activeSession && !sessionTimerRunning) {
+                        navigate('/post-session', { state: { sessionId } });
+                      }else {
                         navigate('/session');
                       }
                     }}
-                    sx={{ backgroundColor: activeSession ? '#ffb5a9' : '#d4ff99' }}
+                    sx={{
+                      backgroundColor: activeSession ? '#d4ff99' : '#d4ff99',
+                      color: '#1a3e00',
+                      borderRadius: '999px',
+                      px: 2,
+                      py: 1,
+                      minWidth: '240px',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
+                      '&:hover': {
+                        backgroundColor: '#c7f68e',
+                      }
+                    }}
+                    title={activeSession ? "Click to end session" : "Start a new session"}
                   >
-                    {activeSession ? 'Ongoing Session' : 'Start Session'}
+                  {sessionTimerRunning
+                    ? `Ongoing session — ${formatTime(sessionRemainingSeconds)} left`
+                    : activeSession
+                      ? 'Complete Session Reflection'
+                      : 'Start Session'}
                   </Button>
                   <Link to="/profile">
                     <Button>
@@ -365,17 +479,22 @@ export default function App() {
         </Stack>
         
         <Box width="100%" height="100%">
-          <Outlet 
-            context={
-              { 
-                setActiveProblem, 
-                session, 
-                isAdmin, 
-                refetchProgress: fetchProgress,
-                refetchProfile: fetchProfile 
-              }
-            }
-          />
+          <Outlet context={{ 
+            setActiveProblem, 
+            session, 
+            isAdmin, 
+            refetchProgress: fetchProgress,
+            refetchProfile: fetchProfile,
+            activeSession,
+            sessionId,
+            sessionRemainingSeconds,
+            sessionDuration,
+            plannedExerciseCount,
+            problemSessionStats,
+            setProblemSessionStats,
+            progress,
+            sessionTimerRunning
+          }} />
         </Box>
         
       </Stack>

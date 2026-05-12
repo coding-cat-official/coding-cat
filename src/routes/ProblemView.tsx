@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
-import { Problem, EvalResponse } from '../types';
+import { Problem, EvalResponse, EvalResult } from '../types';
 import useEval from '../hooks/useEval';
 import usePersistentProblemCode from '../hooks/usePersistentProblemCode';
 
@@ -20,10 +20,9 @@ import cursedCat from '../assets/cUrSed.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
+import useProblemTimer from '../hooks/useProblemTimer';
 
 // Emoji rendered in the report
-const TEST_CASE_PASSED = '✅';
-const TEST_CASE_FAILED = '❌';
 const ALL_TESTS_PASSED = '🎉';
 
 const PASS_COLOR = '#caffc5';
@@ -40,7 +39,7 @@ export default function ProblemView() {
   const problem = useLoaderData() as Problem;
   return (
     <>
-      <ProblemIDE problem={problem} />
+      <ProblemIDE key={problem.meta.name} problem={problem} />
     </>
   );
 }
@@ -50,20 +49,67 @@ interface ProblemIDEProps {
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
-  const [code, setCode] = usePersistentProblemCode(problem);
-  const [hidePrompt, setHidePrompt] = useState(true);
-  const [question, setQuestion] = useState("");
-  const reflectionInput = useRef<HTMLElement>(null);
-  const [isTourOpen, setTourOpen] = useState(false);
-  const [problems, setProblems] = useState<Problem[]>([]);
+    const [code, setCode] = usePersistentProblemCode(problem);
+    const [hidePrompt, setHidePrompt] = useState(true);
+    const [question, setQuestion] = useState("");
+    const reflectionInput = useRef<HTMLElement>(null);
+    const [isTourOpen, setTourOpen] = useState(false);
+    const [problems, setProblems] = useState<Problem[]>([]);
+    const [problemAlertStage, setProblemAlertStage] = useState<null | 'twoThirds'>(null);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
+    const latestProblemNameRef = useRef(problem.meta.name);
 
-  const { session, setActiveProblem, refetchProgress } = useOutletContext<{
-    session: Session | null,
-    setActiveProblem: (name: string | null) => void,
-    refetchProgress: () => void
-  }>();
-  
+    const { 
+      session, 
+      setActiveProblem, 
+      refetchProgress,
+      sessionDuration,
+      plannedExerciseCount,
+      problemSessionStats,
+      setProblemSessionStats,
+      progress,
+      sessionTimerRunning
+     } = useOutletContext<{
+      session: Session | null,
+      setActiveProblem: (name: string | null) => void,
+      refetchProgress: () => void,
+      activeSession: boolean,
+      sessionTimerRunning: boolean,
+      sessionId: string | null,
+      sessionRemainingSeconds: number,
+      sessionDuration: number,
+      plannedExerciseCount: number,
+      problemSessionStats: Record<string, {
+        elapsedTimeSeconds: number;
+        completed: boolean;
+        passedTests: number;
+        totalTests: number;
+      }>,
+      setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, {
+        elapsedTimeSeconds: number;
+        completed: boolean;
+        passedTests: number;
+        totalTests: number;
+      }>>>,
+      progress: { problem_title: string; passed_tests: number; total_tests: number }[]
+    }>();
+
+  const {
+    elapsed: problemElapsedSeconds,
+    completed: isCompleted,
+    stop: stopTimer,
+  } = useProblemTimer({
+    problemName: problem.meta.name,
+    activeSession: sessionTimerRunning,
+    problemSessionStats,
+    setProblemSessionStats,
+    progress,
+  });
+    
   const navigate = useNavigate();
+
+  latestProblemNameRef.current = problem.meta.name;
 
   useEffect(() => {
     (async () => {
@@ -97,6 +143,21 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
 
 
+  useEffect(() => {
+    if (!evalResponse || evalResponse?.status !== "success") return;
+    if (latestProblemNameRef.current !== problem.meta.name) return; 
+
+    const passedTests = evalResponse.report.filter((r) => r.equal).length;
+    const totalTests = evalResponse.report.length;
+    const allPassed = passedTests === totalTests;
+
+    if (allPassed && !isCompleted) {
+      stopTimer({ passedTests, totalTests });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evalResponse, isCompleted, problem.meta.name]);
+
+
   // Function for defining what reflection questions to show to user depending on success status of user code
   useEffect(() => {
     if(!evalResponse || evalResponse?.status === "failure") {
@@ -104,6 +165,10 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       return;
     }
     if (evalResponse.status === "success") {
+      if(onlyPrintTestFail(evalResponse.report)){
+        setHidePrompt(true);
+        return;
+      }
       setHidePrompt(false);
 
       const allPassed = evalResponse.report.every((r) => r.equal);
@@ -131,12 +196,19 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       if (!session?.user) return;
       if (hasFetchedProblems.current.has(problem.meta.name)) return;
 
+      // If localStorage already has code for the problem we don't overwrite it
+      const localCode = localStorage.getItem(problem.meta.name);
+      if (localCode) {
+        hasFetchedProblems.current.add(problem.meta.name);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('submissions')
         .select('code')
         .eq('profile_id', session.user.id)
         .eq('problem_title', problem.meta.name)
-        .order('submitted_at', { ascending: false})
+        .order('submitted_at', { ascending: false })
         .limit(1);
 
       const json = data?.[0] || null;
@@ -145,8 +217,8 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         console.warn('Could not load latest submission: ', error.message);
         return;
       }
-      
-      if (json){
+
+      if (json) {
         if (problem.meta.question_type[0] === 'mutation') {
           setCode(json.code);
         } else {
@@ -158,24 +230,42 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           );
         }
       } else {
-        if(['coding','haystack'].includes(problem.meta.question_type[0])){
+        if (['coding', 'haystack'].includes(problem.meta.question_type[0])) {
           setCode(problem.starter || '');
         }
-        else{
+        else {
           setCode('');
         }
       }
       hasFetchedProblems.current.add(problem.meta.name);
     }
-
     fetchLatestSubmission();
 
   }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
-  function changeCode(e: string | undefined) {
-    setCode(e ?? '')
-  }
+ 
+    // Alert user if taking too long on a problem
+    useEffect(() => {
+      if (!sessionTimerRunning || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
 
+      const sessionSeconds = sessionDuration * 60;
+      const perProblemTarget = Math.max(1, Math.floor(sessionSeconds / Math.max(1, plannedExerciseCount)));
+
+      if (problemElapsedSeconds >= perProblemTarget * (2/3) && problemAlertStage !== 'twoThirds') {
+        setProblemAlertStage('twoThirds');
+        setHideExerciseTimer(false);
+        setAlertMessage(`You've been on this problem for a while 🐱 Consider using your tools, asking for hints or moving on!`);
+      }
+    }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, sessionTimerRunning, problemAlertStage]);
+
+    useEffect(() => {
+      setAlertMessage(null);
+      setProblemAlertStage(null);
+    }, [problem.meta.name]);
+
+    function changeCode(e: string | undefined) {
+      setCode(e ?? '')
+    }
 
   function handlePreviousProblem(){
     if(currIndex > 0){
@@ -235,7 +325,77 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               </Markdown>
               {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
             </Box>
+
+            {alertMessage && (
+              <Box sx={{
+                width: '100%',
+                mt: 1,
+                p: 1.5,
+                borderRadius: '12px',
+                backgroundColor: '#ffe0b2',
+                border: '#ffb74d',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 2,
+              }}>
+                <Typography level="body-sm" sx={{ color: '#3f2d2d' }}>
+                  {alertMessage}
+                </Typography>
+                <Button
+                  size="sm"
+                  variant="plain"
+                  color="neutral"
+                  onClick={() => setAlertMessage(null)}
+                  sx={{ minWidth: '24px', px: 0, color: '#3f2d2d' }}
+                >
+                  ×
+                </Button>
+              </Box>
+            )}
+
+            {sessionTimerRunning && !isCompleted && (
+              hideExerciseTimer ? (
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <Button
+                    size="sm"
+                    variant="soft"
+                    color="neutral"
+                    onClick={() => setHideExerciseTimer(false)}
+                    sx={{ borderRadius: '999px', textTransform: 'none' }}
+                  >
+                    Show exercise timer
+                  </Button>
+                </Box>
+              ) : (
+                <Box sx={{
+                  width: '100%',
+                  mt: 2,
+                  p: 1,
+                  borderRadius: '999px',
+                  background: 'linear-gradient(90deg, #ff9a9e 0%, #fad0c4 50%, #f9d976 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 2,
+                }}>
+                  <Typography level="body-md" sx={{ fontWeight: 700, color: '#3f2d2d' }}>
+                    Exercise timer: {Math.floor(problemElapsedSeconds / 60)}:{(problemElapsedSeconds % 60).toString().padStart(2, '0')} elapsed
+                  </Typography>
+                  <Button
+                    size="sm"
+                    variant="plain"
+                    color="neutral"
+                    onClick={() => setHideExerciseTimer(true)}
+                    sx={{ minWidth: '24px', px: 0, color: '#3f2d2d' }}
+                  >
+                    ×
+                  </Button>
+                </Box>
+              )
+            )}
           </Box>
+
           { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
             (
               <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
@@ -281,6 +441,24 @@ interface ReportProps {
   questionType: string;
 }
 
+/**
+ * A function that checks whether the only failing test case is the print statement check.
+ * This determines whether to show the test case at all.
+ * @param report evalResponse.report to parse
+ * @returns boolean 
+ */
+function onlyPrintTestFail(report: EvalResult[]){
+  for(var i = 0; i < report.length; i++){
+    if(!report[i].equal){
+      if(i === report.length - 1){
+        return true;
+      }
+      return false;
+    }
+  }
+  return false;
+}
+
 function Report({ evalResponse, questionType }: ReportProps) {
   if (null === evalResponse) return null;
 
@@ -295,42 +473,17 @@ function Report({ evalResponse, questionType }: ReportProps) {
 
   if ('success' === evalResponse.status) {
 
-    if(questionType === 'haystack'){
-      return (
-        <Table size="sm" variant="outlined"
-          sx={{
-            '--TableCell-headBackground': '#f5f5f5',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'center' }}>Input</th>
-              <th style={{ textAlign: 'center' }}>Your output</th>
-              <th style={{ textAlign: 'center' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evalResponse.report.map((r, i) => (
-              <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.input}</td>
-                <td className="mono" style={{ textAlign: 'center' }}>{r.actual}</td>
-                <td style={{ textAlign: 'center' }}>
-                  {r.equal ? TEST_CASE_PASSED : TEST_CASE_FAILED}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      );
-    }
+    const tableSx = { borderRadius: 10, border: 2, borderColor: "white" };
+    // changes the font size to small in haystack questions
+    const tableProps = questionType === "haystack"
+      ? { size: "sm" as const, sx: {...tableSx} }
+      : { sx: {...tableSx} };
 
     return (
       <Box sx={{ border: 2, borderRadius: 10}} >
         <Stack direction="column">
           <Typography sx={{ p: 2, borderBottom: 2 }} level="h4"> Results </Typography>
-          <Table sx={{ borderRadius: 10, border: 2, borderColor: "white" }}>
+          <Table {...tableProps}>
             <thead>
             <tr>
               <th> Input </th>
@@ -340,11 +493,36 @@ function Report({ evalResponse, questionType }: ReportProps) {
             </thead>
             <tbody>
             { evalResponse.report.map((r, i) =>
-                <tr key={i} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
-                  <td className="mono"> {r.input} </td>
-                  <td className="mono"> {r.expected} </td>
-                  <td className="mono"> {r.actual} </td>
-                </tr>)
+              <>
+                <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                  { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
+                    ? <td colSpan={3}> 
+                        Looks like you still have left over debugging print statements in your code! Remove them to complete this problem.
+                      </td>
+                    : <></>
+                  }
+                  { r.input !== "N/A"
+                    ? <>
+                        <td className="mono"> {r.input} </td>
+                        <td className="mono"> {r.expected} </td>
+                        <td className="mono"> {r.actual} </td>
+                      </>
+                    : <></>
+                  }
+                </tr>
+                { r.printed !== "" // check for any printed lines
+                  ? <tr key={`printed-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
+                      <td className="mono" colSpan={3}>
+                        Printed output:
+                        { /* pre allows the printed `\n`s to work as newlines */ }
+                        <pre style={{ margin: '4px 0 0 0', padding: '4px', whiteSpace: 'pre-wrap', backgroundColor: 'white', borderRadius: 5 }}>
+                          {r.printed}
+                        </pre>
+                      </td>
+                    </tr>
+                  : <></>
+                }
+              </>)
             }
             </tbody>
           </Table>

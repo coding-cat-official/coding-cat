@@ -107,7 +107,6 @@ export default function PreSessionForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { user } = session!!;
-
     const { data, error} = await supabase
       .from('sessions')
       .insert([{
@@ -116,6 +115,7 @@ export default function PreSessionForm() {
         pre_session_reflection: answers,
         exercise_goals: Number(answers["goals-2"] || 0),
         exercise_categories: answers['goals-3'] || [],
+        planned_duration_minutes: Number(answers['goals-1'])
       }])
       .select()
       .single();
@@ -124,7 +124,7 @@ export default function PreSessionForm() {
       setError("Error submitting session data. Please try again.");
       console.error("Supabase insert error:", error);
     } else {
-      navigate('/', { state: { sessionId: data.id } });
+      navigate('/', { state: { sessionId: data.id, fromPreSession: true } });
     }
   };
 
