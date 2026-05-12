@@ -127,7 +127,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
     let categories = Object.keys(contract.Coding.problemsToSolveByCategory);
 
     categories.forEach((cat, i) => {
-      contract.Coding.problemsToSolveByCategory[cat] = Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]);
+      contract.Coding.problemsToSolveByCategory[cat] = Math.max(0, Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]));
     });
 
     await onSave();
