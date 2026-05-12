@@ -191,7 +191,8 @@ def load_and_test_student_function(e):
             err_type = type(e).__name__ 
             hint = hints.get(err_type)
 
-            return respond_failure( # show a hint if there is one
+            return respond_failure( 
+                # show a hint if there is one
                 f"{err_type} while running your code: {e}\n\n"
                 f"Tip: {hint}" if hint else 'Check your code for errors.'
             )
