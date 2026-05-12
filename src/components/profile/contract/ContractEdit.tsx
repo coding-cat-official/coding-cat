@@ -182,7 +182,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
             answer={contract.Haystack.problemsToSolve}
             isUpdating={isUpdating}
             element={
-              <Input slotProps={{input:{type:"number", min: 0}}} value={contract.Haystack.problemsToSolve} 
+              <Input slotProps={{input:{type:"number", min: 0, max: problemCountByCategory["haystack"] ?? 0}}} value={contract.Haystack.problemsToSolve} 
                 onChange={(e) =>
                   setContract((c) => ({
                     ...c,
@@ -270,7 +270,7 @@ export default function ContractEdit({ contract, setContract, isUpdating, featur
             answer={contract.Mutation.problemsToSolve}
             isUpdating={isUpdating}
             element={
-              <Input sx={{ width: "4em", backgroundColor: "whitesmoke" }} placeholder="0" slotProps={{input:{type:"number", min: 0}}} value={contract.Mutation.problemsToSolve} 
+              <Input sx={{ width: "4em", backgroundColor: "whitesmoke" }} placeholder="0" slotProps={{input:{type:"number", min: 0, max: problemCountByCategory["mutation"] ?? 0}}} value={contract.Mutation.problemsToSolve} 
                 onChange={(e) =>
                   setContract((c) => ({
                     ...c,

@@ -123,12 +123,30 @@ interface ContractModalProps {
 function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap, problemCountByCategory }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const capProblemsAndSave = async () => {
-    let categories = Object.keys(contract.Coding.problemsToSolveByCategory);
+  featureMap = {
+    "CodingStage2": true,
+    "Haystack": true,
+    "Mutation": true
+  }
 
-    categories.forEach((cat, i) => {
-      contract.Coding.problemsToSolveByCategory[cat] = Math.max(0, Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]));
-    });
+  /**
+   * This function enforces a max and min of submitted values
+   * for completed problems then calls the onSave function
+   */
+  const capProblemsAndSave = async () => {
+    if(featureMap["CodingStage2"]){
+      let codingCategories = Object.keys(contract.Coding.problemsToSolveByCategory);
+
+      codingCategories.forEach((cat, i) => {
+        contract.Coding.problemsToSolveByCategory[cat] = Math.max(0, Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]));
+      });
+    }
+    if(featureMap["Haystack"]){
+      contract.Haystack.problemsToSolve = Math.max(0, Math.min(contract.Haystack.problemsToSolve, problemCountByCategory["haystack"]));
+    }
+    if(featureMap["Mutation"]){
+      contract.Mutation.problemsToSolve = Math.max(0, Math.min(contract.Mutation.problemsToSolve, problemCountByCategory["mutation"]));
+    }
 
     await onSave();
   }
