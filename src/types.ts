@@ -162,3 +162,34 @@ export interface BlogPost {
         title: string;
     };
 }
+
+export interface ProblemLog {
+  problem_title: string;
+  session_id: string;
+  profile_id: string;
+  problem_category: string;
+  question_type: string;
+  attempt_count: number;
+  successful: boolean;
+  passed_tests: number;
+  total_tests: number;
+  time_spent_seconds: number;
+  first_attempt_at: string;
+  last_attempt_at: string;
+  code: unknown;
+}
+
+export interface ProblemSessionStats{
+    elapsedTimeSeconds: number;
+    completed: boolean;
+    passedTests: number;
+    totalTests: number;
+}
+
+export interface ProblemArgs{
+    problemName: string;
+    activeSession: boolean;
+    problemSessionStats: Record<string, ProblemSessionStats>;
+    setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, ProblemSessionStats>>>;
+    progress?: Pick<Submission, 'problem_title' | 'passed_tests' | 'total_tests'>[];
+}
