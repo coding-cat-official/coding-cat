@@ -122,6 +122,16 @@ interface ContractModalProps {
 
 function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap, problemCountByCategory }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const capProblemsAndSave = async () => {
+    let categories = Object.keys(contract.Coding.problemsToSolveByCategory);
+
+    categories.forEach((cat, i) => {
+      contract.Coding.problemsToSolveByCategory[cat] = Math.min(contract.Coding.problemsToSolveByCategory[cat], problemCountByCategory[cat]);
+    });
+
+    await onSave();
+  }
     
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
@@ -144,12 +154,12 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
             <Typography level="body-xs">
               Last Modified: 
               {
-                lastUpdated ? 
-                  ` ${lastUpdated.toLocaleDateString()} 
+                lastUpdated 
+                ? ` ${lastUpdated.toLocaleDateString()} 
                   ${lastUpdated.toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
-                  })}` 
+                  })}`
                 : '—'
               }
             </Typography> 
@@ -158,7 +168,7 @@ function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSa
             isUpdating ?
               <>
                 <Button sx={{ width: "15%" }} variant="outlined" onClick={() => setIsUpdating(false)}>Cancel</Button>
-                <Button sx={{ width: "15%" }} onClick={async() => { await onSave(); setIsUpdating(false);}}>Save</Button>
+                <Button sx={{ width: "15%" }} onClick={async() => { await capProblemsAndSave(); setIsUpdating(false);}}>Save</Button>
               </>
             : <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>Edit</Button>
           }
