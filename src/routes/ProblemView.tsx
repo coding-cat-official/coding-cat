@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -506,7 +506,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
             </thead>
             <tbody>
             { evalResponse.report.map((r, i) =>
-              <>
+              <React.Fragment key={i}>
                 <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
                     ? <td colSpan={3}> 
@@ -535,7 +535,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
                     </tr>
                   : <></>
                 }
-              </>)
+              </React.Fragment>)
             }
             </tbody>
           </Table>
