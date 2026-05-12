@@ -1,5 +1,4 @@
 import ast
-import traceback
 # browser is a Brython-specific module that exists in the browser runtime
 # 'type: ignore' is telling the linter to skip it and stop giving a warning
 from browser import bind, self # type: ignore
@@ -23,9 +22,21 @@ def load_student_function(code, name):
     # stores student code in a box
     HARNESS_CODE = f'box["fn"] = {name}'
     box = {}
-    # this call to exec stores the student func in the box
-    # override print inside the student's execution env
-    exec(code + '\n' + HARNESS_CODE, { 'box': box, 'print': captured_print })
+    try:
+        # this call to exec stores the student func in the box
+        # override print inside the student's execution env
+        exec(code + '\n' + HARNESS_CODE, { 'box': box, 'print': captured_print })
+    except SyntaxError as e:
+        # SyntaxErrors come with .lineno
+        raise SyntaxError(f"line {e.lineno}: {e.msg}") from e
+    except Exception as e:
+        # for other Exceptions, walk to the last frame to get line
+        tb = e.__traceback__
+        line_num = None
+        while tb:
+            line_num = tb.tb_lineno
+            tb = tb.tb_next
+        raise type(e)(f"line {line_num}: {e}") from e
     return box['fn'] # return the function from the box
 
 def test_student_function(student_function, tests): 
@@ -44,11 +55,12 @@ def test_student_function(student_function, tests):
                 "printed": "".join(_print_output) # captured printed lines
             })
         except Exception as e:
-            tb = traceback.extract_tb(e.__traceback__)
-            # filter out harness lines and keep only student code
-            student_frames = [f for f in tb if 'box' not in f.filename]
-            line_info = f" (line {student_frames[-1].lineno})" if student_frames else ""
-
+            tb = e.__traceback__
+            line_num = None
+            while tb:
+                line_num = tb.tb_lineno
+                tb = tb.tb_next
+            line_info = f" (line {line_num})" if line_num else ""
             report.append({
                 "input": ", ".join(str(x) for x in test['input']),
                 "expected": str(test['output']),
@@ -167,24 +179,21 @@ def load_and_test_student_function(e):
             for result in report:
                 if result["error"]:
                     err_type, err_msg = result["error"].split(":", 1)
+                    err_name = err_type.split("(")[0].strip() # err_type has line number in it
+                    hint = hints.get(err_name)
                     
-                    hint = hints.get(err_type.strip())
-                    if hint == None:
-                        return respond_failure(
-                            f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}"
-                        )
                     return respond_failure(
-                        f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}\n\n"
-                        f"Tip: {hint}"
-                    ) 
+                        f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}"
+                        f"\n\nTip: {hint}" if hint else '\nCheck your code for errors.'
+                    )
             
         except Exception as e:
             err_type = type(e).__name__ 
             hint = hints.get(err_type)
 
-            return respond_failure(
+            return respond_failure( # show a hint if there is one
                 f"{err_type} while running your code: {e}\n\n"
-                f"Tip: {hint}"        
+                f"Tip: {hint}" if hint else 'Check your code for errors.'
             )
     elif data.get("question_type", None) == "mutation":
         try:
