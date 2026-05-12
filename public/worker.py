@@ -167,10 +167,15 @@ def load_and_test_student_function(e):
     if data.get("question_type", None) in ('coding', 'haystack'):
         try:
             student_function = load_student_function(data['code'], data['name'])
-        except Exception as e:
+        except NameError as e:
+            # this only happens when the function has the wrong name
             return respond_failure(
                 f"{type(e).__name__} while loading your function: {e}\n\n"
-                "Tip: Make sure your function is defined with the correct name and syntax."
+                "Check that your function is named exactly as the problem asks."
+            )
+        except Exception as e:
+            return respond_failure(
+                f"{type(e).__name__} while loading your function: {e}"
             )
 
         try:
@@ -179,7 +184,8 @@ def load_and_test_student_function(e):
             for result in report:
                 if result["error"]:
                     err_type, err_msg = result["error"].split(":", 1)
-                    err_name = err_type.split("(")[0].strip() # err_type has line number in it
+                    # .split as err_type has line number in it surrounded with ()
+                    err_name = err_type.split("(")[0].strip()
                     hint = hints.get(err_name)
                     
                     return respond_failure(
