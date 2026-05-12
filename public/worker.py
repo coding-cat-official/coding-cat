@@ -1,4 +1,5 @@
 import ast
+import traceback
 # browser is a Brython-specific module that exists in the browser runtime
 # 'type: ignore' is telling the linter to skip it and stop giving a warning
 from browser import bind, self # type: ignore
@@ -43,12 +44,17 @@ def test_student_function(student_function, tests):
                 "printed": "".join(_print_output) # captured printed lines
             })
         except Exception as e:
+            tb = traceback.extract_tb(e.__traceback__)
+            # filter out harness lines and keep only student code
+            student_frames = [f for f in tb if 'box' not in f.filename]
+            line_info = f" (line {student_frames[-1].lineno})" if student_frames else ""
+
             report.append({
                 "input": ", ".join(str(x) for x in test['input']),
                 "expected": str(test['output']),
                 "actual": None,
                 "equal": False,
-                "error": f"{type(e).__name__}: {e}",
+                "error": f"{type(e).__name__}{line_info}: {e}",
                 "printed": "".join(_print_output)
             })
     # Final test for if the code contains print statements
