@@ -123,12 +123,6 @@ interface ContractModalProps {
 function ContractModal({ open, setOpen, contract, setContract, lastUpdated, onSave, featureMap, problemCountByCategory }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  featureMap = {
-    "CodingStage2": true,
-    "Haystack": true,
-    "Mutation": true
-  }
-
   /**
    * This function enforces a max and min of submitted values
    * for completed problems then calls the onSave function
