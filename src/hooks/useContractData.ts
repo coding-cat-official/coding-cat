@@ -31,7 +31,6 @@ export default function useContractData(session: Session | null): UseContractDat
     })();
   }, [session]);
 
-  // Fetch user progress/submissions
   const fetchProgress = useCallback(async () => {
     if (!session) return;
     const { data: submissions, error } = await supabase
@@ -45,7 +44,6 @@ export default function useContractData(session: Session | null): UseContractDat
     fetchProgress();
   }, [fetchProgress]);
 
-  // Calculate contract progress
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress['mutation'] = contract.Mutation.problemsToSolve;
   contractProgress['haystack'] = contract.Haystack.problemsToSolve;
