@@ -382,6 +382,14 @@ export default function App() {
     }
   }, [selectedProblem, drawerOpen, openCategory, allCategories, searchedProblems, activeCategory, selectedCategory]);
 
+  // on new category selected, set selectedProblem to first problem
+  useEffect(() => {
+    const first = searchedProblems
+      .filter(p => p.meta.category === activeCategory)
+      .map(p => p.meta.name)[0] ?? null;
+    setSelectedProblem(first);
+  }, [activeCategory, searchedProblems]);
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     return () => {
