@@ -10,7 +10,7 @@ interface AdminPageModalProps {
   modalDesc: string;
   switchLabel?: string;
   switchAction?: () => void;
-  extraNode: ReactNode;
+  extraNodes?: ReactNode[];
 }
 
 // Style for modal itself
@@ -42,7 +42,7 @@ export default function AdminPageModal({
   modalDesc,
   switchLabel,
   switchAction,
-  extraNode,
+  extraNodes: extraNode,
 }: AdminPageModalProps) {
   return (
     <Modal
@@ -66,7 +66,7 @@ export default function AdminPageModal({
             {switchLabel}
           </Typography>
         )}
-        {extraNode}
+        {extraNode?.map((elem) => elem)}
       </Box>
     </Modal>
   );

@@ -4,13 +4,14 @@ import AdminPageModal from "../components/admin/AdminPageModal";
 import { AdminSwitch } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { supabase } from "../supabaseClient";
+import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
 
 // Defines the data in the modal
 interface ModalMetaData {
   title: string;
   desc: string;
   switch?: AdminSwitch;
-  extraNode?: ReactNode;
+  extraNodes?: ReactNode[];
 }
 
 // CSS styles of links
@@ -58,7 +59,7 @@ export default function AdminPage() {
           }
         },
       },
-      extraNode: <CategoryPasswordForm visibility={switchToggle} />,
+      extraNodes: [<CategoryPasswordForm visibility={switchToggle} />, <ListProtectedCategories />],
     },
     {
       title: "Modify Global Contract Permissions",
@@ -109,7 +110,7 @@ export default function AdminPage() {
             modalDesc={activeModal.desc}
             switchLabel={activeModal.switch?.switchLabel}
             switchAction={activeModal.switch?.switchAction}
-            extraNode={activeModal.extraNode}
+            extraNodes={activeModal.extraNodes}
           />
         )}
       </Card>
