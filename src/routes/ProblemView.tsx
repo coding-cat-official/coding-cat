@@ -270,16 +270,16 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
   function handlePreviousProblem(){
     if(currIndex > 0){
-      const prevProblem = currProblems[currIndex-1].meta.name;
-      setCurrIndex(currIndex-1);
+      const prevProblem = currProblems[currIndex - 1].meta.name;
+      setCurrIndex(currIndex - 1);
       navigate(`/problems/${prevProblem}`)
     }
   }
 
   function handleNextProblem(){ 
     if(currIndex < currProblems.length - 1){
-      const nextProblem = currProblems[currIndex+1].meta.name;
-      setCurrIndex(currIndex+1);
+      const nextProblem = currProblems[currIndex + 1].meta.name;
+      setCurrIndex(currIndex + 1);
       navigate(`/problems/${nextProblem}`)
     }
   }
