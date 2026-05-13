@@ -1,10 +1,11 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
 import { ReactNode, useEffect, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
-import { AdminSwitch } from "../types";
+import { AdminSwitch, Problem } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { supabase } from "../supabaseClient";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
+import { useLoaderData } from "react-router-dom";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -27,6 +28,13 @@ export default function AdminPage() {
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
+  const problems = useLoaderData() as Problem[];
+
+  // List of categories that have test-questions in their name
+  const testCategories = problems
+    .map((c) => c.meta.category)
+    .filter((c) => c.match(/^test-questions[0-9]*$/))
+    .filter((c, index, arr) => arr.indexOf(c) === index);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -59,7 +67,10 @@ export default function AdminPage() {
           }
         },
       },
-      extraNodes: [<CategoryPasswordForm visibility={switchToggle} />, <ListProtectedCategories />],
+      extraNodes: [
+        <CategoryPasswordForm visibility={switchToggle} />,
+        <ListProtectedCategories testCategories={testCategories} visibility={switchToggle} />,
+      ],
     },
     {
       title: "Modify Global Contract Permissions",
