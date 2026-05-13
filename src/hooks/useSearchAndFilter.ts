@@ -1,22 +1,23 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Problem, BlogPost } from '../types';
 import getBlogPosts from '../utils/getBlogPosts';
+import type { Dispatch, SetStateAction } from 'react';
 
 interface UseSearchAndFilterReturn {
   query: string;
-  setQuery: (query: string) => void;
+  setQuery: Dispatch<SetStateAction<string>>;
   difficulty: string;
-  setDifficulty: (difficulty: string) => void;
+  setDifficulty: Dispatch<SetStateAction<string>>;
   activeCategory: string | null;
-  setActiveCategory: (category: string | null) => void;
+  setActiveCategory: Dispatch<SetStateAction<string | null>>;
   activeProblem: string | null;
-  setActiveProblem: (problem: string | null) => void;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  setActiveProblem: Dispatch<SetStateAction<string | null>>;
+  drawerOpen: boolean;
+  setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   openCategory: boolean;
-  setOpenCategory: (open: boolean) => void;
+  setOpenCategory: Dispatch<SetStateAction<boolean>>;
   selectedTab: string;
-  setSelectedTab: (tab: string) => void;
+  setSelectedTab: Dispatch<SetStateAction<string>>;
   searchedProblems: Problem[];
   searchedBlogs: BlogPost[];
   handleSelectedCategory: (category: string) => void;
@@ -26,9 +27,10 @@ interface UseSearchAndFilterReturn {
 export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFilterReturn {
   const [query, setQuery] = useState('');
   const [difficulty, setDifficulty] = useState('');
+
   const [activeCategory, setActiveCategory] = useState<string | null>(() => 'Fundamentals');
   const [activeProblem, setActiveProblem] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedTab, setSelectedTab] = useState('');
   const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
@@ -67,7 +69,7 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
 
   const handleSelectedProblem = useCallback((name: string) => {
     setActiveProblem(name);
-    setOpen(false);
+    setDrawerOpen(false);
   }, []);
 
   return {
@@ -79,8 +81,8 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
     setActiveCategory,
     activeProblem,
     setActiveProblem,
-    open,
-    setOpen,
+    drawerOpen,
+    setDrawerOpen,
     openCategory,
     setOpenCategory,
     selectedTab,

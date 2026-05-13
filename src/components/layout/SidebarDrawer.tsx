@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Drawer, ModalClose, DialogTitle, DialogContent, Select, Option, Stack, Box, Button } from '@mui/joy';
 import CategoryList from '../CategoryList';
 import CustomSearch from '../ProblemSearch';
@@ -8,7 +8,7 @@ import PasswordProtected from '../../routes/PasswordProtected';
 import { Problem, BlogPost } from '../../types';
 
 interface Props {
-  open: boolean;
+  drawerOpen: boolean;
   onClose: () => void;
   openCategory: boolean;
   setOpenCategory: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,10 +24,11 @@ interface Props {
   blogListProps: any;
   selectedTab: string;
   setSelectedTab: React.Dispatch<React.SetStateAction<string>>;
+  kbSelectedCategory: string | null;
 }
 
 export default function SidebarDrawer({
-  open,
+  drawerOpen,
   onClose,
   openCategory,
   setOpenCategory,
@@ -43,9 +44,10 @@ export default function SidebarDrawer({
   blogListProps,
   selectedTab,
   setSelectedTab,
+  kbSelectedCategory
 }: Props) {
   return (
-    <Drawer open={open} onClose={onClose} size="lg" sx={{ "--ModalClose-inset": "1rem", "--Drawer-verticalSize": "clamp(500px, 60%, 100%)", "--Drawer-horizontalSize": "100vw", "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)" }}>
+    <Drawer open={drawerOpen} onClose={onClose} size="lg" sx={{ "--ModalClose-inset": "1rem", "--Drawer-verticalSize": "clamp(500px, 60%, 100%)", "--Drawer-horizontalSize": "100vw", "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)" }}>
       <ModalClose />
       <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{ alignItems: 'center' }}>
         <DialogTitle level="h1" sx={{ fontFamily: '"Silkscreen", monospace', padding: '5px', fontSize: '30pt' }}>
@@ -65,11 +67,25 @@ export default function SidebarDrawer({
         <Box sx={{ display: 'flex', overflow: 'hidden', gap: '16px' }}>
           <Button className="mobile-categoryList" onClick={() => setOpenCategory(true)}>&gt;</Button>
           <Drawer open={openCategory} onClose={() => setOpenCategory(false)} sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="mobile-categoryList">
-            <CategoryList searchedProblems={searchedProblems} activeCategory={activeCategory} onSelectCategory={handleSelectedCategory} session={problemListProps.session} contractProgress={problemListProps.contractProgress} />
+            <CategoryList 
+              searchedProblems={searchedProblems} 
+              activeCategory={activeCategory} 
+              onSelectCategory={handleSelectedCategory} 
+              session={problemListProps.session} 
+              contractProgress={problemListProps.contractProgress} 
+              keyboardSelected={kbSelectedCategory}
+            />
           </Drawer>
 
           <Box sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="categoryList">
-            <CategoryList searchedProblems={searchedProblems} activeCategory={activeCategory} onSelectCategory={handleSelectedCategory} session={problemListProps.session} contractProgress={problemListProps.contractProgress} />
+            <CategoryList 
+              searchedProblems={searchedProblems}
+              activeCategory={activeCategory}
+              onSelectCategory={handleSelectedCategory}
+              session={problemListProps.session}
+              contractProgress={problemListProps.contractProgress}
+              keyboardSelected={kbSelectedCategory}
+            />
           </Box>
 
           <Box sx={{ flex: 3 }} className="parent-problemList">

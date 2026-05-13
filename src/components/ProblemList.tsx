@@ -20,10 +20,10 @@ export interface ProblemListProps {
   session: Session | null;
   contractProgress: ContractProgress;
   progress: Submission[];
-  keyboardSelected?: string | null
+  kbSelectedProblem: string | null;
 }
 
-export default function ProblemList({ selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress, keyboardSelected }: ProblemListProps) {
+export default function ProblemList({ selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress, kbSelectedProblem }: ProblemListProps) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("name");
 
@@ -149,7 +149,7 @@ export default function ProblemList({ selectedTab, setSelectedTab, searchedProbl
                       to={`/problems/${p.meta.name}`} 
                       onClick={closeDrawer}
                       sx={
-                        p.meta.name === keyboardSelected
+                        p.meta.name === kbSelectedProblem
                           ? { backgroundColor: '#FFE293 !important' }
                           : {}
                       }

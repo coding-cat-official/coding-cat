@@ -18,6 +18,7 @@ interface Props {
   sessionId: string | null;
   userData: { name: string; pfp_id: number } | null;
   isAdmin: boolean;
+  signOut: () => void;
 }
 
 export default function UpperNavBar({
@@ -32,6 +33,7 @@ export default function UpperNavBar({
   sessionId,
   userData,
   isAdmin,
+  signOut,
 }: Props) {
   const navigate = useNavigate();
 
@@ -86,7 +88,7 @@ export default function UpperNavBar({
               </Button>
             </Link>
 
-            <Button onClick={() => { /* sign out handled in parent via supabase */ }}>{'Sign Out'}</Button>
+            <Button onClick={signOut}>{'Sign Out'}</Button>
 
             {isAdmin && (
               <Link to="/admin">
