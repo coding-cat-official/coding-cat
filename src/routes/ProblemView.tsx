@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -17,6 +17,7 @@ import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import cursedCat from '../assets/cUrSed.png';
+import errorCat from '../assets/error-cat.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
@@ -464,10 +465,31 @@ function Report({ evalResponse, questionType }: ReportProps) {
 
   if ('failure' === evalResponse.status) {
     return (
-      <Stack direction="column">
-        <Typography> Uh-oh... There was a problem with your submission. </Typography>
-        <Typography sx={{ whiteSpace: 'pre-wrap'}}> {evalResponse.message} </Typography>
-      </Stack>
+      <Box 
+        sx={{ 
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: FAIL_COLOR,
+          padding: "10px",
+          border: "2px solid black",
+          borderRadius: "10px",
+        }}
+      >
+        <Typography>
+          Uh-oh! There was a problem with your submission.
+        </Typography>
+        <Box sx={{ alignSelf: "center", marginY: "10px" }}>
+          <img 
+            src={errorCat}
+            alt='error cat'
+            height="100px"
+            width="100px"
+          />
+          </Box>
+        <Typography sx={{ whiteSpace: 'pre-wrap'}}>
+          {evalResponse.message}
+        </Typography>
+      </Box>
     )
   }
 
@@ -493,7 +515,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
             </thead>
             <tbody>
             { evalResponse.report.map((r, i) =>
-              <>
+              <React.Fragment key={i}>
                 <tr key={`result-${i}`} style={{ backgroundColor: r.equal ? PASS_COLOR : FAIL_COLOR }}>
                   { r.input === "N/A" && onlyPrintTestFail(evalResponse.report)
                     ? <td colSpan={3}> 
@@ -522,7 +544,7 @@ function Report({ evalResponse, questionType }: ReportProps) {
                     </tr>
                   : <></>
                 }
-              </>)
+              </React.Fragment>)
             }
             </tbody>
           </Table>

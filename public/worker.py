@@ -22,9 +22,21 @@ def load_student_function(code, name):
     # stores student code in a box
     HARNESS_CODE = f'box["fn"] = {name}'
     box = {}
-    # this call to exec stores the student func in the box
-    # override print inside the student's execution env
-    exec(code + '\n' + HARNESS_CODE, { 'box': box, 'print': captured_print })
+    try:
+        # this call to exec stores the student func in the box
+        # override print inside the student's execution env
+        exec(code + '\n' + HARNESS_CODE, { 'box': box, 'print': captured_print })
+    except SyntaxError as e:
+        # SyntaxErrors come with .lineno
+        raise SyntaxError(f"line {e.lineno}: {e.msg}") from e
+    except Exception as e:
+        # for other Exceptions, walk to the last frame to get line
+        tb = e.__traceback__
+        line_num = None
+        while tb:
+            line_num = tb.tb_lineno
+            tb = tb.tb_next
+        raise type(e)(f"line {line_num}: {e}") from e
     return box['fn'] # return the function from the box
 
 def test_student_function(student_function, tests): 
@@ -43,12 +55,18 @@ def test_student_function(student_function, tests):
                 "printed": "".join(_print_output) # captured printed lines
             })
         except Exception as e:
+            tb = e.__traceback__
+            line_num = None
+            while tb:
+                line_num = tb.tb_lineno
+                tb = tb.tb_next
+            line_info = f" (line {line_num})" if line_num else ""
             report.append({
                 "input": ", ".join(str(x) for x in test['input']),
                 "expected": str(test['output']),
                 "actual": None,
                 "equal": False,
-                "error": f"{type(e).__name__}: {e}",
+                "error": f"{type(e).__name__}{line_info}: {e}",
                 "printed": "".join(_print_output)
             })
     # Final test for if the code contains print statements
@@ -144,14 +162,20 @@ def load_and_test_student_function(e):
         "KeyError":    "You're trying to access a dictionary key that isn't there.",
         "ValueError":  "A value isn't in the expected format – perhaps converting types went wrong?",
         "ZeroDivisionError": "You attempted to divide by zero – make sure your denominators aren't zero.",
+        "NameError": "You may be trying to use a variable whose value hasn't been set - make sure all variables are set before referring to them."
     }
     if data.get("question_type", None) in ('coding', 'haystack'):
         try:
             student_function = load_student_function(data['code'], data['name'])
-        except Exception as e:
+        except NameError as e:
+            # this only happens when the function has the wrong name
             return respond_failure(
                 f"{type(e).__name__} while loading your function: {e}\n\n"
-                "Tip: Make sure your function is defined with the correct name and syntax."
+                "Check that your function is named exactly as the problem asks."
+            )
+        except Exception as e:
+            return respond_failure(
+                f"{type(e).__name__} while loading your function: {e}"
             )
 
         try:
@@ -160,20 +184,23 @@ def load_and_test_student_function(e):
             for result in report:
                 if result["error"]:
                     err_type, err_msg = result["error"].split(":", 1)
+                    # .split as err_type has line number in it surrounded with ()
+                    err_name = err_type.split("(")[0].strip()
+                    hint = hints.get(err_name)
                     
-                    hint = hints.get(err_type.strip())
                     return respond_failure(
-                        f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}\n\n"
-                        f"Tip: {hint}"
+                        f"{err_type.strip()} while running your code on input {result['input']}: {err_msg.strip()}"
+                        f"\n\nTip: {hint}" if hint else '\nCheck your code for errors.'
                     )
             
         except Exception as e:
             err_type = type(e).__name__ 
             hint = hints.get(err_type)
 
-            return respond_failure(
+            return respond_failure( 
+                # show a hint if there is one
                 f"{err_type} while running your code: {e}\n\n"
-                f"Tip: {hint}"        
+                f"Tip: {hint}" if hint else 'Check your code for errors.'
             )
     elif data.get("question_type", None) == "mutation":
         try:
