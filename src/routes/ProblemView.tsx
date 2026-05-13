@@ -294,7 +294,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   return (
     <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
       <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-        <Box className="navigate-problem-btn">
+        <Box className="navigate-problem-box">
           <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Prev</Typography>
