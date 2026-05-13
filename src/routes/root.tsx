@@ -307,10 +307,12 @@ export default function App() {
 
   // keybinds navigation
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    // Ctrl + B opens Drawer
     if(event.ctrlKey && event.key === "b"){
       event.preventDefault();
       setDrawerOpen(o => !o);
     }
+
     if(drawerOpen){
       if(openCategory){
         if(event.key === "ArrowUp"){
@@ -319,7 +321,7 @@ export default function App() {
           const prevIndex = currentIndex <= 0 
             ? allCategories.length - 1
             : currentIndex - 1;
-          handleSelectedCategory(allCategories[prevIndex]);
+          setSelectedCategory(allCategories[prevIndex]);
         }
         if(event.key === "ArrowDown"){
           event.preventDefault();
@@ -327,22 +329,44 @@ export default function App() {
           const nextIndex = currentIndex >= allCategories.length - 1
             ? 0
             : currentIndex + 1;
-          handleSelectedCategory(allCategories[nextIndex]);
+          setSelectedCategory(allCategories[nextIndex]);
+        }
+        // select category
+        if (event.key === "Enter") {
+          event.preventDefault();
+          if (selectedCategory) handleSelectedCategory(selectedCategory);
         }
       }
       else{
-        if(event.key === "Enter"){
-          event.preventDefault();
-          if(selectedProblem) setActiveProblem(selectedProblem);
-        }
+        // filters problems in active category
+        const categoryProblems = searchedProblems
+          .filter(p => p.meta.category === activeCategory)
+          .map(p => p.meta.name);
+        
         // up / down selects problem
         if(event.key === "ArrowUp"){
           event.preventDefault();
-          console.log("Nav problem up");
+          const currentIndex = categoryProblems.indexOf(selectedProblem ?? "");
+          const prevIndex = currentIndex <= 0 
+            ? categoryProblems.length - 1 
+            : currentIndex - 1;
+          setSelectedProblem(categoryProblems[prevIndex]);
         }
         if(event.key === "ArrowDown"){
           event.preventDefault();
-          console.log("Nav problem down");
+          const currentIndex = categoryProblems.indexOf(selectedProblem ?? "");
+          const nextIndex = currentIndex >= categoryProblems.length - 1 
+            ? 0
+            : currentIndex + 1;
+          setSelectedProblem(categoryProblems[nextIndex]);
+        }
+
+        if(event.key === "Enter"){
+          event.preventDefault();
+          if(selectedProblem){
+            handleSelectedProblem(selectedProblem);
+            navigate(`/problems/${selectedProblem}`);
+          }
         }
       }
 
@@ -356,7 +380,7 @@ export default function App() {
         setOpenCategory(false);
       }
     }
-  },[selectedProblem, setSelectedProblem, drawerOpen, setDrawerOpen, openCategory, setOpenCategory]);
+  }, [selectedProblem, drawerOpen, openCategory, allCategories, searchedProblems, activeCategory, selectedCategory]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
