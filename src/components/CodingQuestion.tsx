@@ -38,7 +38,7 @@ export default function CodingQuestion({code, changeCode, problem, runCode, prev
       event.preventDefault();
       nextProb();
     }
-  },[code, runCode]);
+  },[code, runCode, prevProb, nextProb]);
   
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);

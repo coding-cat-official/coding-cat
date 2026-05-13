@@ -407,7 +407,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             (
               <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} prevProb={handlePreviousProblem} nextProb={handleNextProblem} />
             ) : ( 
-              <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
+              <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} prevProb={handlePreviousProblem} nextProb={handleNextProblem} />
             )
           }
         </Sheet>
