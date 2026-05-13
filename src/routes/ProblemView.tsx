@@ -298,7 +298,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       event.preventDefault();
       handleNextProblem();
     }
-  },[code, runCode, handleNextProblem, handleNextProblem]);
+  },[code, runCode, handlePreviousProblem, handleNextProblem]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
