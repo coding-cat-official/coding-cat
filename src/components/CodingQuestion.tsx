@@ -22,18 +22,18 @@ export default function CodingQuestion({code, changeCode, problem, runCode}: Cod
     if (fontSize > 10) setFontSize(fontSize - 4); 
   }
   
-    const handleKeyPress = useCallback((event:KeyboardEvent) => {
-        if(event.altKey && event.key === "Enter"){
-          runCode(code);
-        }
-      },[code, runCode]);
+  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+    if(event.altKey && event.key === "Enter"){
+      runCode(code);
+    }
+  },[code, runCode]);
   
-      useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
-        return () => {
-          document.removeEventListener('keydown', handleKeyPress);
-        };
-      }, [handleKeyPress]);
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return(
     <>
