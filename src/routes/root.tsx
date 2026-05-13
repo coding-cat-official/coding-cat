@@ -40,7 +40,7 @@ export default function App() {
   const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
@@ -54,6 +54,8 @@ export default function App() {
   const [progress, setProgress] = useState<Submission[]>([]);
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
   const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
+
+  const [selectedProblem, setSelectedProblem] = useState(null);
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -91,7 +93,7 @@ export default function App() {
 
   function handleSelectedProblem(name: string){
     setActiveProblem(name)
-    setOpen(false)
+    setDrawerOpen(false)
   }
 
   useEffect(() => {
@@ -194,7 +196,7 @@ export default function App() {
     selectedCategory: activeCategory,
     activeProblem,
     onSelectProblem: handleSelectedProblem,
-    closeDrawer: () => setOpen(false),
+    closeDrawer: () => setDrawerOpen(false),
     session,
     contractProgress,
     progress
@@ -206,7 +208,7 @@ export default function App() {
     setSelectedTab,
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
-    closeDrawer: () => setOpen(false)
+    closeDrawer: () => setDrawerOpen(false)
   };
 
   const startSession = (sessionIdFromState: string, durationMinutes: number, exerciseCount: number) => {
@@ -296,12 +298,44 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessionStartTime, sessionDuration]);
 
+  // keybinds navigation
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if(event.ctrlKey && event.key === "b"){
       event.preventDefault();
-      setOpen(o => !o);
+      setDrawerOpen(o => !o);
     }
-  },[setOpen]);
+    if(drawerOpen){
+      if(openCategory){
+        if(event.key === "ArrowUp"){
+          console.log("Nav category up");
+        }
+        if(event.key === "ArrowDown"){
+          console.log("Nav category down");
+        }
+      }
+      else{
+        if(event.key === "Enter"){
+          event.preventDefault();
+          setActiveProblem(selectedProblem);
+        }
+        // up / down selects problem
+        if(event.key === "ArrowUp"){
+          console.log("Nav problem up");
+        }
+        if(event.key === "ArrowDown"){
+          console.log("Nav problem down");
+        }
+      }
+
+      // left / right opens category list
+      if(event.key === "ArrowLeft"){
+        setOpenCategory(true);
+      }
+      if(event.key === "ArrowRight"){
+        setOpenCategory(false);
+      }
+    }
+  },[selectedProblem, setSelectedProblem, drawerOpen, setDrawerOpen, openCategory, setOpenCategory]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
@@ -335,11 +369,11 @@ export default function App() {
           }
         }}
         className="desktop-bar"
-        onClick={() => setOpen(true)}
+        onClick={() => setDrawerOpen(true)}
       />
       <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
         size="lg"
         // Temporary fix for: https://github.com/coding-cat-official/coding-cat/pull/56
         sx={{
@@ -410,7 +444,7 @@ export default function App() {
           position:'relative' 
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
-            <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setOpen(true)} className="mobile-bar">
+            <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setDrawerOpen(true)} className="mobile-bar">
               <ListIcon size={20} />
             </Button>
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
