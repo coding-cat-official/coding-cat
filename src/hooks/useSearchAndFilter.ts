@@ -1,22 +1,23 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Problem, BlogPost } from '../types';
 import getBlogPosts from '../utils/getBlogPosts';
+import type { Dispatch, SetStateAction } from 'react';
 
 interface UseSearchAndFilterReturn {
   query: string;
-  setQuery: (query: string) => void;
+  setQuery: Dispatch<SetStateAction<string>>;
   difficulty: string;
-  setDifficulty: (difficulty: string) => void;
+  setDifficulty: Dispatch<SetStateAction<string>>;
   activeCategory: string | null;
-  setActiveCategory: (category: string | null) => void;
+  setActiveCategory: Dispatch<SetStateAction<string | null>>;
   activeProblem: string | null;
-  setActiveProblem: (problem: string | null) => void;
+  setActiveProblem: Dispatch<SetStateAction<string | null>>;
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
   openCategory: boolean;
-  setOpenCategory: (open: boolean) => void;
+  setOpenCategory: Dispatch<SetStateAction<boolean>>;
   selectedTab: string;
-  setSelectedTab: (tab: string) => void;
+  setSelectedTab: Dispatch<SetStateAction<string>>;
   searchedProblems: Problem[];
   searchedBlogs: BlogPost[];
   handleSelectedCategory: (category: string) => void;
