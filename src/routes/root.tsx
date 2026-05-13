@@ -44,6 +44,12 @@ export default function App() {
   const [openCategory, setOpenCategory] = useState(false);
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
+  const allCategories = useMemo(() => {
+    return problems
+      .map((c) => c.meta.category)
+      .filter((c, index, array) => array.indexOf(c) === index)
+      .sort((a, b) => a.localeCompare(b));
+  }, [problems]);
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -55,7 +61,8 @@ export default function App() {
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
   const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
 
-  const [selectedProblem, setSelectedProblem] = useState(null);
+  const [selectedProblem, setSelectedProblem] = useState(activeProblem);
+  const [selectedCategory, setSelectedCategory] = useState(activeCategory);
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -307,31 +314,45 @@ export default function App() {
     if(drawerOpen){
       if(openCategory){
         if(event.key === "ArrowUp"){
-          console.log("Nav category up");
+          event.preventDefault();
+          const currentIndex = allCategories.indexOf(selectedCategory ?? "");
+          const prevIndex = currentIndex <= 0 
+            ? allCategories.length - 1
+            : currentIndex - 1;
+          handleSelectedCategory(allCategories[prevIndex]);
         }
         if(event.key === "ArrowDown"){
-          console.log("Nav category down");
+          event.preventDefault();
+          const currentIndex = allCategories.indexOf(selectedCategory ?? "");
+          const nextIndex = currentIndex >= allCategories.length - 1
+            ? 0
+            : currentIndex + 1;
+          handleSelectedCategory(allCategories[nextIndex]);
         }
       }
       else{
         if(event.key === "Enter"){
           event.preventDefault();
-          setActiveProblem(selectedProblem);
+          if(selectedProblem) setActiveProblem(selectedProblem);
         }
         // up / down selects problem
         if(event.key === "ArrowUp"){
+          event.preventDefault();
           console.log("Nav problem up");
         }
         if(event.key === "ArrowDown"){
+          event.preventDefault();
           console.log("Nav problem down");
         }
       }
 
       // left / right opens category list
       if(event.key === "ArrowLeft"){
+        setSelectedCategory(activeCategory);
         setOpenCategory(true);
       }
       if(event.key === "ArrowRight"){
+        setSelectedCategory(activeCategory);
         setOpenCategory(false);
       }
     }
@@ -445,6 +466,7 @@ export default function App() {
         }} >
           <Stack sx={{ width: '100%', display: 'flex', flexDirection: 'row'}} className="upper-nav">
             <Button sx={{ margin: '10px 10px 0 10px', cursor: 'pointer'}} onClick={() => setDrawerOpen(true)} className="mobile-bar">
+              { /* TODO: get non-deprecated icon */ }
               <ListIcon size={20} />
             </Button>
             <Box sx={{ margin: '10px 10px 0 10px', display: 'flex', gap: 1 }} className="account-btns">
@@ -521,9 +543,9 @@ export default function App() {
           <Link to="/">
             <Box component="img" src={logo} sx={{ maxHeight: "80px", marginTop: "5px", marginRight:"15px" }}/>
           </Link>
-            <Typography  sx={{ fontFamily: '"Silkscreen", monospace', fontSize: "35pt"}} level="h1">
-              Coding Cat!
-            </Typography>
+          <Typography  sx={{ fontFamily: '"Silkscreen", monospace', fontSize: "35pt"}} level="h1">
+            Coding Cat!
+          </Typography>
         </Stack>
         
         <Box width="100%" height="100%">
