@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -284,6 +284,29 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
   }
 
+  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+    if(event.altKey && event.key === "Enter"){
+      runCode(code);
+    }
+
+    if(event.altKey && event.key === "ArrowLeft"){
+      event.preventDefault();
+      handlePreviousProblem();
+    }
+
+    if(event.altKey && event.key === "ArrowRight"){
+      event.preventDefault();
+      handleNextProblem();
+    }
+  },[code, runCode, handleNextProblem, handleNextProblem]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
   let author = problem.meta.author;
   if (author.toLowerCase() === "chatgpt") author = "";
 
@@ -405,9 +428,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
           { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
             (
-              <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} prevProb={handlePreviousProblem} nextProb={handleNextProblem} />
+              <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
             ) : ( 
-              <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} prevProb={handlePreviousProblem} nextProb={handleNextProblem} />
+              <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
             )
           }
         </Sheet>

@@ -117,29 +117,6 @@ export default function MutationQuestion({ code, setCode, runCode, problem, eval
     }, 2000)
   }, [expectedOutputRows, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
 
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
-    if(event.altKey && event.key === "Enter"){
-      runCode(code);
-    }
-
-    if(event.altKey && event.key === "ArrowLeft"){
-      event.preventDefault();
-      prevProb();
-    }
-
-    if(event.altKey && event.key === "ArrowRight"){
-      event.preventDefault();
-      nextProb();
-    }
-  },[code, runCode, prevProb, nextProb]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
-
   return(
     <> 
       <LinearProgress className="mutation-progressBar" determinate value={countPassedMutants(evalResponse)/numOfMutations*100} size="lg" thickness={30}>
