@@ -296,7 +296,7 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessionStartTime, sessionDuration]);
 
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if(event.ctrlKey && event.key === "b"){
       event.preventDefault();
       setOpen(o => !o);
