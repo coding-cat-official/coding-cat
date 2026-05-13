@@ -17,6 +17,7 @@ import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
 import Tutorial from '../components/MutationTutorial';
 import cursedCat from '../assets/cUrSed.png';
+import errorCat from '../assets/error-cat.png';
 import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
@@ -477,6 +478,14 @@ function Report({ evalResponse, questionType }: ReportProps) {
         <Typography>
           Uh-oh! There was a problem with your submission.
         </Typography>
+        <Box sx={{ alignSelf: "center", marginY: "10px" }}>
+          <img 
+            src={errorCat}
+            alt='error cat'
+            height="100px"
+            width="100px"
+          />
+          </Box>
         <Typography sx={{ whiteSpace: 'pre-wrap'}}>
           {evalResponse.message}
         </Typography>
