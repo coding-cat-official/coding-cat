@@ -265,14 +265,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }, [problem.meta.name]);
 
     function changeCode(e: string | undefined) {
-      setCode(e ?? '')
+      setCode(e ?? '');
     }
 
   function handlePreviousProblem(){
     if(currIndex > 0){
       const prevProblem = currProblems[currIndex - 1].meta.name;
       setCurrIndex(currIndex - 1);
-      navigate(`/problems/${prevProblem}`)
+      navigate(`/problems/${prevProblem}`);
     }
   }
 
@@ -280,7 +280,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     if(currIndex < currProblems.length - 1){
       const nextProblem = currProblems[currIndex + 1].meta.name;
       setCurrIndex(currIndex + 1);
-      navigate(`/problems/${nextProblem}`)
+      navigate(`/problems/${nextProblem}`);
     }
   }
 
