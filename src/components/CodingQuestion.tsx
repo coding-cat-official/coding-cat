@@ -8,9 +8,11 @@ interface CodingProps {
   changeCode: (e: string | undefined) => void;
   problem: Problem;
   runCode: (code: string) => void;
+  prevProb: () => void;
+  nextProb: () => void;
 }
 
-export default function CodingQuestion({code, changeCode, problem, runCode}: CodingProps){
+export default function CodingQuestion({code, changeCode, problem, runCode, prevProb, nextProb}: CodingProps){
   const [fontSize, setFontSize] = useState(14);
   const [disabled, setDisabled] = useState(false);
 
@@ -25,6 +27,16 @@ export default function CodingQuestion({code, changeCode, problem, runCode}: Cod
   const handleKeyPress = useCallback((event:KeyboardEvent) => {
     if(event.altKey && event.key === "Enter"){
       runCode(code);
+    }
+
+    if(event.altKey && event.key === "ArrowLeft"){
+      event.preventDefault();
+      prevProb();
+    }
+
+    if(event.altKey && event.key === "ArrowRight"){
+      event.preventDefault();
+      nextProb();
     }
   },[code, runCode]);
   

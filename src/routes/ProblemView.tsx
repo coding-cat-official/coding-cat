@@ -299,6 +299,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Prev</Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + ←)
+              </Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {currProblems[currIndex - 1]?.meta?.title}
               </Typography>
             </Stack>
@@ -306,6 +309,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Next</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + →)
+              </Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {currProblems[currIndex + 1]?.meta?.title}
               </Typography>
@@ -399,7 +405,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
           { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
             (
-              <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
+              <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} prevProb={handlePreviousProblem} nextProb={handleNextProblem} />
             ) : ( 
               <MutationQuestion code={code} setCode={changeCode} runCode={runCode} evalResponse={evalResponse} problem={problem} />
             )
