@@ -1,6 +1,6 @@
 import {Button, Box, Stack, Typography} from '@mui/joy';
 import ResizableEditor from './ResizableEditor';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Problem } from '../types';
 
 interface CodingProps {
@@ -8,11 +8,9 @@ interface CodingProps {
   changeCode: (e: string | undefined) => void;
   problem: Problem;
   runCode: (code: string) => void;
-  prevProb: () => void;
-  nextProb: () => void;
 }
 
-export default function CodingQuestion({code, changeCode, problem, runCode, prevProb, nextProb}: CodingProps){
+export default function CodingQuestion({ code, changeCode, problem, runCode }: CodingProps){
   const [fontSize, setFontSize] = useState(14);
   const [disabled, setDisabled] = useState(false);
 
@@ -23,29 +21,6 @@ export default function CodingQuestion({code, changeCode, problem, runCode, prev
   function decreaseFontSize() {
     if (fontSize > 10) setFontSize(fontSize - 4); 
   }
-  
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
-    if(event.altKey && event.key === "Enter"){
-      runCode(code);
-    }
-
-    if(event.altKey && event.key === "ArrowLeft"){
-      event.preventDefault();
-      prevProb();
-    }
-
-    if(event.altKey && event.key === "ArrowRight"){
-      event.preventDefault();
-      nextProb();
-    }
-  },[code, runCode, prevProb, nextProb]);
-  
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
 
   return(
     <>
