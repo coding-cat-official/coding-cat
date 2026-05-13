@@ -305,6 +305,9 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessionStartTime, sessionDuration]);
 
+  // TODO: add visualization of selected problem and category
+  // maybe use the hoverover logic?
+
   // keybinds navigation
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + B opens Drawer
@@ -315,6 +318,7 @@ export default function App() {
 
     if(drawerOpen){
       if(openCategory){
+        // up / down selects category
         if(event.key === "ArrowUp"){
           event.preventDefault();
           const currentIndex = allCategories.indexOf(selectedCategory ?? "");
@@ -331,6 +335,7 @@ export default function App() {
             : currentIndex + 1;
           setSelectedCategory(allCategories[nextIndex]);
         }
+
         // select category
         if (event.key === "Enter") {
           event.preventDefault();
@@ -361,6 +366,7 @@ export default function App() {
           setSelectedProblem(categoryProblems[nextIndex]);
         }
 
+        // select new problem
         if(event.key === "Enter"){
           event.preventDefault();
           if(selectedProblem){
