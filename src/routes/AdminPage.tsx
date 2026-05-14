@@ -25,7 +25,6 @@ const linkStyle = { marginBottom: 2, color: "black" };
  */
 export default function AdminPage() {
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
-  const [switchToggle, setSwitchToggle] = useState(false);
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
