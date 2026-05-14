@@ -37,6 +37,7 @@ export default function CategoryListItems({categories, type, progress, mapCatego
                     border: "1px solid black",
                 }}
                 >
+                    {/* Change to use hidden as well */}
                     {!unlocked && <LockSimple size={16}/>}
                     <Typography sx={{fontFamily: "Doto", fontWeight: "900"}}>
                         {
