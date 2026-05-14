@@ -1,4 +1,4 @@
-import { List, ListItem, Switch, Typography } from "@mui/joy";
+import { List, ListItem, Switch } from "@mui/joy";
 import Box from "@mui/joy/Box";
 
 interface ListProtectedCategoriesProps {
@@ -24,16 +24,14 @@ export function ListProtectedCategories({ testCategories, visibility }: ListProt
     <Box
       sx={boxStyles}
     >
-      <Typography>
-        <List>
-          {testCategories.map((elem) => (
-            <ListItem key={elem}>
-              {elem}
-              <Switch />
-            </ListItem>
-          ))}
-        </List>
-      </Typography>
+      <List>
+        {testCategories.map((elem) => (
+          <ListItem key={elem}>
+            {elem}
+            <Switch />
+          </ListItem>
+        ))}
+      </List>
     </Box>
   ) : null;
 }

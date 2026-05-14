@@ -66,7 +66,9 @@ export default function AdminPageModal({
             {switchLabel}
           </Typography>
         )}
-        {extraNode?.map((elem) => elem)}
+        {extraNode?.map((elem, idx) => (
+          <div key={idx}>{elem}</div>
+        ))}
       </Box>
     </Modal>
   );
