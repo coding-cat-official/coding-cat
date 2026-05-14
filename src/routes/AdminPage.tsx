@@ -36,17 +36,6 @@ export default function AdminPage() {
     .filter((c) => c.match(/^test-questions[0-9]*$/))
     .filter((c, index, arr) => arr.indexOf(c) === index);
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const { data } = await supabase.from("settings").select("value").eq("key", "test-questions");
-
-      if (data?.[0]?.value) {
-        setSwitchToggle(true);
-      }
-    };
-    fetchSettings();
-  }, [switchToggle]);
-
   // Meta data for each link
   const links: ModalMetaData[] = [
     {
@@ -56,20 +45,9 @@ export default function AdminPage() {
     {
       title: "Toggle Public/Test Questions",
       desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
-      switch: {
-        switchLabel: "Enable Test Categories",
-        switchAction: async () => {
-          if (switchToggle === true) {
-            await supabase.from("settings").update({ value: "" }).eq("key", "test-password");
-            setSwitchToggle(false);
-          } else {
-            setSwitchToggle(true);
-          }
-        },
-      },
       extraNodes: [
-        <CategoryPasswordForm visibility={switchToggle} />,
-        <ListProtectedCategories testCategories={testCategories} visibility={switchToggle} />,
+        <CategoryPasswordForm />,
+        <ListProtectedCategories testCategories={testCategories} />,
       ],
     },
     {
@@ -115,7 +93,6 @@ export default function AdminPage() {
         {activeModal && (
           <AdminPageModal
             open
-            switchToggle={switchToggle}
             handleClose={handleClose}
             modalTitle={activeModal.title}
             modalDesc={activeModal.desc}

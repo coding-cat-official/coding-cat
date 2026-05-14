@@ -5,7 +5,6 @@ import { ReactNode } from "react";
 interface AdminPageModalProps {
   open: boolean;
   handleClose: () => void;
-  switchToggle: boolean;
   modalTitle: string;
   modalDesc: string;
   switchLabel?: string;
@@ -37,7 +36,6 @@ const styles = {
 export default function AdminPageModal({
   open,
   handleClose,
-  switchToggle,
   modalTitle,
   modalDesc,
   switchLabel,
@@ -61,7 +59,7 @@ export default function AdminPageModal({
         {switchLabel && (
           <Typography
             component="label"
-            endDecorator={<Switch checked={switchToggle} onChange={switchAction} />}
+            endDecorator={<Switch onChange={switchAction} />}
           >
             {switchLabel}
           </Typography>

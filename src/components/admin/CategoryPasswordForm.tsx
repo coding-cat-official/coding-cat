@@ -3,11 +3,7 @@ import { useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { hashPassword } from "../../utils/hashPassword";
 
-interface CategoryPasswordFormProps {
-  visibility: boolean;
-}
-
-export default function CategoryPasswordForm({ visibility }: CategoryPasswordFormProps) {
+export default function CategoryPasswordForm() {
   const [testPassword, setTestPassword] = useState("");
 
   const statusDefault = { value: "", statusSx: {} as Record<string, any> };
@@ -60,7 +56,7 @@ export default function CategoryPasswordForm({ visibility }: CategoryPasswordFor
     }
   };
 
-  return visibility ? (
+  return (
     <Box component="form" onSubmit={handleSubmit}>
       <Input
         value={testPassword}
@@ -72,5 +68,5 @@ export default function CategoryPasswordForm({ visibility }: CategoryPasswordFor
         Save
       </Button>
     </Box>
-  ) : null;
+  );
 }

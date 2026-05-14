@@ -3,7 +3,6 @@ import Box from "@mui/joy/Box";
 
 interface ListProtectedCategoriesProps {
   testCategories: string[];
-  visibility: boolean
 }
 
 const boxStyles = {
@@ -16,14 +15,12 @@ const boxStyles = {
 
 /**
  * A component that display and controls what test categories to display
- * @param testCategories List of strings representing the test categories 
+ * @param testCategories List of strings representing the test categories
  * @returns <ListProtectedCategories {...props} />
  */
-export function ListProtectedCategories({ testCategories, visibility }: ListProtectedCategoriesProps) {
-  return visibility ? (
-    <Box
-      sx={boxStyles}
-    >
+export function ListProtectedCategories({ testCategories }: ListProtectedCategoriesProps) {
+  return (
+    <Box sx={boxStyles}>
       <List>
         {testCategories.map((elem) => (
           <ListItem key={elem}>
@@ -33,5 +30,5 @@ export function ListProtectedCategories({ testCategories, visibility }: ListProt
         ))}
       </List>
     </Box>
-  ) : null;
+  );
 }
