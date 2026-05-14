@@ -403,7 +403,7 @@ export default function App() {
     const first = searchedProblems
       .filter(p => p.meta.category === activeCategory)
       .map(p => p.meta.name)[0] ?? null;
-    setKeyboardSelectedProblem(first);
+    setKeyboardSelectedProblem(activeProblem ?? first);
   }, [activeCategory, searchedProblems]);
 
   useEffect(() => {
