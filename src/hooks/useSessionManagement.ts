@@ -54,7 +54,7 @@ export default function useSessionManagement(session: Session | null): UseSessio
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-
+  // Handle session start when coming back from PreSessionForm
   useEffect(() => {
     const locationState = location.state as any;
     const sessionIdFromState = locationState?.sessionId;
@@ -76,13 +76,13 @@ export default function useSessionManagement(session: Session | null): UseSessio
     };
     fetchSessionData();
   }, [location.pathname, location.state, session?.user, navigate]);
-
+  // Handle session reset when coming back from PostSessionForm
   useEffect(() => {
     if (location.pathname === '/' && activeSession && (location.state as any)?.fromPostSession) {
       endSession();
     }
   }, [location.pathname, location.state, activeSession, endSession]);
-
+  // Session countdown timer
   useEffect(() => {
     if (!activeSession || !sessionStartTime) return;
 

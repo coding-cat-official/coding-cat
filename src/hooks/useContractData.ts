@@ -14,7 +14,6 @@ export default function useContractData(session: Session | null): UseContractDat
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
   const [progress, setProgress] = useState<Submission[]>([]);
 
-  // Fetch contract data
   useEffect(() => {
     (async () => {
       if (!session) return;
