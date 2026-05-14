@@ -82,9 +82,7 @@ const router = createHashRouter([
         path: "admin",
         element: <AdminWrapper />,
         children: [
-          { index: true, element: <AdminPage />,
-            loader: problemListLoader
-          }
+          { index: true, element: <AdminPage />}
         ],
       }
     ],
