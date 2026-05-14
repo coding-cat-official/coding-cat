@@ -38,7 +38,7 @@ export default function CategoryListItems({ categories, type, progress, mapCateg
                     boxShadow: "5px 5px black",
                     border: "1px solid black",
                     ...(category === keyboardSelected && {
-                        backgroundColor: 'rgba(255, 0, 0, 0.3) !important',
+                        backgroundColor: '#82d078 !important',
                     })
                 }}
                 >
