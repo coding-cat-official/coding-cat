@@ -72,6 +72,7 @@ export default function CategoryList({
      */
     function mapCategoryToLock(category: string) {
         switch (category) {
+            case "Level 0": return categoryLock.level_0
             case "Fundamentals": return categoryLock.fundamentals
             case "Logic": return categoryLock.logic
             case "String-1": return categoryLock.string_1
