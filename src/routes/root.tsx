@@ -18,6 +18,7 @@ import { ALL_PFPS } from '../components/profile/UserInfo';
 import ProfileAvatar from '../components/profile/ProfileAvatar';
 import BlogList from '../components/BlogList';
 import getBlogPosts from '../utils/getBlogPosts';
+import { TEST_CATEGORY_PATTERN } from '../utils/constants';
 
 interface UserData{
   name: string,
@@ -372,7 +373,7 @@ export default function App() {
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
-                {activeCategory?.match(/(final|midterm)\d+$/) ? (
+                {activeCategory?.match(TEST_CATEGORY_PATTERN) ? (
                   <PasswordProtected {...problemListProps}/>
                 ) : activeCategory === 'blogs' ? (
                   <BlogList {...blogListProps}/>

@@ -6,6 +6,7 @@ import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { supabase } from "../supabaseClient";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
 import { useLoaderData } from "react-router-dom";
+import { TEST_CATEGORY_PATTERN } from "../utils/constants";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -33,7 +34,7 @@ export default function AdminPage() {
   // List of categories that have test-questions in their name
   const testCategories = problems
     .map((c) => c.meta.category)
-    .filter((c) => c.match(/^(final|midterm)\d+$/))
+    .filter((c) => c.match(TEST_CATEGORY_PATTERN))
     .filter((c, index, arr) => arr.indexOf(c) === index);
 
   // Meta data for each link
