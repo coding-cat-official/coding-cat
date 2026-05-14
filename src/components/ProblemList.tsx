@@ -149,7 +149,7 @@ export default function ProblemList({ selectedTab, setSelectedTab, searchedProbl
                       onClick={closeDrawer}
                       sx={
                         p.meta.name === keyboardSelected
-                          ? { backgroundColor: 'rgba(255, 0, 0, 0.3) !important' }
+                          ? { backgroundColor: '#FFE293 !important' }
                           : {}
                       }
                     >
