@@ -161,6 +161,7 @@ export interface BlogPost {
         editor?: string;
         author: string;
         title: string;
+        category: string;
     };
 }
 
