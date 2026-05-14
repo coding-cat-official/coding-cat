@@ -16,8 +16,6 @@ import SidebarDrawer from '../components/layout/SidebarDrawer';
 import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
 
-
-// The main thing that needs to be done is putting the `Drawer` component into its own separate file.
 export default function App() {
   const problems = useLoaderData() as Problem[];
   const navigate = useNavigate();
