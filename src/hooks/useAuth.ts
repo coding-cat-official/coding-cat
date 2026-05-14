@@ -21,7 +21,6 @@ export default function useAuth(): UseAuthReturn {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
 
-  // Fetch user profile data
   const fetchProfile = useCallback(async () => {
     if (!session) return;
     const { user } = session;

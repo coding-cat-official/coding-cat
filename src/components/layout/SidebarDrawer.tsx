@@ -47,7 +47,9 @@ export default function SidebarDrawer({
   kbSelectedCategory
 }: Props) {
   return (
-    <Drawer open={drawerOpen} onClose={onClose} size="lg" sx={{ "--ModalClose-inset": "1rem", "--Drawer-verticalSize": "clamp(500px, 60%, 100%)", "--Drawer-horizontalSize": "100vw", "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)" }}>
+    <Drawer open={drawerOpen} onClose={onClose} size="lg" 
+    // Temporary fix for: https://github.com/coding-cat-official/coding-cat/pull/56
+    sx={{ "--ModalClose-inset": "1rem", "--Drawer-verticalSize": "clamp(500px, 60%, 100%)", "--Drawer-horizontalSize": "100vw", "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)" }}>
       <ModalClose />
       <Stack width="100%" direction="row" justifyContent="space-between" padding={'10px'} className="big-navbar" sx={{ alignItems: 'center' }}>
         <DialogTitle level="h1" sx={{ fontFamily: '"Silkscreen", monospace', padding: '5px', fontSize: '30pt' }}>
