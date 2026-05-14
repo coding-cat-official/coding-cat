@@ -35,13 +35,12 @@ export default function CategoryList({
         .sort((a, b) => a.localeCompare(b));
 
     const specialCategories = [];
-    if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
-        specialCategories.push("mutation");
-    }
     if (searchedProblems.some((c) => c.meta.question_type[0] === 'haystack')) {
         specialCategories.push("haystack");
     }
-
+    if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
+        specialCategories.push("mutation");
+    }
 
     useEffect(() => {
         async function fetchProgress() {

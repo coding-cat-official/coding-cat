@@ -3,7 +3,6 @@ import { LockSimple } from '@phosphor-icons/react';
 import { capitalizeString } from '../utils/capitalizeString';
 
 export default function CategoryListItems({ categories, type, progress, mapCategoryToLock, activeCategory, onSelectCategory, session, contractProgress, keyboardSelected }:any) {
-    console.log("keyboardSelected:", keyboardSelected, "categories:", categories);
     return(
     <>
      {categories.map((category:string) => {

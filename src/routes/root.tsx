@@ -45,10 +45,16 @@ export default function App() {
   const [activeProblem, setActiveProblem] = useState<null | string>(null);
   const problems = useLoaderData() as Problem[];
   const allCategories = useMemo(() => {
-    return problems
+    const categories = problems
       .map((c) => c.meta.category)
       .filter((c, index, array) => array.indexOf(c) === index)
       .sort((a, b) => a.localeCompare(b));
+
+    const specialCategories: string[] = [];
+    if(problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
+    if(problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
+  
+    return [...categories, ...specialCategories];
   }, [problems]);
   const [activeCategory, setActiveCategory] = useState<string | null>(() => {return 'Fundamentals';});
   const [query, setQuery] = useState("");
@@ -346,7 +352,13 @@ export default function App() {
       else{
         // filters problems in active category
         const categoryProblems = searchedProblems
-          .filter(p => p.meta.category === activeCategory)
+          .filter(p => {
+            const questionType = p.meta.question_type[0];
+            const cat = questionType === "coding"
+              ? p.meta.category
+              : questionType;
+            return cat === activeCategory;
+          })
           .map(p => p.meta.name);
         
         // up / down selects problem
