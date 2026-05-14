@@ -1,12 +1,10 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
 import { ReactNode, useEffect, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
-import { AdminSwitch, Problem } from "../types";
+import { AdminSwitch } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { supabase } from "../supabaseClient";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
-import { useLoaderData } from "react-router-dom";
-import { TEST_CATEGORY_PATTERN } from "../utils/constants";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -25,16 +23,47 @@ const linkStyle = { marginBottom: 2, color: "black" };
  */
 export default function AdminPage() {
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+  const [testCategoriesList, setTestCategoriesList] = useState<Map<string, boolean>>(new Map());
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
-  const problems = useLoaderData() as Problem[];
 
-  // List of categories that have test-questions in their name
-  const testCategories = problems
-    .map((c) => c.meta.category)
-    .filter((c) => c.match(TEST_CATEGORY_PATTERN))
-    .filter((c, index, arr) => arr.indexOf(c) === index);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase.from("testcategories").select("category, is_active");
+
+      if (error) {
+        console.error("Error fetching protected categories:", error);
+        return;
+      }
+
+      const fetchedCategories = new Map<string, boolean>(
+        (data ?? []).map((row) => [row.category as string, row.is_active as boolean]),
+      );
+
+      setTestCategoriesList(fetchedCategories);
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Update db state on toggle switch
+  const toggleCategories = async (category: string, isActive: boolean) => {
+    setTestCategoriesList((prev) => {
+      const next = new Map(prev);
+      next.set(category, isActive);
+      return next;
+    });
+
+    const { error } = await supabase
+      .from("testcategories")
+      .update({ is_active: isActive })
+      .eq("category", category);
+
+    if (error) {
+      console.error("Error updating protected category:", error);
+    }
+  };
 
   // Meta data for each link
   const links: ModalMetaData[] = [
@@ -47,7 +76,10 @@ export default function AdminPage() {
       desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
       extraNodes: [
         <CategoryPasswordForm />,
-        <ListProtectedCategories testCategories={testCategories} />,
+        <ListProtectedCategories
+          testCategories={testCategoriesList}
+          toggleAction={toggleCategories}
+        />,
       ],
     },
     {

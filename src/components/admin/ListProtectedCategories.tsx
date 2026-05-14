@@ -2,7 +2,8 @@ import { List, ListItem, Switch } from "@mui/joy";
 import Box from "@mui/joy/Box";
 
 interface ListProtectedCategoriesProps {
-  testCategories: string[];
+  testCategories: Map<string, boolean>;
+  toggleAction: (category: string, isActive: boolean) => void;
 }
 
 const boxStyles = {
@@ -18,14 +19,17 @@ const boxStyles = {
  * @param testCategories List of strings representing the test categories
  * @returns <ListProtectedCategories {...props} />
  */
-export function ListProtectedCategories({ testCategories }: ListProtectedCategoriesProps) {
+export function ListProtectedCategories({
+  testCategories,
+  toggleAction,
+}: ListProtectedCategoriesProps) {
   return (
     <Box sx={boxStyles}>
       <List>
-        {testCategories.map((elem) => (
-          <ListItem key={elem}>
-            {elem}
-            <Switch />
+        {Array.from(testCategories.entries()).map(([category, isActive]) => (
+          <ListItem key={category}>
+            {category}
+            <Switch checked={isActive} onChange={() => toggleAction(category, !isActive)} />
           </ListItem>
         ))}
       </List>
