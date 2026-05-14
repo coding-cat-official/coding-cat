@@ -33,7 +33,7 @@ export default function AdminPage() {
   // List of categories that have test-questions in their name
   const testCategories = problems
     .map((c) => c.meta.category)
-    .filter((c) => c.match(/^test-questions[0-9]*$/))
+    .filter((c) => c.match(/^(final|midterm)\d+$/))
     .filter((c, index, arr) => arr.indexOf(c) === index);
 
   // Meta data for each link
