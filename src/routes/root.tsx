@@ -19,6 +19,7 @@ import ProfileAvatar from '../components/profile/ProfileAvatar';
 import BlogList from '../components/BlogList';
 import getBlogPosts from '../utils/getBlogPosts';
 import { TEST_CATEGORY_PATTERN } from '../utils/constants';
+import { syncTestCategories } from '../utils/CategoryHide';
 
 interface UserData{
   name: string,
@@ -69,6 +70,20 @@ export default function App() {
         problem.meta.difficulty.includes(newDifficulty);
     });
   }, [problems, query, newDifficulty])
+
+  // Get all test categories in a list
+  const testCategories = problems
+    .map((c) => c.meta.category)
+    .filter((c) => c.match(TEST_CATEGORY_PATTERN))
+    .filter((c, index, arr) => arr.indexOf(c) === index);
+
+  // On startup it syncs the test questions to the db
+  // DRAWBACK: Every user instance on a browser is a db query
+  useEffect(() => {
+    (async () => {
+      await syncTestCategories(testCategories, false)
+    })()
+  }, [testCategories])
 
   useEffect(() => {
     setSearchedProblems(filteredProblems);
