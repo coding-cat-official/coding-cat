@@ -312,13 +312,10 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSession, sessionStartTime, sessionDuration]);
 
-  // TODO: add visualization of selected problem and category
-  // maybe use the hoverover logic?
-
   // keybinds navigation
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    // Ctrl + B opens Drawer
-    if(event.ctrlKey && event.key === "b"){
+    // Ctrl + D opens Drawer
+    if(event.ctrlKey && event.key === "d"){
       event.preventDefault();
       setDrawerOpen(o => !o);
     }
