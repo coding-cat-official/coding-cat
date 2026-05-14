@@ -20,9 +20,10 @@ export interface ProblemListProps {
   session: Session | null;
   contractProgress: ContractProgress;
   progress: Submission[];
+  keyboardSelected?: string | null
 }
 
-export default function ProblemList({selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress}: ProblemListProps) {
+export default function ProblemList({ selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress, keyboardSelected }: ProblemListProps) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("name");
 
@@ -139,20 +140,31 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
               <List sx={{ pt: 0 }}>
                 { sortedProblems?.map((p) => 
-                    <ListItemButton className="problems" key={p.meta.name} selected={p.meta.name === activeProblem}
-                        component={Link} to={`/problems/${p.meta.name}`} onClick={closeDrawer}>
-                        <Stack width="100%" direction="row" justifyContent="space-between">
-                          <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
-                          <Stack direction="row" gap={1} justifyContent="center">
-                            {
-                              solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
-                            }
-                            {
-                              unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
-                            }
-                            <DifficultyChip difficulty={p.meta.difficulty} />
-                          </Stack>
+                    <ListItemButton 
+                      className="problems" 
+                      key={p.meta.name} 
+                      selected={p.meta.name === activeProblem}
+                      component={Link} 
+                      to={`/problems/${p.meta.name}`} 
+                      onClick={closeDrawer}
+                      sx={
+                        p.meta.name === keyboardSelected
+                          ? { backgroundColor: 'rgba(255, 0, 0, 0.3) !important' }
+                          : {}
+                      }
+                    >
+                      <Stack width="100%" direction="row" justifyContent="space-between">
+                        <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
+                        <Stack direction="row" gap={1} justifyContent="center">
+                          {
+                            solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
+                          }
+                          {
+                            unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
+                          }
+                          <DifficultyChip difficulty={p.meta.difficulty} />
                         </Stack>
+                      </Stack>
                     </ListItemButton>,
                 )}
               </List>
