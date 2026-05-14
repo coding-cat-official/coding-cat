@@ -61,8 +61,8 @@ export default function App() {
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
   const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
 
-  const [selectedProblem, setSelectedProblem] = useState(activeProblem);
-  const [selectedCategory, setSelectedCategory] = useState(activeCategory);
+  const [keyboardSelectedProblem, setKeyboardSelectedProblem] = useState(activeProblem);
+  const [keyboardSelectedCategory, setKeyboardSelectedCategory] = useState(activeCategory);
 
   const contractProgress: ContractProgress = contract.Coding.problemsToSolveByCategory;
   contractProgress["mutation"] = contract.Mutation.problemsToSolve;
@@ -206,7 +206,8 @@ export default function App() {
     closeDrawer: () => setDrawerOpen(false),
     session,
     contractProgress,
-    progress
+    progress,
+    keyboardSelected: keyboardSelectedProblem,
   };
   
   const blogListProps = {
@@ -321,25 +322,25 @@ export default function App() {
         // up / down selects category
         if(event.key === "ArrowUp"){
           event.preventDefault();
-          const currentIndex = allCategories.indexOf(selectedCategory ?? "");
+          const currentIndex = allCategories.indexOf(keyboardSelectedCategory ?? "");
           const prevIndex = currentIndex <= 0 
             ? allCategories.length - 1
             : currentIndex - 1;
-          setSelectedCategory(allCategories[prevIndex]);
+          setKeyboardSelectedCategory(allCategories[prevIndex]);
         }
         if(event.key === "ArrowDown"){
           event.preventDefault();
-          const currentIndex = allCategories.indexOf(selectedCategory ?? "");
+          const currentIndex = allCategories.indexOf(keyboardSelectedCategory ?? "");
           const nextIndex = currentIndex >= allCategories.length - 1
             ? 0
             : currentIndex + 1;
-          setSelectedCategory(allCategories[nextIndex]);
+          setKeyboardSelectedCategory(allCategories[nextIndex]);
         }
 
         // select category
         if (event.key === "Enter") {
           event.preventDefault();
-          if (selectedCategory) handleSelectedCategory(selectedCategory);
+          if (keyboardSelectedCategory) handleSelectedCategory(keyboardSelectedCategory);
         }
       }
       else{
@@ -351,49 +352,49 @@ export default function App() {
         // up / down selects problem
         if(event.key === "ArrowUp"){
           event.preventDefault();
-          const currentIndex = categoryProblems.indexOf(selectedProblem ?? "");
+          const currentIndex = categoryProblems.indexOf(keyboardSelectedProblem ?? "");
           const prevIndex = currentIndex <= 0 
             ? categoryProblems.length - 1 
             : currentIndex - 1;
-          setSelectedProblem(categoryProblems[prevIndex]);
+          setKeyboardSelectedProblem(categoryProblems[prevIndex]);
         }
         if(event.key === "ArrowDown"){
           event.preventDefault();
-          const currentIndex = categoryProblems.indexOf(selectedProblem ?? "");
+          const currentIndex = categoryProblems.indexOf(keyboardSelectedProblem ?? "");
           const nextIndex = currentIndex >= categoryProblems.length - 1 
             ? 0
             : currentIndex + 1;
-          setSelectedProblem(categoryProblems[nextIndex]);
+          setKeyboardSelectedProblem(categoryProblems[nextIndex]);
         }
 
         // select new problem
         if(event.key === "Enter"){
           event.preventDefault();
-          if(selectedProblem){
-            handleSelectedProblem(selectedProblem);
-            navigate(`/problems/${selectedProblem}`);
+          if(keyboardSelectedProblem){
+            handleSelectedProblem(keyboardSelectedProblem);
+            navigate(`/problems/${keyboardSelectedProblem}`);
           }
         }
       }
 
       // left / right opens category list
       if(event.key === "ArrowLeft"){
-        setSelectedCategory(activeCategory);
+        setKeyboardSelectedCategory(activeCategory);
         setOpenCategory(true);
       }
       if(event.key === "ArrowRight"){
-        setSelectedCategory(activeCategory);
+        setKeyboardSelectedCategory(activeCategory);
         setOpenCategory(false);
       }
     }
-  }, [selectedProblem, drawerOpen, openCategory, allCategories, searchedProblems, activeCategory, selectedCategory]);
+  }, [navigate, keyboardSelectedProblem, drawerOpen, openCategory, allCategories, searchedProblems, activeCategory, keyboardSelectedCategory]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
     const first = searchedProblems
       .filter(p => p.meta.category === activeCategory)
       .map(p => p.meta.name)[0] ?? null;
-    setSelectedProblem(first);
+    setKeyboardSelectedProblem(first);
   }, [activeCategory, searchedProblems]);
 
   useEffect(() => {
@@ -467,6 +468,7 @@ export default function App() {
                   onSelectCategory={handleSelectedCategory}
                   session={session}
                   contractProgress={contractProgress}
+                  keyboardSelected={keyboardSelectedCategory}
                 />
               </Drawer>
               <Box sx={{ flex: 1, width: 300, overflowY: 'auto',}} className="categoryList">
@@ -476,6 +478,7 @@ export default function App() {
                   onSelectCategory={handleSelectedCategory}
                   session={session}
                   contractProgress={contractProgress}
+                  keyboardSelected={keyboardSelectedCategory}
                 />
               </Box>
               <Box sx={{ flex: 3}} className="parent-problemList">
