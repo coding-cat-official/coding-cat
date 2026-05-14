@@ -64,7 +64,7 @@ export default function CategoryPasswordForm() {
         onChange={handleTestPassword}
       />
       <Typography sx={status.statusSx}>{status.value}</Typography>
-      <Button color="success" onClick={handleSubmit}>
+      <Button color="success" sx={{ width: "100%", my: 2 }} onClick={handleSubmit}>
         Save
       </Button>
     </Box>
