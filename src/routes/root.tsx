@@ -24,60 +24,29 @@ export default function App() {
   const { session, userData, isAdmin, isRecoverySession, fetchProfile } = useAuth();
   const { progress, contractProgress, fetchProgress } = useContractData(session);
   const {
-    activeSession,
-    sessionId,
-    sessionDuration,
-    sessionRemainingSeconds,
-    plannedExerciseCount,
-    sessionTimerRunning,
-    endSession,
-    formatTime,
-  } = useSessionManagement(session);
+    activeSession, sessionId, sessionDuration,sessionRemainingSeconds,plannedExerciseCount,
+    sessionTimerRunning, endSession,formatTime, } = useSessionManagement(session);
 
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
 
   const search = useSearchAndFilter(problems);
 
   const {
-    query,
-    setQuery,
-    difficulty,
-    setDifficulty,
-    activeCategory,
-    activeProblem,
-    setActiveProblem,
-    open,
-    setOpen,
-    openCategory,
-    setOpenCategory,
-    selectedTab,
-    setSelectedTab,
-    searchedProblems,
-    searchedBlogs,
-    handleSelectedCategory,
-    handleSelectedProblem,
+    query, setQuery, difficulty, setDifficulty, activeCategory, activeProblem,
+    setActiveProblem, open, setOpen, openCategory, setOpenCategory, selectedTab,
+    setSelectedTab, searchedProblems, searchedBlogs, handleSelectedCategory,
+    handleSelectedProblem, 
   } = search;
 
   const problemListProps = {
-    selectedTab,
-    setSelectedTab,
-    searchedProblems,
-    selectedCategory: activeCategory,
-    activeProblem,
-    onSelectProblem: handleSelectedProblem,
-    closeDrawer: () => setOpen(false),
-    session,
-    contractProgress,
-    progress,
+    selectedTab, setSelectedTab, searchedProblems, selectedCategory: activeCategory,
+    activeProblem, onSelectProblem: handleSelectedProblem, closeDrawer: () => setOpen(false),
+    session, contractProgress, progress,
   };
 
   const blogListProps = {
-    searchedBlogs: searchedBlogs,
-    selectedTab,
-    setSelectedTab,
-    selectedCategory: activeCategory,
-    activeBlog: activeProblem,
-    closeDrawer: () => setOpen(false),
+    searchedBlogs: searchedBlogs, selectedTab, setSelectedTab, selectedCategory: activeCategory,
+    activeBlog: activeProblem, closeDrawer: () => setOpen(false),
   };
 
   const signOut = async () => {
@@ -87,38 +56,20 @@ export default function App() {
   return (
     <MainLayout openDrawer={() => setOpen(true)}>
       <SidebarDrawer
-        open={open}
-        onClose={() => setOpen(false)}
-        openCategory={openCategory}
-        setOpenCategory={setOpenCategory}
-        difficulty={difficulty}
-        setDifficulty={setDifficulty}
-        query={query}
-        setQuery={setQuery}
-        searchedProblems={searchedProblems}
-        searchedBlogs={searchedBlogs}
-        activeCategory={activeCategory}
-        handleSelectedCategory={handleSelectedCategory}
-        problemListProps={problemListProps}
-        blogListProps={blogListProps}
-        selectedTab={selectedTab}
+        open={open} onClose={() => setOpen(false)} openCategory={openCategory}
+        setOpenCategory={setOpenCategory} difficulty={difficulty} setDifficulty={setDifficulty}
+        query={query} setQuery={setQuery} searchedProblems={searchedProblems} searchedBlogs={searchedBlogs}
+        activeCategory={activeCategory} handleSelectedCategory={handleSelectedCategory}
+        problemListProps={problemListProps} blogListProps={blogListProps} selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
 
       <Stack sx={{ width: '100%' }}>
         <UpperNavBar
-          openDrawer={() => setOpen(true)}
-          session={session}
-          isRecoverySession={isRecoverySession}
-          activeSession={activeSession}
-          sessionTimerRunning={sessionTimerRunning}
-          formatTime={formatTime}
-          sessionRemainingSeconds={sessionRemainingSeconds}
-          endSession={endSession}
-          sessionId={sessionId}
-          userData={userData}
-          isAdmin={isAdmin}
-          signOut={signOut}
+          openDrawer={() => setOpen(true)} session={session} isRecoverySession={isRecoverySession}
+          activeSession={activeSession} sessionTimerRunning={sessionTimerRunning} formatTime={formatTime}
+          sessionRemainingSeconds={sessionRemainingSeconds} endSession={endSession} sessionId={sessionId}
+          userData={userData} isAdmin={isAdmin} signOut={signOut}
         />
 
         <AppHeader />
@@ -126,20 +77,10 @@ export default function App() {
         <Box width="100%" height="100%">
           <Outlet
             context={{
-              setActiveProblem,
-              session,
-              isAdmin,
-              refetchProgress: fetchProgress,
-              refetchProfile: fetchProfile,
-              activeSession,
-              sessionId,
-              sessionRemainingSeconds,
-              sessionDuration,
-              plannedExerciseCount,
-              problemSessionStats,
-              setProblemSessionStats,
-              progress,
-              sessionTimerRunning,
+              setActiveProblem, session, isAdmin, refetchProgress: fetchProgress,
+              refetchProfile: fetchProfile, activeSession, sessionId, sessionRemainingSeconds,
+              sessionDuration, plannedExerciseCount, problemSessionStats, setProblemSessionStats,
+              progress, sessionTimerRunning,
             }}
           />
         </Box>
