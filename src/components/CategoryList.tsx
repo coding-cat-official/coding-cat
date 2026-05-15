@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import { Session } from '@supabase/supabase-js';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { ContractProgress, Problem, Progress } from '../types';
+import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
 import CategoryLock from '../utils/CategoryLock';
 import CategoryListItems from './CategoryListItem';
 import BlogMenuButton from './BlogMenuButton';
@@ -27,10 +28,11 @@ export default function CategoryList({
     const [progress, setProgress] = useState<Progress[]>([]);
 
     // List of categories that show up in search results.
-    const categories = searchedProblems
+    var categories = searchedProblems
         .map((c) => c.meta.category)
-        .filter((c, index, array) => array.indexOf(c) === index)
-        .sort((a, b) => a.localeCompare(b));
+        .filter((c, index, array) => array.indexOf(c) === index);
+    
+    categories = getCategoryListOrdered(categories);
 
     const specialCategories = [];
     if (searchedProblems.some((c) => c.meta.question_type[0] === 'mutation')) {
