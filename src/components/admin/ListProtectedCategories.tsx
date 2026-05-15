@@ -1,8 +1,11 @@
 import { List, ListItem, Switch } from "@mui/joy";
 import Box from "@mui/joy/Box";
+import { Problem } from "../../types";
+import useTestCategoriesSync from "../../hooks/useTestCategoriesSync";
 
 interface ListProtectedCategoriesProps {
   testCategories: Map<string, boolean>;
+  problems: Problem[];
   toggleAction: (category: string, isActive: boolean) => void;
 }
 
@@ -22,7 +25,12 @@ const boxStyles = {
 export function ListProtectedCategories({
   testCategories,
   toggleAction,
+  problems
 }: ListProtectedCategoriesProps) {
+
+  // Retrieve test categories and store in db
+  useTestCategoriesSync(problems);
+
   return (
     <Box sx={boxStyles}>
       <List>

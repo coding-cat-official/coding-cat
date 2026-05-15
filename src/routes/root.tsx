@@ -15,13 +15,9 @@ import MainLayout from '../components/layout/MainLayout';
 import SidebarDrawer from '../components/layout/SidebarDrawer';
 import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
-import useTestCategoriesSync from '../hooks/useTestCategoriesSync';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
-
-  // Retrieve test categories and store in db
-  useTestCategoriesSync(problems);
 
   const { session, userData, isAdmin, isRecoverySession, fetchProfile } = useAuth();
   const { progress, contractProgress, fetchProgress } = useContractData(session);

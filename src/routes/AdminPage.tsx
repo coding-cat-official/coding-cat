@@ -80,6 +80,7 @@ export default function AdminPage() {
         <CategoryPasswordForm />,
         <ListProtectedCategories
           testCategories={testCategoriesList}
+          problems={problems}
           toggleAction={toggleCategories}
         />,
       ],
