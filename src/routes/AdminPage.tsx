@@ -1,9 +1,8 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
 import { AdminSwitch, Problem } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
-import { supabase } from "../supabaseClient";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
 import { useLoaderData } from "react-router-dom";
 
@@ -24,48 +23,10 @@ const linkStyle = { marginBottom: 2, color: "black" };
  */
 export default function AdminPage() {
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
-  const [testCategoriesList, setTestCategoriesList] = useState<Map<string, boolean>>(new Map());
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
   const problems = useLoaderData() as Problem[];
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data, error } = await supabase.from("testcategories").select("category, is_active");
-
-      if (error) {
-        console.error("Error fetching protected categories:", error);
-        return;
-      }
-
-      const fetchedCategories = new Map<string, boolean>(
-        (data ?? []).map((row) => [row.category as string, row.is_active as boolean]),
-      );
-
-      setTestCategoriesList(fetchedCategories);
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Update db state on toggle switch
-  const toggleCategories = async (category: string, isActive: boolean) => {
-    setTestCategoriesList((prev) => {
-      const next = new Map(prev);
-      next.set(category, isActive);
-      return next;
-    });
-
-    const { error } = await supabase
-      .from("testcategories")
-      .update({ is_active: isActive })
-      .eq("category", category);
-
-    if (error) {
-      console.error("Error updating protected category:", error);
-    }
-  };
 
   // Meta data for each link
   const links: ModalMetaData[] = [
@@ -76,14 +37,7 @@ export default function AdminPage() {
     {
       title: "Toggle Public/Test Questions",
       desc: "Update the password to add test categories below and remember to press save! In order to display one or many test categories publicly, click on the toggles below",
-      extraNodes: [
-        <CategoryPasswordForm />,
-        <ListProtectedCategories
-          testCategories={testCategoriesList}
-          problems={problems}
-          toggleAction={toggleCategories}
-        />,
-      ],
+      extraNodes: [<CategoryPasswordForm />, <ListProtectedCategories problems={problems} />],
     },
     {
       title: "Modify Global Contract Permissions",
