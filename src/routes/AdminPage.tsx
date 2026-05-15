@@ -1,10 +1,11 @@
 import { Box, Typography, Link, Card } from "@mui/joy";
 import { ReactNode, useEffect, useState } from "react";
 import AdminPageModal from "../components/admin/AdminPageModal";
-import { AdminSwitch } from "../types";
+import { AdminSwitch, Problem } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { supabase } from "../supabaseClient";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
+import { useLoaderData } from "react-router-dom";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -27,6 +28,7 @@ export default function AdminPage() {
 
   const handleOpen = (index: number) => setActiveModalIndex(index);
   const handleClose = () => setActiveModalIndex(null);
+  const problems = useLoaderData() as Problem[];
 
   useEffect(() => {
     const fetchCategories = async () => {
