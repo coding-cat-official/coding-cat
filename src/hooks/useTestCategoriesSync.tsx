@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Problem } from "../types";
 import { TEST_CATEGORY_PATTERN } from "../utils/constants";
-import { syncTestCategories } from "../utils/CategoryHide";
+import { supabase } from "../supabaseClient";
 
 export default function useTestCategoriesSync(problems: Problem[]) {
   // Get all test categories in a list
@@ -17,4 +17,19 @@ export default function useTestCategoriesSync(problems: Problem[]) {
       await syncTestCategories(testCategories, false);
     })();
   }, [testCategories]);
+}
+
+// Sync test categories on startup
+async function syncTestCategories(category: string | string[], isActive: boolean) {
+  const categories = Array.isArray(category) ? category : [category];
+  
+  // Update or insert the existing categories to the db
+  const { error } = await supabase.from("testcategories").upsert(
+    categories.map((cat) => ({ category: cat, is_active: isActive })),
+    { onConflict: "category", ignoreDuplicates: true },
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }
