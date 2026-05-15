@@ -75,7 +75,7 @@ export default function AdminPage() {
     },
     {
       title: "Toggle Public/Test Questions",
-      desc: "Below is a switch that toggles what types of questions to display to the user. You can choose to display test questions or the pubic questions",
+      desc: "Update the password to add test categories below and remember to press save! In order to display one or many test categories publicly, click on the toggles below",
       extraNodes: [
         <CategoryPasswordForm />,
         <ListProtectedCategories
