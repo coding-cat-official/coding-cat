@@ -1,5 +1,5 @@
 import { ListItemButton, Typography } from "@mui/joy";
-import { LockSimple } from "@phosphor-icons/react";
+import { LockSimpleIcon } from "@phosphor-icons/react";
 import { capitalizeString } from "../utils/capitalizeString";
 
 export default function CategoryListItems({
@@ -52,7 +52,7 @@ export default function CategoryListItems({
             }}
           >
             {/* Change to use hidden as well */}
-            {!unlocked && <LockSimple size={16} />}
+            {!unlocked && <LockSimpleIcon size={16} />}
             <Typography sx={{ fontFamily: "Doto", fontWeight: "900" }}>
               {!!session ? (
                 <>
