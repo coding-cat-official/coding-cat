@@ -38,12 +38,12 @@ export default function ProblemList({selectedTab, setSelectedTab, searchedProble
 
   const problemsByTopic = searchedProblems.filter(problem => {
     const question_type = problem.meta.question_type[0];
-    const category = question_type === "coding" ? problem.meta.category : question_type;
+    const category = question_type === "coding" || "test" ? problem.meta.category : question_type;
     return category === selectedCategory;
   });
 
   const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemCategories = problem.meta.question_type.includes("coding") ? "" : categorizeCategories(problem);
+    const problemCategories = problem.meta.question_type.includes("coding") || problem.meta.question_type.includes("test") ? "" : categorizeCategories(problem);
     if (!acc[problemCategories]) acc[problemCategories] = [];
     acc[problemCategories].push(problem);
     return acc;
