@@ -21,7 +21,7 @@ export function getCompletedProblems(submissions: Submission[]): Progress[] {
 
   for(const p of problems) {
     const question_type = p.meta.question_type[0];
-    const category = question_type === "coding" ? p.meta.category : question_type;
+    const category = question_type === "coding" || "test" ? p.meta.category : question_type;
 
     totalByCategory[category] = (totalByCategory[category] || 0) +1;
     questionTypeByCategory[category] = question_type
