@@ -1,6 +1,8 @@
 import { ListItemButton, Typography } from "@mui/joy";
 import { LockSimpleIcon } from "@phosphor-icons/react";
 import { capitalizeString } from "../utils/capitalizeString";
+import { useEffect, useState } from "react";
+import { fetchCategories } from "../utils/TestCategoriesFetch";
 
 export default function CategoryListItems({
   categories,
@@ -12,9 +14,28 @@ export default function CategoryListItems({
   session,
   contractProgress,
 }: any) {
+  const [controlledCategories, setControlledCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const fetchedCategories = await fetchCategories();
+
+      if (!fetchedCategories) return;
+
+      // Find the test categories that are toggled false
+      const toRemove = [...fetchedCategories.entries()]
+        .filter(([, values]) => values === false)
+        .map(([key]) => key);
+
+      const filteredCategories = categories.filter((val: string) => !toRemove.includes(val));
+        
+      setControlledCategories(filteredCategories);
+    })();
+  }, [categories]);
+
   return (
     <>
-      {categories.map((category: string) => {
+      {controlledCategories.map((category: string) => {
         const summary = progress.find((p: any) => p[type] === category);
         const lock = mapCategoryToLock(category);
         const unlocked = lock.isUnlocked();
