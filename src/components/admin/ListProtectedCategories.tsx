@@ -4,6 +4,8 @@ import { Problem } from "../../types";
 import useTestCategoriesSync from "../../hooks/useTestCategoriesSync";
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { fetchCategories } from "../../utils/TestCategoriesFetch";
+import { isElementAccessChain } from "typescript";
 
 interface ListProtectedCategoriesProps {
   problems: Problem[];
@@ -26,22 +28,12 @@ export function ListProtectedCategories({ problems }: ListProtectedCategoriesPro
   const [testCategoriesList, setTestCategoriesList] = useState<Map<string, boolean>>(new Map());
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const { data, error } = await supabase.from("testcategories").select("category, is_active");
+    (async () => {
+      const fetchedCategories = await fetchCategories();
 
-      if (error) {
-        console.error("Error fetching protected categories:", error);
-        return;
-      }
-
-      const fetchedCategories = new Map<string, boolean>(
-        (data ?? []).map((row) => [row.category as string, row.is_active as boolean]),
-      );
-
+      if (!fetchedCategories) return;
       setTestCategoriesList(fetchedCategories);
-    };
-
-    fetchCategories();
+    })();
   }, []);
 
   // Update db state on toggle switch
