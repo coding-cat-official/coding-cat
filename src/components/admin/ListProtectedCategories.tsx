@@ -5,7 +5,6 @@ import useTestCategoriesSync from "../../hooks/useTestCategoriesSync";
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { fetchCategories } from "../../utils/TestCategoriesFetch";
-import { isElementAccessChain } from "typescript";
 
 interface ListProtectedCategoriesProps {
   problems: Problem[];
