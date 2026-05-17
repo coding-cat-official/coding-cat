@@ -40,7 +40,8 @@ export default function CategoryList({
         specialCategories.push("haystack");
     }
 
-
+    const testCategories = searchedProblems.filter((c) => c.meta.question_type[0] === 'test').map((c) => c.meta.category).filter((c, index, array) => array.indexOf(c) === index)
+    
     useEffect(() => {
         async function fetchProgress() {
             if (!session) return;
@@ -119,6 +120,19 @@ export default function CategoryList({
                 <CategoryListItems
                     categories={specialCategories}
                     type="question_type"
+                    progress={progress}
+                    mapCategoryToLock={mapCategoryToLock}
+                    activeCategory={activeCategory}
+                    onSelectCategory={onSelectCategory}
+                    session={session}
+                    contractProgress={contractProgress}
+                />
+                <Box>
+                    <hr />
+                </Box>
+                <CategoryListItems
+                    categories={testCategories}
+                    type="category"
                     progress={progress}
                     mapCategoryToLock={mapCategoryToLock}
                     activeCategory={activeCategory}
