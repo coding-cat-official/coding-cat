@@ -31,7 +31,6 @@ export default function App() {
   const search = useSearchAndFilter(problems);
 
   const {
-<<<<<<< HEAD
     query,
     setQuery,
     difficulty,
@@ -49,12 +48,6 @@ export default function App() {
     searchedBlogs,
     handleSelectedCategory,
     handleSelectedProblem,
-=======
-    query, setQuery, difficulty, setDifficulty, activeCategory, activeProblem,
-    setActiveProblem, open, setOpen, openCategory, setOpenCategory, selectedTab,
-    setSelectedTab, searchedProblems, searchedBlogs, handleSelectedCategory,
-    handleSelectedProblem, 
->>>>>>> aedbab4 (Format code)
   } = search;
 
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
@@ -62,7 +55,6 @@ export default function App() {
 
 
   const problemListProps = {
-<<<<<<< HEAD
     selectedTab,
     setSelectedTab,
     searchedProblems,
@@ -83,16 +75,6 @@ export default function App() {
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
-=======
-    selectedTab, setSelectedTab, searchedProblems, selectedCategory: activeCategory,
-    activeProblem, onSelectProblem: handleSelectedProblem, closeDrawer: () => setOpen(false),
-    session, contractProgress, progress,
-  };
-
-  const blogListProps = {
-    searchedBlogs: searchedBlogs, selectedTab, setSelectedTab, selectedCategory: activeCategory,
-    activeBlog: activeProblem, closeDrawer: () => setOpen(false),
->>>>>>> aedbab4 (Format code)
   };
 
   const signOut = async () => {
@@ -237,7 +219,6 @@ export default function App() {
 
       <Stack sx={{ width: '100%' }}>
         <UpperNavBar
-<<<<<<< HEAD
           openDrawer={() => setDrawerOpen(true)}
           session={session}
           isRecoverySession={isRecoverySession}
@@ -250,12 +231,6 @@ export default function App() {
           userData={userData}
           isAdmin={isAdmin}
           signOut={signOut}
-=======
-          openDrawer={() => setOpen(true)} session={session} isRecoverySession={isRecoverySession}
-          activeSession={activeSession} sessionTimerRunning={sessionTimerRunning} formatTime={formatTime}
-          sessionRemainingSeconds={sessionRemainingSeconds} endSession={endSession} sessionId={sessionId}
-          userData={userData} isAdmin={isAdmin} signOut={signOut}
->>>>>>> aedbab4 (Format code)
         />
 
         <AppHeader />
