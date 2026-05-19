@@ -64,7 +64,10 @@ export default function ProblemList({
 
   const problemsByTopic = searchedProblems.filter((problem) => {
     const question_type = problem.meta.question_type[0];
-    const category = question_type === "coding" || "test" ? problem.meta.category : question_type;
+    const category =
+      question_type === "coding" || question_type === "test"
+        ? problem.meta.category
+        : question_type;
     return category === selectedCategory;
   });
 
