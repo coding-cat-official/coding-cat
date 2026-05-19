@@ -1,4 +1,3 @@
-import { debug } from "console";
 import { Problem } from "../types.js";
 
 /**
@@ -21,7 +20,7 @@ async function getProblemSet(): Promise<Problem[]> {
       loadProblems("../private-problems/problems.js"),
       loadProblems("../public-problems/problems.js"),
     ]);
-      
+
     return [...privateSet, ...publicSet];
   }
 
@@ -33,12 +32,12 @@ async function getProblemSet(): Promise<Problem[]> {
 }
 
 // Wrapper to handle when one or all of the imports fail when loading both imports
-  async function loadProblems(path: string): Promise<Problem[]> {
-    try {
-      return (await import(path)).default;
-    } catch {
-      return [];
-    }
-  };
+async function loadProblems(path: string): Promise<Problem[]> {
+  try {
+    return (await import(path)).default;
+  } catch {
+    return [];
+  }
+}
 
 export default getProblemSet;
