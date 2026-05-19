@@ -16,27 +16,22 @@ async function getProblemSet(): Promise<Problem[]> {
 
   //If env is set to both then it renders the both submodule problems
   if (questionType === "both") {
-    const [privateSet, publicSet] = await Promise.all([
-      loadProblems("../private-problems/problems.js"),
-      loadProblems("../public-problems/problems.js"),
-    ]);
-
-    return [...privateSet, ...publicSet];
+    try {
+      const [privateSet, publicSet] = await Promise.all([
+        (await import("../private-problems/problems.js")).default,
+        (await import("../public-problems/problems.js")).default,
+      ]);
+      return [...privateSet, ...publicSet];
+    } catch (error) {
+      return [];
+    }
   }
 
   if (questionTypeList.includes(questionType!)) {
+    // eslint-disable-next-line
     return (await import(`../${questionType}/problems.js`)).default;
   } else {
     throw new Error("The env REACT_APP_PROBLEM_SET is incorrect or not set");
-  }
-}
-
-// Wrapper to handle when one or all of the imports fail when loading both imports
-async function loadProblems(path: string): Promise<Problem[]> {
-  try {
-    return (await import(path)).default;
-  } catch {
-    return [];
   }
 }
 
