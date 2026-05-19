@@ -30,6 +30,7 @@ jobs:
         uses: ./.github/actions/npm-setup
       - run: chmod +rwx src/blog-posts/build-blog
       - run: npm run build
+      - run: cd private-problems && echo export [] > problems.js
       - uses: actions/upload-artifact@v4
         with:
           name: build
