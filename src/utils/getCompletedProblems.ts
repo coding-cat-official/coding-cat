@@ -1,7 +1,7 @@
 import getProblemSet from "./getProblemSet";
 import { Progress, Submission } from "../types";
 
-const problems = await getProblemSet()
+const problems = await getProblemSet();
 
 interface CompletedByCategory {
   problems: {
@@ -19,12 +19,13 @@ export function getCompletedProblems(submissions: Submission[]): Progress[] {
   const completedByCategory: Record<string, CompletedByCategory> = {};
   const completedTitles = new Set<string>();
 
-  for(const p of problems) {
+  for (const p of problems) {
     const question_type = p.meta.question_type[0];
-    const category = question_type === "coding" ? p.meta.category : question_type;
+    const category =
+      question_type === "coding" || question_type === "test" ? p.meta.category : question_type;
 
-    totalByCategory[category] = (totalByCategory[category] || 0) +1;
-    questionTypeByCategory[category] = question_type
+    totalByCategory[category] = (totalByCategory[category] || 0) + 1;
+    questionTypeByCategory[category] = question_type;
   }
 
   for (const s of submissions || []) {
@@ -36,30 +37,30 @@ export function getCompletedProblems(submissions: Submission[]): Progress[] {
   for (const p of problems) {
     const question_type = p.meta.question_type[0];
     const category = question_type === "coding" ? p.meta.category : question_type;
-    
+
     completedTitles.forEach((ct) => {
       if (ct === p.meta.name) {
         if (!completedByCategory[category]) {
           completedByCategory[category] = {
-            problems: []
-          }
+            problems: [],
+          };
         }
 
         completedByCategory[category].problems.push({
           title: p.meta.name,
-          difficulty: p.meta.difficulty
-        })
+          difficulty: p.meta.difficulty,
+        });
       }
     });
   }
 
-  const summary = Object.keys(totalByCategory).map(category => ({
+  const summary = Object.keys(totalByCategory).map((category) => ({
     category: category,
-    completed: (completedByCategory[category] || {problems: []}).problems.length,
+    completed: (completedByCategory[category] || { problems: [] }).problems.length,
     total: totalByCategory[category],
-    problems: (completedByCategory[category] || {problems: []}).problems,
-    question_type: questionTypeByCategory[category]
+    problems: (completedByCategory[category] || { problems: [] }).problems,
+    question_type: questionTypeByCategory[category],
   }));
 
-  return summary
+  return summary;
 }
