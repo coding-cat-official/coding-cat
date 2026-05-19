@@ -28,21 +28,21 @@ export default function BlogPostView() {
     setCurrIndex(allBlogs.findIndex(p => p.meta.blog_slug === result.meta.blog_slug));
   }, [allBlogs, result.meta.blog_slug]);
 
-  function handlePreviousBlog() {
+  const handlePreviousBlog = useCallback(() => {
     if (currIndex > 0) {
       const prevBlog = allBlogs[currIndex - 1].meta.blog_slug;
       setCurrIndex(currIndex - 1);
-      navigate(`/blogs/${prevBlog}`)
+      navigate(`/blogs/${prevBlog}`);
     }
-  }
+  }, [navigate, currIndex, allBlogs]);
 
-  function handleNextBlog() {
+  const handleNextBlog = useCallback(() => {
     if (currIndex < allBlogs.length - 1) {
       const nextBlog = allBlogs[currIndex + 1].meta.blog_slug;
       setCurrIndex(currIndex + 1);
-      navigate(`/blogs/${nextBlog}`)
+      navigate(`/blogs/${nextBlog}`);
     }
-  }
+  }, [navigate, currIndex, allBlogs]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if(event.altKey && event.key === "ArrowLeft"){
