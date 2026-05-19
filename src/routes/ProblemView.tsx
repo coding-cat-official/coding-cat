@@ -283,7 +283,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
   }, [currIndex, currProblems, navigate]);
 
-  const handleKeyPress = useCallback((event:KeyboardEvent) => {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if(event.altKey && event.key === "Enter"){
       runCode(code);
     }
