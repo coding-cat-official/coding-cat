@@ -10,8 +10,13 @@ export const welcomePageTutorial = [
   {
     content: () => (
       <>
-        <h1>Welcome to CODING CAT 😸</h1>
-        <p>Here, you will choose the number of problems that Eric will require you to solve this semester</p>
+        <h1>Welcome to CODING CAT! 😸</h1>
+        <p>
+          Here, you will choose the number of problems that Eric will require you to solve this semester.
+          <br/>
+          <br/>
+          Click the arrows below or use the arrow keys to get started!
+        </p>
         <h3>╮(╯▽╰)╭</h3>
       </>
     )
