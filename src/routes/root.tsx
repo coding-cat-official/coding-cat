@@ -213,7 +213,7 @@ export default function App() {
         setOpenCategory(false);
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, searchedProblems, searchedBlogs, activeCategory, kbSelectedCategory]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, searchedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setOpenCategory]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
@@ -221,8 +221,9 @@ export default function App() {
       .filter(p => p.meta.category === activeCategory)
       .map(p => p.meta.name)[0] ?? null;
     setKbSelectedProblem(activeProblem ?? first);
-  }, [activeCategory, searchedProblems]);
+  }, [activeCategory, activeProblem, searchedProblems]);
 
+  // TODO: may need to create blogCategory in the future
   useEffect(() => {
     const first = searchedBlogs[0]?.meta.blog_slug ?? null;
     setKbSelectedBlog(first ?? "");
