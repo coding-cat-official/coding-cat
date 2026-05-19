@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Outlet, useLoaderData } from 'react-router';
 import { Problem, ProblemSessionStats } from '../types';
 import { supabase } from '../supabaseClient';
@@ -39,7 +39,7 @@ export default function App() {
   const problemListProps = {
     selectedTab, setSelectedTab, searchedProblems, selectedCategory: activeCategory,
     activeProblem, onSelectProblem: handleSelectedProblem, closeDrawer: () => setDrawerOpen(false),
-    session, contractProgress, keyboardSelectedProblem
+    session, contractProgress, progress
   };
 
   const blogListProps = {
