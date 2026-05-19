@@ -36,7 +36,7 @@ export default function AdminPage() {
     },
     {
       title: "Toggle Public/Test Questions",
-      desc: "Update the password to add test categories below and remember to press save! In order to display one or many test categories publicly, click on the toggles below",
+      desc: "Update the password that the students will use to access the test questions below. Use the toggles to display what test questions to show",
       extraNodes: [<CategoryPasswordForm />, <ListProtectedCategories problems={problems} />],
     },
     {
