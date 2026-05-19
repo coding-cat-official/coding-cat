@@ -52,6 +52,7 @@ export default function App() {
 
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
+  const [kbSelectedBlog, setKbSelectedBlog] = useState("");
 
   const problemListProps = {
     selectedTab,
@@ -74,6 +75,7 @@ export default function App() {
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
+    kbSelectedBlog
   };
 
   const signOut = async () => {
@@ -128,41 +130,75 @@ export default function App() {
         }
       }
       else{
-        // filters problems in active category
-        const categoryProblems = searchedProblems
-          .filter(p => {
-            const questionType = p.meta.question_type[0];
-            const cat = questionType === "coding"
-              ? p.meta.category
-              : questionType;
-            return cat === activeCategory;
-          })
-          .map(p => p.meta.name);
-        
-        // up / down selects problem
-        if(event.key === "ArrowUp"){
-          event.preventDefault();
-          const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
-          const prevIndex = currentIndex <= 0 
-            ? categoryProblems.length - 1 
-            : currentIndex - 1;
-          setKbSelectedProblem(categoryProblems[prevIndex]);
-        }
-        if(event.key === "ArrowDown"){
-          event.preventDefault();
-          const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
-          const nextIndex = currentIndex >= categoryProblems.length - 1 
-            ? 0
-            : currentIndex + 1;
-          setKbSelectedProblem(categoryProblems[nextIndex]);
-        }
+        if(activeCategory === 'blogs'){
+          // navigating through blog posts
+          const blogSlugs = searchedBlogs.map(b => b.meta.blog_slug);
 
-        // select new problem
-        if(event.key === "Enter"){
-          event.preventDefault();
-          if(kbSelectedProblem){
-            handleSelectedProblem(kbSelectedProblem);
-            navigate(`/problems/${kbSelectedProblem}`);
+          // up / down selects blog post
+          if(event.key === "ArrowUp"){
+            event.preventDefault();
+            const currentIndex = blogSlugs.indexOf(kbSelectedBlog ?? "");
+            const prevIndex = currentIndex <= 0
+              ? blogSlugs.length - 1
+              : currentIndex - 1;
+            setKbSelectedBlog(blogSlugs[prevIndex]);
+          }
+          if(event.key === "ArrowDown"){
+            event.preventDefault();
+            const currentIndex = blogSlugs.indexOf(kbSelectedBlog ?? "");
+            const nextIndex = currentIndex >= blogSlugs.length - 1
+              ? 0
+              : currentIndex + 1;
+            setKbSelectedBlog(blogSlugs[nextIndex]);
+          }
+
+          // select blog post
+          if(event.key === "Enter"){
+            event.preventDefault();
+            if(kbSelectedBlog){
+              navigate(`/blogs/${kbSelectedBlog}`);
+              setDrawerOpen(false);
+            }
+          }
+        } else {
+          // navigating through problems in activeCategory
+
+          // filters problems in active category
+          const categoryProblems = searchedProblems
+            .filter(p => {
+              const questionType = p.meta.question_type[0];
+              const cat = questionType === "coding"
+                ? p.meta.category
+                : questionType;
+              return cat === activeCategory;
+            })
+            .map(p => p.meta.name);
+          
+          // up / down selects problem
+          if(event.key === "ArrowUp"){
+            event.preventDefault();
+            const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
+            const prevIndex = currentIndex <= 0 
+              ? categoryProblems.length - 1 
+              : currentIndex - 1;
+            setKbSelectedProblem(categoryProblems[prevIndex]);
+          }
+          if(event.key === "ArrowDown"){
+            event.preventDefault();
+            const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
+            const nextIndex = currentIndex >= categoryProblems.length - 1 
+              ? 0
+              : currentIndex + 1;
+            setKbSelectedProblem(categoryProblems[nextIndex]);
+          }
+
+          // select new problem
+          if(event.key === "Enter"){
+            event.preventDefault();
+            if(kbSelectedProblem){
+              handleSelectedProblem(kbSelectedProblem);
+              navigate(`/problems/${kbSelectedProblem}`);
+            }
           }
         }
       }
@@ -177,7 +213,7 @@ export default function App() {
         setOpenCategory(false);
       }
     }
-  }, [navigate, kbSelectedProblem, drawerOpen, openCategory, allCategories, searchedProblems, activeCategory, kbSelectedCategory]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, searchedProblems, searchedBlogs, activeCategory, kbSelectedCategory]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
@@ -186,6 +222,11 @@ export default function App() {
       .map(p => p.meta.name)[0] ?? null;
     setKbSelectedProblem(activeProblem ?? first);
   }, [activeCategory, searchedProblems]);
+
+  useEffect(() => {
+    const first = searchedBlogs[0]?.meta.blog_slug ?? null;
+    setKbSelectedBlog(first ?? "");
+  }, [activeCategory, searchedBlogs]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
