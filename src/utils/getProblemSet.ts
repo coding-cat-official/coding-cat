@@ -23,7 +23,7 @@ async function getProblemSet(): Promise<Problem[]> {
       ]);
       return [...privateSet, ...publicSet];
     } catch (error) {
-      return [];
+        new Error("One or both submodules are not loading properly")
     }
   }
 
