@@ -96,7 +96,6 @@ export default function CategoryList({
     return (
         <List component="nav" sx={{ py: 2 }}>
             <>
-                {/* TODO: Add keyboard navigation to Blog Posts */}
                 <BlogMenuButton
                     category='blogs'
                     activeCategory={activeCategory}
