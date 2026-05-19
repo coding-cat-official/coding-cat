@@ -3,7 +3,7 @@ import getBlogPosts from "../utils/getBlogPosts";
 import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
   const blogPosts = await getBlogPosts();
@@ -26,7 +26,7 @@ export default function BlogPostView() {
 
   useEffect(() => {
     setCurrIndex(allBlogs.findIndex(p => p.meta.blog_slug === result.meta.blog_slug));
-  }, [allBlogs, result.meta.blog_slug])
+  }, [allBlogs, result.meta.blog_slug]);
 
   function handlePreviousBlog() {
     if (currIndex > 0) {
@@ -44,12 +44,34 @@ export default function BlogPostView() {
     }
   }
 
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if(event.altKey && event.key === "ArrowLeft"){
+      event.preventDefault();
+      handlePreviousBlog();
+    }
+
+    if(event.altKey && event.key === "ArrowRight"){
+      event.preventDefault();
+      handleNextBlog();
+    }
+  }, [handlePreviousBlog, handleNextBlog]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
   return (
     <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" zIndex={-2} >
         <Box className="navigate-problem-btn">
           <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + ←)
+              </Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {allBlogs[currIndex - 1]?.meta.title}
               </Typography>
@@ -58,6 +80,9 @@ export default function BlogPostView() {
           <Button disabled={currIndex >= allBlogs.length - 1} onClick={handleNextBlog}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Next</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + →)
+              </Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {allBlogs[currIndex + 1]?.meta.title}
               </Typography>
