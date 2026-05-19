@@ -127,6 +127,7 @@ export interface Question {
     max?: number;
     randomizeable?: boolean;
     relies_on?: string;
+    condition?: "success" | "struggle";
 }
 
 export interface FormAnswers {

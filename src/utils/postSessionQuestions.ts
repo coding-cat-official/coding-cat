@@ -27,7 +27,8 @@ export const postSessionQuestions = [
         type: "textarea",
         category: "goals",
         randomizeable: false,
-        relies_on: "goals"
+        relies_on: "goals",
+        condition: "success"
     },
     {
         id: "goals-2",
@@ -35,7 +36,8 @@ export const postSessionQuestions = [
         type: "textarea",
         category: "goals",
         randomizeable: false,
-        relies_on: "goals"
+        relies_on: "goals",
+        condition: "struggle"
     },
     {
         id: "goals-3",
@@ -52,7 +54,7 @@ export const postSessionQuestions = [
     {
         id: "debugging-1",
         text: "Choose one of the exercises you completed today.",
-        type: "textarea",
+        type: "problem_picker",
         category: "debugging",
         randomizeable: false
     },
