@@ -1,3 +1,4 @@
+import { debug } from "console";
 import { Problem } from "../types.js";
 
 /**
@@ -9,8 +10,7 @@ const questionTypeList = ["private-problems", "public-problems"];
  * Depending on the REACT_APP_PROBLEM_SET, it returns an ESM module import for the
  * selected problems. If `REACT_APP_PROBLEM_SET` is set to "both", it imports
  * both `private-problems` and `public-problems` concurrently and returns a
- * merged array when both exports are arrays, otherwise returns an object with
- * both sets keyed by their folder names.
+ * merged array
  */
 async function getProblemSet(): Promise<Problem[]> {
   const questionType = process.env.REACT_APP_PROBLEM_SET;
@@ -18,8 +18,8 @@ async function getProblemSet(): Promise<Problem[]> {
   //If env is set to both then it renders the both submodule problems
   if (questionType === "both") {
     const [privateSet, publicSet] = await Promise.all([
-      await import("../private-problems/problems.js").then((m) => m.default),
-      await import("../public-problems/problems.js").then((m) => m.default),
+      loadProblems("../private-problems/problems.js"),
+      loadProblems("../public-problems/problems.js"),
     ]);
       
     return [...privateSet, ...publicSet];
@@ -31,5 +31,14 @@ async function getProblemSet(): Promise<Problem[]> {
     throw new Error("The env REACT_APP_PROBLEM_SET is incorrect or not set");
   }
 }
+
+// Wrapper to handle when one or all of the imports fail when loading both imports
+  async function loadProblems(path: string): Promise<Problem[]> {
+    try {
+      return (await import(path)).default;
+    } catch {
+      return [];
+    }
+  };
 
 export default getProblemSet;
