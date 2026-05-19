@@ -1,13 +1,22 @@
 import { Button, Chip, LinearProgress, List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from '@mui/joy';
 import { ContractProgress, Problem, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { capitalizeString } from '../utils/capitalizeString';
 import sortProblems from '../utils/sortProblems';
+
+export interface ProblemListItemProps {
+  problem: Problem;
+  activeProblem: string | null;
+  closeDrawer: () => void;
+  kbSelectedProblem: string | null;
+  solvedProblems: string[];
+  unsolvedProblems: string[];
+}
 
 export interface ProblemListProps {
   searchedProblems: Problem[];
@@ -21,6 +30,46 @@ export interface ProblemListProps {
   contractProgress: ContractProgress;
   progress: Submission[];
   kbSelectedProblem: string | null;
+}
+
+function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, solvedProblems, unsolvedProblems }: ProblemListItemProps){
+  const itemRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (problem.meta.name === kbSelectedProblem) {
+      itemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [kbSelectedProblem, problem.meta.name]);
+  
+  return (
+    <ListItemButton
+      ref={itemRef}
+      className="problems" 
+      key={problem.meta.name} 
+      selected={problem.meta.name === activeProblem}
+      component={Link} 
+      to={`/problems/${problem.meta.name}`} 
+      onClick={closeDrawer}
+      sx={
+        problem.meta.name === kbSelectedProblem
+          ? { backgroundColor: '#FFE293 !important' }
+          : {}
+      }
+    >
+      <Stack width="100%" direction="row" justifyContent="space-between">
+        <Typography sx={{fontFamily: "Victor Mono"}}>{problem.meta.title}</Typography>
+        <Stack direction="row" gap={1} justifyContent="center">
+          {
+            solvedProblems.includes(problem.meta.name) && <CheckCircle size={24} color="#47f22f" />
+          }
+          {
+            unsolvedProblems.includes(problem.meta.name) && <MinusCircle size={24} color="#939393" />
+          }
+          <DifficultyChip difficulty={problem.meta.difficulty} />
+        </Stack>
+      </Stack>
+    </ListItemButton>
+  )
 }
 
 export default function ProblemList({ selectedTab, setSelectedTab, searchedProblems, selectedCategory, activeProblem, closeDrawer, session, contractProgress, progress, kbSelectedProblem }: ProblemListProps) {
@@ -140,32 +189,15 @@ export default function ProblemList({ selectedTab, setSelectedTab, searchedProbl
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
             <List sx={{ pt: 0 }}>
               { sortedProblems?.map((p) => 
-                <ListItemButton 
-                  className="problems" 
-                  key={p.meta.name} 
-                  selected={p.meta.name === activeProblem}
-                  component={Link} 
-                  to={`/problems/${p.meta.name}`} 
-                  onClick={closeDrawer}
-                  sx={
-                    p.meta.name === kbSelectedProblem
-                      ? { backgroundColor: '#FFE293 !important' }
-                      : {}
-                  }
-                >
-                  <Stack width="100%" direction="row" justifyContent="space-between">
-                    <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
-                    <Stack direction="row" gap={1} justifyContent="center">
-                      {
-                        solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
-                      }
-                      {
-                        unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
-                      }
-                      <DifficultyChip difficulty={p.meta.difficulty} />
-                    </Stack>
-                  </Stack>
-                </ListItemButton>,
+                <ProblemListItem
+                  key={p.meta.name}
+                  problem={p}
+                  activeProblem={activeProblem}
+                  closeDrawer={closeDrawer}
+                  kbSelectedProblem={kbSelectedProblem}
+                  solvedProblems={solvedProblems}
+                  unsolvedProblems={unsolvedProblems}
+                />
               )}
             </List>
           </TabPanel>
