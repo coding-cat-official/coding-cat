@@ -65,6 +65,7 @@ export default function AdminPage() {
           gap: 1.5,
           border: "10px, solid ,#d4ff99",
           padding: "100px",
+          marginTop: "5%"
         }}
       >
         <Typography level="h2" sx={{ marginBottom: 2, color: "black" }}>
