@@ -119,7 +119,7 @@ export interface QuestionOption {
 export interface Question {
     id: string;
     text: string;
-    type: "radio" | "checkbox" | "number" | "textarea";
+    type: "radio" | "checkbox" | "number" | "textarea" | "problem_picker";
     options?: QuestionOption[];
     category: string;
     placeholder?: string;

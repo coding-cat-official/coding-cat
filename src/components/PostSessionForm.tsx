@@ -163,7 +163,7 @@ export default function PostSessionForm() {
     if (q.condition === "success" && sessionSuccessful) return true;
     if (q.condition === "struggle" && sessionSuccessful === false) return true;
     return true;
-  })
+  });
 
   const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
     setAnswers(prev => ({
@@ -197,13 +197,12 @@ export default function PostSessionForm() {
     try {
       const { error: dbError } = await supabase
         .from("sessions")
-        .update([
-          {
-            end_time: new Date().toISOString(),
-            "post_session_reflection": answers,
-          },
-        ])
-        .eq("profile_id", session.user.id);
+        .update({
+          end_time: new Date().toISOString(),
+          "post_session_reflection": answers,
+        })
+        .eq("profile_id", session.user.id)
+        .eq("id", sessionId);
       if (dbError) {
         throw dbError;
       }
@@ -240,6 +239,52 @@ export default function PostSessionForm() {
 
   const renderQuestion = (question: Question) => {
     switch (question.type) {
+      case "problem_picker":
+        return (
+          <Stack spacing={1}>
+            {sessionProblems.length === 0 && (
+              <Typography level="body-sm" sx={{ color: "#888" }}>
+                No problems worked on this session.
+              </Typography>
+            )}
+            {sessionProblems.map(p => {
+              const isSelected = answers[question.id] === p.problem_title;
+              return (
+                <Box
+                  key={p.problem_title}
+                  onClick={() => handleAnswerChange(question.id, p.problem_title)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: "10px",
+                    border: isSelected ? "2px solid #333" : "2px solid transparent",
+                    backgroundColor: p.completed ? "#d4ff99" : "#ffe57d",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    "&:hover": {backgroundColor: "#d4ff99"}
+                  }}
+                >
+                  <Typography level="body-sm" sx={{ fontSize: "18px" }}>
+                    {p.completed ? "✅" : "🔄"}
+                  </Typography>
+                  <Typography level="body-sm" sx={{ fontWeight: isSelected ? 700 : 400 }}>
+                    {p.problem_title}
+                  </Typography>
+                  <Chip
+                    size="sm"
+                    variant="soft"
+                    color={p.completed ? "success" : "warning"}
+                    sx={{ ml: "auto" }}
+                  >
+                    {p.completed ? "Completed" : "Attempted"}
+                  </Chip>
+                </Box>
+              );
+            })}
+          </Stack>
+        )
       case "radio":
         const numOptions = question.options?.length || 0;
         const columns = numOptions > 5 ? "repeat(5, 1fr)" : "1fr 1fr";
@@ -367,7 +412,7 @@ export default function PostSessionForm() {
         }}
       >
         <Stack spacing={4}>
-          {questions.map(question => {
+          {visiblequestions.map(question => {
             const reliesOnDisplay = getReliesOnDisplay(question);
             return (
               <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
