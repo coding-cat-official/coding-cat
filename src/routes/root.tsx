@@ -90,7 +90,7 @@ export default function App() {
     if(problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
     if(problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
   
-    return [...categories, ...specialCategories];
+    return ['blogs', ...categories, ...specialCategories];
   }, [problems]);
 
   // keybinds navigation

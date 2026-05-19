@@ -101,6 +101,7 @@ export default function CategoryList({
                     category='blogs'
                     activeCategory={activeCategory}
                     onSelectCategory={onSelectCategory}
+                    keyboardSelected={keyboardSelected}
                 />
                 <Box>
                     <hr />
