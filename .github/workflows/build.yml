@@ -29,7 +29,7 @@ jobs:
       - name: Set up npm dependencies
         uses: ./.github/actions/npm-setup
       - run: chmod +rwx src/blog-posts/build-blog
-      - run: cd src/private-problems && echo export default [] > problems.js
+      - run: cd src/private-problems && echo -e const problems = [];\nexport default problems > problems.js
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
