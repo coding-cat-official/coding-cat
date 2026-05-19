@@ -138,36 +138,36 @@ export default function ProblemList({ selectedTab, setSelectedTab, searchedProbl
           </Stack>
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
-              <List sx={{ pt: 0 }}>
-                { sortedProblems?.map((p) => 
-                  <ListItemButton 
-                    className="problems" 
-                    key={p.meta.name} 
-                    selected={p.meta.name === activeProblem}
-                    component={Link} 
-                    to={`/problems/${p.meta.name}`} 
-                    onClick={closeDrawer}
-                    sx={
-                      p.meta.name === kbSelectedProblem
-                        ? { backgroundColor: '#FFE293 !important' }
-                        : {}
-                    }
-                  >
-                    <Stack width="100%" direction="row" justifyContent="space-between">
-                      <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
-                      <Stack direction="row" gap={1} justifyContent="center">
-                        {
-                          solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
-                        }
-                        {
-                          unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
-                        }
-                        <DifficultyChip difficulty={p.meta.difficulty} />
-                      </Stack>
+            <List sx={{ pt: 0 }}>
+              { sortedProblems?.map((p) => 
+                <ListItemButton 
+                  className="problems" 
+                  key={p.meta.name} 
+                  selected={p.meta.name === activeProblem}
+                  component={Link} 
+                  to={`/problems/${p.meta.name}`} 
+                  onClick={closeDrawer}
+                  sx={
+                    p.meta.name === kbSelectedProblem
+                      ? { backgroundColor: '#FFE293 !important' }
+                      : {}
+                  }
+                >
+                  <Stack width="100%" direction="row" justifyContent="space-between">
+                    <Typography sx={{fontFamily: "Victor Mono"}}>{p.meta.title}</Typography>
+                    <Stack direction="row" gap={1} justifyContent="center">
+                      {
+                        solvedProblems.includes(p.meta.name) && <CheckCircle size={24} color="#47f22f" />
+                      }
+                      {
+                        unsolvedProblems.includes(p.meta.name) && <MinusCircle size={24} color="#939393" />
+                      }
+                      <DifficultyChip difficulty={p.meta.difficulty} />
                     </Stack>
-                  </ListItemButton>,
-                )}
-              </List>
+                  </Stack>
+                </ListItemButton>,
+              )}
+            </List>
           </TabPanel>
         </Tabs>
       </List>
