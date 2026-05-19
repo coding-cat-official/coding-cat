@@ -97,7 +97,6 @@ export default function ProblemList({ selectedTab, setSelectedTab, searchedProbl
       
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
-          {/* TODO: Add haystack / mutation tab keyboard navigation */}
           <TabList>
             {Object.keys(problemsByCategory).sort().filter(Boolean).map((type) => (
               <Tab key={type} value={type} variant="plain" color="neutral" sx={{ fontFamily: "Silkscreen"}}>
