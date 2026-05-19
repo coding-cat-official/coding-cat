@@ -2,25 +2,62 @@ import { List, ListItemButton, Stack, TabPanel, Tabs, Typography } from "@mui/jo
 import { Link } from "react-router-dom";
 import { BlogPost } from "../types";
 import { capitalizeString } from "../utils/capitalizeString";
+import { useEffect, useRef } from "react";
 
-export interface BlogListProps {
-    searchedBlogs: BlogPost[];
-    selectedTab: string;
-    setSelectedTab: (peep: string) => void;
-    selectedCategory: string | null;
-    activeBlog: string | null;
-    closeDrawer: () => void;
-    kbSelectedBlog: string | null;
+interface BlogListItemProps {
+  blog: BlogPost;
+  activeBlog: string | null;
+  closeDrawer: () => void;
+  kbSelectedBlog: string | null;
+}
+
+interface BlogListProps {
+  searchedBlogs: BlogPost[];
+  selectedTab: string;
+  setSelectedTab: (peep: string) => void;
+  selectedCategory: string | null;
+  activeBlog: string | null;
+  closeDrawer: () => void;
+  kbSelectedBlog: string | null;
+}
+
+function BlogListItem({ blog, activeBlog, closeDrawer, kbSelectedBlog }: BlogListItemProps) {
+  const itemRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (blog.meta.blog_slug === kbSelectedBlog) {
+      itemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [kbSelectedBlog, blog.meta.blog_slug]);
+
+  return (
+    <ListItemButton
+      ref={itemRef}
+      className="problems"
+      key={blog.meta.blog_slug}
+      selected={blog.meta.blog_slug === activeBlog}
+      component={Link}
+      to={`/blogs/${blog.meta.blog_slug}`}
+      onClick={closeDrawer}
+      sx={{
+        ...(blog.meta.blog_slug === kbSelectedBlog && { backgroundColor: '#FFE293 !important' })
+      }}
+    >
+      <Stack width="100%" direction="row" justifyContent="space-between">
+        <Typography sx={{ fontFamily: "Victor Mono" }}>{blog.meta.title}</Typography>
+      </Stack>
+    </ListItemButton>
+  );
 }
 
 export default function BlogList({
-    searchedBlogs,
-    selectedTab,
-    setSelectedTab,
-    selectedCategory,
-    activeBlog,
-    closeDrawer,
-    kbSelectedBlog
+  searchedBlogs,
+  selectedTab,
+  setSelectedTab,
+  selectedCategory,
+  activeBlog,
+  closeDrawer,
+  kbSelectedBlog
 }: BlogListProps) {
   const handleTabChange = (_: any, newValue: any) => {
     if (newValue != null) {
@@ -39,23 +76,13 @@ export default function BlogList({
             <List sx={{ pt: 0 }}>
               {searchedBlogs.map((blog: BlogPost) => {
                 return (
-                  <ListItemButton
-                    className="problems"
+                  <BlogListItem
                     key={blog.meta.blog_slug}
-                    selected={blog.meta.blog_slug === activeBlog}
-                    component={Link}
-                    to={`/blogs/${blog.meta.blog_slug}`}
-                    onClick={closeDrawer}
-                    sx = {{
-                      ...(blog.meta.blog_slug === kbSelectedBlog &&
-                        { backgroundColor: '#FFE293 !important' }
-                      )
-                    }}
-                  >
-                    <Stack width="100%" direction="row" justifyContent="space-between">
-                      <Typography sx={{ fontFamily: "Victor Mono" }}>{blog.meta.title}</Typography>
-                    </Stack>
-                  </ListItemButton>
+                    blog={blog}
+                    activeBlog={activeBlog}
+                    closeDrawer={closeDrawer}
+                    kbSelectedBlog={kbSelectedBlog}
+                  />
                 )
               })}
             </List>
