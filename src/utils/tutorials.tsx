@@ -20,7 +20,7 @@ export const welcomePageTutorial = [
     content: () => (
       <>
         <h2>To navigate to exercises 📚</h2>
-        <p>Click on the bar on your left</p>
+        <p>Click on the bar on your left (or press Control + D)</p>
         <section style={{ display:'flex', gap: '10px'}}>
           <img src={tabPaw} alt="tab white cat paw navbar" height="50px" width="50px" style={{ borderRadius:"10px"}}/>
           <h3>👈(ﾟヮﾟ) </h3>

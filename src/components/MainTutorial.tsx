@@ -1,14 +1,11 @@
 import { Box, Button, Card } from '@mui/joy';
 import { ArrowCircleLeft, ArrowCircleRight} from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { welcomePageTutorial } from '../utils/tutorials';
 
 
 export default function MainTutorial(){
-
   const[step, setStep] = useState(0);
-
-  const content = welcomePageTutorial[step];
 
   const nextStep = () => {
     if(step < welcomePageTutorial.length-1) setStep(step+1);
@@ -17,6 +14,27 @@ export default function MainTutorial(){
   const previousStep = () => {
     if(step > 0) setStep(step-1);
   }
+
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if(event.key === "ArrowLeft"){
+      event.preventDefault();
+      previousStep();
+    }
+
+    if(event.key === "ArrowRight"){
+      event.preventDefault();
+      nextStep();
+    }
+  }, [previousStep, nextStep]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
+  const content = welcomePageTutorial[step];
 
   return(
     <Box sx={{ height:"90%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
