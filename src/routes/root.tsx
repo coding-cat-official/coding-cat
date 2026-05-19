@@ -53,7 +53,6 @@ export default function App() {
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
 
-
   const problemListProps = {
     selectedTab,
     setSelectedTab,
