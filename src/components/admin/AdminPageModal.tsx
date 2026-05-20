@@ -8,7 +8,8 @@ interface AdminPageModalProps {
   modalTitle: string;
   modalDesc: string;
   switchLabel?: string;
-  extraNode: ReactNode;
+  switchAction?: () => void;
+  extraNodes?: ReactNode[];
 }
 
 // Style for modal itself
@@ -38,7 +39,8 @@ export default function AdminPageModal({
   modalTitle,
   modalDesc,
   switchLabel,
-  extraNode
+  switchAction,
+  extraNodes: extraNode,
 }: AdminPageModalProps) {
   return (
     <Modal
@@ -55,11 +57,16 @@ export default function AdminPageModal({
         <Typography id="modal-modal-description">{modalDesc}</Typography>
 
         {switchLabel && (
-          <Typography component="label" endDecorator={<Switch />}>
+          <Typography
+            component="label"
+            endDecorator={<Switch onChange={switchAction} />}
+          >
             {switchLabel}
           </Typography>
         )}
-        {extraNode}
+        {extraNode?.map((elem, idx) => (
+          <div key={idx}>{elem}</div>
+        ))}
       </Box>
     </Modal>
   );

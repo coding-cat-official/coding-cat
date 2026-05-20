@@ -1,6 +1,7 @@
 import { Box, Button, Input, Typography } from "@mui/joy";
 import { useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { hashPassword } from "../../utils/hashPassword";
 
 export default function CategoryPasswordForm() {
   const [testPassword, setTestPassword] = useState("");
@@ -13,7 +14,7 @@ export default function CategoryPasswordForm() {
     setStatus(statusDefault);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     // If eric wants to add rules to his own password this is where to do it
     const passwordRules = {
       minLength: {
@@ -27,17 +28,18 @@ export default function CategoryPasswordForm() {
 
     if (!failedRule) {
       e.preventDefault();
-      sendPasswordtoDB(testPassword);
+      const hashedPassword = await hashPassword(testPassword);
+      sendPasswordtoDB(hashedPassword);
     } else {
       setStatus({ value: failedRule.msg, statusSx: { color: "red", mt: 1 } });
     }
   };
 
   // Update query to update test-password to the new password
-  const sendPasswordtoDB = async (password: string) => {
+  const sendPasswordtoDB = async (hashedPassword: string) => {
     let { error } = await supabase
       .from("settings")
-      .update({ value: password })
+      .update({ value: hashedPassword })
       .eq("key", "test-password")
       .select();
 
@@ -62,7 +64,7 @@ export default function CategoryPasswordForm() {
         onChange={handleTestPassword}
       />
       <Typography sx={status.statusSx}>{status.value}</Typography>
-      <Button color="success" onClick={handleSubmit}>
+      <Button color="success" sx={{ width: "100%", my: 2 }} onClick={handleSubmit}>
         Save
       </Button>
     </Box>
