@@ -93,7 +93,7 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
           : '—'}
         </Typography>
         <Button onClick={() => setOpen(true)}>
-          Edit
+          View
         </Button>
       </Stack>
 
