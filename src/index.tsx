@@ -25,6 +25,7 @@ import ReqPasswordChange from './routes/ReqPasswordChange';
 import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
 import BlogPostView, { blogPostLoader } from './routes/BlogPostView';
+import { StudentAnalytics } from './routes/StudentAnalytics';
 
 declare module "@mui/joy/Drawer" {
   interface DrawerPropsSizeOverrides {
@@ -82,7 +83,8 @@ const router = createHashRouter([
         path: "admin",
         element: <AdminWrapper />,
         children: [
-          { index: true, element: <AdminPage />, loader: problemListLoader}
+          { index: true, element: <AdminPage />, loader: problemListLoader},
+          { path: "student-analytics", index: true, element: <StudentAnalytics />}
         ],
       }
     ],
