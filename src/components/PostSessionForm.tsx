@@ -160,8 +160,8 @@ export default function PostSessionForm() {
 
   //choose goal question based on a successful or struggling session
   const visiblequestions = questions.filter(q => {
-    if (q.condition === "success" && sessionSuccessful) return true;
-    if (q.condition === "struggle" && sessionSuccessful === false) return true;
+    if (q.condition === "success") return sessionSuccessful === true;
+    if (q.condition === "struggle") return sessionSuccessful === false;
     return true;
   });
 
