@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Autocomplete } from "@mui/joy";
-import { useStudentSearch } from "../../utils/useStudentSearch";
+import { useStudentSearch } from "../../hooks/useStudentSearch";
 import { useNavigate } from "react-router-dom";
 
 export function SearchBar() {
