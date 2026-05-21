@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Session } from '@supabase/supabase-js'
 import { Button, Stack, Typography } from '@mui/joy';
-import { Reflection } from '../types';
+import { Reflection, SessionReflectionRecord } from '../types';
 import UserInfo from '../components/profile/UserInfo';
 import Reflections from '../components/profile/reflections/Reflections';
 import Contract from '../components/profile/contract/Contract';
@@ -12,6 +12,7 @@ import { getCompletedProblems } from '../utils/getCompletedProblems';
 import HeatMap from '../components/profile/progress/heatmap/HeatMap';
 import OtherStats from '../components/profile/progress/other-stats/OtherStats';
 import { useOutletContext } from 'react-router-dom';
+import SessionReflections from '../components/profile/sessions/SessionReflections';
 
 interface CategoryData {
   category: string;
@@ -32,11 +33,12 @@ export default function Account({ session }: { session: Session }) {
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
   const [categoriesData, setCategoriesData] = useState<CategoryData[]>([]);
   const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string,number>>({});
+  const [sessionReflections, setSessionReflections] = useState<SessionReflectionRecord[]>([]);
 
   const { refetchProfile } = useOutletContext<{ refetchProfile: () => Promise<void> }>();
 
   // Change "reflections" into something else
-  const [view, setView] = useState<"reflections" | "activity">("reflections");
+  const [view, setView] = useState<"reflections" | "activity" | "sessions">("reflections");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -51,6 +53,19 @@ export default function Account({ session }: { session: Session }) {
 
       if(error) {
         setError(error.message);
+      }
+      //could seperate it into other functions if it gets too big, but for now it's manageable
+      const { data: sessions, error: sessionError } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('profile_id', user.id)
+        .not("post_session_reflection", "is", null)
+        .order('start_time', { ascending: false });
+      
+      if (sessionError) {
+        setError(sessionError.message);
+      } else {
+        setSessionReflections(sessions ?? []);
       }
 
       const reflections: Reflection[] = (submissions || [])
@@ -99,6 +114,7 @@ export default function Account({ session }: { session: Session }) {
         <Stack direction="row" gap={1}>
           <Button onClick={() => setView("reflections")} color={ view === "reflections" ? "primary" : "neutral" } >Reflections</Button>
           <Button onClick={() => setView("activity")} color={ view === "activity" ? "primary" : "neutral" } >Activity</Button>
+          <Button onClick={() => setView("sessions")} color={ view === "sessions" ? "primary" : "neutral" } >Sessions</Button>
         </Stack>
 
         { view === "activity" && <ActivityGraph activityStamps={activityStamps} passingStamps={passingStamps} startDate={userStartDate}/> }
@@ -106,6 +122,7 @@ export default function Account({ session }: { session: Session }) {
         { view === "activity" && <HeatMap activity={activityStamps} /> }
         { view === "activity" && <OtherStats activity={activityStamps} /> }
         { view === "reflections" && <Reflections reflections={reflections} /> }
+        { view === "sessions" && <SessionReflections sessions={sessionReflections} /> }
     </Stack>
   </Stack>
   )

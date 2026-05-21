@@ -194,3 +194,12 @@ export interface ProblemArgs{
     setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, ProblemSessionStats>>>;
     progress?: Pick<Submission, 'problem_title' | 'passed_tests' | 'total_tests'>[];
 }
+
+export interface SessionReflectionRecord {
+  id: string;
+  start_time: string;
+  end_time: string | null;
+  exercise_goals: number;
+  pre_session_reflection: FormAnswers | null;
+  post_session_reflection: FormAnswers | null;
+}
