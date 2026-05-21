@@ -1,29 +1,15 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../supabaseClient";
 import { StudentRecord } from "../types";
+import { getProfiles } from "../utils/getProfiles";
 
 export function useStudentSearch(query: string) {
   const [profileData, setProfileData] = useState<StudentRecord[]>([]);
 
   useEffect(() => {
-    // Get profiles based on query parameters
-    const searchStudentProfiles = async () => {
-      const { data: studentData, error } = await supabase
-        .from("profiles")
-        .select()
-        .ilike("username", `%${query}%`);
-
-      if (error) {
-        console.error("Failed to fetch student profiles:", error);
-        throw error;
-      }
-
-      return studentData as StudentRecord[] | null;
-    };
 
     // Wrapper function to search and filter
     const runSearch = async () => {
-      const studentData = await searchStudentProfiles();
+      const studentData = await getProfiles('username', query, 'ilike');
       if (!studentData) {
         setProfileData([]);
         return;
