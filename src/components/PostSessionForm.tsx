@@ -13,6 +13,7 @@ import type { Session } from "@supabase/supabase-js";
 interface SessionProblem {
   problem_title: string;
   completed: boolean;
+  timeSpent: number | null;
 }
 
 /**
@@ -68,7 +69,7 @@ export default function PostSessionForm() {
   const fetchSessionSubmissions = async ( profileId: string, startTime: string, exerciseGoals: number) => {
     const { data, error: fetchError } = await supabase
       .from("submissions")
-      .select("problem_title, passed_tests, total_tests")
+      .select("problem_title, passed_tests, total_tests, time_spent")
       .eq("profile_id", profileId)
       .gte("submitted_at", startTime)
       .order("submitted_at", { ascending: true });
@@ -79,15 +80,18 @@ export default function PostSessionForm() {
     }
 
     //group by the poblem titles and track if there's any successful submission (all tests passed) for each problem
-    const problemMap = new Map<string, boolean>();
+    const problemMap = new Map<string, { completed: boolean; timeSpent: number | null }>();
     data.forEach(submission => {
-      const alreadyCompleted = problemMap.get(submission.problem_title) ?? false;
+      const alreadyCompleted = problemMap.get(submission.problem_title);
       const submissionPassed = submission.passed_tests === submission.total_tests && submission.total_tests > 0;
-      problemMap.set(submission.problem_title, alreadyCompleted || submissionPassed);
+      problemMap.set(submission.problem_title, {
+        completed: (alreadyCompleted?.completed ?? false) || submissionPassed,
+        timeSpent: submission.time_spent ?? alreadyCompleted?.timeSpent ?? null
+      });
     });
 
     const problems: SessionProblem[] = Array.from(problemMap.entries()).map(
-      ([problem_title, completed]) => ({ problem_title, completed })
+      ([problem_title, {completed, timeSpent}]) => ({ problem_title, completed, timeSpent })
     );
 
     setSessionProblems(problems);
@@ -280,6 +284,13 @@ export default function PostSessionForm() {
                   >
                     {p.completed ? "Completed" : "Attempted"}
                   </Chip>
+                  {p.timeSpent !== null && (
+                    <Typography level="body-xs" sx={{ ml: 1, color: "#555", whitespace: "nowrap" }}>
+                      {Math.floor(p.timeSpent / 60) > 0
+                        ? `${Math.floor(p.timeSpent / 60)}m ${p.timeSpent % 60}s`
+                        : `${p.timeSpent}s`}
+                    </Typography>
+                  )}
                 </Box>
               );
             })}
