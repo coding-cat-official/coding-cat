@@ -4,15 +4,14 @@ import { supabase } from "../supabaseClient";
 type StudentRecord = { username: string };
 
 export function useStudentSearch(query: string) {
-  const [options, setOptions] = useState<string[]>([]);
+  const [profileData, setProfileData] = useState<StudentRecord[]>([]);
 
   useEffect(() => {
-
     // Get profiles based on query parameters
     const searchStudentProfiles = async () => {
       const { data: studentData, error } = await supabase
         .from("profiles")
-        .select("username")
+        .select()
         .ilike("username", `%${query}%`);
 
       if (error) {
@@ -26,7 +25,12 @@ export function useStudentSearch(query: string) {
     // Wrapper function to search and filter
     const runSearch = async () => {
       const studentData = await searchStudentProfiles();
-      formatOptions(studentData);
+      if (!studentData) {
+        setProfileData([]);
+        return;
+      } else {
+        setProfileData(studentData);
+      }
     };
 
     if (query.length > 0) {
@@ -34,21 +38,8 @@ export function useStudentSearch(query: string) {
     }
 
     // Set options on cleanup to empty to avoid stale results
-    return () => setOptions([])
-
+    return () => setProfileData([]);
   }, [query]);
 
-
-  // Format how to display data
-  const formatOptions = (studentData: StudentRecord[] | null) => {
-    if (!studentData) {
-      setOptions([]);
-      return;
-    }
-
-    const ids = studentData.map((val: StudentRecord) => val.username);
-    setOptions(ids);
-  };
-
-  return options;
+  return profileData;
 }

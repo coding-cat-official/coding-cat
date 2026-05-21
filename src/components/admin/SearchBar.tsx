@@ -4,12 +4,15 @@ import { useStudentSearch } from "../../utils/useStudentSearch";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
-  const options = useStudentSearch(query);
-  const loading = options.length === 0;
+  const profileData = useStudentSearch(query);
+  const loading = profileData.length === 0;
+  
+  // Format how to display options
+  const formattedOptions = profileData.map(p => p.username)
 
   return (
     <Autocomplete
-      options={options}
+      options={formattedOptions}
       inputValue={query}
       onInputChange={(_, value) => setQuery(value)}
       loading={loading}
