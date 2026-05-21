@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 import Markdown from 'markdown-to-jsx';
 
@@ -50,51 +50,51 @@ interface ProblemIDEProps {
 }
 
 function ProblemIDE({ problem }: ProblemIDEProps) {
-    const [code, setCode] = usePersistentProblemCode(problem);
-    const [hidePrompt, setHidePrompt] = useState(true);
-    const [question, setQuestion] = useState("");
-    const reflectionInput = useRef<HTMLElement>(null);
-    const [isTourOpen, setTourOpen] = useState(false);
-    const [problems, setProblems] = useState<Problem[]>([]);
-    const [problemAlertStage, setProblemAlertStage] = useState<null | 'twoThirds'>(null);
-    const [alertMessage, setAlertMessage] = useState<string | null>(null);
-    const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
-    const latestProblemNameRef = useRef(problem.meta.name);
+  const [code, setCode] = usePersistentProblemCode(problem);
+  const [hidePrompt, setHidePrompt] = useState(true);
+  const [question, setQuestion] = useState("");
+  const reflectionInput = useRef<HTMLElement>(null);
+  const [isTourOpen, setTourOpen] = useState(false);
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [problemAlertStage, setProblemAlertStage] = useState<null | 'twoThirds'>(null);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [hideExerciseTimer, setHideExerciseTimer] = useState(false);
+  const latestProblemNameRef = useRef(problem.meta.name);
 
-    const { 
-      session, 
-      setActiveProblem, 
-      refetchProgress,
-      sessionDuration,
-      plannedExerciseCount,
-      problemSessionStats,
-      setProblemSessionStats,
-      progress,
-      sessionTimerRunning
-     } = useOutletContext<{
-      session: Session | null,
-      setActiveProblem: (name: string | null) => void,
-      refetchProgress: () => void,
-      activeSession: boolean,
-      sessionTimerRunning: boolean,
-      sessionId: string | null,
-      sessionRemainingSeconds: number,
-      sessionDuration: number,
-      plannedExerciseCount: number,
-      problemSessionStats: Record<string, {
-        elapsedTimeSeconds: number;
-        completed: boolean;
-        passedTests: number;
-        totalTests: number;
-      }>,
-      setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, {
-        elapsedTimeSeconds: number;
-        completed: boolean;
-        passedTests: number;
-        totalTests: number;
-      }>>>,
-      progress: { problem_title: string; passed_tests: number; total_tests: number }[]
-    }>();
+  const { 
+    session, 
+    setActiveProblem, 
+    refetchProgress,
+    sessionDuration,
+    plannedExerciseCount,
+    problemSessionStats,
+    setProblemSessionStats,
+    progress,
+    sessionTimerRunning
+    } = useOutletContext<{
+    session: Session | null,
+    setActiveProblem: (name: string | null) => void,
+    refetchProgress: () => void,
+    activeSession: boolean,
+    sessionTimerRunning: boolean,
+    sessionId: string | null,
+    sessionRemainingSeconds: number,
+    sessionDuration: number,
+    plannedExerciseCount: number,
+    problemSessionStats: Record<string, {
+      elapsedTimeSeconds: number;
+      completed: boolean;
+      passedTests: number;
+      totalTests: number;
+    }>,
+    setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, {
+      elapsedTimeSeconds: number;
+      completed: boolean;
+      passedTests: number;
+      totalTests: number;
+    }>>>,
+    progress: { problem_title: string; passed_tests: number; total_tests: number }[]
+  }>();
 
   const {
     elapsed: problemElapsedSeconds,
@@ -142,7 +142,6 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   }, [setActiveProblem, problem.meta.name, currProblems]);
 
   const [evalResponse, runCode] = useEval(problem, session, refetchProgress);
-
 
   useEffect(() => {
     if (!evalResponse || evalResponse?.status !== "success") return;
@@ -245,44 +244,67 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   }, [problem.meta.name, problem.meta.question_type, problem.starter, session, setCode]);
 
  
-    // Alert user if taking too long on a problem
-    useEffect(() => {
-      if (!sessionTimerRunning || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
+  // Alert user if taking too long on a problem
+  useEffect(() => {
+    if (!sessionTimerRunning || plannedExerciseCount <= 0 || sessionDuration <= 0) return;
 
-      const sessionSeconds = sessionDuration * 60;
-      const perProblemTarget = Math.max(1, Math.floor(sessionSeconds / Math.max(1, plannedExerciseCount)));
+    const sessionSeconds = sessionDuration * 60;
+    const perProblemTarget = Math.max(1, Math.floor(sessionSeconds / Math.max(1, plannedExerciseCount)));
 
-      if (problemElapsedSeconds >= perProblemTarget * (2/3) && problemAlertStage !== 'twoThirds') {
-        setProblemAlertStage('twoThirds');
-        setHideExerciseTimer(false);
-        setAlertMessage(`You've been on this problem for a while 🐱 Consider using your tools, asking for hints or moving on!`);
-      }
-    }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, sessionTimerRunning, problemAlertStage]);
-
-    useEffect(() => {
-      setAlertMessage(null);
-      setProblemAlertStage(null);
-    }, [problem.meta.name]);
-
-    function changeCode(e: string | undefined) {
-      setCode(e ?? '')
+    if (problemElapsedSeconds >= perProblemTarget * (2/3) && problemAlertStage !== 'twoThirds') {
+      setProblemAlertStage('twoThirds');
+      setHideExerciseTimer(false);
+      setAlertMessage(`You've been on this problem for a while 🐱 Consider using your tools, asking for hints or moving on!`);
     }
+  }, [problemElapsedSeconds, plannedExerciseCount, sessionDuration, sessionTimerRunning, problemAlertStage]);
 
-  function handlePreviousProblem(){
+  useEffect(() => {
+    setAlertMessage(null);
+    setProblemAlertStage(null);
+  }, [problem.meta.name]);
+
+  function changeCode(e: string | undefined) {
+    setCode(e ?? '');
+  }
+
+  const handlePreviousProblem = useCallback(() => {
     if(currIndex > 0){
-      const prevProblem = currProblems[currIndex-1].meta.name;
-      setCurrIndex(currIndex-1);
-      navigate(`/problems/${prevProblem}`)
+      const prevProblem = currProblems[currIndex - 1].meta.name;
+      setCurrIndex(currIndex - 1);
+      navigate(`/problems/${prevProblem}`);
     }
-  }
+  }, [currIndex, currProblems, navigate]);
 
-  function handleNextProblem(){ 
+  const handleNextProblem = useCallback(() => { 
     if(currIndex < currProblems.length - 1){
-      const nextProblem = currProblems[currIndex+1].meta.name;
-      setCurrIndex(currIndex+1);
-      navigate(`/problems/${nextProblem}`)
+      const nextProblem = currProblems[currIndex + 1].meta.name;
+      setCurrIndex(currIndex + 1);
+      navigate(`/problems/${nextProblem}`);
     }
-  }
+  }, [currIndex, currProblems, navigate]);
+
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    if(event.altKey && event.key === "Enter"){
+      runCode(code);
+    }
+
+    if(event.altKey && event.key === "ArrowLeft"){
+      event.preventDefault();
+      handlePreviousProblem();
+    }
+
+    if(event.altKey && event.key === "ArrowRight"){
+      event.preventDefault();
+      handleNextProblem();
+    }
+  }, [code, runCode, handlePreviousProblem, handleNextProblem]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   let author = problem.meta.author;
   if (author.toLowerCase() === "chatgpt") author = "";
@@ -294,10 +316,13 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
   return (
     <Stack sx={{ width: "100%", p: 3 }} className="problem-container" direction="row" spacing={2}  justifyContent="center">
       <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex"}} direction="column" spacing={2} alignItems="center">
-        <Box className="navigate-problem-btn">
+        <Box className="navigate-problem-box">
           <Button disabled={currIndex === 0} onClick={handlePreviousProblem}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + ←)
+              </Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {currProblems[currIndex - 1]?.meta?.title}
               </Typography>
@@ -306,6 +331,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           <Button disabled={currIndex >= currProblems.length-1 } onClick={handleNextProblem}>
             <Stack direction="column" spacing={0} alignItems="center">
               <Typography level="body-md" fontFamily="inherit">Next</Typography>
+              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+                (Alt + →)
+              </Typography>
               <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
                 {currProblems[currIndex + 1]?.meta?.title}
               </Typography>

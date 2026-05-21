@@ -1,6 +1,6 @@
 import {Button, Box, Stack, Typography} from '@mui/joy';
 import ResizableEditor from './ResizableEditor';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Problem } from '../types';
 
 interface CodingProps {
@@ -10,7 +10,7 @@ interface CodingProps {
   runCode: (code: string) => void;
 }
 
-export default function CodingQuestion({code, changeCode, problem, runCode}: CodingProps){
+export default function CodingQuestion({ code, changeCode, problem, runCode }: CodingProps){
   const [fontSize, setFontSize] = useState(14);
   const [disabled, setDisabled] = useState(false);
 
@@ -21,19 +21,6 @@ export default function CodingQuestion({code, changeCode, problem, runCode}: Cod
   function decreaseFontSize() {
     if (fontSize > 10) setFontSize(fontSize - 4); 
   }
-  
-    const handleKeyPress = useCallback((event:KeyboardEvent) => {
-        if(event.altKey && event.key === "Enter"){
-          runCode(code);
-        }
-      },[code, runCode]);
-  
-      useEffect(() => {
-        document.addEventListener('keydown', handleKeyPress);
-        return () => {
-          document.removeEventListener('keydown', handleKeyPress);
-        };
-      }, [handleKeyPress]);
 
   return(
     <>
