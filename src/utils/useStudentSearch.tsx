@@ -7,6 +7,8 @@ export function useStudentSearch(query: string) {
   const [options, setOptions] = useState<string[]>([]);
 
   useEffect(() => {
+
+    // Get profiles based on query parameters
     const searchStudentProfiles = async () => {
       const { data: studentData, error } = await supabase
         .from("profiles")
@@ -20,6 +22,8 @@ export function useStudentSearch(query: string) {
 
       return studentData as StudentRecord[] | null;
     };
+
+    // Wrapper function to search and filter
     const runSearch = async () => {
       const studentData = await searchStudentProfiles();
       formatOptions(studentData);
@@ -30,6 +34,8 @@ export function useStudentSearch(query: string) {
     }
   }, [query]);
 
+
+  // Format how to display data
   const formatOptions = (studentData: StudentRecord[] | null) => {
     if (!studentData) {
       setOptions([]);
