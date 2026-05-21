@@ -14,7 +14,7 @@ export interface CategoryListProps {
   onSelectCategory: (cat: string) => void;
   session: Session | null;
   contractProgress: ContractProgress;
-  keyboardSelected: string | null;
+  kbSelectedCategory: string | null;
 }
 
 export default function CategoryList({
@@ -23,7 +23,7 @@ export default function CategoryList({
   onSelectCategory,
   session,
   contractProgress,
-  keyboardSelected
+  kbSelectedCategory
 }: CategoryListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
@@ -115,7 +115,7 @@ export default function CategoryList({
           category="blogs"
           activeCategory={activeCategory}
           onSelectCategory={onSelectCategory}
-          keyboardSelected={keyboardSelected}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -129,7 +129,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
-          keyboardSelected={keyboardSelected}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -143,7 +143,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
-          keyboardSelected={keyboardSelected}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -157,7 +157,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
-          keyboardSelected={keyboardSelected}
+          kbSelectedCategory={kbSelectedCategory}
         />
       </>
     </List>

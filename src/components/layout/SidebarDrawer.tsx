@@ -76,7 +76,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory} 
               session={problemListProps.session} 
               contractProgress={problemListProps.contractProgress} 
-              keyboardSelected={kbSelectedCategory}
+              kbSelectedCategory={kbSelectedCategory}
             />
           </Drawer>
 
@@ -87,7 +87,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory}
               session={problemListProps.session}
               contractProgress={problemListProps.contractProgress}
-              keyboardSelected={kbSelectedCategory}
+              kbSelectedCategory={kbSelectedCategory}
             />
           </Box>
 

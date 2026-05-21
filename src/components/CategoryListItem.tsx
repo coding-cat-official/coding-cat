@@ -13,7 +13,7 @@ function CategoryListItem({
   onSelectCategory,
   session,
   contractProgress,
-  keyboardSelected
+  kbSelectedCategory
 }: any) {
   const itemRef = useRef<HTMLDivElement>(null);
   const summary = progress.find((p: any) => p[type] === category);
@@ -21,13 +21,15 @@ function CategoryListItem({
   const unlocked = lock.isUnlocked();
 
   useEffect(() => {
-      if (category === keyboardSelected) {
-          itemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-  }, [keyboardSelected, category]);
+    console.log(`${category} ${kbSelectedCategory}`)
+    if (category === kbSelectedCategory) {
+      itemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [kbSelectedCategory, category]);
 
   return (
     <ListItemButton
+      ref={itemRef}
       key={category}
       selected={category === activeCategory}
       onClick={() => {
@@ -57,6 +59,9 @@ function CategoryListItem({
         margin: "10px 10px 10px 15px",
         boxShadow: "5px 5px black",
         border: "1px solid black",
+        ...(category === kbSelectedCategory && {
+          backgroundColor: '#82d078 !important',
+        })
       }}
     >
       {/* Change to use hidden as well */}
@@ -86,7 +91,7 @@ export default function CategoryListItems({
   onSelectCategory,
   session,
   contractProgress,
-  keyboardSelected 
+  kbSelectedCategory 
 }: any){
   const [controlledCategories, setControlledCategories] = useState<string[]>([]);
   
@@ -120,7 +125,7 @@ export default function CategoryListItems({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
-          keyboardSelected={keyboardSelected}
+          kbSelectedCategory={kbSelectedCategory}
         />
       ))}
     </>

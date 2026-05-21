@@ -4,10 +4,15 @@ export interface BlogMenuProps {
   activeCategory: string | null;
   onSelectCategory: (cat: string) => void;
   category: string;
-  keyboardSelected: string | null;
+  kbSelectedCategory: string | null;
 }
 
-export default function BlogMenuButton({ onSelectCategory, activeCategory, category, keyboardSelected }: BlogMenuProps) {
+export default function BlogMenuButton({ 
+  onSelectCategory,
+  activeCategory,
+  category,
+  kbSelectedCategory
+}: BlogMenuProps) {
   return (
     <ListItemButton
       key={category}
@@ -28,7 +33,7 @@ export default function BlogMenuButton({ onSelectCategory, activeCategory, categ
         margin: "10px 10px 10px 15px",
         boxShadow: "5px 5px black",
         border: "1px solid black",
-        ...(category === keyboardSelected && {
+        ...(category === kbSelectedCategory && {
           backgroundColor: '#82d078 !important',
         })
       }}
