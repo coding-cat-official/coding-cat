@@ -1,0 +1,44 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+
+type StudentRecord = { username: string };
+
+export function useStudentSearch(query: string) {
+  const [options, setOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    const searchStudentProfiles = async () => {
+      const { data: studentData, error } = await supabase
+        .from("profiles")
+        .select("username")
+        .ilike("username", `%${query}%`);
+
+      if (error) {
+        console.error("Failed to fetch student profiles:", error);
+        throw error;
+      }
+
+      return studentData as StudentRecord[] | null;
+    };
+    const runSearch = async () => {
+      const studentData = await searchStudentProfiles();
+      formatOptions(studentData);
+    };
+
+    if (query.length > 0) {
+      runSearch();
+    }
+  }, [query]);
+
+  const formatOptions = (studentData: StudentRecord[] | null) => {
+    if (!studentData) {
+      setOptions([]);
+      return;
+    }
+
+    const ids = studentData.map((val: StudentRecord) => val.username);
+    setOptions(ids);
+  };
+
+  return options;
+}
