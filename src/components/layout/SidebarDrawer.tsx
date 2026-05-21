@@ -6,6 +6,7 @@ import ProblemList from '../ProblemList';
 import BlogList from '../BlogList';
 import PasswordProtected from '../../routes/PasswordProtected';
 import { Problem, BlogPost } from '../../types';
+import { TEST_CATEGORY_PATTERN } from '../../utils/constants';
 
 interface Props {
   drawerOpen: boolean;
@@ -91,7 +92,7 @@ export default function SidebarDrawer({
           </Box>
 
           <Box sx={{ flex: 3 }} className="parent-problemList">
-            {activeCategory === 'test-questions' ? (
+            {activeCategory?.match(TEST_CATEGORY_PATTERN) ? (
               <PasswordProtected {...problemListProps} />
             ) : activeCategory === 'blogs' ? (
               <BlogList {...blogListProps} />

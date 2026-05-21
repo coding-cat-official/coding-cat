@@ -2,6 +2,7 @@ import { Box, Button, Card, Input, Typography } from "@mui/joy";
 import { useState } from "react";
 import ProblemList, { ProblemListProps } from "../components/ProblemList";
 import { supabase } from "../supabaseClient";
+import { hashPassword } from "../utils/hashPassword";
 
 const containerStyles = {
   minHeight: "100vh",
@@ -44,7 +45,9 @@ export default function PasswordProtected({
   const [locked, setLocked] = useState(true);
 
   const handleClick = async () => {
-    //Get password from db and compare. (NOTE: Will change to compare hash)
+    //Generate a hash and compare it w/ the user entered password
+    const hashedUserPassword = await hashPassword(passwordValue)
+
     const { data, error } = await supabase.from("settings").select();
 
     if (error) {
@@ -52,7 +55,7 @@ export default function PasswordProtected({
       return;
     }
 
-    if (passwordValue === data?.[0]?.value) {
+    if (hashedUserPassword === data?.[0]?.value) {
       handleUnlock();
     } else {
       setError("Incorrect password. Please try again.");
