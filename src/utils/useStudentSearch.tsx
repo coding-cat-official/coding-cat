@@ -32,6 +32,10 @@ export function useStudentSearch(query: string) {
     if (query.length > 0) {
       runSearch();
     }
+
+    // Set options on cleanup to empty to avoid stale results
+    return () => setOptions([])
+
   }, [query]);
 
 
