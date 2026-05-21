@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { Autocomplete } from "@mui/joy";
 import { useStudentSearch } from "../../utils/useStudentSearch";
+import { useNavigate } from "react-router-dom";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const profileData = useStudentSearch(query);
+  const navigate = useNavigate();
   const loading = profileData.length === 0;
-  
+
   // Format how to display options
-  const formattedOptions = profileData.map(p => p.username)
+  const formattedOptions = profileData.map((p) => p.username);
 
   return (
     <Autocomplete
-      options={formattedOptions}
+      options={profileData}
+      getOptionLabel={(profile) => profile.username}
+      onChange={(_, selectedOption) => {
+        if (selectedOption) navigate(`/admin/student-analytics/${selectedOption.profile_id}`);
+      }}
       inputValue={query}
       onInputChange={(_, value) => setQuery(value)}
       loading={loading}
