@@ -9,9 +9,6 @@ export function SearchBar() {
   const navigate = useNavigate();
   const loading = profileData.length === 0;
 
-  // Format how to display options
-  const formattedOptions = profileData.map((p) => p.username);
-
   return (
     <Autocomplete
       options={profileData}
