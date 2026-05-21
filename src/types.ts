@@ -1,5 +1,15 @@
 import { getCategoryList } from "./utils/getCategoryList";
 
+export interface StudentRecord {
+  created_at: string;
+  username: string;
+  updated_at: string;
+  profile_id: string;
+  student_id: number;
+  is_admin: boolean;
+  pfp_id: number;
+}
+
 export interface AdminSwitch {
     switchLabel: string
     switchAction: () => void;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-
-type StudentRecord = { username: string };
+import { StudentRecord } from "../types";
 
 export function useStudentSearch(query: string) {
   const [profileData, setProfileData] = useState<StudentRecord[]>([]);
