@@ -14,6 +14,7 @@ export interface CategoryListProps {
   onSelectCategory: (cat: string) => void;
   session: Session | null;
   contractProgress: ContractProgress;
+  kbSelectedCategory: string | null;
 }
 
 export default function CategoryList({
@@ -22,6 +23,7 @@ export default function CategoryList({
   onSelectCategory,
   session,
   contractProgress,
+  kbSelectedCategory
 }: CategoryListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
@@ -34,11 +36,11 @@ export default function CategoryList({
     .sort((a, b) => a.localeCompare(b));
 
   const specialCategories = [];
-  if (searchedProblems.some((c) => c.meta.question_type[0] === "mutation")) {
-    specialCategories.push("mutation");
-  }
   if (searchedProblems.some((c) => c.meta.question_type[0] === "haystack")) {
     specialCategories.push("haystack");
+  }
+  if (searchedProblems.some((c) => c.meta.question_type[0] === "mutation")) {
+    specialCategories.push("mutation");
   }
 
   const testCategories = searchedProblems
@@ -113,6 +115,7 @@ export default function CategoryList({
           category="blogs"
           activeCategory={activeCategory}
           onSelectCategory={onSelectCategory}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -126,6 +129,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -139,6 +143,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
           <hr />
@@ -152,6 +157,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbSelectedCategory={kbSelectedCategory}
         />
       </>
     </List>
