@@ -96,6 +96,7 @@ export default function App() {
   }, [problems]);
 
   // keybinds navigation
+  // TODO: single source of truth for this?
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + D opens Drawer
     if(event.ctrlKey && event.key === "d"){
