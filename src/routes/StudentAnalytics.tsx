@@ -85,10 +85,10 @@ export function StudentAnalytics() {
         <Box sx={leftPanelStyles}>
             <Box sx={studentInfoStyles}>
               <Typography sx={{ fontSize: "1.05rem", fontWeight: 700, color: "#1f2937" }}>
-                Student ID: {profileData.student_id}
+                Student ID: {profileData.student_id ?? "No Student ID Found"}
               </Typography>
               <Typography sx={{ fontSize: "1rem", fontWeight: 600, color: "#1f2937" }}>
-                Student Name: {profileData.username}
+                Student Name: {profileData.username ?? "No Username Found"}
               </Typography>
             </Box>
             <Button> View Contract </Button>
