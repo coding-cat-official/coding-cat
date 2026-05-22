@@ -10,6 +10,14 @@ export interface StudentRecord {
   pfp_id: number;
 }
 
+export interface CategoryData {
+  category: string;
+  completed: number;
+  total: number;
+  problems: object[];
+  question_type: string;
+}
+
 export interface AdminSwitch {
     switchLabel: string
     switchAction: () => void;
