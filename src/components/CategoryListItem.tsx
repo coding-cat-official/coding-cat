@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { ListItemButton, Typography } from "@mui/joy";
-import { LockSimpleIcon } from "@phosphor-icons/react";
+import { LockSimple } from "@phosphor-icons/react";
 import { capitalizeString } from "../utils/capitalizeString";
 import { fetchCategories } from "../utils/TestCategoriesFetch";
 
@@ -65,7 +65,7 @@ function CategoryListItem({
       }}
     >
       {/* Change to use hidden as well */}
-      {!unlocked && <LockSimpleIcon size={16} />}
+      {!unlocked && <LockSimple size={16} />}
       <Typography sx={{ fontFamily: "Doto", fontWeight: "900" }}>
         {!!session ? (
           <>
@@ -91,10 +91,10 @@ export default function CategoryListItems({
   onSelectCategory,
   session,
   contractProgress,
-  kbSelectedCategory 
-}: any){
+  kbSelectedCategory
+}: any) {
   const [controlledCategories, setControlledCategories] = useState<string[]>([]);
-  
+
   useEffect(() => {
     (async () => {
       const fetchedCategories = await fetchCategories();
@@ -107,7 +107,7 @@ export default function CategoryListItems({
         .map(([key]) => key);
 
       const filteredCategories = categories.filter((val: string) => !toRemove.includes(val));
-        
+
       setControlledCategories(filteredCategories);
     })();
   }, [categories]);
