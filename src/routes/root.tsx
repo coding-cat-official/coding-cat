@@ -217,10 +217,20 @@ export default function App() {
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
-    const first = searchedProblems
-      .filter(p => p.meta.category === activeCategory)
-      .map(p => p.meta.name)[0] ?? null;
-    setKbSelectedProblem(activeProblem ?? first);
+    const categoryProblems = searchedProblems
+      .filter(p => {
+        const questionType = p.meta.question_type[0];
+        const cat = questionType === "coding" 
+          ? p.meta.category 
+          : questionType;
+        return cat === activeCategory;
+      })
+      .map(p => p.meta.name);
+
+    const first = categoryProblems[0] ?? null;
+    const keepCurrent = activeProblem && categoryProblems.includes(activeProblem);
+
+    setKbSelectedProblem(keepCurrent ? activeProblem : first);
   }, [activeCategory, activeProblem, searchedProblems]);
 
   // TODO: may need to create blogCategory in the future
