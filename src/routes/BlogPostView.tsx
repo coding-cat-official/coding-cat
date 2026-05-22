@@ -65,7 +65,7 @@ export default function BlogPostView() {
 
   return (
     <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" zIndex={-2} >
-      <Box className="navigate-problem-btn">
+      <Box className="navigate-problem-btn" sx={{ display: "flex" }} width={"95%"} justifyContent={"space-between"}>
         <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
           <Stack direction="column" spacing={0} alignItems="center">
             <Typography level="body-md" fontFamily="inherit">Prev</Typography>
@@ -97,22 +97,11 @@ export default function BlogPostView() {
             {!!result.meta.author && <Typography level="body-sm">Authored by {result.meta.author}</Typography>}
             {!!result.meta.editor && <Typography level="body-sm">Edited by {result.meta.editor}</Typography>}
           </Box>
-
-          <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "60%", minWidth: "15rem" }}>
-            <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
-              <Box>
-                <Typography level="h2">{result.meta.title}</Typography>
-                {!!result.meta.author && <Typography level="body-sm">Authored by {result.meta.author}</Typography>}
-                {!!result.meta.editor && <Typography level="body-sm">Edited by {result.meta.editor}</Typography>}
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-                <Markdown>
-                  {result.blog_text}
-                </Markdown>
-              </Box>
-            </Box>
-          </Sheet>
+          <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+            <Markdown>
+              {result.blog_text}
+            </Markdown>
+          </Box>
         </Box>
       </Sheet>
     </Stack>
