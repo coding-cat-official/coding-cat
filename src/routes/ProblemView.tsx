@@ -154,6 +154,28 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
 
     if (allPassed && !isCompleted) {
       stopTimer({ passedTests, totalTests });
+
+      //save to database
+      if (session?.user && sessionTimerRunning) {
+        supabase
+          .from('submissions')
+          .select('submission_id')
+          .eq('profile_id', session.user.id)
+          .eq('problem_title', problem.meta.name)
+          .order("submitted_at", { ascending: false })
+          .limit(1)
+          .single()
+          .then(({ data, error}) =>{
+            if (error || !data) return;
+            supabase
+              .from('submissions')
+              .update({ time_spent: problemElapsedSeconds })
+              .eq('submission_id', data.submission_id)
+              .then(({ error }) => {
+                if (error) console.error("Error updating submission with time spent: ", error.message);
+              })
+          })
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [evalResponse, isCompleted, problem.meta.name]);

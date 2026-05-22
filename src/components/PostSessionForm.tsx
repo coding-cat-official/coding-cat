@@ -1,11 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { Box, Button, Checkbox, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
+import { Box, Button, Checkbox, Chip, FormLabel, Radio, RadioGroup, Stack, Textarea, Typography } from "@mui/joy";
 import { Question, FormAnswers } from "../types";
 import { preSessionQuestions } from "../utils/preSessionQuestions";
 import { postSessionQuestions } from "../utils/postSessionQuestions";
 import { supabase } from "../supabaseClient";
 import type { Session } from "@supabase/supabase-js";
+
+/**
+ * 
+ */
+interface SessionProblem {
+  problem_title: string;
+  completed: boolean;
+  timeSpent: number | null;
+}
 
 /**
  * This component is used in the post-session reflection of the session . It will fetch a list of questions from a json file 
@@ -19,6 +28,78 @@ export default function PostSessionForm() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [preSessionReflection, setPreSessionReflection] = useState<FormAnswers | null>(null);
+  const [sessionSuccessful, setSessionSuccessful] = useState<boolean | null>(null);
+  const [sessionProblems, setSessionProblems] = useState<SessionProblem[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  const fetchSessionData = useCallback(async (profileId: string) => {
+    try{
+      const { data, error: fetchError } = await supabase
+        .from("sessions")
+        .select("id, start_time, exercise_goals, pre_session_reflection")
+        .eq("profile_id", profileId)
+        .order("start_time", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (fetchError || !data) {
+        console.warn("Could not fetch session data:", fetchError);
+        return;
+      }
+
+      setSessionId(data.id);
+
+      //If we successfully got data from the database and it contains pre_session_reflection 
+      //then extract it and store it in state so we can use it later.
+      if (data && typeof data === 'object' && "pre_session_reflection" in data) {
+        const reflection = data.pre_session_reflection;
+        if (reflection) {
+          setPreSessionReflection(reflection as FormAnswers);
+        }
+      }
+
+      //fetch all submissions made during the session, so basically completed AND attempted problems
+      await fetchSessionSubmissions(profileId, data.start_time, data.exercise_goals);
+
+    } catch (err) {
+      console.warn("Error fetching session data:", err);
+    }
+  }, []);
+
+  const fetchSessionSubmissions = async ( profileId: string, startTime: string, exerciseGoals: number) => {
+    const { data, error: fetchError } = await supabase
+      .from("submissions")
+      .select("problem_title, passed_tests, total_tests, time_spent")
+      .eq("profile_id", profileId)
+      .gte("submitted_at", startTime)
+      .order("submitted_at", { ascending: true });
+
+    if (fetchError || !data){
+      console.warn("Could not fetch session submissions:", fetchError);
+      return;
+    }
+
+    //group by the poblem titles and track if there's any successful submission (all tests passed) for each problem
+    const problemMap = new Map<string, { completed: boolean; timeSpent: number | null }>();
+    data.forEach(submission => {
+      const alreadyCompleted = problemMap.get(submission.problem_title);
+      const submissionPassed = submission.passed_tests === submission.total_tests && submission.total_tests > 0;
+      problemMap.set(submission.problem_title, {
+        completed: (alreadyCompleted?.completed ?? false) || submissionPassed,
+        timeSpent: submission.time_spent ?? alreadyCompleted?.timeSpent ?? null
+      });
+    });
+
+    const problems: SessionProblem[] = Array.from(problemMap.entries()).map(
+      ([problem_title, {completed, timeSpent}]) => ({ problem_title, completed, timeSpent })
+    );
+
+    setSessionProblems(problems);
+
+    //calculate or determine if the session was successful 
+    const completedCount = problems.filter(p => p.completed).length;
+    setSessionSuccessful(completedCount >= exerciseGoals);
+  }
 
   const fetchQuestions = useCallback(async () => {
     try {
@@ -46,37 +127,10 @@ export default function PostSessionForm() {
   useEffect(() => {
     fetchQuestions();
     if (session?.user) {
-      fetchPreSessionReflection(session.user.id);
+      fetchSessionData(session.user.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
-
-  async function fetchPreSessionReflection(profileId: string) {
-    try {
-      const { data, error: fetchError } = await supabase
-        .from("sessions")
-        .select("pre_session_reflection")
-        .eq("profile_id", profileId)
-        .order("start_time", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (fetchError) {
-        console.warn("Could not fetch pre-session reflection:", fetchError);
-        return;
-      }
-      //If we successfully got data from the database and it contains pre_session_reflection 
-      //then extract it and store it in state so we can use it later.
-      if (data && typeof data === 'object' && "pre_session_reflection" in data) {
-        const reflection = (data as Record<string, unknown>)["pre_session_reflection"];
-        if (reflection) {
-          setPreSessionReflection(reflection as FormAnswers);
-        }
-      }
-    } catch (err) {
-      console.warn("Error fetching pre-session reflection:", err);
-    }
-  }
+  }, [session, fetchSessionData, fetchQuestions]);
 
   function selectQuestionsByCategory(questionsData: Question[]): Question[] {
     const grouped: Record<string, Question[]> = {};
@@ -107,6 +161,13 @@ export default function PostSessionForm() {
 
     return result;
   }
+
+  //choose goal question based on a successful or struggling session
+  const visiblequestions = questions.filter(q => {
+    if (q.condition === "success") return sessionSuccessful === true;
+    if (q.condition === "struggle") return sessionSuccessful === false;
+    return true;
+  });
 
   const handleAnswerChange = (questionId: string, value: string | string[] | number) => {
     setAnswers(prev => ({
@@ -140,13 +201,12 @@ export default function PostSessionForm() {
     try {
       const { error: dbError } = await supabase
         .from("sessions")
-        .update([
-          {
-            end_time: new Date().toISOString(),
-            "post_session_reflection": answers,
-          },
-        ])
-        .eq("profile_id", session.user.id);
+        .update({
+          end_time: new Date().toISOString(),
+          "post_session_reflection": answers,
+        })
+        .eq("profile_id", session.user.id)
+        .eq("id", sessionId);
       if (dbError) {
         throw dbError;
       }
@@ -183,6 +243,59 @@ export default function PostSessionForm() {
 
   const renderQuestion = (question: Question) => {
     switch (question.type) {
+      case "problem_picker":
+        return (
+          <Stack spacing={1}>
+            {sessionProblems.length === 0 && (
+              <Typography level="body-sm" sx={{ color: "#888" }}>
+                No problems worked on this session.
+              </Typography>
+            )}
+            {sessionProblems.map(p => {
+              const isSelected = answers[question.id] === p.problem_title;
+              return (
+                <Box
+                  key={p.problem_title}
+                  onClick={() => handleAnswerChange(question.id, p.problem_title)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.5,
+                    p: 1.5,
+                    borderRadius: "10px",
+                    border: isSelected ? "2px solid #333" : "2px solid transparent",
+                    backgroundColor: p.completed ? "#d4ff99" : "#ffe57d",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    "&:hover": {backgroundColor: "#d4ff99"}
+                  }}
+                >
+                  <Typography level="body-sm" sx={{ fontSize: "18px" }}>
+                    {p.completed ? "✅" : "🔄"}
+                  </Typography>
+                  <Typography level="body-sm" sx={{ fontWeight: isSelected ? 700 : 400 }}>
+                    {p.problem_title}
+                  </Typography>
+                  <Chip
+                    size="sm"
+                    variant="soft"
+                    color={p.completed ? "success" : "warning"}
+                    sx={{ ml: "auto" }}
+                  >
+                    {p.completed ? "Completed" : "Attempted"}
+                  </Chip>
+                  {p.timeSpent !== null && (
+                    <Typography level="body-xs" sx={{ ml: 1, color: "#555", whitespace: "nowrap" }}>
+                      {Math.floor(p.timeSpent / 60) > 0
+                        ? `${Math.floor(p.timeSpent / 60)}m ${p.timeSpent % 60}s`
+                        : `${p.timeSpent}s`}
+                    </Typography>
+                  )}
+                </Box>
+              );
+            })}
+          </Stack>
+        )
       case "radio":
         const numOptions = question.options?.length || 0;
         const columns = numOptions > 5 ? "repeat(5, 1fr)" : "1fr 1fr";
@@ -310,7 +423,7 @@ export default function PostSessionForm() {
         }}
       >
         <Stack spacing={4}>
-          {questions.map(question => {
+          {visiblequestions.map(question => {
             const reliesOnDisplay = getReliesOnDisplay(question);
             return (
               <Box key={question.id} sx={{ display: "flex", gap: 4, alignItems: "flex-start" }}>

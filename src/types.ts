@@ -119,7 +119,7 @@ export interface QuestionOption {
 export interface Question {
     id: string;
     text: string;
-    type: "radio" | "checkbox" | "number" | "textarea";
+    type: "radio" | "checkbox" | "number" | "textarea" | "problem_picker";
     options?: QuestionOption[];
     category: string;
     placeholder?: string;
@@ -127,6 +127,7 @@ export interface Question {
     max?: number;
     randomizeable?: boolean;
     relies_on?: string;
+    condition?: "success" | "struggle";
 }
 
 export interface FormAnswers {
@@ -192,4 +193,13 @@ export interface ProblemArgs{
     problemSessionStats: Record<string, ProblemSessionStats>;
     setProblemSessionStats: React.Dispatch<React.SetStateAction<Record<string, ProblemSessionStats>>>;
     progress?: Pick<Submission, 'problem_title' | 'passed_tests' | 'total_tests'>[];
+}
+
+export interface SessionReflectionRecord {
+  id: string;
+  start_time: string;
+  end_time: string | null;
+  exercise_goals: number;
+  pre_session_reflection: FormAnswers | null;
+  post_session_reflection: FormAnswers | null;
 }
