@@ -121,12 +121,11 @@ table input{
   background-color: white;
 }
 
-.MuiBox-root.navigate-problem-btn{
+.MuiBox-root.navigate-problem-box{
   display: flex; 
   width: 100%;
   justify-content: space-between; 
-  padding: 0 5px; 
-  cursor: pointer;
+  padding: 0 5px;
 } 
 
 [aria-disabled="true"]{

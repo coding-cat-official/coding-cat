@@ -9,7 +9,7 @@ import { Problem, BlogPost } from '../../types';
 import { TEST_CATEGORY_PATTERN } from '../../utils/constants';
 
 interface Props {
-  open: boolean;
+  drawerOpen: boolean;
   onClose: () => void;
   openCategory: boolean;
   setOpenCategory: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,10 +25,11 @@ interface Props {
   blogListProps: any;
   selectedTab: string;
   setSelectedTab: React.Dispatch<React.SetStateAction<string>>;
+  kbSelectedCategory: string | null;
 }
 
 export default function SidebarDrawer({
-  open,
+  drawerOpen,
   onClose,
   openCategory,
   setOpenCategory,
@@ -44,9 +45,10 @@ export default function SidebarDrawer({
   blogListProps,
   selectedTab,
   setSelectedTab,
+  kbSelectedCategory
 }: Props) {
   return (
-    <Drawer open={open} onClose={onClose} size="lg" 
+    <Drawer open={drawerOpen} onClose={onClose} size="lg" 
     // Temporary fix for: https://github.com/coding-cat-official/coding-cat/pull/56
     sx={{ "--ModalClose-inset": "1rem", "--Drawer-verticalSize": "clamp(500px, 60%, 100%)", "--Drawer-horizontalSize": "100vw", "--Drawer-titleMargin": "1rem 1rem calc(1rem / 2)" }}>
       <ModalClose />
@@ -68,11 +70,25 @@ export default function SidebarDrawer({
         <Box sx={{ display: 'flex', overflow: 'hidden', gap: '16px' }}>
           <Button className="mobile-categoryList" onClick={() => setOpenCategory(true)}>&gt;</Button>
           <Drawer open={openCategory} onClose={() => setOpenCategory(false)} sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="mobile-categoryList">
-            <CategoryList searchedProblems={searchedProblems} activeCategory={activeCategory} onSelectCategory={handleSelectedCategory} session={problemListProps.session} contractProgress={problemListProps.contractProgress} />
+            <CategoryList 
+              searchedProblems={searchedProblems} 
+              activeCategory={activeCategory} 
+              onSelectCategory={handleSelectedCategory} 
+              session={problemListProps.session} 
+              contractProgress={problemListProps.contractProgress} 
+              kbSelectedCategory={kbSelectedCategory}
+            />
           </Drawer>
 
           <Box sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="categoryList">
-            <CategoryList searchedProblems={searchedProblems} activeCategory={activeCategory} onSelectCategory={handleSelectedCategory} session={problemListProps.session} contractProgress={problemListProps.contractProgress} />
+            <CategoryList 
+              searchedProblems={searchedProblems}
+              activeCategory={activeCategory}
+              onSelectCategory={handleSelectedCategory}
+              session={problemListProps.session}
+              contractProgress={problemListProps.contractProgress}
+              kbSelectedCategory={kbSelectedCategory}
+            />
           </Box>
 
           <Box sx={{ flex: 3 }} className="parent-problemList">

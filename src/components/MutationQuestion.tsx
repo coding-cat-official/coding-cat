@@ -1,17 +1,15 @@
 import {Box, Button, LinearProgress, Stack, Typography} from '@mui/joy';
 import { useCallback, useEffect, useState } from 'react';
-import {  getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
+import { getColumnStatuses, countPassedMutants } from '../utils/mapMutantResults';
 
-export default function MutationQuestion({runCode, evalResponse, problem, code, setCode}: any) {
-
+export default function MutationQuestion({ code, setCode, runCode, problem, evalResponse, prevProb, nextProb }: any) {
   const [numOfTableRows, setNumRows] = useState(5);
   const [disabled, setDisabled] = useState(false);
+  const [attemptedRun, setAttemptedRun] = useState(false);
 
   const maxNumberOfRows = 15;
   const numOfMutations = problem.mutations.length;
   const inputCount = problem.io[0].input.length;
-
-  const [attemptedRun, setAttemptedRun] = useState(false);
 
   //The inputRows are 2D arrays since each row is a test and each test contains 
   //an array of inputs
@@ -29,7 +27,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
 
   const hasEmptyExpected = expectedOutputRows
     .slice(0, numOfTableRows)
-    .some(row => row === "")
+    .some(row => row === "");
     
 
   useEffect(() => {
@@ -119,19 +117,6 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
     }, 2000)
   }, [expectedOutputRows, hasEmptyExpected, hasEmptyInputs, inputRows, numOfTableRows, runCode, setCode]);
 
-  useEffect(() => {
-    const handleKeyPress = (event:KeyboardEvent) => {
-      if(event.altKey && event.key === "Enter"){
-        handleRun();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleRun]);
-
   return(
     <> 
       <LinearProgress className="mutation-progressBar" determinate value={countPassedMutants(evalResponse)/numOfMutations*100} size="lg" thickness={30}>
@@ -162,7 +147,7 @@ export default function MutationQuestion({runCode, evalResponse, problem, code, 
           </tr>
         </thead>
         <tbody>
-        { Array.from({length:numOfTableRows}).map((_, rowIndex) => {
+        { Array.from({ length:numOfTableRows }).map((_, rowIndex) => {
           const row = evalResponse?.report[rowIndex] ?? null;
           const mutations = row?.mutations ?? Array(numOfMutations).fill(null);
 
