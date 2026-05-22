@@ -107,121 +107,6 @@ function ProblemListProgress({
   );
 }
 
-interface Level0ProblemListProps {
-  problems: Problem[];
-  activeProblem: string | null;
-  closeDrawer: () => void;
-  session: Session | null;
-  contractProgress: ContractProgress;
-  progress: Submission[];
-  kbSelectedProblem: string | null;
-}
-
-function Level0ProblemList({
-  problems,
-  activeProblem,
-  closeDrawer,
-  session,
-  contractProgress,
-  progress,
-  kbSelectedProblem
-}: Level0ProblemListProps){
-  const completedProblems = useMemo(() => {
-    return getCompletedProblems(progress).filter((p) => p.category === "level0")[0];
-  }, [progress]);
-
-  let percentageCompleted = Math.round(
-    (completedProblems?.completed /
-      (contractProgress["level0"!!] || (completedProblems?.total ?? 0))) *
-      100,
-  );
-  if (percentageCompleted > 100) percentageCompleted = 100;
-  if (isNaN(percentageCompleted)) percentageCompleted = 0;
-
-  const solvedProblems = useMemo(
-    () => progress.filter((p) => p.passed_tests === p.total_tests).map((p) => p.problem_title),
-    [progress],
-  );
-
-  const unsolvedProblems = useMemo(
-    () =>
-      progress
-        .filter(
-          (p) => p.passed_tests !== p.total_tests && !solvedProblems.includes(p.problem_title),
-        )
-        .map((p) => p.problem_title),
-    [progress, solvedProblems],
-  );
-
-  const sortedProblems = sortProblems(
-    problems,
-    solvedProblems,
-    "asc",
-    "name"
-  );
-
-  return (
-    <Stack gap={1} className="stack-problemList">
-      {!!session ? (
-        <Stack pr={4} gap={1}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography
-              level="h1"
-              sx={{ fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt" }}
-            >
-              Level 0 -{" "}
-              {completedProblems?.completed}/
-              {contractProgress["level0"!!] || (completedProblems?.total ?? 0)}
-            </Typography>
-            <Typography level="h4">{percentageCompleted}%</Typography>
-          </Stack>
-          <LinearProgress
-            className="problemList-progressBar"
-            determinate
-            value={percentageCompleted}
-            size="lg"
-            thickness={15}
-          />
-        </Stack>
-      ) : (
-        <Typography
-          level="h1"
-          sx={{ fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt" }}
-        >
-          Level 0
-        </Typography>
-      )}
-
-      <List component="nav">
-        <Stack
-          pl={1}
-          pt={1}
-          pb={1}
-          width="100%"
-          direction="row"
-          gap={2}
-          alignItems="center"
-          className="sort-parent"
-        >
-          <List sx={{ pt: 0 }}>
-            { sortedProblems?.map((p) => 
-              <ProblemListItem
-                key={p.meta.name}
-                problem={p}
-                activeProblem={activeProblem}
-                closeDrawer={closeDrawer}
-                kbSelectedProblem={kbSelectedProblem}
-                solvedProblems={solvedProblems}
-                unsolvedProblems={unsolvedProblems}
-              />
-            )}
-          </List>
-        </Stack>
-      </List>
-    </Stack>
-  );
-}
-
 interface ProblemListSortButtonsProps {
   sortCategories: string[];
   order: string;
@@ -310,6 +195,14 @@ export default function ProblemList({
   const [orderBy, setOrderBy] = useState("name");
 
   const sortCategories = ["name", "completed", "difficulty"];
+
+  // force Level 0 to be sorted ascending and by name
+  useEffect(() => {
+    if(selectedCategory === "Level 0"){
+      setOrder("asc");
+      setOrderBy("name");
+    }
+  }, [selectedCategory]);
 
   const completedProblems = useMemo(() => {
     return getCompletedProblems(progress).filter((p) => p.category === selectedCategory)[0];
@@ -417,6 +310,7 @@ export default function ProblemList({
           </TabList>
 
           {
+            // hide sort buttons on Level 0 category
             selectedCategory !== "Level 0"
               ? <ProblemListSortButtons 
                   sortCategories={sortCategories}
