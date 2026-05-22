@@ -37,7 +37,6 @@ export default function PasswordProtected({
   session,
   contractProgress,
   progress,
-  onSelectProblem,
   kbSelectedProblem
 }: ProblemListProps) {
   const [passwordValue, setPasswordValue] = useState("");
@@ -116,7 +115,6 @@ export default function PasswordProtected({
           session={session}
           contractProgress={contractProgress}
           progress={progress}
-          onSelectProblem={onSelectProblem}
           kbSelectedProblem={kbSelectedProblem}
         />
       )}
