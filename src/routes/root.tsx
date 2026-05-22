@@ -166,7 +166,8 @@ export default function App() {
           // navigating through problems in activeCategory
 
           // filters problems in active category
-          // TODO: Fix Level 0 not cycling properly as they aren't alphabetical
+          // TODO: Fix Level 0 not cycling properly as they aren't alphabetical (it shows in the right order, but the hover jumps around)
+            // run this through sortProblems and pass the sortedProblems down?
           // TODO: This also doesn't work when the sorting changes
           const categoryProblems = searchedProblems
             .filter(p => {
