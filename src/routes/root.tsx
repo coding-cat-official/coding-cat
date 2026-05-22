@@ -15,6 +15,7 @@ import MainLayout from '../components/layout/MainLayout';
 import SidebarDrawer from '../components/layout/SidebarDrawer';
 import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
+import sortProblems from '../utils/sortProblems';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
@@ -165,6 +166,8 @@ export default function App() {
           // navigating through problems in activeCategory
 
           // filters problems in active category
+          // TODO: Fix Level 0 not cycling properly as they aren't alphabetical
+          // TODO: This also doesn't work when the sorting changes
           const categoryProblems = searchedProblems
             .filter(p => {
               const questionType = p.meta.question_type[0];
