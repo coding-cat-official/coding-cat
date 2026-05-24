@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
-import { Button, Stack } from "@mui/joy";
+import { Button, Stack, Typography } from "@mui/joy";
 import UserInfo from "../components/profile/UserInfo";
 import Reflections from "../components/profile/reflections/Reflections";
 import Contract from "../components/profile/contract/Contract";
@@ -18,6 +18,7 @@ import useActivityTracker from "../hooks/useActivityTracker";
  */
 export default function Account({ session }: { session: Session }) {
   const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string, number>>({});
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { refetchProfile } = useOutletContext<{ refetchProfile: () => Promise<void> }>();
 
   // Change "reflections" into something else
@@ -54,7 +55,10 @@ export default function Account({ session }: { session: Session }) {
         className="account-wrapper"
       >
         <UserInfo refetchProfile={refetchProfile} />
-        <Contract problemCountByCategory={problemCountByCategory} />
+         <Stack direction="row" alignItems="center" gap={1}>
+          <Typography level="h2">Contract</Typography>
+        </Stack>
+        <Contract problemCountByCategory={problemCountByCategory} lastUpdated={lastUpdated} setLastUpdated={setLastUpdated} />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>

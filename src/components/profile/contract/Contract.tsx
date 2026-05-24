@@ -6,10 +6,15 @@ import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
 
-export default function Contract({ problemCountByCategory }: { problemCountByCategory: Record<string,number> }) {
+interface ContractProps {
+  problemCountByCategory: Record<string,number>;
+  lastUpdated:  Date | null;
+  setLastUpdated: Dispatch<SetStateAction<Date | null>>;
+}
+
+export default function Contract({ problemCountByCategory, lastUpdated, setLastUpdated }: ContractProps) {
   const [open, setOpen] = useState(false);
   const [contract, setContract] = useState<ContractData>(BLANK_CONTRACT);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
   const [featureMap, setFeatureMap] = useState<Record<string, boolean>>({});
 
@@ -81,9 +86,6 @@ export default function Contract({ problemCountByCategory }: { problemCountByCat
   return (
     <>
       <Stack alignItems="center">
-        <Stack direction="row" alignItems="center" gap={1}>
-          <Typography level="h2">Contract</Typography>
-        </Stack>
         <Typography>Last Modified:{' '} 
         {lastUpdated
           ? `${lastUpdated.toLocaleDateString()} ${lastUpdated.toLocaleTimeString([], {
