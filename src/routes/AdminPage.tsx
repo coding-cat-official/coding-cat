@@ -5,6 +5,7 @@ import { AdminSwitch, Problem } from "../types";
 import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
 import { useLoaderData } from "react-router-dom";
+import { SearchBar } from "../components/admin/SearchBar";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -33,6 +34,7 @@ export default function AdminPage() {
     {
       title: "View Student Information",
       desc: "Enter the email/student id of the student you want to a detailed view of",
+      extraNodes: [<SearchBar />]
     },
     {
       title: "Toggle Public/Test Questions",
