@@ -170,6 +170,7 @@ export interface ProblemListProps {
   sortedProblems: Problem[];
   selectedTab: string;
   setSelectedTab: (peep: string) => void;
+  onTabsChange: (tabs: string[]) => void;
   selectedCategory: string | null;
   activeProblem: string | null;
   closeDrawer: () => void;
@@ -186,6 +187,7 @@ export interface ProblemListProps {
 export default function ProblemList({
   selectedTab,
   setSelectedTab,
+  onTabsChange,
   sortedProblems,
   selectedCategory,
   activeProblem,
@@ -239,6 +241,11 @@ export default function ProblemList({
     acc[problemCategories].push(problem);
     return acc;
   }, {});
+
+  useEffect(() => {
+    const tabs = Object.keys(problemsByCategory).sort().filter(Boolean);
+    onTabsChange(tabs);
+  }, [problemsByCategory, onTabsChange]);
 
   const solvedProblems = useMemo(
     () => progress.filter((p) => p.passed_tests === p.total_tests).map((p) => p.problem_title),

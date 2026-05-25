@@ -30,6 +30,7 @@ const headingStyles = {
 export default function PasswordProtected({
   selectedTab,
   setSelectedTab,
+  onTabsChange,
   sortedProblems,
   selectedCategory,
   activeProblem,
@@ -112,6 +113,7 @@ export default function PasswordProtected({
         <ProblemList
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
+          onTabsChange={onTabsChange}
           sortedProblems={sortedProblems}
           selectedCategory={selectedCategory}
           activeProblem={activeProblem}

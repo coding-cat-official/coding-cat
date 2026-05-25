@@ -66,9 +66,12 @@ export default function App() {
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
   const [kbSelectedBlog, setKbSelectedBlog] = useState("");
 
+  const [availableTabs, setAvailableTabs] = useState<string[]>([]);
+
   const problemListProps = {
     selectedTab,
     setSelectedTab,
+    onTabsChange: setAvailableTabs,
     sortedProblems,
     selectedCategory: activeCategory,
     activeProblem,
@@ -113,8 +116,6 @@ export default function App() {
 
   // keybinds navigation
   // TODO: single source of truth for this?
-  type KbFocus = 'categories' | 'problems' | 'tabs';
-  const [kbFocus, setKbFocus] = useState<KbFocus>('categories');
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + D opens Drawer
     if(event.ctrlKey && event.key === "d"){
@@ -223,16 +224,39 @@ export default function App() {
       }
 
       // left / right opens category list
+      // unless the category has tabs, in which case left / right navigates through them
+      // if on the leftmost tab, left opens the category list
       if(event.key === "ArrowLeft"){
-        setKbSelectedCategory(activeCategory);
-        setCategoryOpen(true);
+        console.log(availableTabs);
+        if(availableTabs.length > 0){
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex <= 0){
+            // on leftmost tab - open category list
+            setKbSelectedCategory(activeCategory);
+            setCategoryOpen(true);
+          } else {
+            // go to prev tab
+            setSelectedTab(availableTabs[currTabIndex - 1]);
+          }
+        } else {
+          // no tabs - open category list directly
+          setKbSelectedCategory(activeCategory);
+          setCategoryOpen(true);
+        }
       }
       if(event.key === "ArrowRight"){
-        setKbSelectedCategory(activeCategory);
-        setCategoryOpen(false);
+        if(categoryOpen) {
+          setCategoryOpen(false);
+        } else if(availableTabs.length > 0) {
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex < availableTabs.length - 1) {
+            setSelectedTab(availableTabs[currTabIndex + 1]);
+          }
+          // on rightmost tab — do nothing
+        }
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
