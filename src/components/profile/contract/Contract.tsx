@@ -8,7 +8,7 @@ import { useOutletContext } from "react-router-dom";
 
 interface ContractProps {
   categoriesData: CategoryData[];
-  profileData?: StudentRecord
+  profileData?: StudentRecord;
 }
 
 export default function Contract({ categoriesData, profileData }: ContractProps) {
@@ -25,7 +25,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
   const profileId = profileData?.profile_id ?? session?.user.id;
 
   if (!profileData) {
-     throw Error("Error: No session or profile_id has been defined");
+    throw Error("Error: No session or profile_id has been defined");
   }
 
   // if the categoriesData changes, update the problem count
