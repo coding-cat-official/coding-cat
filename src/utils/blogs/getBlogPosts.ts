@@ -1,11 +1,11 @@
-import { BlogPost } from "../types.js";
+import { BlogPost } from "../../types.js";
 
 /**
  * This fetches the blog post data and transforms them into BlogPost objects
  */
 export default async function getBlogPosts() {
     try {
-        const unsortedPosts = (await import(`../blog-posts/blogs.js`)).default as BlogPost[];
+        const unsortedPosts = (await import(`../../blog-posts/blogs.js`)).default as BlogPost[];
         unsortedPosts.sort((post1: BlogPost, post2: BlogPost) => {
             //handling empty "order" values
             if (!post1.meta.order) {

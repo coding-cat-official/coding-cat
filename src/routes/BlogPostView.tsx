@@ -1,5 +1,5 @@
 import { useLoaderData, useNavigate } from "react-router-dom";
-import getBlogPosts from "../utils/getBlogPosts";
+import getBlogPosts from "../utils/blogs/getBlogPosts";
 import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
