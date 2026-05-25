@@ -24,8 +24,8 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
   const session = outletContext?.session;
   const profileId = profileData?.profile_id ?? session?.user.id;
 
-  if (!profileData) {
-    throw Error("Error: No session or profile_id has been defined");
+  if (!profileId) {
+     throw Error("Error: No session or profile_id has been defined");
   }
 
   // if the categoriesData changes, update the problem count
