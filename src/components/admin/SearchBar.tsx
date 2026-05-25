@@ -7,7 +7,6 @@ export function SearchBar() {
   const [query, setQuery] = useState("");
   const profileData = useStudentSearch(query);
   const navigate = useNavigate();
-  const loading = profileData.length === 0;
 
   return (
     <Autocomplete
@@ -18,7 +17,7 @@ export function SearchBar() {
       }}
       inputValue={query}
       onInputChange={(_, value) => setQuery(value)}
-      loading={loading}
+      noOptionsText={"No Students Found"}
       placeholder="Search for a student..."
     />
   );
