@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import { Button, Stack, Typography } from "@mui/joy";
 import UserInfo from "../components/profile/UserInfo";
@@ -17,8 +17,6 @@ import useActivityTracker from "../hooks/useActivityTracker";
  * Additional components used in the profile page are located in `components/profile`.
  */
 export default function Account({ session }: { session: Session }) {
-  const [problemCountByCategory, setProblemCountByCategory] = useState<Record<string, number>>({});
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { refetchProfile } = useOutletContext<{ refetchProfile: () => Promise<void> }>();
 
   // Change "reflections" into something else
@@ -37,14 +35,6 @@ export default function Account({ session }: { session: Session }) {
     reflections,
   } = useActivityTracker(user);
 
-  // if the categoriesData changes, update the problem count
-  useEffect(() => {
-    const probCountByCat = Object.fromEntries(
-      categoriesData.map(({ category, total }) => [category, total]),
-    );
-    setProblemCountByCategory(probCountByCat);
-  }, [categoriesData, setProblemCountByCategory]);
-
   return (
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack
@@ -58,7 +48,7 @@ export default function Account({ session }: { session: Session }) {
          <Stack direction="row" alignItems="center" gap={1}>
           <Typography level="h2">Contract</Typography>
         </Stack>
-        <Contract problemCountByCategory={problemCountByCategory} lastUpdated={lastUpdated} setLastUpdated={setLastUpdated} />
+        <Contract categoriesData={categoriesData} />
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>
