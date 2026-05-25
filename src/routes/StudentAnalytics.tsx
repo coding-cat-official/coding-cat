@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 import CategoriesBarGraph from "../components/profile/progress/CategoriesBarGraph";
 import HeatMap from "../components/profile/progress/heatmap/HeatMap";
 import ActivityGraph from "../components/profile/progress/ActivityGraph";
