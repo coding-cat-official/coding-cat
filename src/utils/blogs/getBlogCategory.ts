@@ -1,6 +1,6 @@
 import { BlogPost } from "../../types"
 // For blog post category separation
-export default function categorizeCategories(blog: BlogPost) {
+export default function getBlogCategory(blog: BlogPost) {
     const category = blog.meta.category;
     if (category.startsWith("meta")) {
         return "Meta";
