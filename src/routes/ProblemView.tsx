@@ -256,7 +256,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
           );
         }
       } else {
-        if (['coding', 'haystack'].includes(problem.meta.question_type[0])) {
+        if (['coding', 'haystack', 'test'].includes(problem.meta.question_type[0])) {
           setCode(problem.starter || '');
         }
         else {
@@ -378,7 +378,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
               <Markdown>
                 {problem.description}
               </Markdown>
-              {['coding','haystack'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
+              {['coding', 'haystack', 'test'].includes(problem.meta.question_type[0]) ? <></> : <Tutorial tourState={isTourOpen} setTourState={setTourOpen}/>}
             </Box>
 
             {alertMessage && (
@@ -451,7 +451,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
             )}
           </Box>
 
-          { ['coding','haystack'].includes(problem.meta.question_type[0]) ?
+          { ['coding','haystack', 'test'].includes(problem.meta.question_type[0]) ?
             (
               <CodingQuestion code={code} changeCode={changeCode} problem={problem} runCode={runCode} />
             ) : ( 
@@ -463,7 +463,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       
       <Stack height="100%" width="100%" flex={2} alignItems="flex-start" className="results-container" gap={3}>
         { 
-          ['coding','haystack'].includes(problem.meta.question_type[0]) ? (
+          ['coding','haystack', 'test'].includes(problem.meta.question_type[0]) ? (
             <Box flex={1} width="100%">
               {evalResponse ? <Report evalResponse={evalResponse} questionType={problem.meta.question_type[0]} /> : <Box></Box>}
             </Box>
