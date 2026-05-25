@@ -390,11 +390,12 @@ function ContractCategoriesInput({ isUpdating, categories, problemCountByCategor
         marginLeft: "10px"
       }}
     >
+      <tbody>
       <tr>
       {
-        categories.map((c) => {
+        categories.map((c, index) => {
           return (
-            <td style={{ display: "inline-block" }}>
+            <td key={index} style={{ display: "inline-block" }}>
               <Stack direction="row" alignItems="center" gap={1}>
                 <Typography>{c}: </Typography>
                 {
@@ -405,7 +406,7 @@ function ContractCategoriesInput({ isUpdating, categories, problemCountByCategor
                       sx={{ width: "50px", typography: 'body1', backgroundColor: "whitesmoke" }}
                       slotProps={{ input: { type: "number", min: 0, max: problemCountByCategory[c] ?? 0 } }}
                       placeholder="0"
-                      value={contract.Coding.problemsToSolveByCategory[c]}
+                      value={contract.Coding.problemsToSolveByCategory[c] ?? ""}
                       onChange={(e) =>
                         setContract((cat) => ({
                           ...cat,
@@ -427,6 +428,7 @@ function ContractCategoriesInput({ isUpdating, categories, problemCountByCategor
         })
       }
       </tr>
+      </tbody>
     </Table>
   )
 }
