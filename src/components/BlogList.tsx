@@ -65,6 +65,7 @@ export default function BlogList({
       setSelectedTab(newValue);
     }
   }
+
   const blogsByCategory = searchedBlogs.reduce<Record<string, BlogPost[]>>((acc, blog) => {
     const problemCategories = getBlogCategory(blog);
     if (!acc[problemCategories]) acc[problemCategories] = [];
@@ -107,21 +108,19 @@ export default function BlogList({
             className="sort-parent"
           >
             <Typography fontFamily="Victor Mono">
-              {searchedBlogs.length} blog{searchedBlogs.length !== 1 ? "s" : ""} found
+              {blogsByCategory[selectedTab].length} blog{searchedBlogs.length !== 1 ? "s" : ""} found
             </Typography>
           </Stack>
           <TabPanel className="problemList-list" value={selectedTab} sx={{ overflowY: 'auto', height: "60vh", pt: 0 }}>
             <List sx={{ pt: 0 }}>
-              {searchedBlogs.map((blog: BlogPost) => {
-                return (
-                  <BlogListItem
-                    key={blog.meta.blog_slug}
-                    blog={blog}
-                    activeBlog={activeBlog}
-                    closeDrawer={closeDrawer}
-                    kbSelectedBlog={kbSelectedBlog}
-                  />
-                )
+              {blogsByCategory[selectedTab].map((blog: BlogPost) => {
+                return (<BlogListItem
+                  key={blog.meta.blog_slug}
+                  blog={blog}
+                  activeBlog={activeBlog}
+                  closeDrawer={closeDrawer}
+                  kbSelectedBlog={kbSelectedBlog}
+                />)
               })}
             </List>
           </TabPanel>
