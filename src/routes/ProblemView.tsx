@@ -23,6 +23,7 @@ import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
 import useProblemTimer from '../hooks/useProblemTimer';
+import sortProblems from '../utils/sortProblems';
 
 // Emoji rendered in the report
 const ALL_TESTS_PASSED = '🎉';
@@ -133,7 +134,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
   };
 
-  const currProblems = currCategoryProblems();
+  // TODO: maybe sort these by how the user sorts?
+  // currently hard-coded to alphabetical order
+  const currProblems = sortProblems(currCategoryProblems(), [], "asc", "name");
   const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
 
 
