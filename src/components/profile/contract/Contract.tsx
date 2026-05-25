@@ -24,6 +24,10 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
   const session = outletContext?.session;
   const profileId = profileData?.profile_id ?? session?.user.id;
 
+  if (!profileData) {
+     throw Error("Error: No session or profile_id has been defined");
+  }
+
   // if the categoriesData changes, update the problem count
   useEffect(() => {
     const probCountByCat = Object.fromEntries(
@@ -106,7 +110,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
               })}`
             : "—"}
         </Typography>
-        <Button onClick={() => setOpen(true)}>View</Button>
+        <Button onClick={() => setOpen(true)}>View Contract</Button>
       </Stack>
 
       <ContractModal
