@@ -149,6 +149,24 @@ function ContractModal({
   problemCountByCategory,
 }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
+  useEffect(() => {
+    const checkIfReadOnly = async () => {
+      const { data: readOnlySetting, error } = await supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "contract-read-only");
+
+      if(error){
+        throw Error("Contract Read-Only Setting cannot be Defined", error)
+      } else {
+        const readOnlyValue = readOnlySetting?.[0]?.value as string;
+        setIsReadOnly(JSON.parse(readOnlyValue));
+      }
+    };
+    checkIfReadOnly();
+  }, [isReadOnly]);
 
   /**
    * This function enforces a max and min of submitted values
@@ -234,7 +252,7 @@ function ContractModal({
               </Button>
             </>
           ) : (
-            <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>
+            <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)} disabled={isReadOnly}>
               Edit
             </Button>
           )}
