@@ -4,6 +4,7 @@ import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
+import { getOrderedBlogPosts } from "../utils/blogs/getOrderedBlogPosts";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
   const blogPosts = await getBlogPosts();
@@ -26,9 +27,10 @@ export default function BlogPostView() {
   }, []);
 
   useEffect(() => {
-    setCurrCategoryBlogs(allBlogs.filter(blog => {
+    const blogs = allBlogs.filter(blog => {
       return blog.meta.category === currBlog.meta.category;
-    }));
+    });
+    setCurrCategoryBlogs(getOrderedBlogPosts(blogs));
   }, [allBlogs, currBlog.meta.category])
 
   useEffect(() => {

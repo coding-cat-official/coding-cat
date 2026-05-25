@@ -4,6 +4,7 @@ import { BlogPost } from "../types";
 import { capitalizeString } from "../utils/capitalizeString";
 import { useEffect, useRef } from "react";
 import getBlogCategory from "../utils/blogs/getBlogCategory";
+import { getOrderedBlogPosts } from "../utils/blogs/getOrderedBlogPosts";
 
 interface BlogListItemProps {
   blog: BlogPost;
@@ -72,6 +73,10 @@ export default function BlogList({
     acc[problemCategories].push(blog);
     return acc;
   }, {});
+
+  Object.keys(blogsByCategory).forEach((str) => {
+    blogsByCategory[str] = getOrderedBlogPosts(blogsByCategory[str]);
+  })
 
   return (
     <Stack gap={1} className="stack-problemList">
