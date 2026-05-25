@@ -271,29 +271,36 @@ export default function App() {
     }
   }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
-  // on new category selected, set selectedProblem to first problem
+  // on selecting new category or tab, select first problem / blog available
   useEffect(() => {
-    const categoryProblems = sortedProblems
-      .filter(p => {
-        const questionType = p.meta.question_type[0];
-        const cat = questionType === "coding" 
-          ? p.meta.category 
-          : questionType;
-        return cat === activeCategory;
-      })
-      .map(p => p.meta.name);
+    if(activeCategory === 'blogs'){
+      const tabBlogs = searchedBlogs
+        .filter(b => {
+          return b.meta.category === selectedTab.toLowerCase();
+        })
+        .map(b => b.meta.blog_slug);
+      
+      const first = tabBlogs[0] ?? null;
+      setKbSelectedBlog(first);
+    } else {
+      const tabProblems = sortedProblems
+        .filter(p => {
+          const questionType = p.meta.question_type[0];
+          const cat = questionType === "coding" 
+            ? p.meta.category 
+            : questionType;
+          return cat === activeCategory;
+        })
+        .filter(p => {
+          if(availableTabs.length > 0) return categorizeCategories(p) === selectedTab;
+          return p;
+        })
+        .map(p => p.meta.name);
 
-    const first = categoryProblems[0] ?? null;
-    const keepCurrent = activeProblem && categoryProblems.includes(activeProblem);
-
-    setKbSelectedProblem(keepCurrent ? activeProblem : first);
-  }, [activeCategory, activeProblem, sortedProblems]);
-
-  // TODO: utilize blog categories
-  useEffect(() => {
-    const first = searchedBlogs[0]?.meta.blog_slug ?? null;
-    setKbSelectedBlog(first ?? "");
-  }, [activeCategory, searchedBlogs]);
+      const first = tabProblems[0] ?? null;
+      setKbSelectedProblem(first);
+    }
+  }, [selectedTab, activeCategory, availableTabs, sortedProblems, searchedBlogs]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
