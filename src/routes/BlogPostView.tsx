@@ -1,9 +1,10 @@
 import { useLoaderData, useNavigate } from "react-router-dom";
-import getBlogPosts from "../utils/getBlogPosts";
+import getBlogPosts from "../utils/blogs/getBlogPosts";
 import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
+import { getOrderedBlogPosts } from "../utils/blogs/getOrderedBlogPosts";
 
 export async function blogPostLoader({ params }: any): Promise<BlogPost> {
   const blogPosts = await getBlogPosts();
@@ -13,8 +14,9 @@ export async function blogPostLoader({ params }: any): Promise<BlogPost> {
 }
 
 export default function BlogPostView() {
-  const result = useLoaderData() as BlogPost;
+  const currBlog = useLoaderData() as BlogPost;
   const [allBlogs, setAllBlogs] = useState<BlogPost[]>([]);
+  const [currCategoryBlogs, setCurrCategoryBlogs] = useState<BlogPost[]>([]);
   const [currIndex, setCurrIndex] = useState(-1);
   const navigate = useNavigate();
 
@@ -25,32 +27,39 @@ export default function BlogPostView() {
   }, []);
 
   useEffect(() => {
-    setCurrIndex(allBlogs.findIndex(p => p.meta.blog_slug === result.meta.blog_slug));
-  }, [allBlogs, result.meta.blog_slug]);
+    const blogs = allBlogs.filter(blog => {
+      return blog.meta.category === currBlog.meta.category;
+    });
+    setCurrCategoryBlogs(getOrderedBlogPosts(blogs));
+  }, [allBlogs, currBlog.meta.category])
+
+  useEffect(() => {
+    setCurrIndex(currCategoryBlogs.findIndex(p => p.meta.blog_slug === currBlog.meta.blog_slug));
+  }, [currCategoryBlogs, currBlog.meta.blog_slug]);
 
   const handlePreviousBlog = useCallback(() => {
     if (currIndex > 0) {
-      const prevBlog = allBlogs[currIndex - 1].meta.blog_slug;
+      const prevBlog = currCategoryBlogs[currIndex - 1].meta.blog_slug;
       setCurrIndex(currIndex - 1);
       navigate(`/blogs/${prevBlog}`);
     }
-  }, [navigate, currIndex, allBlogs]);
+  }, [navigate, currIndex, currCategoryBlogs]);
 
   const handleNextBlog = useCallback(() => {
-    if (currIndex < allBlogs.length - 1) {
-      const nextBlog = allBlogs[currIndex + 1].meta.blog_slug;
+    if (currIndex < currCategoryBlogs.length - 1) {
+      const nextBlog = currCategoryBlogs[currIndex + 1].meta.blog_slug;
       setCurrIndex(currIndex + 1);
       navigate(`/blogs/${nextBlog}`);
     }
-  }, [navigate, currIndex, allBlogs]);
+  }, [navigate, currIndex, currCategoryBlogs]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if(event.altKey && event.key === "ArrowLeft"){
+    if (event.altKey && event.key === "ArrowLeft") {
       event.preventDefault();
       handlePreviousBlog();
     }
 
-    if(event.altKey && event.key === "ArrowRight"){
+    if (event.altKey && event.key === "ArrowRight") {
       event.preventDefault();
       handleNextBlog();
     }
@@ -65,46 +74,45 @@ export default function BlogPostView() {
 
   return (
     <Stack sx={{ flex: 4, width: "100%", height: "100%", display: "flex" }} direction="column" spacing={2} alignItems="center" marginBottom="1rem" zIndex={-2} >
-        <Box className="navigate-problem-btn">
-          <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
-            <Stack direction="column" spacing={0} alignItems="center">
-              <Typography level="body-md" fontFamily="inherit">Prev</Typography>
-              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                (Alt + ←)
-              </Typography>
-              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                {allBlogs[currIndex - 1]?.meta.title}
-              </Typography>
-            </Stack>
-          </Button>
-          <Button disabled={currIndex >= allBlogs.length - 1} onClick={handleNextBlog}>
-            <Stack direction="column" spacing={0} alignItems="center">
-              <Typography level="body-md" fontFamily="inherit">Next</Typography>
-              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                (Alt + →)
-              </Typography>
-              <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
-                {allBlogs[currIndex + 1]?.meta.title}
-              </Typography>
-            </Stack>
-          </Button>
-        </Box>
+      <Box className="navigate-problem-btn" sx={{ display: "flex" }} width={"95%"} justifyContent={"space-between"}>
+        <Button disabled={currIndex === 0} onClick={handlePreviousBlog}>
+          <Stack direction="column" spacing={0} alignItems="center">
+            <Typography level="body-md" fontFamily="inherit">Prev</Typography>
+            <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+              (Alt + ←)
+            </Typography>
+            <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+              {currCategoryBlogs[currIndex - 1]?.meta.title}
+            </Typography>
+          </Stack>
+        </Button>
+        <Button disabled={currIndex >= currCategoryBlogs.length - 1} onClick={handleNextBlog}>
+          <Stack direction="column" spacing={0} alignItems="center">
+            <Typography level="body-md" fontFamily="inherit">Next</Typography>
+            <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+              (Alt + →)
+            </Typography>
+            <Typography level="body-sm" fontStyle="italic" fontFamily="inherit">
+              {currCategoryBlogs[currIndex + 1]?.meta.title}
+            </Typography>
+          </Stack>
+        </Button>
+      </Box>
 
-        <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "75%" }}>
-          <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
-            <Box>
-              <Typography level="h2">{result.meta.title}</Typography>
-              {!!result.meta.author && <Typography level="body-sm">Authored by {result.meta.author}</Typography>}
-              {!!result.meta.editor && <Typography level="body-sm">Edited by {result.meta.editor}</Typography>}
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-              <Markdown>
-                {result.blog_text}
-              </Markdown>
-            </Box>
+      <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "75%" }}>
+        <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
+          <Box>
+            <Typography level="h2">{currBlog.meta.title}</Typography>
+            {!!currBlog.meta.author && <Typography level="body-sm">Authored by {currBlog.meta.author}</Typography>}
+            {!!currBlog.meta.editor && <Typography level="body-sm">Edited by {currBlog.meta.editor}</Typography>}
           </Box>
-        </Sheet>
-    </Stack >
+          <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+            <Markdown>
+              {currBlog.blog_text}
+            </Markdown>
+          </Box>
+        </Box>
+      </Sheet>
+    </Stack>
   );
 }
