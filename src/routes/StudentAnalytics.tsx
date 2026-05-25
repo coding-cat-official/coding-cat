@@ -92,7 +92,7 @@ export function StudentAnalytics() {
                 Student Name: {profileData.username ?? "No Username Found"}
               </Typography>
             </Box>
-        <Contract categoriesData={categoriesData} />
+        <Contract categoriesData={categoriesData} profileData={profileData} />
           </Box>
         <Box sx={rightPanelStyles}>
           <Stack sx={graphStackStyles}>
