@@ -180,6 +180,7 @@ export interface BlogPost {
         author: string;
         title: string;
         category: string;
+        order?: number;
     };
 }
 

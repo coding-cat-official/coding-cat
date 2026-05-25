@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Problem, BlogPost } from '../types';
-import getBlogPosts from '../utils/getBlogPosts';
+import getBlogPosts from '../utils/blogs/getBlogPosts';
 import type { Dispatch, SetStateAction } from 'react';
 
 interface UseSearchAndFilterReturn {
@@ -64,6 +64,7 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
     setActiveProblem(null);
     setOpenCategory(false);
     if (category === 'coding') setSelectedTab('');
+    if (category === 'blogs') setSelectedTab('Meta');
     else setSelectedTab('List');
   }, []);
 
