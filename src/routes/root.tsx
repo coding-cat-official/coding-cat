@@ -17,6 +17,7 @@ import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
 import sortProblems from '../utils/sortProblems';
 import { categorizeCategories } from '../utils/categorizeCategories';
+import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
@@ -112,8 +113,7 @@ export default function App() {
     const specialCategories: string[] = [];
     if(problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
     if(problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
-  
-    return ['blogs', ...categories, ...specialCategories];
+    return ['blogs', ...getCategoryListOrdered(categories), ...specialCategories];
   }, [problems]);
 
   // keybinds navigation

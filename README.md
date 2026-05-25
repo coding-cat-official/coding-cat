@@ -76,6 +76,23 @@ Once the program is finished:
 - `CategoryLock.ts` file needs to be modified to change the rules of what problems are locked and how many problems from the previous category needs to be completed.
 - The file `enabled-problems` (inside the coding cat public problems repo) controls which problems actually get build into `problems.js`. It is a list of problem names, or entire categories, i.e. strings that appear under the `name` or `category` key in `meta.json`
 
+
+### Adding new categories
+
+If new categories are added in the future, they need to be added to getCategoryListOrdered.ts. If they are not, they will be appended to the end of the category list. The category list goes as follows:
+- Level 0
+- Fundamentals
+- Logic
+- String-1
+- List-1
+- String-2
+- List-2
+- String-3
+- List-3
+
+Then the special categories Haystack and Mutation
+
+
 ## To Do
 - Enhancing the admin menu so that it allows problem categories to be omitted with the contract sections. ( Currently the admin menu can set topics as true or false and according to that information the contract data would be displayed. We have a separate way to omit problems, the idea is to merge both so that when the admin decides to remove mutation from the menu it stops displaying mutation data in the contract and mutation problems in the problem list ) 
 - Finding all problems that rely on problem type and replace them with objects. (Ex: `problem.question_type[0] == "mutation"`). The code will be redundant if we add another problem type like debugging problems.
