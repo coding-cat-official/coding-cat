@@ -33,7 +33,6 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
   const [selectedTab, setSelectedTab] = useState('');
-  const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
   const [searchedBlogs, setSearchedBlogs] = useState<BlogPost[]>([]);
 
   let newDifficulty = difficulty;
@@ -47,10 +46,6 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
       );
     });
   }, [problems, query, newDifficulty]);
-
-  useEffect(() => {
-    setSearchedProblems(filteredProblems);
-  }, [filteredProblems]);
 
   useEffect(() => {
     (async () => {
@@ -87,7 +82,7 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
     setOpenCategory,
     selectedTab,
     setSelectedTab,
-    searchedProblems,
+    searchedProblems: filteredProblems,
     searchedBlogs,
     handleSelectedCategory,
     handleSelectedProblem,

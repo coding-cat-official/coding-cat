@@ -51,6 +51,17 @@ export default function App() {
     handleSelectedProblem,
   } = search;
 
+  const [order, setOrder] = useState<string>("asc");
+  const [orderBy, setOrderBy] = useState<string>("name");
+
+  const sortedProblems = useMemo(() => {
+    const solvedProblems = progress.filter(
+      (p) => p.passed_tests === p.total_tests
+    ).map((p) => p.problem_title);
+
+    return sortProblems(searchedProblems ?? [], solvedProblems, order, orderBy);
+  }, [searchedProblems, progress, order, orderBy]);
+
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
   const [kbSelectedBlog, setKbSelectedBlog] = useState("");
@@ -58,7 +69,7 @@ export default function App() {
   const problemListProps = {
     selectedTab,
     setSelectedTab,
-    searchedProblems,
+    sortedProblems,
     selectedCategory: activeCategory,
     activeProblem,
     onSelectProblem: handleSelectedProblem,
@@ -66,7 +77,11 @@ export default function App() {
     session,
     contractProgress,
     progress,
-    kbSelectedProblem
+    kbSelectedProblem,
+    order,
+    setOrder,
+    orderBy,
+    setOrderBy
   };
 
   const blogListProps = {
@@ -166,10 +181,7 @@ export default function App() {
           // navigating through problems in activeCategory
 
           // filters problems in active category
-          // TODO: Fix Level 0 not cycling properly as they aren't alphabetical (it shows in the right order, but the hover jumps around)
-            // run this through sortProblems and pass the sortedProblems down?
-          // TODO: This also doesn't work when the sorting changes
-          const categoryProblems = searchedProblems
+          const categoryProblems = sortedProblems
             .filter(p => {
               const questionType = p.meta.question_type[0];
               const cat = questionType === "coding"
@@ -218,11 +230,11 @@ export default function App() {
         setOpenCategory(false);
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, searchedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setOpenCategory]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setOpenCategory]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
-    const categoryProblems = searchedProblems
+    const categoryProblems = sortedProblems
       .filter(p => {
         const questionType = p.meta.question_type[0];
         const cat = questionType === "coding" 
@@ -236,7 +248,7 @@ export default function App() {
     const keepCurrent = activeProblem && categoryProblems.includes(activeProblem);
 
     setKbSelectedProblem(keepCurrent ? activeProblem : first);
-  }, [activeCategory, activeProblem, searchedProblems]);
+  }, [activeCategory, activeProblem, sortedProblems]);
 
   // TODO: may need to create blogCategory in the future
   useEffect(() => {

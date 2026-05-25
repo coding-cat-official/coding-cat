@@ -13,7 +13,7 @@ import {
 } from "@mui/joy";
 import { ContractProgress, Problem, Progress, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
@@ -26,11 +26,11 @@ export interface ProblemListItemProps {
   activeProblem: string | null;
   closeDrawer: () => void;
   kbSelectedProblem: string | null;
-  solvedProblems: string[];
-  unsolvedProblems: string[];
+  attempted: boolean;
+  solved: boolean;
 }
 
-function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, solvedProblems, unsolvedProblems }: ProblemListItemProps){
+function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, attempted, solved }: ProblemListItemProps){
   const itemRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -58,10 +58,10 @@ function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProble
         <Typography sx={{fontFamily: "Victor Mono"}}>{problem.meta.title}</Typography>
         <Stack direction="row" gap={1} justifyContent="center">
           {
-            solvedProblems.includes(problem.meta.name) && <CheckCircle size={24} color="#47f22f" />
+            solved && <CheckCircle size={24} color="#47f22f" />
           }
           {
-            unsolvedProblems.includes(problem.meta.name) && <MinusCircle size={24} color="#939393" />
+            attempted && !solved && <MinusCircle size={24} color="#939393" />
           }
           <DifficultyChip difficulty={problem.meta.difficulty} />
         </Stack>
@@ -167,7 +167,7 @@ function ProblemListSortButtons({
 }
 
 export interface ProblemListProps {
-  searchedProblems: Problem[];
+  sortedProblems: Problem[];
   selectedTab: string;
   setSelectedTab: (peep: string) => void;
   selectedCategory: string | null;
@@ -177,23 +177,28 @@ export interface ProblemListProps {
   contractProgress: ContractProgress;
   progress: Submission[];
   kbSelectedProblem: string | null;
+  order: string;
+  setOrder: (order: string) => void;
+  orderBy: string;
+  setOrderBy: (orderBy: string) => void;
 }
 
 export default function ProblemList({
   selectedTab,
   setSelectedTab,
-  searchedProblems,
+  sortedProblems,
   selectedCategory,
   activeProblem,
   closeDrawer,
   session,
   contractProgress,
   progress,
-  kbSelectedProblem
+  kbSelectedProblem,
+  order,
+  setOrder,
+  orderBy,
+  setOrderBy
 }: ProblemListProps) {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
-
   const sortCategories = ["name", "completed", "difficulty"];
 
   // force Level 0 to be sorted ascending and by name
@@ -202,7 +207,7 @@ export default function ProblemList({
       setOrder("asc");
       setOrderBy("name");
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, setOrder, setOrderBy]);
 
   const completedProblems = useMemo(() => {
     return getCompletedProblems(progress).filter((p) => p.category === selectedCategory)[0];
@@ -216,7 +221,7 @@ export default function ProblemList({
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
-  const problemsByTopic = searchedProblems.filter((problem) => {
+  const problemsByTopic = sortedProblems.filter((problem) => {
     const question_type = problem.meta.question_type[0];
     const category =
       question_type === "coding" || question_type === "test"
@@ -250,7 +255,7 @@ export default function ProblemList({
     [progress, solvedProblems],
   );
 
-  const sortedProblems = sortProblems(
+  const displayedProblems = sortProblems(
     problemsByCategory[selectedTab] || problemsByCategory[""],
     solvedProblems,
     order,
@@ -270,7 +275,7 @@ export default function ProblemList({
     setOrderBy(sortCategory);
   };
 
-  const problemsFound = sortedProblems?.length || 0;
+  const problemsFound = problemsByTopic.length;
 
   return (
     <Stack gap={1} className="stack-problemList">
@@ -324,15 +329,15 @@ export default function ProblemList({
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
             <List sx={{ pt: 0 }}>
-              { sortedProblems?.map((p) => 
+              { displayedProblems?.map((p) => 
                 <ProblemListItem
                   key={p.meta.name}
                   problem={p}
                   activeProblem={activeProblem}
                   closeDrawer={closeDrawer}
                   kbSelectedProblem={kbSelectedProblem}
-                  solvedProblems={solvedProblems}
-                  unsolvedProblems={unsolvedProblems}
+                  attempted={unsolvedProblems.includes(p.meta.name)}
+                  solved={solvedProblems.includes(p.meta.name)}
                 />
               )}
             </List>
