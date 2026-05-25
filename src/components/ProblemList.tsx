@@ -223,24 +223,30 @@ export default function ProblemList({
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
-  const problemsByTopic = sortedProblems.filter((problem) => {
-    const question_type = problem.meta.question_type[0];
-    const category =
-      question_type === "coding" || question_type === "test"
-        ? problem.meta.category
-        : question_type;
-    return category === selectedCategory;
-  });
+  const problemsByTopic = useMemo(() => {
+    return sortedProblems.filter((problem) => {
+      const question_type = problem.meta.question_type[0];
+      const category =
+        question_type === "coding" || question_type === "test"
+          ? problem.meta.category
+          : question_type;
 
-  const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemCategories =
-      problem.meta.question_type.includes("coding") || problem.meta.question_type.includes("test")
-        ? ""
-        : categorizeCategories(problem);
-    if (!acc[problemCategories]) acc[problemCategories] = [];
-    acc[problemCategories].push(problem);
-    return acc;
-  }, {});
+      return category === selectedCategory;
+    });
+  }, [sortedProblems, selectedCategory]);
+
+  const problemsByCategory = useMemo(() => {
+    return problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+      const problemCategories =
+        problem.meta.question_type.includes("coding") || problem.meta.question_type.includes("test")
+          ? ""
+          : categorizeCategories(problem);
+      if (!acc[problemCategories]) acc[problemCategories] = [];
+      acc[problemCategories].push(problem);
+      
+      return acc;
+    }, {});
+  }, [problemsByTopic]);
 
   useEffect(() => {
     const tabs = Object.keys(problemsByCategory).sort().filter(Boolean);
