@@ -1,8 +1,9 @@
-import { List, ListItemButton, Stack, TabPanel, Tabs, Typography } from "@mui/joy";
+import { List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 import { BlogPost } from "../types";
 import { capitalizeString } from "../utils/capitalizeString";
 import { useEffect, useRef } from "react";
+import getBlogCategory from "../utils/blogs/getBlogCategory";
 
 interface BlogListItemProps {
   blog: BlogPost;
@@ -64,6 +65,12 @@ export default function BlogList({
       setSelectedTab(newValue);
     }
   }
+  const blogsByCategory = searchedBlogs.reduce<Record<string, BlogPost[]>>((acc, blog) => {
+    const problemCategories = getBlogCategory(blog);
+    if (!acc[problemCategories]) acc[problemCategories] = [];
+    acc[problemCategories].push(blog);
+    return acc;
+  }, {});
 
   return (
     <Stack gap={1} className="stack-problemList">
@@ -72,6 +79,37 @@ export default function BlogList({
       </Typography>
       <List component="nav">
         <Tabs value={selectedTab} onChange={handleTabChange}>
+          <TabList>
+            {Object.keys(blogsByCategory)
+              .sort()
+              .filter(Boolean)
+              .map((type) => (
+                <Tab
+                  key={type}
+                  value={type}
+                  variant="plain"
+                  color="neutral"
+                  sx={{ fontFamily: "Silkscreen" }}
+                >
+                  {type}
+                </Tab>
+              ))}
+          </TabList>
+
+          <Stack
+            pl={1}
+            pt={1}
+            pb={1}
+            width="100%"
+            direction="row"
+            gap={2}
+            alignItems="center"
+            className="sort-parent"
+          >
+            <Typography fontFamily="Victor Mono">
+              {searchedBlogs.length} blog{searchedBlogs.length !== 1 ? "s" : ""} found
+            </Typography>
+          </Stack>
           <TabPanel className="problemList-list" value={selectedTab} sx={{ overflowY: 'auto', height: "60vh", pt: 0 }}>
             <List sx={{ pt: 0 }}>
               {searchedBlogs.map((blog: BlogPost) => {
