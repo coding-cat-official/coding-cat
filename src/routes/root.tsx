@@ -41,8 +41,8 @@ export default function App() {
     setActiveProblem,
     drawerOpen,
     setDrawerOpen,
-    openCategory,
-    setOpenCategory,
+    categoryOpen,
+    setCategoryOpen,
     selectedTab,
     setSelectedTab,
     searchedProblems,
@@ -113,6 +113,8 @@ export default function App() {
 
   // keybinds navigation
   // TODO: single source of truth for this?
+  type KbFocus = 'categories' | 'problems' | 'tabs';
+  const [kbFocus, setKbFocus] = useState<KbFocus>('categories');
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + D opens Drawer
     if(event.ctrlKey && event.key === "d"){
@@ -121,7 +123,7 @@ export default function App() {
     }
 
     if(drawerOpen){
-      if(openCategory){
+      if(categoryOpen){
         // up / down selects category
         if(event.key === "ArrowUp"){
           event.preventDefault();
@@ -223,14 +225,14 @@ export default function App() {
       // left / right opens category list
       if(event.key === "ArrowLeft"){
         setKbSelectedCategory(activeCategory);
-        setOpenCategory(true);
+        setCategoryOpen(true);
       }
       if(event.key === "ArrowRight"){
         setKbSelectedCategory(activeCategory);
-        setOpenCategory(false);
+        setCategoryOpen(false);
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setOpenCategory]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen]);
 
   // on new category selected, set selectedProblem to first problem
   useEffect(() => {
@@ -268,8 +270,8 @@ export default function App() {
       <SidebarDrawer
         drawerOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        openCategory={openCategory}
-        setOpenCategory={setOpenCategory}
+        categoryOpen={categoryOpen}
+        setCategoryOpen={setCategoryOpen}
         difficulty={difficulty}
         setDifficulty={setDifficulty}
         query={query}
