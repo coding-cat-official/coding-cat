@@ -248,7 +248,12 @@ export default function ProblemList({
   }, [problemsByCategory, onTabsChange]);
 
   const solvedProblems = useMemo(
-    () => progress.filter((p) => p.passed_tests === p.total_tests).map((p) => p.problem_title),
+    () => 
+      progress
+        .filter(
+          (p) => p.passed_tests === p.total_tests
+        )
+        .map((p) => p.problem_title),
     [progress],
   );
 
