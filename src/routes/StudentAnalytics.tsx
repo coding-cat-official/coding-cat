@@ -7,6 +7,7 @@ import { StudentRecord } from "../types";
 import { getProfiles } from "../utils/getProfiles";
 import { useLoaderData } from "react-router-dom";
 import useActivityTracker from "../hooks/useActivityTracker";
+import Contract from "../components/profile/contract/Contract";
 
 const containerStyles = {
   minHeight: "100vh",
@@ -91,7 +92,7 @@ export function StudentAnalytics() {
                 Student Name: {profileData.username ?? "No Username Found"}
               </Typography>
             </Box>
-            <Button> View Contract </Button>
+        <Contract categoriesData={categoriesData} />
           </Box>
         <Box sx={rightPanelStyles}>
           <Stack sx={graphStackStyles}>
