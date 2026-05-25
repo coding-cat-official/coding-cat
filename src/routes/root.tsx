@@ -227,7 +227,6 @@ export default function App() {
       // unless the category has tabs, in which case left / right navigates through them
       // if on the leftmost tab, left opens the category list
       if(event.key === "ArrowLeft"){
-        console.log(availableTabs);
         if(availableTabs.length > 0){
           const currTabIndex = availableTabs.indexOf(selectedTab);
           if(currTabIndex <= 0){
