@@ -103,7 +103,7 @@ export default function BlogPostView() {
         </Button>
       </Box>
 
-      <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "75%" }}>
+      <Sheet sx={{ border: 2, borderRadius: 10, p: 2, display: "flex", flexDirection: "column", gap: 1, width: "60%" }}>
         <Box sx={{ width: "100%", flexDirection: "column", gap: 1 }}>
           <Box>
             <Typography level="h2">{currBlog.meta.title}</Typography>
