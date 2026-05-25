@@ -16,6 +16,7 @@ import SidebarDrawer from '../components/layout/SidebarDrawer';
 import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
 import sortProblems from '../utils/sortProblems';
+import { categorizeCategories } from '../utils/categorizeCategories';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
@@ -91,6 +92,7 @@ export default function App() {
     searchedBlogs: searchedBlogs,
     selectedTab,
     setSelectedTab,
+    onTabsChange: setAvailableTabs,
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
@@ -124,6 +126,38 @@ export default function App() {
     }
 
     if(drawerOpen){
+      // left / right opens category list
+      // unless the category has tabs, in which case left / right navigates through them
+      // if on the leftmost tab, left opens the category list
+      if(event.key === "ArrowLeft"){
+        if(availableTabs.length > 0){
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex <= 0){
+            // on leftmost tab - open category list
+            setKbSelectedCategory(activeCategory);
+            setCategoryOpen(true);
+          } else {
+            // go to prev tab
+            setSelectedTab(availableTabs[currTabIndex - 1]);
+          }
+        } else {
+          // no tabs - open category list directly
+          setKbSelectedCategory(activeCategory);
+          setCategoryOpen(true);
+        }
+      }
+      if(event.key === "ArrowRight"){
+        if(categoryOpen) {
+          setCategoryOpen(false);
+        } else if(availableTabs.length > 0) {
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex < availableTabs.length - 1) {
+            setSelectedTab(availableTabs[currTabIndex + 1]);
+          }
+          // on rightmost tab — do nothing
+        }
+      }
+
       if(categoryOpen){
         // up / down selects category
         if(event.key === "ArrowUp"){
@@ -152,8 +186,13 @@ export default function App() {
       else{
         if(activeCategory === 'blogs'){
           // navigating through blog posts
-          const blogSlugs = searchedBlogs.map(b => b.meta.blog_slug);
-
+          const blogSlugs = searchedBlogs
+            .filter(b => {
+              // filters by selectedTab if there are any
+              return availableTabs.length > 0 
+                && b.meta.category === selectedTab.toLowerCase();
+            })
+            .map(b => b.meta.blog_slug);
           // up / down selects blog post
           if(event.key === "ArrowUp"){
             event.preventDefault();
@@ -192,6 +231,13 @@ export default function App() {
                 : questionType;
               return cat === activeCategory;
             })
+            .filter(p => {
+              // filters by selectedTab if there are any
+              if(availableTabs.length > 0){
+                return categorizeCategories(p) === selectedTab;
+              }
+              return p;
+            })
             .map(p => p.meta.name);
           
           // up / down selects problem
@@ -222,38 +268,6 @@ export default function App() {
           }
         }
       }
-
-      // left / right opens category list
-      // unless the category has tabs, in which case left / right navigates through them
-      // if on the leftmost tab, left opens the category list
-      if(event.key === "ArrowLeft"){
-        if(availableTabs.length > 0){
-          const currTabIndex = availableTabs.indexOf(selectedTab);
-          if(currTabIndex <= 0){
-            // on leftmost tab - open category list
-            setKbSelectedCategory(activeCategory);
-            setCategoryOpen(true);
-          } else {
-            // go to prev tab
-            setSelectedTab(availableTabs[currTabIndex - 1]);
-          }
-        } else {
-          // no tabs - open category list directly
-          setKbSelectedCategory(activeCategory);
-          setCategoryOpen(true);
-        }
-      }
-      if(event.key === "ArrowRight"){
-        if(categoryOpen) {
-          setCategoryOpen(false);
-        } else if(availableTabs.length > 0) {
-          const currTabIndex = availableTabs.indexOf(selectedTab);
-          if(currTabIndex < availableTabs.length - 1) {
-            setSelectedTab(availableTabs[currTabIndex + 1]);
-          }
-          // on rightmost tab — do nothing
-        }
-      }
     }
   }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
@@ -275,7 +289,7 @@ export default function App() {
     setKbSelectedProblem(keepCurrent ? activeProblem : first);
   }, [activeCategory, activeProblem, sortedProblems]);
 
-  // TODO: may need to create blogCategory in the future
+  // TODO: utilize blog categories
   useEffect(() => {
     const first = searchedBlogs[0]?.meta.blog_slug ?? null;
     setKbSelectedBlog(first ?? "");
