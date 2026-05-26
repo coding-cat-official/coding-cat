@@ -7,6 +7,7 @@ import { ContractProgress, Problem, Progress } from "../types";
 import CategoryLock from "../utils/CategoryLock";
 import CategoryListItems from "./CategoryListItem";
 import BlogMenuButton from "./BlogMenuButton";
+import { getCategoryListOrdered } from "../utils/getCategoryListOrdered";
 
 export interface CategoryListProps {
   searchedProblems: Problem[];
@@ -29,11 +30,11 @@ export default function CategoryList({
   const [progress, setProgress] = useState<Progress[]>([]);
 
   // List of categories that show up in search results.
-  const categories = searchedProblems
+  const categories = getCategoryListOrdered(searchedProblems
     .filter((c) => c.meta.question_type[0] !== "test")
     .map((c) => c.meta.category)
     .filter((c, index, array) => array.indexOf(c) === index)
-    .sort((a, b) => a.localeCompare(b));
+    .sort((a, b) => a.localeCompare(b)));
 
   const specialCategories = [];
   if (searchedProblems.some((c) => c.meta.question_type[0] === "haystack")) {

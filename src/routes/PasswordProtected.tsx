@@ -30,15 +30,19 @@ const headingStyles = {
 export default function PasswordProtected({
   selectedTab,
   setSelectedTab,
-  searchedProblems,
+  onTabsChange,
+  sortedProblems,
   selectedCategory,
   activeProblem,
   closeDrawer,
   session,
   contractProgress,
   progress,
-  onSelectProblem,
-  kbSelectedProblem
+  kbSelectedProblem,
+  order,
+  setOrder,
+  orderBy,
+  setOrderBy
 }: ProblemListProps) {
   const [passwordValue, setPasswordValue] = useState("");
   const [error, setError] = useState("");
@@ -109,15 +113,19 @@ export default function PasswordProtected({
         <ProblemList
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
-          searchedProblems={searchedProblems}
+          onTabsChange={onTabsChange}
+          sortedProblems={sortedProblems}
           selectedCategory={selectedCategory}
           activeProblem={activeProblem}
           closeDrawer={closeDrawer}
           session={session}
           contractProgress={contractProgress}
           progress={progress}
-          onSelectProblem={onSelectProblem}
           kbSelectedProblem={kbSelectedProblem}
+          order={order}
+          setOrder={setOrder}
+          orderBy={orderBy}
+          setOrderBy={setOrderBy}
         />
       )}
     </>
