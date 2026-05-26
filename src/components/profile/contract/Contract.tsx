@@ -25,7 +25,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
   const profileId = profileData?.profile_id ?? session?.user.id;
 
   if (!profileId) {
-     throw Error("Error: No session or profile_id has been defined");
+    throw Error("Error: No session or profile_id has been defined");
   }
 
   // if the categoriesData changes, update the problem count
@@ -158,8 +158,8 @@ function ContractModal({
         .select("value")
         .eq("key", "contract-read-only");
 
-      if(error){
-        throw Error("Contract Read-Only Setting cannot be Defined", error)
+      if (error) {
+        throw Error("Contract Read-Only Setting cannot be Defined", error);
       } else {
         const readOnlyValue = readOnlySetting?.[0]?.value as string;
         setIsReadOnly(JSON.parse(readOnlyValue));
@@ -255,10 +255,14 @@ function ContractModal({
             <>
               {isReadOnly && (
                 <Typography fontWeight="bold" sx={{ mr: 2 }}>
-                   CONTRACT IS SET TO READ-ONLY
+                  CONTRACT IS SET TO READ-ONLY
                 </Typography>
               )}
-              <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)} disabled={isReadOnly}>
+              <Button
+                sx={{ width: "15%" }}
+                onClick={() => setIsUpdating(true)}
+                disabled={isReadOnly}
+              >
                 Edit
               </Button>
             </>
