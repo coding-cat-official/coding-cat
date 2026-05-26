@@ -7,6 +7,7 @@ import { ListProtectedCategories } from "../components/admin/ListProtectedCatego
 import { useLoaderData } from "react-router-dom";
 import { SearchBar } from "../components/admin/SearchBar";
 import { fetchContractPerms, updateContractPerms } from "../utils/contractPerms";
+import ContractOverrideList from "../components/admin/ContractOverrideList";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -50,6 +51,7 @@ export default function AdminPage() {
         switchCondition: () => fetchContractPerms(),
         switchAction: () => updateContractPerms(),
       },
+      extraNodes: [<ContractOverrideList />]
     },
   ];
 
