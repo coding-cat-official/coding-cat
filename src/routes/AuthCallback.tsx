@@ -1,43 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { supabase } from '../supabaseClient';
-import { Navigate } from 'react-router-dom';
 
 export default function AuthCallback() {
-  const [redirectTo, setRedirectTo] = useState<string | null>(null)
-  const [tokens, setTokens] = useState<{ access_token: string, refresh_token: string } | null >(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // parsing the URL for the access and refresh tokens
+    const code = new URLSearchParams(window.location.search).get('code');
 
-    // hash should give something like ex:
-    // #/auth/callback#access_token=...&type=recovery
-    const hash = window.location.hash;
-    
-    // split gives ['', '/auth/callback', 'access_token=...&type=recovery']
-    // slice to remove first 2 indexes
-    // join reassembles in case of another #
-    const tokenPart = hash.split('#').slice(2).join('#');
-    
-    if (tokenPart) {
-      const params = new URLSearchParams(tokenPart);
-      const access_token = params.get('access_token');
-      const refresh_token = params.get('refresh_token');
-      const type = params.get('type');
-
-      if (access_token && refresh_token) {
-        supabase.auth.setSession({ access_token, refresh_token }).then(() => {
-          setTokens({ access_token, refresh_token });
-          if (type === 'recovery') {
-            setRedirectTo('/auth/change-password');
-          } else {
-            setRedirectTo('/profile');
-          }
-        });
-      }
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) console.error('Auth callback error:', error);
+        navigate('/', { replace: true });
+      });
+    } else {
+      navigate('/', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
-  if (redirectTo) return <Navigate to={redirectTo} state={tokens} replace />;
-
-  return <p>Confirming your account...</p>;
+  return <p>Signing you in...</p>;
 }

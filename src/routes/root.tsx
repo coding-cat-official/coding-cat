@@ -24,6 +24,13 @@ export default function App() {
   const navigate = useNavigate();
 
   const { session, userData, isAdmin, isRecoverySession, fetchProfile } = useAuth();
+  
+  useEffect(() => {
+    if(isRecoverySession){
+      navigate('/auth/change-password', { replace: true });
+    }
+  }, [navigate, isRecoverySession]);
+
   const { progress, contractProgress, fetchProgress } = useContractData(session);
   const {
     activeSession, sessionId, sessionDuration,sessionRemainingSeconds,plannedExerciseCount,

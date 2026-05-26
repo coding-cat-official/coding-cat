@@ -21,7 +21,7 @@ export default function ReqPasswordChange() {
       // !! if this is edited, it needs to match with the Supabase redirect URLs !!
       // check 'Authentication/URL Configuration
       // ${window.location.origin} sets it dynamically to localhost or coding-cat.club
-      redirectTo: `${window.location.origin}/#/auth/callback`
+      redirectTo: `${window.location.origin}/`
     });
     
     if(error){
