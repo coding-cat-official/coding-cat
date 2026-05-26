@@ -56,5 +56,3 @@ export default function ContractOverrideList() {
     </Box>
   );
 }
-
-function disableOverride(profile_id: string) {}
