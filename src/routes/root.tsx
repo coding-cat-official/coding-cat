@@ -18,6 +18,7 @@ import AppHeader from '../components/layout/AppHeader';
 import sortProblems from '../utils/sortProblems';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
+import { getLevel0ProblemsOrdered } from '../utils/getLevel0ProblemOrdered';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
@@ -57,12 +58,18 @@ export default function App() {
   const [orderBy, setOrderBy] = useState<string>("name");
 
   const sortedProblems = useMemo(() => {
+    // level 0 has some sorting issues, so run the custom sort
+    if(activeCategory === "Level 0"){
+      const sortLevel0 = getLevel0ProblemsOrdered(searchedProblems ?? [])
+      return sortLevel0;
+    }
+
     const solvedProblems = progress.filter(
       (p) => p.passed_tests === p.total_tests
     ).map((p) => p.problem_title);
 
     return sortProblems(searchedProblems ?? [], solvedProblems, order, orderBy);
-  }, [searchedProblems, progress, order, orderBy]);
+  }, [activeCategory, searchedProblems, progress, order, orderBy]);
 
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);

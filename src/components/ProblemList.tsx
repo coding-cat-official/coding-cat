@@ -20,6 +20,7 @@ import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCompletedProblems } from '../utils/getCompletedProblems';
 import { capitalizeString } from '../utils/capitalizeString';
 import sortProblems from '../utils/sortProblems';
+import { getLevel0ProblemsOrdered } from "../utils/getLevel0ProblemOrdered";
 
 export interface ProblemListItemProps {
   problem: Problem;
@@ -273,12 +274,19 @@ export default function ProblemList({
     [progress, solvedProblems],
   );
 
-  const displayedProblems = sortProblems(
-    problemsByCategory[selectedTab] || problemsByCategory[""],
-    solvedProblems,
-    order,
-    orderBy,
-  );
+  var displayedProblems: Problem[] = [];
+
+  if(selectedCategory === "Level 0"){
+    // custom sort to fix level 0 problems 10 and 11 coming before 1
+    displayedProblems = getLevel0ProblemsOrdered(problemsByCategory[""]);
+  } else {
+    displayedProblems = sortProblems(
+      problemsByCategory[selectedTab] || problemsByCategory[""],
+      solvedProblems,
+      order,
+      orderBy,
+    );
+  }
 
   const handleTabChange = (_: any, newValue: any) => {
     if (newValue != null) {
