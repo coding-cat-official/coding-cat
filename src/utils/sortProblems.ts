@@ -1,4 +1,5 @@
 import { Problem } from "../types";
+import { getLevel0ProblemsOrdered } from "./getLevel0ProblemOrdered";
 
 /**
  * Sorts the current list of problems by name, completed status, or difficulty.
@@ -7,6 +8,10 @@ export default function sortProblems(problemList: Problem[], solvedProblems: str
   if(!problemList) return [];
 
   const problems = [...problemList];
+
+  if(problems.some(p => p.meta.category === "Level 0")){
+    return getLevel0ProblemsOrdered(problems);
+  }
   
   if (orderBy === "name") {
     problems.sort((a, b) => {
