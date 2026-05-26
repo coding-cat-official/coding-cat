@@ -284,7 +284,7 @@ export default function ProblemList({
       problemsByCategory[selectedTab] || problemsByCategory[""],
       solvedProblems,
       order,
-      orderBy,
+      orderBy
     );
   }
 
