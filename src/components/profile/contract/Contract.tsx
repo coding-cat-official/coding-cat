@@ -252,9 +252,16 @@ function ContractModal({
               </Button>
             </>
           ) : (
-            <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)} disabled={isReadOnly}>
-              Edit
-            </Button>
+            <>
+              {isReadOnly && (
+                <Typography fontWeight="bold" sx={{ mr: 2 }}>
+                   CONTRACT IS SET TO READ-ONLY
+                </Typography>
+              )}
+              <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)} disabled={isReadOnly}>
+                Edit
+              </Button>
+            </>
           )}
         </Stack>
       </ModalDialog>
