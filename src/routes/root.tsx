@@ -62,7 +62,7 @@ export default function App() {
     ).map((p) => p.problem_title);
 
     return sortProblems(searchedProblems ?? [], solvedProblems, order, orderBy);
-  }, [activeCategory, searchedProblems, progress, order, orderBy]);
+  }, [searchedProblems, progress, order, orderBy]);
 
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
