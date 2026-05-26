@@ -216,7 +216,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
       }, 100)
     }
-  }, [evalResponse]);
+  }, [evalResponse, problem.meta.category]);
 
   const hasFetchedProblems = useRef<Set<string>>(new Set());
 
