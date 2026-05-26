@@ -1,9 +1,8 @@
 import { Problem } from "../types";
 
 /**
- * Gets the categories in logical completion order
- * Will put any categories unaccounted for at the end
- * This function also does not include haystack or mutation
+ * Gets a list of assumed Level 0 problems in numerical order
+ * Will put any unnumbered categories at the end
  */
 export function getLevel0ProblemsOrdered(problems: Problem[]): Problem[] {
   const numberedProbs = problems

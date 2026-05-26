@@ -4,35 +4,20 @@
  * This function also does not include haystack or mutation
  */
 export function getCategoryListOrdered(categories: string[]): string[] {
-  const knownCategories: string[] = [
+  const orderedCategories: string[] = [
     "Level 0",
     "Fundamentals",
     "Logic",
     "String-1",
-    "String-2",
-    "String-3",
     "List-1: Indexing",
+    "String-2",
     "List-2: Iterating",
+    "String-3",
     "List-3: Complex Loop"
-  ]
+  ];
   
-  var otherCategories: string[] = [];
-  categories.map((c) => {
-    if(!knownCategories.includes(c)){
-      otherCategories.push(c);
-    }
-  });
-  
-  return [
-    "Level 0",
-    "Fundamentals",
-    "Logic",
-    "String-1",
-    "List-1: Indexing",
-    "String-2",
-    "List-2: Iterating",
-    "String-3",
-    "List-3: Complex Loop",
-    ...otherCategories
-  ]
+  const knownSet = new Set(orderedCategories);
+  const otherCategories = categories.filter((c) => !knownSet.has(c));
+
+  return [...orderedCategories, ...otherCategories];
 }
