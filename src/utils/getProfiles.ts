@@ -33,5 +33,5 @@ export async function getProfiles(
     throw error;
   }
 
-  return data as StudentRecord[] | null;
+  return data as StudentRecord[];
 }
