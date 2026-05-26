@@ -41,17 +41,21 @@ export default function ContractOverrideList() {
     <Box sx={boxStyles}>
       <Typography fontWeight="bold">Students with Write Access Overrides</Typography>
       <List>
-        {profilesWithOverrides?.map((profile, idx) => (
-          <ListItem
-            key={idx}
-            sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
-          >
-            <Typography>
-              {profile.username}({profile.student_id})
-            </Typography>
-            <Button onClick={() => disableOverride(profile.profile_id)}> Disable </Button>
-          </ListItem>
-        ))}
+        {profilesWithOverrides && profilesWithOverrides.length > 0 ? (
+          profilesWithOverrides.map((profile, idx) => (
+            <ListItem
+              key={idx}
+              sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
+            >
+              <Typography>
+                {profile.username}({profile.student_id})
+              </Typography>
+              <Button onClick={() => disableOverride(profile.profile_id)}> Disable </Button>
+            </ListItem>
+          ))
+        ) : (
+          <Typography>No Students Found with Overrides</Typography>
+        )}
       </List>
     </Box>
   );
