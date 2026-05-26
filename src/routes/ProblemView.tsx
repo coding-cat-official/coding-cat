@@ -191,7 +191,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       return;
     }
     if (evalResponse.status === "success") {
-      if(onlyPrintTestFail(evalResponse.report)){
+      if(onlyPrintTestFail(evalResponse.report) || problem.meta.category === "Level 0"){
         setHidePrompt(true);
         return;
       }
