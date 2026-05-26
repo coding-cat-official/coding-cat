@@ -69,7 +69,7 @@ export default function useAuth(): UseAuthReturn {
     }
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchAdminStatus]);
 
   const fetchProfile = useCallback(async () => {
     if (!session) return;
