@@ -6,6 +6,7 @@ import CategoryPasswordForm from "../components/admin/CategoryPasswordForm";
 import { ListProtectedCategories } from "../components/admin/ListProtectedCategories";
 import { useLoaderData } from "react-router-dom";
 import { SearchBar } from "../components/admin/SearchBar";
+import { fetchContractPerms, updateContractPerms } from "../utils/contractPerms";
 
 // Defines the data in the modal
 interface ModalMetaData {
@@ -34,7 +35,7 @@ export default function AdminPage() {
     {
       title: "View Student Information",
       desc: "Enter the email/student id of the student you want to a detailed view of",
-      extraNodes: [<SearchBar />]
+      extraNodes: [<SearchBar />],
     },
     {
       title: "Toggle Public/Test Questions",
@@ -44,7 +45,11 @@ export default function AdminPage() {
     {
       title: "Modify Global Contract Permissions",
       desc: "Below is a switch that toggles the contract to be read-only globally. This does not apply for student who have contract overrides enabled.",
-      switch: { switchLabel: "Toggle Read-Only Mode", switchAction: () => ({}) },
+      switch: {
+        switchLabel: "Toggle Read-Only Mode",
+        switchCondition: () => fetchContractPerms(),
+        switchAction: () => updateContractPerms(),
+      },
     },
   ];
 
@@ -67,7 +72,7 @@ export default function AdminPage() {
           gap: 1.5,
           border: "10px, solid ,#d4ff99",
           padding: "100px",
-          marginTop: "5%"
+          marginTop: "5%",
         }}
       >
         <Typography level="h2" sx={{ marginBottom: 2, color: "black" }}>
@@ -90,6 +95,7 @@ export default function AdminPage() {
             modalDesc={activeModal.desc}
             switchLabel={activeModal.switch?.switchLabel}
             switchAction={activeModal.switch?.switchAction}
+            switchCondition={activeModal.switch?.switchCondition}
             extraNodes={activeModal.extraNodes}
           />
         )}

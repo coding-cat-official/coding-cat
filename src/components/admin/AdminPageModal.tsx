@@ -1,5 +1,5 @@
 import { Modal, Box, Typography, Switch } from "@mui/joy";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 // Interface for Modal Props
 interface AdminPageModalProps {
@@ -9,6 +9,7 @@ interface AdminPageModalProps {
   modalDesc: string;
   switchLabel?: string;
   switchAction?: () => void;
+  switchCondition?: () => Promise<boolean>;
   extraNodes?: ReactNode[];
 }
 
@@ -40,8 +41,34 @@ export default function AdminPageModal({
   modalDesc,
   switchLabel,
   switchAction,
+  switchCondition,
   extraNodes: extraNode,
 }: AdminPageModalProps) {
+  const [isChecked, setIsChecked] = useState(false);
+
+  // If a switchCondition is set, handle it as a checked condition for the toggle itself
+  useEffect(() => {
+    const handleSwitchCondition = async () => {
+      if (!switchCondition) return;
+      const fetchedCheckState = await switchCondition();
+      setIsChecked(fetchedCheckState);
+    };
+    handleSwitchCondition();
+  }, [switchCondition]);
+
+  const handleSwitchChange = async () => {
+    const nextChecked = !isChecked;
+
+    setIsChecked(nextChecked);
+
+    try {
+      await switchAction?.();
+    } catch (error) {
+      setIsChecked(!nextChecked);
+      throw error;
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -59,7 +86,7 @@ export default function AdminPageModal({
         {switchLabel && (
           <Typography
             component="label"
-            endDecorator={<Switch onChange={switchAction} />}
+            endDecorator={<Switch checked={isChecked} onChange={handleSwitchChange} />}
           >
             {switchLabel}
           </Typography>

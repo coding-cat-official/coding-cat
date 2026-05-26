@@ -19,7 +19,8 @@ export interface CategoryData {
 }
 
 export interface AdminSwitch {
-    switchLabel: string
+    switchLabel: string;
+    switchCondition: () => Promise<boolean>;
     switchAction: () => void;
 }
 
