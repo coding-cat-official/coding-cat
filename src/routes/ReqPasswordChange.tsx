@@ -18,10 +18,11 @@ export default function ReqPasswordChange() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // dynamically builds the base URL to support both coding-cat.club and
+      // the github pages deployment at coding-cat-official.github.io/coding-cat
       // !! if this is edited, it needs to match with the Supabase redirect URLs !!
-      // check 'Authentication/URL Configuration
-      // ${window.location.origin} sets it dynamically to localhost or coding-cat.club
-      redirectTo: `${window.location.origin}/`
+      // check 'Authentication/URL Configuration'
+      redirectTo: `${window.location.origin}${window.location.pathname.split('/').slice(0, 2).join('/')}/`
     });
     
     if(error){
