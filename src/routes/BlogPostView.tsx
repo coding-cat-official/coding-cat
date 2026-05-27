@@ -160,7 +160,10 @@ export default function BlogPostView() {
                         </RadioGroup>
                       )}
                       {/* Feedback after user answer*/}
-                      {hasSelection && ( <Typography mt={2}> {isCorrect ? "Correct" : "Incorrect"} </Typography>
+                      {hasSelection && (
+                        <Typography mt={2} sx={{ color: isCorrect ? 'green' : 'red', fontWeight: 'bold' }}>
+                          {isCorrect ? "Correct" : "Incorrect"}
+                        </Typography>
                       )}
                       {hasSelection && isCorrect && question.explanation && ( <Typography mt={1}> {question.explanation}</Typography>
                       )}
