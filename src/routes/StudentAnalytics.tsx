@@ -108,14 +108,12 @@ export function StudentAnalytics() {
     <Box sx={containerStyles}>
       <Box sx={pageStyles}>
         <Box sx={heroStyles}>
-          <Box>
-            <Typography level="h1" component="h1" sx={titleStyles}>
-              Student Analytics
-            </Typography>
-            <Typography sx={{ mt: 0.75, color: "#4b5563", fontWeight: 500 }}>
-              Performance, progress, and contract controls for {profileData.username}
-            </Typography>
-          </Box>
+          <Typography level="h1" component="h1" sx={titleStyles}>
+            Student Analytics
+          </Typography>
+          <Typography sx={{ mt: 0.75, color: "#4b5563", fontWeight: 500 }}>
+             Control Panel for User: {profileData.username}
+          </Typography>
         </Box>
         <Box sx={contentStyles}>
           <Card sx={leftPanelStyles}>
