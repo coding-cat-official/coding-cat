@@ -1,4 +1,4 @@
-import { Box, Stack, Switch, Typography } from "@mui/joy";
+import { Box, Button, Card, Divider, Stack, Switch, Typography } from "@mui/joy";
 import CategoriesBarGraph from "../components/profile/progress/CategoriesBarGraph";
 import HeatMap from "../components/profile/progress/heatmap/HeatMap";
 import ActivityGraph from "../components/profile/progress/ActivityGraph";
@@ -13,56 +13,81 @@ import { supabase } from "../supabaseClient";
 
 const containerStyles = {
   minHeight: "100vh",
+  px: { xs: 2, md: 4 },
+  py: { xs: 2, md: 3 },
+  background: "linear-gradient(180deg, #feffed 0%, #fff7d9 100%)",
+};
+
+const pageStyles = {
+  width: "100%",
+  maxWidth: 1500,
+  mx: "auto",
   display: "flex",
   flexDirection: "column",
-  pt: 3,
-  pb: 4,
-  px: 2,
-  gap: 4,
+  gap: 3,
+};
+
+const heroStyles = {
+  display: "flex",
+  alignItems: { xs: "flex-start", md: "center" },
+  justifyContent: "space-between",
+  gap: 2,
+  flexWrap: "wrap",
+  p: { xs: 2, md: 3 },
+  borderRadius: "xl",
+  backgroundColor: "rgba(255, 255, 255, 0.72)",
+  border: "1px solid rgba(0, 0, 0, 0.08)",
+  boxShadow: "0 20px 60px rgba(31, 41, 55, 0.08)",
 };
 
 const titleStyles = {
-  fontSize: "2rem",
-  textAlign: "center",
+  fontSize: { xs: "1.7rem", md: "2.2rem" },
+  textAlign: { xs: "left", md: "center" },
+  lineHeight: 1.05,
+  fontWeight: 800,
 };
 
 const contentStyles = {
-  flex: 1,
-  display: "flex",
-  gap: 4,
-  alignItems: "flex-start",
-  justifyContent: "space-between",
+  display: "grid",
+  gridTemplateColumns: { xs: "1fr", lg: "300px minmax(0, 1fr)" },
+  gap: { xs: 2, lg: 3 },
+  alignItems: "start",
 };
 
 const leftPanelStyles = {
-  flex: "0 0 220px",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
-  alignItems: "center",
-  p: 3,
-  pb: 2,
-  minHeight: 160,
-  backgroundColor: "#f7f0dc",
-  borderRadius: "lg",
-  border: "1px solid",
-  borderColor: "rgba(0, 0, 0, 0.08)",
+  gap: 2,
+  p: 2.5,
+  borderRadius: "xl",
+  backgroundColor: "rgba(255, 255, 255, 0.8)",
+  border: "1px solid rgba(0, 0, 0, 0.08)",
+  boxShadow: "0 18px 40px rgba(31, 41, 55, 0.08)",
 };
 
 const studentInfoStyles = {
   width: "100%",
-  textAlign: "center",
+  display: "flex",
+  flexDirection: "column",
+  gap: 0.75,
 };
 
 const rightPanelStyles = {
-  flex: 1,
   display: "flex",
-  justifyContent: "flex-end",
+  minWidth: 0,
 };
 
 const graphStackStyles = {
   width: "100%",
-  maxWidth: 960,
+  gap: 2.25,
+};
+
+const graphCardStyles = {
+  p: { xs: 1.5, md: 2 },
+  borderRadius: "xl",
+  backgroundColor: "rgba(255, 255, 255, 0.82)",
+  border: "1px solid rgba(0, 0, 0, 0.08)",
+  boxShadow: "0 18px 40px rgba(31, 41, 55, 0.06)",
 };
 
 export async function profileLoader({ params }: any): Promise<StudentRecord> {
@@ -81,33 +106,63 @@ export function StudentAnalytics() {
 
   return (
     <Box sx={containerStyles}>
-      <Typography level="h1" component="h1" sx={titleStyles}>
-        Student Analytics: ({profileData.username})
-      </Typography>
-      <Box sx={contentStyles}>
-        <Box sx={leftPanelStyles}>
-          <Box sx={studentInfoStyles}>
-            <Typography sx={{ fontSize: "1.05rem", fontWeight: 700, color: "#1f2937" }}>
-              Student ID: {profileData.student_id ?? "No Student ID Found"}
+      <Box sx={pageStyles}>
+        <Box sx={heroStyles}>
+          <Box>
+            <Typography level="h1" component="h1" sx={titleStyles}>
+              Student Analytics
             </Typography>
-            <Typography sx={{ fontSize: "1rem", fontWeight: 600, color: "#1f2937" }}>
-              Student Name: {profileData.username ?? "No Username Found"}
+            <Typography sx={{ mt: 0.75, color: "#4b5563", fontWeight: 500 }}>
+              Performance, progress, and contract controls for {profileData.username}
             </Typography>
           </Box>
-          <Contract categoriesData={categoriesData} profileData={profileData} />
-          <ContractOverrideSwitch profileData={profileData} />
+          <Button variant="soft" sx={{ alignSelf: { xs: "stretch", md: "center" } }}>
+            Profile: {profileData.student_id ?? "Unknown"}
+          </Button>
         </Box>
-        <Box sx={rightPanelStyles}>
-          <Stack sx={graphStackStyles}>
-            <ActivityGraph
-              activityStamps={activityStamps}
-              passingStamps={passingStamps}
-              startDate={userStartDate}
-            />
-            <CategoriesBarGraph categoriesData={categoriesData} />
-            <HeatMap activity={activityStamps} />
-            <OtherStats activity={activityStamps} />
-          </Stack>
+        <Box sx={contentStyles}>
+          <Card sx={leftPanelStyles}>
+            <Box sx={studentInfoStyles}>
+              <Typography level="title-md" sx={{ color: "#111827" }}>
+                {profileData.username ?? "No Username Found"}
+              </Typography>
+              <Typography sx={{ color: "#4b5563" }}>
+                Student ID: {profileData.student_id ?? "No Student ID Found"}
+              </Typography>
+              <Typography level="body-sm" sx={{ color: "#6b7280" }}>
+                Last updated: {new Date(profileData.updated_at).toLocaleDateString()}
+              </Typography>
+            </Box>
+
+            <Divider />
+
+            <Contract categoriesData={categoriesData} profileData={profileData} />
+
+            <Divider />
+
+            <ContractOverrideSwitch profileData={profileData} />
+          </Card>
+
+          <Box sx={rightPanelStyles}>
+            <Stack sx={graphStackStyles}>
+              <Card sx={graphCardStyles}>
+                <ActivityGraph
+                  activityStamps={activityStamps}
+                  passingStamps={passingStamps}
+                  startDate={userStartDate}
+                />
+              </Card>
+              <Card sx={graphCardStyles}>
+                <CategoriesBarGraph categoriesData={categoriesData} />
+              </Card>
+              <Card sx={graphCardStyles}>
+                <HeatMap activity={activityStamps} />
+              </Card>
+              <Card sx={graphCardStyles}>
+                <OtherStats activity={activityStamps} />
+              </Card>
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -118,20 +173,37 @@ function ContractOverrideSwitch({ profileData }: { profileData: StudentRecord })
   const [isChecked, setIsChecked] = useState<boolean>(!!profileData.contract_override);
 
   const handleToggle = async () => {
-    setIsChecked(!isChecked);
+    const nextChecked = !isChecked;
+
+    setIsChecked(nextChecked);
     const { error } = await supabase
       .from("profiles")
-      .update({ contract_override: !isChecked })
+      .update({ contract_override: nextChecked })
       .eq("profile_id", profileData.profile_id);
 
     if (error) {
+      setIsChecked(!nextChecked);
       throw Error(error.message);
     }
   };
 
   return (
-    <Typography endDecorator={<Switch checked={isChecked} onChange={handleToggle} />}>
-      Toggle Contract Readonly Override
-    </Typography>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box>
+        <Typography level="title-sm" sx={{ color: "#111827" }}>
+          Contract Override
+        </Typography>
+        <Typography level="body-sm" sx={{ color: "#6b7280" }}>
+          Temporarily bypass the read-only contract lock for this student.
+        </Typography>
+      </Box>
+      <Typography
+        component="label"
+        sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}
+        endDecorator={<Switch checked={isChecked} onChange={handleToggle} />}
+      >
+        <span>Readonly override</span>
+      </Typography>
+    </Box>
   );
 }
