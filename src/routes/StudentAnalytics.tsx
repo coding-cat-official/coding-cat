@@ -116,9 +116,6 @@ export function StudentAnalytics() {
               Performance, progress, and contract controls for {profileData.username}
             </Typography>
           </Box>
-          <Button variant="soft" sx={{ alignSelf: { xs: "stretch", md: "center" } }}>
-            Profile: {profileData.student_id ?? "Unknown"}
-          </Button>
         </Box>
         <Box sx={contentStyles}>
           <Card sx={leftPanelStyles}>
