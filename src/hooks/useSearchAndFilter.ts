@@ -14,8 +14,8 @@ interface UseSearchAndFilterReturn {
   setActiveProblem: Dispatch<SetStateAction<string | null>>;
   drawerOpen: boolean;
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
-  openCategory: boolean;
-  setOpenCategory: Dispatch<SetStateAction<boolean>>;
+  categoryOpen: boolean;
+  setCategoryOpen: Dispatch<SetStateAction<boolean>>;
   selectedTab: string;
   setSelectedTab: Dispatch<SetStateAction<string>>;
   searchedProblems: Problem[];
@@ -31,9 +31,8 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
   const [activeCategory, setActiveCategory] = useState<string | null>(() => 'Fundamentals');
   const [activeProblem, setActiveProblem] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [openCategory, setOpenCategory] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState('');
-  const [searchedProblems, setSearchedProblems] = useState<Problem[]>([]);
   const [searchedBlogs, setSearchedBlogs] = useState<BlogPost[]>([]);
 
   let newDifficulty = difficulty;
@@ -49,10 +48,6 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
   }, [problems, query, newDifficulty]);
 
   useEffect(() => {
-    setSearchedProblems(filteredProblems);
-  }, [filteredProblems]);
-
-  useEffect(() => {
     (async () => {
       const posts = await getBlogPosts();
       setSearchedBlogs(posts);
@@ -62,7 +57,7 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
   const handleSelectedCategory = useCallback((category: string) => {
     setActiveCategory(category);
     setActiveProblem(null);
-    setOpenCategory(false);
+    setCategoryOpen(false);
     if (category === 'coding') setSelectedTab('');
     if (category === 'blogs') setSelectedTab('Meta');
     else setSelectedTab('List');
@@ -84,11 +79,11 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
     setActiveProblem,
     drawerOpen,
     setDrawerOpen,
-    openCategory,
-    setOpenCategory,
+    categoryOpen,
+    setCategoryOpen,
     selectedTab,
     setSelectedTab,
-    searchedProblems,
+    searchedProblems: filteredProblems,
     searchedBlogs,
     handleSelectedCategory,
     handleSelectedProblem,

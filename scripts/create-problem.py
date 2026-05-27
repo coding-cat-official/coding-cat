@@ -13,6 +13,11 @@ difficulties = [
 
 categories = [
     {
+        "display_name": "Level 0",
+        "input_name": "level0",
+        "dir_name": "level_0"
+    },
+    {
         "display_name": "Fundamentals",
         "input_name": "fundamentals",
         "dir_name": "fundamentals"

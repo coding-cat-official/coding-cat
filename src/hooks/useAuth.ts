@@ -21,77 +21,71 @@ export default function useAuth(): UseAuthReturn {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
 
-  const fetchProfile = useCallback(async () => {
-    if (!session) return;
-    const { user } = session;
-
-    const { data } = await supabase
+  const fetchAdminStatus = useCallback((userId: string) => {
+    supabase
       .from('profiles')
-      .select('username, pfp_id')
-      .eq('profile_id', user.id)
-      .single();
-
-    if (data) {
-      setUserData({
-        name: data.username,
-        pfp_id: data.pfp_id,
+      .select('is_admin')
+      .eq('profile_id', userId)
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data) setIsAdmin(data.is_admin);
       });
-    }
-  }, [session]);
+  }, []);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, newSession) => {
+    // PKCE code exchange 
+    const code = new URLSearchParams(window.location.search).get('code');
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+        if (!error && data.session) {
+          setSession(data.session);
+          fetchAdminStatus(data.session.user.id);
+          window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+        }
+      });
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (_event === 'PASSWORD_RECOVERY') {
         setIsRecoverySession(true);
+        setSession(newSession);
         return;
       }
       setIsRecoverySession(false);
       setSession(newSession);
-
       if (newSession?.user) {
-        supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('profile_id', newSession.user.id)
-          .single()
-          .then(({ data, error }) => {
-            if (!error && data) {
-              setIsAdmin(data.is_admin);
-            }
-          });
+        fetchAdminStatus(newSession.user.id);
       } else {
         setIsAdmin(false);
       }
     });
 
-    if (!isRecoverySession) {
+    // only fetch existing session if no code to exchange
+    if (!code) {
       supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
         setSession(currentSession);
-        if (currentSession?.user) {
-          supabase
-            .from('profiles')
-            .select('is_admin')
-            .eq('profile_id', currentSession.user.id)
-            .single()
-            .then(({ data, error }) => {
-              if (!error && data) {
-                setIsAdmin(data.is_admin);
-              }
-            });
-        }
+        if (currentSession?.user) fetchAdminStatus(currentSession.user.id);
       });
     }
-  }, [isRecoverySession]);
+
+    return () => subscription.unsubscribe();
+  }, [fetchAdminStatus]);
+
+  const fetchProfile = useCallback(async () => {
+    if (!session) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, pfp_id')
+      .eq('profile_id', session.user.id)
+      .single();
+    if (data) {
+      setUserData({ name: data.username, pfp_id: data.pfp_id });
+    }
+  }, [session]);
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  return {
-    session,
-    userData,
-    isAdmin,
-    isRecoverySession,
-    fetchProfile,
-  };
+  return { session, userData, isAdmin, isRecoverySession, fetchProfile };
 }

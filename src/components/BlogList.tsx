@@ -2,22 +2,12 @@ import { List, ListItemButton, Stack, Tab, TabList, TabPanel, Tabs, Typography }
 import { Link } from "react-router-dom";
 import { BlogPost } from "../types";
 import { capitalizeString } from "../utils/capitalizeString";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import getBlogCategory from "../utils/blogs/getBlogCategory";
 import { getOrderedBlogPosts } from "../utils/blogs/getOrderedBlogPosts";
 
 interface BlogListItemProps {
   blog: BlogPost;
-  activeBlog: string | null;
-  closeDrawer: () => void;
-  kbSelectedBlog: string | null;
-}
-
-interface BlogListProps {
-  searchedBlogs: BlogPost[];
-  selectedTab: string;
-  setSelectedTab: (peep: string) => void;
-  selectedCategory: string | null;
   activeBlog: string | null;
   closeDrawer: () => void;
   kbSelectedBlog: string | null;
@@ -52,10 +42,22 @@ function BlogListItem({ blog, activeBlog, closeDrawer, kbSelectedBlog }: BlogLis
   );
 }
 
+interface BlogListProps {
+  searchedBlogs: BlogPost[];
+  selectedTab: string;
+  setSelectedTab: (peep: string) => void;
+  onTabsChange: (tabs: string[]) => void;
+  selectedCategory: string | null;
+  activeBlog: string | null;
+  closeDrawer: () => void;
+  kbSelectedBlog: string | null;
+}
+
 export default function BlogList({
   searchedBlogs,
   selectedTab,
   setSelectedTab,
+  onTabsChange,
   selectedCategory,
   activeBlog,
   closeDrawer,
@@ -67,16 +69,26 @@ export default function BlogList({
     }
   }
 
-  const blogsByCategory = searchedBlogs.reduce<Record<string, BlogPost[]>>((acc, blog) => {
-    const problemCategories = getBlogCategory(blog);
-    if (!acc[problemCategories]) acc[problemCategories] = [];
-    acc[problemCategories].push(blog);
-    return acc;
-  }, {});
+  const blogsByCategory = useMemo(() => {
+    const blogCategories = searchedBlogs.reduce<Record<string, BlogPost[]>>((acc, blog) => {
+      const category = getBlogCategory(blog);
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(blog);
 
-  Object.keys(blogsByCategory).forEach((str) => {
-    blogsByCategory[str] = getOrderedBlogPosts(blogsByCategory[str]);
-  })
+      return acc;
+    }, {});
+
+    Object.keys(blogCategories).forEach((str) => {
+      blogCategories[str] = getOrderedBlogPosts(blogCategories[str]);
+    });
+
+    return blogCategories;
+  }, [searchedBlogs]);
+
+  useEffect(() => {
+    const tabs = Object.keys(blogsByCategory).sort().filter(Boolean);
+    onTabsChange(tabs);
+  }, [blogsByCategory, onTabsChange]);
 
   return (
     <Stack gap={1} className="stack-problemList">

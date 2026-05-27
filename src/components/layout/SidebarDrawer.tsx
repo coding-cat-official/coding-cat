@@ -11,8 +11,8 @@ import { TEST_CATEGORY_PATTERN } from '../../utils/constants';
 interface Props {
   drawerOpen: boolean;
   onClose: () => void;
-  openCategory: boolean;
-  setOpenCategory: React.Dispatch<React.SetStateAction<boolean>>;
+  categoryOpen: boolean;
+  setCategoryOpen: React.Dispatch<React.SetStateAction<boolean>>;
   difficulty: string;
   setDifficulty: React.Dispatch<React.SetStateAction<string>>;
   query: string;
@@ -31,8 +31,8 @@ interface Props {
 export default function SidebarDrawer({
   drawerOpen,
   onClose,
-  openCategory,
-  setOpenCategory,
+  categoryOpen,
+  setCategoryOpen,
   difficulty,
   setDifficulty,
   query,
@@ -68,8 +68,8 @@ export default function SidebarDrawer({
       </Stack>
       <DialogContent>
         <Box sx={{ display: 'flex', overflow: 'hidden', gap: '16px' }}>
-          <Button className="mobile-categoryList" onClick={() => setOpenCategory(true)}>&gt;</Button>
-          <Drawer open={openCategory} onClose={() => setOpenCategory(false)} sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="mobile-categoryList">
+          <Button className="mobile-categoryList" onClick={() => setCategoryOpen(true)}>&gt;</Button>
+          <Drawer open={categoryOpen} onClose={() => setCategoryOpen(false)} sx={{ flex: 1, width: 300, overflowY: 'auto' }} className="mobile-categoryList">
             <CategoryList 
               searchedProblems={searchedProblems} 
               activeCategory={activeCategory} 

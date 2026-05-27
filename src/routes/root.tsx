@@ -15,12 +15,22 @@ import MainLayout from '../components/layout/MainLayout';
 import SidebarDrawer from '../components/layout/SidebarDrawer';
 import UpperNavBar from '../components/layout/UpperNavBar';
 import AppHeader from '../components/layout/AppHeader';
+import sortProblems from '../utils/sortProblems';
+import { categorizeCategories } from '../utils/categorizeCategories';
+import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
   const navigate = useNavigate();
 
   const { session, userData, isAdmin, isRecoverySession, fetchProfile } = useAuth();
+  
+  useEffect(() => {
+    if(isRecoverySession){
+      navigate('/auth/change-password', { replace: true });
+    }
+  }, [navigate, isRecoverySession]);
+
   const { progress, contractProgress, fetchProgress } = useContractData(session);
   const {
     activeSession, sessionId, sessionDuration,sessionRemainingSeconds,plannedExerciseCount,
@@ -40,8 +50,8 @@ export default function App() {
     setActiveProblem,
     drawerOpen,
     setDrawerOpen,
-    openCategory,
-    setOpenCategory,
+    categoryOpen,
+    setCategoryOpen,
     selectedTab,
     setSelectedTab,
     searchedProblems,
@@ -50,14 +60,28 @@ export default function App() {
     handleSelectedProblem,
   } = search;
 
+  const [order, setOrder] = useState<string>("asc");
+  const [orderBy, setOrderBy] = useState<string>("name");
+
+  const sortedProblems = useMemo(() => {
+    const solvedProblems = progress.filter(
+      (p) => p.passed_tests === p.total_tests
+    ).map((p) => p.problem_title);
+
+    return sortProblems(searchedProblems ?? [], solvedProblems, order, orderBy);
+  }, [searchedProblems, progress, order, orderBy]);
+
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
   const [kbSelectedBlog, setKbSelectedBlog] = useState("");
 
+  const [availableTabs, setAvailableTabs] = useState<string[]>([]);
+
   const problemListProps = {
     selectedTab,
     setSelectedTab,
-    searchedProblems,
+    onTabsChange: setAvailableTabs,
+    sortedProblems,
     selectedCategory: activeCategory,
     activeProblem,
     onSelectProblem: handleSelectedProblem,
@@ -65,13 +89,18 @@ export default function App() {
     session,
     contractProgress,
     progress,
-    kbSelectedProblem
+    kbSelectedProblem,
+    order,
+    setOrder,
+    orderBy,
+    setOrderBy
   };
 
   const blogListProps = {
     searchedBlogs: searchedBlogs,
     selectedTab,
     setSelectedTab,
+    onTabsChange: setAvailableTabs,
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
@@ -91,11 +120,11 @@ export default function App() {
     const specialCategories: string[] = [];
     if(problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
     if(problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
-  
-    return ['blogs', ...categories, ...specialCategories];
+    return ['blogs', ...getCategoryListOrdered(categories), ...specialCategories];
   }, [problems]);
 
   // keybinds navigation
+  // TODO: single source of truth for this?
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + D opens Drawer
     if(event.ctrlKey && event.key === "d"){
@@ -104,7 +133,39 @@ export default function App() {
     }
 
     if(drawerOpen){
-      if(openCategory){
+      // left / right opens category list
+      // unless the category has tabs, in which case left / right navigates through them
+      // if on the leftmost tab, left opens the category list
+      if(event.key === "ArrowLeft"){
+        if(availableTabs.length > 0){
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex <= 0){
+            // on leftmost tab - open category list
+            setKbSelectedCategory(activeCategory);
+            setCategoryOpen(true);
+          } else {
+            // go to prev tab
+            setSelectedTab(availableTabs[currTabIndex - 1]);
+          }
+        } else {
+          // no tabs - open category list directly
+          setKbSelectedCategory(activeCategory);
+          setCategoryOpen(true);
+        }
+      }
+      if(event.key === "ArrowRight"){
+        if(categoryOpen) {
+          setCategoryOpen(false);
+        } else if(availableTabs.length > 0) {
+          const currTabIndex = availableTabs.indexOf(selectedTab);
+          if(currTabIndex < availableTabs.length - 1) {
+            setSelectedTab(availableTabs[currTabIndex + 1]);
+          }
+          // on rightmost tab — do nothing
+        }
+      }
+
+      if(categoryOpen){
         // up / down selects category
         if(event.key === "ArrowUp"){
           event.preventDefault();
@@ -132,8 +193,13 @@ export default function App() {
       else{
         if(activeCategory === 'blogs'){
           // navigating through blog posts
-          const blogSlugs = searchedBlogs.map(b => b.meta.blog_slug);
-
+          const blogSlugs = searchedBlogs
+            .filter(b => {
+              // filters by selectedTab if there are any
+              return availableTabs.length > 0 
+                && b.meta.category === selectedTab.toLowerCase();
+            })
+            .map(b => b.meta.blog_slug);
           // up / down selects blog post
           if(event.key === "ArrowUp"){
             event.preventDefault();
@@ -164,13 +230,20 @@ export default function App() {
           // navigating through problems in activeCategory
 
           // filters problems in active category
-          const categoryProblems = searchedProblems
+          const categoryProblems = sortedProblems
             .filter(p => {
               const questionType = p.meta.question_type[0];
               const cat = questionType === "coding"
                 ? p.meta.category
                 : questionType;
               return cat === activeCategory;
+            })
+            .filter(p => {
+              // filters by selectedTab if there are any
+              if(availableTabs.length > 0){
+                return categorizeCategories(p) === selectedTab;
+              }
+              return p;
             })
             .map(p => p.meta.name);
           
@@ -202,32 +275,39 @@ export default function App() {
           }
         }
       }
-
-      // left / right opens category list
-      if(event.key === "ArrowLeft"){
-        setKbSelectedCategory(activeCategory);
-        setOpenCategory(true);
-      }
-      if(event.key === "ArrowRight"){
-        setKbSelectedCategory(activeCategory);
-        setOpenCategory(false);
-      }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, openCategory, allCategories, searchedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setOpenCategory]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
-  // on new category selected, set selectedProblem to first problem
+  // on selecting new category or tab, select first problem / blog available
   useEffect(() => {
-    const first = searchedProblems
-      .filter(p => p.meta.category === activeCategory)
-      .map(p => p.meta.name)[0] ?? null;
-    setKbSelectedProblem(activeProblem ?? first);
-  }, [activeCategory, activeProblem, searchedProblems]);
+    if(activeCategory === 'blogs'){
+      const tabBlogs = searchedBlogs
+        .filter(b => {
+          return b.meta.category === selectedTab.toLowerCase();
+        })
+        .map(b => b.meta.blog_slug);
+      
+      const first = tabBlogs[0] ?? null;
+      setKbSelectedBlog(first);
+    } else {
+      const tabProblems = sortedProblems
+        .filter(p => {
+          const questionType = p.meta.question_type[0];
+          const cat = questionType === "coding" 
+            ? p.meta.category 
+            : questionType;
+          return cat === activeCategory;
+        })
+        .filter(p => {
+          if(availableTabs.length > 0) return categorizeCategories(p) === selectedTab;
+          return p;
+        })
+        .map(p => p.meta.name);
 
-  // TODO: may need to create blogCategory in the future
-  useEffect(() => {
-    const first = searchedBlogs[0]?.meta.blog_slug ?? null;
-    setKbSelectedBlog(first ?? "");
-  }, [activeCategory, searchedBlogs]);
+      const first = tabProblems[0] ?? null;
+      setKbSelectedProblem(first);
+    }
+  }, [selectedTab, activeCategory, availableTabs, sortedProblems, searchedBlogs]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
@@ -241,8 +321,8 @@ export default function App() {
       <SidebarDrawer
         drawerOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        openCategory={openCategory}
-        setOpenCategory={setOpenCategory}
+        categoryOpen={categoryOpen}
+        setCategoryOpen={setCategoryOpen}
         difficulty={difficulty}
         setDifficulty={setDifficulty}
         query={query}

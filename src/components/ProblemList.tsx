@@ -11,9 +11,9 @@ import {
   Tabs,
   Typography,
 } from "@mui/joy";
-import { ContractProgress, Problem, Submission } from '../types';
+import { ContractProgress, Problem, Progress, Submission } from '../types';
 import { Link } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { CaretDown, CheckCircle, MinusCircle } from '@phosphor-icons/react';
 import { categorizeCategories } from '../utils/categorizeCategories';
@@ -26,25 +26,11 @@ export interface ProblemListItemProps {
   activeProblem: string | null;
   closeDrawer: () => void;
   kbSelectedProblem: string | null;
-  solvedProblems: string[];
-  unsolvedProblems: string[];
+  attempted: boolean;
+  solved: boolean;
 }
 
-export interface ProblemListProps {
-  searchedProblems: Problem[];
-  selectedTab: string;
-  setSelectedTab: (peep: string) => void;
-  selectedCategory: string | null;
-  activeProblem: string | null;
-  onSelectProblem: (name: string) => void;
-  closeDrawer: () => void;
-  session: Session | null;
-  contractProgress: ContractProgress;
-  progress: Submission[];
-  kbSelectedProblem: string | null;
-}
-
-function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, solvedProblems, unsolvedProblems }: ProblemListItemProps){
+function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, attempted, solved }: ProblemListItemProps){
   const itemRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -72,10 +58,10 @@ function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProble
         <Typography sx={{fontFamily: "Victor Mono"}}>{problem.meta.title}</Typography>
         <Stack direction="row" gap={1} justifyContent="center">
           {
-            solvedProblems.includes(problem.meta.name) && <CheckCircle size={24} color="#47f22f" />
+            solved && <CheckCircle size={24} color="#47f22f" />
           }
           {
-            unsolvedProblems.includes(problem.meta.name) && <MinusCircle size={24} color="#939393" />
+            attempted && !solved && <MinusCircle size={24} color="#939393" />
           }
           <DifficultyChip difficulty={problem.meta.difficulty} />
         </Stack>
@@ -84,22 +70,147 @@ function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProble
   )
 }
 
+interface ProblemListProgressProps {
+  selectedCategory: string | null;
+  completedProblems: Progress;
+  contractProgress: ContractProgress;
+  percentageCompleted: number;
+}
+
+function ProblemListProgress({
+  selectedCategory,
+  completedProblems,
+  contractProgress,
+  percentageCompleted
+}: ProblemListProgressProps){
+  return (
+    <Stack pr={4} gap={1}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography
+          level="h1"
+          sx={{ fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt" }}
+        >
+          {selectedCategory ? capitalizeString(selectedCategory) : ""} -{" "}
+          {completedProblems?.completed}/
+          {contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)}
+        </Typography>
+        <Typography level="h4">{percentageCompleted}%</Typography>
+      </Stack>
+      <LinearProgress
+        className="problemList-progressBar"
+        determinate
+        value={percentageCompleted}
+        size="lg"
+        thickness={15}
+      />
+    </Stack>
+  );
+}
+
+interface ProblemListSortButtonsProps {
+  sortCategories: string[];
+  order: string;
+  orderBy: string;
+  problemsFound: number;
+  handleSort: (sortCategory: string) => void;
+}
+
+function ProblemListSortButtons({
+  sortCategories,
+  order,
+  orderBy,
+  problemsFound,
+  handleSort
+}: ProblemListSortButtonsProps){
+  return (
+    <Stack
+      pl={1}
+      pt={1}
+      pb={1}
+      width="100%"
+      direction="row"
+      gap={2}
+      alignItems="center"
+      className="sort-parent"
+    >
+      {sortCategories.map((sc, index) => {
+        const active = orderBy === sc;
+
+        return (
+          <Button
+            key={index}
+            className="problemList-sortButton"
+            variant="plain"
+            onClick={() => handleSort(sc)}
+            color={active ? "primary" : "neutral"}
+            endDecorator={<CaretDown size={20} opacity={active ? 1 : 0} />}
+            sx={{
+              width: "10em",
+
+              "& svg": {
+                transition: "0.2s",
+                transform: active && order === "desc" ? "rotate(0deg)" : "rotate(180deg)",
+              },
+
+              "&:hover": { "& svg": { opacity: 1 } },
+            }}
+          >
+            {capitalizeString(sc)}
+          </Button>
+        );
+      })}
+      <Typography fontFamily="Victor Mono">
+        {problemsFound} problem{problemsFound !== 1 ? "s" : ""} found
+      </Typography>
+    </Stack>
+  );
+}
+
+export interface ProblemListProps {
+  sortedProblems: Problem[];
+  selectedTab: string;
+  setSelectedTab: (peep: string) => void;
+  onTabsChange: (tabs: string[]) => void;
+  selectedCategory: string | null;
+  activeProblem: string | null;
+  closeDrawer: () => void;
+  session: Session | null;
+  contractProgress: ContractProgress;
+  progress: Submission[];
+  kbSelectedProblem: string | null;
+  order: string;
+  setOrder: (order: string) => void;
+  orderBy: string;
+  setOrderBy: (orderBy: string) => void;
+}
+
 export default function ProblemList({
   selectedTab,
   setSelectedTab,
-  searchedProblems,
+  onTabsChange,
+  sortedProblems,
   selectedCategory,
   activeProblem,
   closeDrawer,
   session,
   contractProgress,
   progress,
-  kbSelectedProblem
+  kbSelectedProblem,
+  order,
+  setOrder,
+  orderBy,
+  setOrderBy
 }: ProblemListProps) {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
-
   const sortCategories = ["name", "completed", "difficulty"];
+
+  // force Level 0 to be sorted ascending and by name
+  // prevents sorting before going into Level 0 and having problems be out of order
+  useEffect(() => {
+    if(selectedCategory === "Level 0"){
+      setOrder("asc");
+      setOrderBy("name");
+    }
+  }, [selectedCategory, setOrder, setOrderBy]);
 
   const completedProblems = useMemo(() => {
     return getCompletedProblems(progress).filter((p) => p.category === selectedCategory)[0];
@@ -113,27 +224,43 @@ export default function ProblemList({
   if (percentageCompleted > 100) percentageCompleted = 100;
   if (isNaN(percentageCompleted)) percentageCompleted = 0;
 
-  const problemsByTopic = searchedProblems.filter((problem) => {
-    const question_type = problem.meta.question_type[0];
-    const category =
-      question_type === "coding" || question_type === "test"
-        ? problem.meta.category
-        : question_type;
-    return category === selectedCategory;
-  });
+  const problemsByTopic = useMemo(() => {
+    return sortedProblems.filter((problem) => {
+      const question_type = problem.meta.question_type[0];
+      const category =
+        question_type === "coding" || question_type === "test"
+          ? problem.meta.category
+          : question_type;
 
-  const problemsByCategory = problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
-    const problemCategories =
-      problem.meta.question_type.includes("coding") || problem.meta.question_type.includes("test")
-        ? ""
-        : categorizeCategories(problem);
-    if (!acc[problemCategories]) acc[problemCategories] = [];
-    acc[problemCategories].push(problem);
-    return acc;
-  }, {});
+      return category === selectedCategory;
+    });
+  }, [sortedProblems, selectedCategory]);
+
+  const problemsByCategory = useMemo(() => {
+    return problemsByTopic.reduce<Record<string, Problem[]>>((acc, problem) => {
+      const problemCategories =
+        problem.meta.question_type.includes("coding") || problem.meta.question_type.includes("test")
+          ? ""
+          : categorizeCategories(problem);
+      if (!acc[problemCategories]) acc[problemCategories] = [];
+      acc[problemCategories].push(problem);
+      
+      return acc;
+    }, {});
+  }, [problemsByTopic]);
+
+  useEffect(() => {
+    const tabs = Object.keys(problemsByCategory).sort().filter(Boolean);
+    onTabsChange(tabs);
+  }, [problemsByCategory, onTabsChange]);
 
   const solvedProblems = useMemo(
-    () => progress.filter((p) => p.passed_tests === p.total_tests).map((p) => p.problem_title),
+    () => 
+      progress
+        .filter(
+          (p) => p.passed_tests === p.total_tests
+        )
+        .map((p) => p.problem_title),
     [progress],
   );
 
@@ -147,11 +274,11 @@ export default function ProblemList({
     [progress, solvedProblems],
   );
 
-  const sortedProblems = sortProblems(
+  const displayedProblems = sortProblems(
     problemsByCategory[selectedTab] || problemsByCategory[""],
     solvedProblems,
     order,
-    orderBy,
+    orderBy
   );
 
   const handleTabChange = (_: any, newValue: any) => {
@@ -167,31 +294,17 @@ export default function ProblemList({
     setOrderBy(sortCategory);
   };
 
-  const problemsFound = sortedProblems?.length || 0;
+  const problemsFound = problemsByTopic.length;
 
   return (
     <Stack gap={1} className="stack-problemList">
       {!!session ? (
-        <Stack pr={4} gap={1}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography
-              level="h1"
-              sx={{ fontFamily: '"Press Start 2P"', fontWeight: "100", fontSize: "20pt" }}
-            >
-              {selectedCategory ? capitalizeString(selectedCategory) : ""} -{" "}
-              {completedProblems?.completed}/
-              {contractProgress[selectedCategory!!] || (completedProblems?.total ?? 0)}
-            </Typography>
-            <Typography level="h4">{percentageCompleted}%</Typography>
-          </Stack>
-          <LinearProgress
-            className="problemList-progressBar"
-            determinate
-            value={percentageCompleted}
-            size="lg"
-            thickness={15}
-          />
-        </Stack>
+        <ProblemListProgress
+          selectedCategory={selectedCategory}
+          completedProblems={completedProblems}
+          contractProgress={contractProgress}
+          percentageCompleted={percentageCompleted}
+        />
       ) : (
         <Typography
           level="h1"
@@ -220,58 +333,30 @@ export default function ProblemList({
               ))}
           </TabList>
 
-          <Stack
-            pl={1}
-            pt={1}
-            pb={1}
-            width="100%"
-            direction="row"
-            gap={2}
-            alignItems="center"
-            className="sort-parent"
-          >
-            {sortCategories.map((sc, index) => {
-              const active = orderBy === sc;
-
-              return (
-                <Button
-                  key={index}
-                  className="problemList-sortButton"
-                  variant="plain"
-                  onClick={() => handleSort(sc)}
-                  color={active ? "primary" : "neutral"}
-                  endDecorator={<CaretDown size={20} opacity={active ? 1 : 0} />}
-                  sx={{
-                    width: "10em",
-
-                    "& svg": {
-                      transition: "0.2s",
-                      transform: active && order === "desc" ? "rotate(0deg)" : "rotate(180deg)",
-                    },
-
-                    "&:hover": { "& svg": { opacity: 1 } },
-                  }}
-                >
-                  {capitalizeString(sc)}
-                </Button>
-              );
-            })}
-            <Typography fontFamily="Victor Mono">
-              {problemsFound} problem{problemsFound !== 1 ? "s" : ""} found
-            </Typography>
-          </Stack>
+          {
+            // hide sort buttons on Level 0 category
+            selectedCategory !== "Level 0"
+              ? <ProblemListSortButtons 
+                  sortCategories={sortCategories}
+                  order={order}
+                  orderBy={orderBy}
+                  problemsFound={problemsFound}
+                  handleSort={handleSort}
+                />
+              : <></>
+          }
           
           <TabPanel className="problemList-list" value={selectedTab} sx={{overflowY: 'auto', height:"60vh", pt: 0}}>
             <List sx={{ pt: 0 }}>
-              { sortedProblems?.map((p) => 
+              { displayedProblems?.map((p) => 
                 <ProblemListItem
                   key={p.meta.name}
                   problem={p}
                   activeProblem={activeProblem}
                   closeDrawer={closeDrawer}
                   kbSelectedProblem={kbSelectedProblem}
-                  solvedProblems={solvedProblems}
-                  unsolvedProblems={unsolvedProblems}
+                  attempted={unsolvedProblems.includes(p.meta.name)}
+                  solved={solvedProblems.includes(p.meta.name)}
                 />
               )}
             </List>

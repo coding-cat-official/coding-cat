@@ -8,7 +8,7 @@ export const supabase = createClient(
     supabaseAnonKey,
     {
         auth: {
-            flowType: 'implicit'
+            flowType: 'pkce'
         }
     }
 );

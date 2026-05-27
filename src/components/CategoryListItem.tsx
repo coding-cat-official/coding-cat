@@ -21,7 +21,6 @@ function CategoryListItem({
   const unlocked = lock.isUnlocked();
 
   useEffect(() => {
-    console.log(`${category} ${kbSelectedCategory}`)
     if (category === kbSelectedCategory) {
       itemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }

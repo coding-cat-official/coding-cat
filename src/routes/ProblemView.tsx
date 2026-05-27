@@ -15,6 +15,8 @@ import ReflectionInput from '../components/ReflectionInput';
 import CodingQuestion from '../components/CodingQuestion';
 import MutationQuestion from '../components/MutationQuestion';
 import { reflectionQuestions } from '../utils/questions';
+// TODO: See line 202
+// import { level0Questions } from '../utils/level0Questions';
 import Tutorial from '../components/MutationTutorial';
 import cursedCat from '../assets/cUrSed.png';
 import errorCat from '../assets/error-cat.png';
@@ -22,6 +24,7 @@ import SolutionCode from '../components/SolutionCode';
 import { getColumnStatuses } from '../utils/mapMutantResults';
 import getProblemSet from '../utils/getProblemSet';
 import useProblemTimer from '../hooks/useProblemTimer';
+import sortProblems from '../utils/sortProblems';
 
 // Emoji rendered in the report
 const ALL_TESTS_PASSED = '🎉';
@@ -132,7 +135,9 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
     }
   };
 
-  const currProblems = currCategoryProblems();
+  // TODO: maybe sort these by how the user sorts?
+  // currently hard-coded to alphabetical order
+  const currProblems = sortProblems(currCategoryProblems(), [], "asc", "name");
   const [currIndex, setCurrIndex] = useState(currProblems.findIndex(p => p.meta.name === problem.meta.name));
 
 
@@ -187,11 +192,14 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
       return;
     }
     if (evalResponse.status === "success") {
-      if(onlyPrintTestFail(evalResponse.report)){
+      if(onlyPrintTestFail(evalResponse.report) || problem.meta.category === "Level 0"){
         setHidePrompt(true);
         return;
       }
       setHidePrompt(false);
+
+      // NOT IMPLEMENTED YET: gets the list of questions with the matching name in level0Questions
+      // questionList = level0Questions[problem.meta.name as keyof typeof level0Questions] ?? [];
 
       const allPassed = evalResponse.report.every((r) => r.equal);
       // if allPassed, give success questions
@@ -209,7 +217,7 @@ function ProblemIDE({ problem }: ProblemIDEProps) {
         reflectionInput.current?.scrollIntoView({ behavior: "smooth" });
       }, 100)
     }
-  }, [evalResponse]);
+  }, [evalResponse, problem.meta.category]);
 
   const hasFetchedProblems = useRef<Set<string>>(new Set());
 

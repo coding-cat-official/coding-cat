@@ -49,6 +49,16 @@ export default class CategoryLock {
     }
   }
 
+  get level_0(): Lock {
+    const categoryName = "Level 0";
+
+    const required = {};
+
+    const prereqSolved = {};
+
+    return createLockObject(required, prereqSolved, categoryName);
+  }
+
   get fundamentals(): Lock {
     return {
       category: "Fundamentals",
