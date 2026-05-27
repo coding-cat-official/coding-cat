@@ -8,6 +8,7 @@ export interface StudentRecord {
   student_id: number;
   is_admin: boolean;
   pfp_id: number;
+  contract_override: boolean;
 }
 
 export interface CategoryData {
