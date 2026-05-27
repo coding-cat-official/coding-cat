@@ -117,12 +117,15 @@ export default function BlogPostView() {
             {questions.length > 0 && (
               <Box sx={{ width: "100%" }}>
                 <Typography level="h3">Quiz</Typography>
+                {/* loop through each questions*/}
                 {questions.map((question, questionIndex) => {
                   const correctAnswers = Array.isArray(question.correct) ? question.correct : [question.correct];
                   const isMultiSelect = correctAnswers.length > 1;
+                  //Get the user’s selected answer for a question or default to empty value depending on question type
                   const selectedAnswer = selectedAnswers[questionIndex] ?? (isMultiSelect ? [] : "");
                   const selectedAnswerList = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
                   const hasSelection = Boolean(answeredQuestions[questionIndex]);
+                  //check if answer is correct and use radio or checkbox depending on how many answers
                   const isCorrect = isMultiSelect
                     ? selectedAnswerList.length === correctAnswers.length && selectedAnswerList.every((answer) => correctAnswers.includes(answer))
                     : typeof selectedAnswer === "string" && selectedAnswer === question.correct;
@@ -135,16 +138,18 @@ export default function BlogPostView() {
                           <pre>{question.code}</pre>
                         </Box>
                       )}
+                      {/* multi-select questions (checkbox)*/}
                       {isMultiSelect ? (
                         <Stack spacing={1}>
-                          {question.options.map((opt) => (
-                            <Checkbox key={opt} label={opt} checked={selectedAnswerList.includes(opt)} onChange={(event) => {
-                                const nextSelected = event.target.checked ? [...selectedAnswerList, opt] : selectedAnswerList.filter((answer) => answer !== opt);
+                          {question.options.map((option) => (
+                            <Checkbox key={option} label={option} checked={selectedAnswerList.includes(option)} onChange={(event) => {
+                                const nextSelected = event.target.checked ? [...selectedAnswerList, option] : selectedAnswerList.filter((answer) => answer !== option);
                                 setSelectedAnswers({...selectedAnswers, [questionIndex]: nextSelected});
                                 setAnsweredQuestions({...answeredQuestions, [questionIndex]: nextSelected.length > 0});
                               }}
                           />))}
                         </Stack>) : (
+                        // single-select questions (radio)
                         <RadioGroup sx={{ mt: 2 }} value={typeof selectedAnswer === "string" ? selectedAnswer : ""}
                           onChange={(e) =>{ 
                             setSelectedAnswers({...selectedAnswers, [questionIndex]: e.target.value});
@@ -154,6 +159,7 @@ export default function BlogPostView() {
                           {question.options.map((opt) => ( <Radio key={opt} value={opt} label={opt} />))}
                         </RadioGroup>
                       )}
+                      {/* Feedback after user answer*/}
                       {hasSelection && ( <Typography mt={2}> {isCorrect ? "Correct" : "Incorrect"} </Typography>
                       )}
                       {hasSelection && isCorrect && question.explanation && ( <Typography mt={1}> {question.explanation}</Typography>
