@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/joy";
+import { Box, Stack, Switch, Typography } from "@mui/joy";
 import CategoriesBarGraph from "../components/profile/progress/CategoriesBarGraph";
 import HeatMap from "../components/profile/progress/heatmap/HeatMap";
 import ActivityGraph from "../components/profile/progress/ActivityGraph";
@@ -8,6 +8,8 @@ import { getProfiles } from "../utils/getProfiles";
 import { useLoaderData } from "react-router-dom";
 import useActivityTracker from "../hooks/useActivityTracker";
 import Contract from "../components/profile/contract/Contract";
+import { useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const containerStyles = {
   minHeight: "100vh",
@@ -84,16 +86,17 @@ export function StudentAnalytics() {
       </Typography>
       <Box sx={contentStyles}>
         <Box sx={leftPanelStyles}>
-            <Box sx={studentInfoStyles}>
-              <Typography sx={{ fontSize: "1.05rem", fontWeight: 700, color: "#1f2937" }}>
-                Student ID: {profileData.student_id ?? "No Student ID Found"}
-              </Typography>
-              <Typography sx={{ fontSize: "1rem", fontWeight: 600, color: "#1f2937" }}>
-                Student Name: {profileData.username ?? "No Username Found"}
-              </Typography>
-            </Box>
-        <Contract categoriesData={categoriesData} profileData={profileData} />
+          <Box sx={studentInfoStyles}>
+            <Typography sx={{ fontSize: "1.05rem", fontWeight: 700, color: "#1f2937" }}>
+              Student ID: {profileData.student_id ?? "No Student ID Found"}
+            </Typography>
+            <Typography sx={{ fontSize: "1rem", fontWeight: 600, color: "#1f2937" }}>
+              Student Name: {profileData.username ?? "No Username Found"}
+            </Typography>
           </Box>
+          <Contract categoriesData={categoriesData} profileData={profileData} />
+          <ContractOverrideSwitch profileData={profileData} />
+        </Box>
         <Box sx={rightPanelStyles}>
           <Stack sx={graphStackStyles}>
             <ActivityGraph
@@ -108,5 +111,27 @@ export function StudentAnalytics() {
         </Box>
       </Box>
     </Box>
+  );
+}
+
+function ContractOverrideSwitch({ profileData }: { profileData: StudentRecord }) {
+  const [isChecked, setIsChecked] = useState<boolean>(!!profileData.contract_override);
+
+  const handleToggle = async () => {
+    setIsChecked(!isChecked);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ contract_override: !isChecked })
+      .eq("profile_id", profileData.profile_id);
+
+    if (error) {
+      throw Error(error.message);
+    }
+  };
+
+  return (
+    <Typography endDecorator={<Switch checked={isChecked} onChange={handleToggle} />}>
+      Toggle Contract Readonly Override
+    </Typography>
   );
 }
