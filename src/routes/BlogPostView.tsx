@@ -2,7 +2,7 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import getBlogPosts from "../utils/blogs/getBlogPosts";
 import { BlogPost } from "../types";
 import Markdown from "markdown-to-jsx";
-import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
+import { Box, Button, Sheet, Stack, Typography, Radio, RadioGroup, Checkbox } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { getOrderedBlogPosts } from "../utils/blogs/getOrderedBlogPosts";
 
@@ -19,6 +19,10 @@ export default function BlogPostView() {
   const [currCategoryBlogs, setCurrCategoryBlogs] = useState<BlogPost[]>([]);
   const [currIndex, setCurrIndex] = useState(-1);
   const navigate = useNavigate();
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string | string[]>>({});
+  const [answeredQuestions, setAnsweredQuestions] = useState<Record<number, boolean>>({});
+  const questions = currBlog.questions ?? [];
+
 
   useEffect(() => {
     (async () => {
@@ -106,10 +110,68 @@ export default function BlogPostView() {
             {!!currBlog.meta.author && <Typography level="body-sm">Authored by {currBlog.meta.author}</Typography>}
             {!!currBlog.meta.editor && <Typography level="body-sm">Edited by {currBlog.meta.editor}</Typography>}
           </Box>
-          <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+          <Box className="blog-post-content" sx={{ display: "flex", alignItems: "flex-end" }}>
             <Markdown>
               {currBlog.blog_text}
             </Markdown>
+            {questions.length > 0 && (
+              <Box sx={{ width: "100%" }}>
+                <Typography level="h3">Quiz</Typography>
+                {/* loop through each questions*/}
+                {questions.map((question, questionIndex) => {
+                  const correctAnswers = Array.isArray(question.correct) ? question.correct : [question.correct];
+                  const isMultiSelect = correctAnswers.length > 1;
+                  //Get the user’s selected answer for a question or default to empty value depending on question type
+                  const selectedAnswer = selectedAnswers[questionIndex] ?? (isMultiSelect ? [] : "");
+                  const selectedAnswerList = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
+                  const hasSelection = Boolean(answeredQuestions[questionIndex]);
+                  //check if answer is correct and use radio or checkbox depending on how many answers
+                  const isCorrect = isMultiSelect
+                    ? selectedAnswerList.length === correctAnswers.length && selectedAnswerList.every((answer) => correctAnswers.includes(answer))
+                    : typeof selectedAnswer === "string" && selectedAnswer === question.correct;
+
+                  return (
+                    <Box key={`${questionIndex}-${question.question}`}>
+                      <Typography mt={1} fontWeight="bold">{question.question}</Typography>
+                      {question.code && (
+                        <Box>
+                          <pre>{question.code}</pre>
+                        </Box>
+                      )}
+                      {/* multi-select questions (checkbox)*/}
+                      {isMultiSelect ? (
+                        <Stack spacing={1}>
+                          {question.options.map((option) => (
+                            <Checkbox key={option} label={option} checked={selectedAnswerList.includes(option)} onChange={(event) => {
+                                const nextSelected = event.target.checked ? [...selectedAnswerList, option] : selectedAnswerList.filter((answer) => answer !== option);
+                                setSelectedAnswers({...selectedAnswers, [questionIndex]: nextSelected});
+                                setAnsweredQuestions({...answeredQuestions, [questionIndex]: nextSelected.length > 0});
+                              }}
+                          />))}
+                        </Stack>) : (
+                        // single-select questions (radio)
+                        <RadioGroup sx={{ mt: 2 }} value={typeof selectedAnswer === "string" ? selectedAnswer : ""}
+                          onChange={(e) =>{ 
+                            setSelectedAnswers({...selectedAnswers, [questionIndex]: e.target.value});
+                            setAnsweredQuestions({...answeredQuestions, [questionIndex]: true});
+                            }
+                          }>
+                          {question.options.map((opt) => ( <Radio key={opt} value={opt} label={opt} />))}
+                        </RadioGroup>
+                      )}
+                      {/* Feedback after user answer*/}
+                      {hasSelection && (
+                        <Typography mt={2} sx={{ color: isCorrect ? 'green' : 'red', fontWeight: 'bold' }}>
+                          {isCorrect ? "Correct" : "Incorrect"}
+                        </Typography>
+                      )}
+                      {hasSelection && isCorrect && question.explanation && ( <Typography mt={1}> {question.explanation}</Typography>
+                      )}
+                    </Box>
+                  );
+                })}
+              </Box>
+            )}
           </Box>
         </Box>
       </Sheet>

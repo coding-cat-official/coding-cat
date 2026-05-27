@@ -182,6 +182,13 @@ export interface BlogPost {
         category: string;
         order?: number;
     };
+    questions?: {
+        question: string;
+        code?: string;
+        options: string[];
+        correct: string | string[];
+        explanation?: string;
+    }[];
 }
 
 export interface ProblemLog {

@@ -21,8 +21,14 @@ export default function ReqPasswordChange() {
       // dynamically builds the base URL to support both coding-cat.club and
       // the github pages deployment at coding-cat-official.github.io/coding-cat
       // !! if this is edited, it needs to match with the Supabase redirect URLs !!
+<<<<<<< HEAD
       // check 'Authentication/URL Configuration'
       redirectTo: `${window.location.origin}${window.location.pathname.split('/').slice(0, 2).join('/')}/`
+=======
+      // check 'Authentication/URL Configuration
+      // ${window.location.origin} sets it dynamically to localhost or coding-cat.club
+      redirectTo: `${window.location.origin}/`
+>>>>>>> 0c9fb3f1c0ac3efdc9e779bb448c6c9f7d22853c
     });
     
     if(error){
