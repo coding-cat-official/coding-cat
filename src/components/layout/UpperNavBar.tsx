@@ -19,6 +19,7 @@ interface Props {
   userData: { name: string; pfp_id: number } | null;
   isAdmin: boolean;
   signOut: () => void;
+  setActiveSession: (param: boolean) => void;
 }
 
 export default function UpperNavBar({
@@ -34,6 +35,7 @@ export default function UpperNavBar({
   userData,
   isAdmin,
   signOut,
+  setActiveSession,
 }: Props) {
   const navigate = useNavigate();
 
@@ -51,13 +53,14 @@ export default function UpperNavBar({
                   endSession();
                   navigate('/post-session', { state: { sessionId } });
                 } else if (activeSession && !sessionTimerRunning) {
+                  setActiveSession(false)
                   navigate('/post-session', { state: { sessionId } });
                 } else {
                   navigate('/session');
                 }
               }}
               sx={{
-                backgroundColor: activeSession ? '#d4ff99' : '#d4ff99',
+                backgroundColor: activeSession && !sessionTimerRunning ? '#ff8b78' : '#d4ff99',
                 color: '#1a3e00',
                 borderRadius: '999px',
                 px: 2,
@@ -71,8 +74,8 @@ export default function UpperNavBar({
               {sessionTimerRunning
                 ? `Ongoing session — ${formatTime(sessionRemainingSeconds)} left`
                 : activeSession
-                ? 'Complete Session Reflection'
-                : 'Start Session'}
+                  ? 'Complete Session Reflection'
+                  : 'Start Session'}
             </Button>
 
             <Link to="/profile">
