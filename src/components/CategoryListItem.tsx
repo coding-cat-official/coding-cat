@@ -13,6 +13,7 @@ function CategoryListItem({
   onSelectCategory,
   session,
   contractProgress,
+  kbFocus,
   kbSelectedCategory
 }: any) {
   const itemRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,7 @@ function CategoryListItem({
         margin: "10px 10px 10px 15px",
         boxShadow: "5px 5px black",
         border: "1px solid black",
-        ...(category === kbSelectedCategory && {
+        ...(category === kbSelectedCategory && kbFocus === "category" && {
           backgroundColor: '#82d078 !important',
         })
       }}
@@ -90,6 +91,7 @@ export default function CategoryListItems({
   onSelectCategory,
   session,
   contractProgress,
+  kbFocus,
   kbSelectedCategory
 }: any) {
   const [controlledCategories, setControlledCategories] = useState<string[]>([]);
@@ -124,6 +126,7 @@ export default function CategoryListItems({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
         />
       ))}

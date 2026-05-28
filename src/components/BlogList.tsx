@@ -10,10 +10,17 @@ interface BlogListItemProps {
   blog: BlogPost;
   activeBlog: string | null;
   closeDrawer: () => void;
+  kbFocus: string;
   kbSelectedBlog: string | null;
 }
 
-function BlogListItem({ blog, activeBlog, closeDrawer, kbSelectedBlog }: BlogListItemProps) {
+function BlogListItem({ 
+  blog,
+  activeBlog,
+  closeDrawer,
+  kbFocus,
+  kbSelectedBlog
+}: BlogListItemProps) {
   const itemRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -32,7 +39,8 @@ function BlogListItem({ blog, activeBlog, closeDrawer, kbSelectedBlog }: BlogLis
       to={`/blogs/${blog.meta.blog_slug}`}
       onClick={closeDrawer}
       sx={{
-        ...(blog.meta.blog_slug === kbSelectedBlog && { backgroundColor: '#FFE293 !important' })
+        ...(blog.meta.blog_slug === kbSelectedBlog && kbFocus === "category" &&
+          { backgroundColor: '#FFE293 !important' })
       }}
     >
       <Stack width="100%" direction="row" justifyContent="space-between">
@@ -50,6 +58,7 @@ interface BlogListProps {
   selectedCategory: string | null;
   activeBlog: string | null;
   closeDrawer: () => void;
+  kbFocus: string;
   kbSelectedBlog: string | null;
 }
 
@@ -61,6 +70,7 @@ export default function BlogList({
   selectedCategory,
   activeBlog,
   closeDrawer,
+  kbFocus,
   kbSelectedBlog
 }: BlogListProps) {
   const handleTabChange = (_: any, newValue: any) => {
@@ -136,6 +146,7 @@ export default function BlogList({
                   blog={blog}
                   activeBlog={activeBlog}
                   closeDrawer={closeDrawer}
+                  kbFocus={kbFocus}
                   kbSelectedBlog={kbSelectedBlog}
                 />)
               })}
