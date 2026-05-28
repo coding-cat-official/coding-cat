@@ -156,14 +156,14 @@ export default function useSessionManagement(session: Session | null): UseSessio
             .from('sessions')
             .update({ end_time: new Date().toISOString() })
             .eq('id', expiredSessionId)
-            .then(() => {
-              navigate('/post-session', {
-                state: {
-                  sessionId: expiredSessionId,
-                  timerExpired: true,
-                },
-              });
-            });
+            // .then(() => {
+            //   navigate('/post-session', {
+            //     state: {
+            //       sessionId: expiredSessionId,
+            //       timerExpired: true,
+            //     }
+            //   });
+            // });
         }
       }
     }, 1000);
