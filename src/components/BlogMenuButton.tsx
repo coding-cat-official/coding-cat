@@ -5,6 +5,7 @@ export interface BlogMenuProps {
   activeCategory: string | null;
   onSelectCategory: (cat: string) => void;
   category: string;
+  kbFocus: string;
   kbSelectedCategory: string | null;
 }
 
@@ -12,6 +13,7 @@ export default function BlogMenuButton({
   onSelectCategory,
   activeCategory,
   category,
+  kbFocus,
   kbSelectedCategory
 }: BlogMenuProps) {
   const itemRef = useRef<HTMLDivElement>(null);
@@ -29,7 +31,7 @@ export default function BlogMenuButton({
       selected={category === activeCategory}
       onClick={() => onSelectCategory(category)}
       className={
-        category === activeCategory 
+        category === activeCategory
           ? 'category-active' 
           : 'category-inactive'
       }
@@ -43,8 +45,9 @@ export default function BlogMenuButton({
         margin: "10px 10px 10px 15px",
         boxShadow: "5px 5px black",
         border: "1px solid black",
-        ...(category === kbSelectedCategory && {
-          backgroundColor: '#82d078 !important',
+        ...(category === kbSelectedCategory && kbFocus === "category" && 
+          {
+            backgroundColor: '#82d078 !important',
         })
       }}
     >

@@ -16,6 +16,7 @@ export interface CategoryListProps {
   onSelectCategory: (cat: string) => void;
   session: Session | null;
   contractProgress: ContractProgress;
+  kbFocus: string;
   kbSelectedCategory: string | null;
 }
 
@@ -25,6 +26,7 @@ export default function CategoryList({
   onSelectCategory,
   session,
   contractProgress,
+  kbFocus,
   kbSelectedCategory
 }: CategoryListProps) {
   const [error, setError] = useState("");
@@ -127,6 +129,7 @@ export default function CategoryList({
           category="blogs"
           activeCategory={activeCategory}
           onSelectCategory={onSelectCategory}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
@@ -141,6 +144,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
           fetchedCategories={fetchedCategories}
         />
@@ -156,6 +160,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
           fetchedCategories={fetchedCategories}
         />
@@ -171,6 +176,7 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
           fetchedCategories={fetchedCategories}
         />

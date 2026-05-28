@@ -74,6 +74,7 @@ export default function App() {
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
   const [kbSelectedBlog, setKbSelectedBlog] = useState("");
+  const [kbFocus, setKbFocus] = useState<"category" | "content">("content");
 
   const [availableTabs, setAvailableTabs] = useState<string[]>([]);
 
@@ -89,6 +90,7 @@ export default function App() {
     session,
     contractProgress,
     progress,
+    kbFocus,
     kbSelectedProblem,
     order,
     setOrder,
@@ -104,6 +106,7 @@ export default function App() {
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
+    kbFocus,
     kbSelectedBlog
   };
 
@@ -129,6 +132,7 @@ export default function App() {
     // Ctrl + D opens Drawer
     if (event.ctrlKey && event.key === "d") {
       event.preventDefault();
+      setKbFocus("content");
       setDrawerOpen(o => !o);
     }
 
@@ -142,7 +146,8 @@ export default function App() {
           if (currTabIndex <= 0) {
             // on leftmost tab - open category list
             setKbSelectedCategory(activeCategory);
-            setCategoryOpen(true);
+            setKbFocus('category');
+            if(window.innerWidth <= 1024) setCategoryOpen(true);
           } else {
             // go to prev tab
             setSelectedTab(availableTabs[currTabIndex - 1]);
@@ -150,13 +155,15 @@ export default function App() {
         } else {
           // no tabs - open category list directly
           setKbSelectedCategory(activeCategory);
-          setCategoryOpen(true);
+          setKbFocus('category');
+          if(window.innerWidth <= 1024) setCategoryOpen(true);
         }
       }
-      if (event.key === "ArrowRight") {
-        if (categoryOpen) {
-          setCategoryOpen(false);
-        } else if (availableTabs.length > 0) {
+      if(event.key === "ArrowRight"){
+        if(kbFocus === "category") {
+          setKbFocus("content");
+          if(window.innerWidth <= 1024) setCategoryOpen(false);
+        } else if(availableTabs.length > 0) {
           const currTabIndex = availableTabs.indexOf(selectedTab);
           if (currTabIndex < availableTabs.length - 1) {
             setSelectedTab(availableTabs[currTabIndex + 1]);
@@ -165,7 +172,7 @@ export default function App() {
         }
       }
 
-      if (categoryOpen) {
+      if(kbFocus === "category"){
         // up / down selects category
         if (event.key === "ArrowUp") {
           event.preventDefault();
@@ -187,7 +194,10 @@ export default function App() {
         // select category
         if (event.key === "Enter") {
           event.preventDefault();
-          if (kbSelectedCategory) handleSelectedCategory(kbSelectedCategory);
+          if (kbSelectedCategory){
+            handleSelectedCategory(kbSelectedCategory);
+            setKbFocus("content");
+          }
         }
       }
       else {
@@ -276,7 +286,7 @@ export default function App() {
         }
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, kbFocus, drawerOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
   // on selecting new category or tab, select first problem / blog available
   useEffect(() => {
@@ -335,6 +345,7 @@ export default function App() {
         blogListProps={blogListProps}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
+        kbFocus={kbFocus}
         kbSelectedCategory={kbSelectedCategory}
       />
 

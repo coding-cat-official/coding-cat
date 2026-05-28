@@ -25,6 +25,7 @@ interface Props {
   blogListProps: any;
   selectedTab: string;
   setSelectedTab: React.Dispatch<React.SetStateAction<string>>;
+  kbFocus: string;
   kbSelectedCategory: string | null;
 }
 
@@ -45,6 +46,7 @@ export default function SidebarDrawer({
   blogListProps,
   selectedTab,
   setSelectedTab,
+  kbFocus,
   kbSelectedCategory
 }: Props) {
   return (
@@ -76,6 +78,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory} 
               session={problemListProps.session} 
               contractProgress={problemListProps.contractProgress} 
+              kbFocus={kbFocus}
               kbSelectedCategory={kbSelectedCategory}
             />
           </Drawer>
@@ -87,6 +90,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory}
               session={problemListProps.session}
               contractProgress={problemListProps.contractProgress}
+              kbFocus={kbFocus}
               kbSelectedCategory={kbSelectedCategory}
             />
           </Box>

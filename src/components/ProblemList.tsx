@@ -25,12 +25,21 @@ export interface ProblemListItemProps {
   problem: Problem;
   activeProblem: string | null;
   closeDrawer: () => void;
+  kbFocus: string;
   kbSelectedProblem: string | null;
   attempted: boolean;
   solved: boolean;
 }
 
-function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProblem, attempted, solved }: ProblemListItemProps){
+function ProblemListItem({
+  problem,
+  activeProblem,
+  closeDrawer,
+  kbFocus,
+  kbSelectedProblem,
+  attempted,
+  solved
+}: ProblemListItemProps){
   const itemRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -49,7 +58,7 @@ function ProblemListItem({ problem, activeProblem, closeDrawer, kbSelectedProble
       to={`/problems/${problem.meta.name}`} 
       onClick={closeDrawer}
       sx={
-        problem.meta.name === kbSelectedProblem
+        problem.meta.name === kbSelectedProblem && kbFocus === "content"
           ? { backgroundColor: '#FFE293 !important' }
           : {}
       }
@@ -177,6 +186,7 @@ export interface ProblemListProps {
   session: Session | null;
   contractProgress: ContractProgress;
   progress: Submission[];
+  kbFocus: string;
   kbSelectedProblem: string | null;
   order: string;
   setOrder: (order: string) => void;
@@ -195,6 +205,7 @@ export default function ProblemList({
   session,
   contractProgress,
   progress,
+  kbFocus,
   kbSelectedProblem,
   order,
   setOrder,
@@ -354,6 +365,7 @@ export default function ProblemList({
                   problem={p}
                   activeProblem={activeProblem}
                   closeDrawer={closeDrawer}
+                  kbFocus={kbFocus}
                   kbSelectedProblem={kbSelectedProblem}
                   attempted={unsolvedProblems.includes(p.meta.name)}
                   solved={solvedProblems.includes(p.meta.name)}

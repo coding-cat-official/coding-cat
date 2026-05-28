@@ -40,7 +40,7 @@ export default function Account({ session }: { session: Session }) {
       <Stack
         flex={1}
         alignItems="center"
-        justifyContent="center"
+        justifyContent="flex-start"
         gap={5}
         className="account-wrapper"
       >
