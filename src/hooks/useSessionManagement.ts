@@ -14,6 +14,7 @@ interface UseSessionManagementReturn {
   startSession: (sessionIdFromState: string, durationMinutes: number, exerciseCount: number) => void;
   endSession: () => void;
   formatTime: (seconds: number) => string;
+  setActiveSession: (param: boolean) => void;
 }
 
 export default function useSessionManagement(session: Session | null): UseSessionManagementReturn {
@@ -95,16 +96,15 @@ export default function useSessionManagement(session: Session | null): UseSessio
 
       if (remaining <= 0) {
         clearInterval(sessionTimerRef.current!);
-        setActiveSession(false);
         setSessionStartTime(null);
         setSessionRemainingSeconds(0);
         setSessionTimerRunning(false);
-        navigate('/post-session', {
-          state: {
-            sessionId,
-            timerExpired: true,
-          },
-        });
+        // navigate('/post-session', {
+        //   state: {
+        //     sessionId,
+        //     timerExpired: true,
+        //   },
+        // });
       }
     }, 1000);
 
@@ -125,5 +125,6 @@ export default function useSessionManagement(session: Session | null): UseSessio
     startSession,
     endSession,
     formatTime,
+    setActiveSession
   };
 }
