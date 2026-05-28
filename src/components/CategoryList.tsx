@@ -8,6 +8,7 @@ import CategoryLock from "../utils/CategoryLock";
 import CategoryListItems from "./CategoryListItem";
 import BlogMenuButton from "./BlogMenuButton";
 import { getCategoryListOrdered } from "../utils/getCategoryListOrdered";
+import { fetchCategories } from "../utils/TestCategoriesFetch";
 
 export interface CategoryListProps {
   searchedProblems: Problem[];
@@ -28,6 +29,16 @@ export default function CategoryList({
 }: CategoryListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [fetchedCategories, setFetchedCategories] = useState<Map<string, boolean>>();
+
+  useEffect(() => {
+    (async () => {
+      const categoryResult = await fetchCategories();
+
+      if (!categoryResult) return;
+      setFetchedCategories(categoryResult)
+    })();
+  }, []);
 
   // List of categories that show up in search results.
   const categories = getCategoryListOrdered(searchedProblems
@@ -131,6 +142,7 @@ export default function CategoryList({
           session={session}
           contractProgress={contractProgress}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
         <Box>
           <hr />
@@ -145,6 +157,7 @@ export default function CategoryList({
           session={session}
           contractProgress={contractProgress}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
         <Box>
           <hr />
@@ -159,6 +172,7 @@ export default function CategoryList({
           session={session}
           contractProgress={contractProgress}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
       </>
     </List>

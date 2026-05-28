@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { ListItemButton, Typography } from "@mui/joy";
 import { LockSimple } from "@phosphor-icons/react";
 import { capitalizeString } from "../utils/capitalizeString";
-import { fetchCategories } from "../utils/TestCategoriesFetch";
 
 function CategoryListItem({
   category,
@@ -90,14 +89,13 @@ export default function CategoryListItems({
   onSelectCategory,
   session,
   contractProgress,
-  kbSelectedCategory
+  kbSelectedCategory,
+  fetchedCategories
 }: any) {
   const [controlledCategories, setControlledCategories] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
-      const fetchedCategories = await fetchCategories();
-
       if (!fetchedCategories) return;
 
       // Find the test categories that are toggled false
@@ -109,7 +107,7 @@ export default function CategoryListItems({
 
       setControlledCategories(filteredCategories);
     })();
-  }, [categories]);
+  }, [categories, fetchedCategories]);
 
   return (
     <>
