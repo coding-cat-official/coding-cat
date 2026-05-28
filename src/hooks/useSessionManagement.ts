@@ -11,7 +11,7 @@ interface UseSessionManagementReturn {
   sessionRemainingSeconds: number;
   plannedExerciseCount: number;
   sessionTimerRunning: boolean;
-  startSession: (sessionIdFromState: string, durationMinutes: number, exerciseCount: number) => void;
+  startSession: (sessionIdFromState: string, durationMinutes: number, exerciseCount: number, startTime?: Date, remainingSeconds?: number) => void;
   endSession: () => void;
   formatTime: (seconds: number) => string;
   setActiveSession: (param: boolean) => void;
@@ -30,15 +30,17 @@ export default function useSessionManagement(session: Session | null): UseSessio
   const [plannedExerciseCount, setPlannedExerciseCount] = useState<number>(0);
   const [sessionTimerRunning, setSessionTimerRunning] = useState(false);
 
-  const startSession = (sessionIdFromState: string, durationMinutes: number, exerciseCount: number) => {
-    setSessionId(sessionIdFromState);
-    setSessionDuration(durationMinutes);
-    setPlannedExerciseCount(exerciseCount);
-    setSessionStartTime(new Date());
-    setSessionRemainingSeconds(durationMinutes * 60);
-    setActiveSession(true);
-    setSessionTimerRunning(true);
-  };
+  const startSession = useCallback((sessionIdFromState: string, durationMinutes: number, exerciseCount: number, startTime: Date = new Date(), remainingSeconds?: number,) => {
+      setSessionId(sessionIdFromState);
+      setSessionDuration(durationMinutes);
+      setPlannedExerciseCount(exerciseCount);
+      setSessionStartTime(startTime);
+      setSessionRemainingSeconds(remainingSeconds ?? durationMinutes * 60);
+      setActiveSession(true);
+      setSessionTimerRunning(true);
+    },
+    [],
+  );
 
   const endSession = useCallback(() => {
     if (sessionTimerRef.current) clearInterval(sessionTimerRef.current);
@@ -49,6 +51,51 @@ export default function useSessionManagement(session: Session | null): UseSessio
     setSessionRemainingSeconds(0);
     setSessionTimerRunning(false);
   }, []);
+
+  const restoreIncompleteSession = useCallback(
+    async (sessionIdToRestore?: string) => {
+      if (!session?.user) return;
+
+      let sessionQuery = supabase
+        .from('sessions')
+        .select('id, start_time, planned_duration_minutes, exercise_goals')
+        .eq('profile_id', session.user.id)
+        .not('pre_session_reflection', 'is', null)
+        .is('post_session_reflection', null);
+
+      if (sessionIdToRestore) {
+        sessionQuery = sessionQuery.eq('id', sessionIdToRestore);
+      } else {
+        sessionQuery = sessionQuery.order('start_time', { ascending: false }).limit(1);
+      }
+
+      const { data, error } = await sessionQuery.maybeSingle();
+      if (error || !data) return;
+      const startTime = new Date(data.start_time);
+      const elapsedSeconds = Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
+      const durationSeconds = data.planned_duration_minutes * 60;
+      const remainingSeconds = Math.max(0, durationSeconds - elapsedSeconds);
+
+      if (remainingSeconds <= 0) {
+        await supabase
+          .from('sessions')
+          .update({ end_time: new Date().toISOString() })
+          .eq('id', data.id)
+          .eq('profile_id', session.user.id);
+        endSession();
+        navigate('/post-session', {
+          state: {
+            sessionId: data.id,
+            timerExpired: true,
+          },
+        });
+        return;
+      }
+
+      startSession(data.id, data.planned_duration_minutes, data.exercise_goals, startTime, remainingSeconds);
+    },
+    [endSession, navigate, session?.user, startSession],
+  );
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -62,23 +109,26 @@ export default function useSessionManagement(session: Session | null): UseSessio
     const locationState = location.state as any;
     const sessionIdFromState = locationState?.sessionId;
     const fromPreSession = locationState?.fromPreSession;
+    const fromPostSession = locationState?.fromPostSession;
 
-    if (location.pathname !== '/' || !fromPreSession || !session?.user) return;
+    if (location.pathname !== '/' || !session?.user) return;
 
-    const fetchSessionData = async () => {
-      const { data, error } = await supabase
-        .from('sessions')
-        .select('planned_duration_minutes, exercise_goals')
-        .eq('id', sessionIdFromState)
-        .eq('profile_id', session.user.id)
-        .single();
-
-      if (!error && data) {
-        startSession(sessionIdFromState, data.planned_duration_minutes, data.exercise_goals);
+    if (fromPostSession) {
+      if (activeSession) {
+        endSession();
       }
-    };
-    fetchSessionData();
-  }, [location.pathname, location.state, session?.user, navigate]);
+      return;
+    }
+
+    if (activeSession) return;
+
+    if (fromPreSession && sessionIdFromState) {
+      void restoreIncompleteSession(sessionIdFromState);
+      return;
+    }
+
+    void restoreIncompleteSession();
+  }, [activeSession, endSession, location.pathname, location.state, restoreIncompleteSession, session?.user]);
   // Handle session reset when coming back from PostSessionForm
   useEffect(() => {
     if (location.pathname === '/' && activeSession && (location.state as any)?.fromPostSession) {
@@ -95,16 +145,26 @@ export default function useSessionManagement(session: Session | null): UseSessio
       setSessionRemainingSeconds(remaining);
 
       if (remaining <= 0) {
+        const expiredSessionId = sessionId;
+
         clearInterval(sessionTimerRef.current!);
         setSessionStartTime(null);
         setSessionRemainingSeconds(0);
         setSessionTimerRunning(false);
-        // navigate('/post-session', {
-        //   state: {
-        //     sessionId,
-        //     timerExpired: true,
-        //   },
-        // });
+        if (expiredSessionId) {
+          supabase
+            .from('sessions')
+            .update({ end_time: new Date().toISOString() })
+            .eq('id', expiredSessionId)
+            .then(() => {
+              navigate('/post-session', {
+                state: {
+                  sessionId: expiredSessionId,
+                  timerExpired: true,
+                },
+              });
+            });
+        }
       }
     }, 1000);
 
