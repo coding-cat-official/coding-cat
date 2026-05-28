@@ -51,8 +51,10 @@ export default function useSessionManagement(session: Session | null): UseSessio
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    //Below is the antiquated return statement, kept just in case
+    //const remainingSeconds = seconds % 60;
+    //return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes} min`
   };
   // Handle session start when coming back from PreSessionForm
   useEffect(() => {
