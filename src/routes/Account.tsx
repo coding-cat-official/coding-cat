@@ -52,7 +52,6 @@ export default function Account({ session }: { session: Session }) {
         className="account-wrapper"
       >
         <Stack direction="column" alignItems="center" gap={1}>
-          <Typography level="h2">Profile Picture</Typography>
           <UserInfo refetchProfile={refetchProfile} />
         </Stack>
         <Stack direction="column" alignItems="center" gap={1}>

@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
-import { Link, Navigate, useOutletContext } from 'react-router-dom';
+import { Navigate, useOutletContext } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 
 /**
@@ -75,9 +75,6 @@ export default function Login() {
           {loading ? <span>Loading</span> : <span>Login</span>}
         </Button>
       </form>
-      <Link to="/change-password-req">
-        <Button>Forgot your password?</Button>
-      </Link>
       { !!error && <Typography color="danger">{error}</Typography> }
       { !!success && <Typography color="success">{success}</Typography> }
     </Stack>

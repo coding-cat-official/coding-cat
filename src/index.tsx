@@ -19,8 +19,6 @@ import PreSessionForm from './components/PreSessionForm';
 import PostSessionForm from './components/PostSessionForm';
 import AdminWrapper, { adminLoader } from './routes/AdminWrapper';
 import AdminPage from './routes/AdminPage';
-import ChangePassword from './routes/ChangePassword';
-import ReqPasswordChange from './routes/ReqPasswordChange';
 import AuthCallback from './routes/AuthCallback';
 import Auth from './routes/Auth';
 import BlogPostView, { blogPostLoader } from './routes/BlogPostView';
@@ -67,10 +65,6 @@ const router = createHashRouter([
         element: <Login />
       },
       {
-        path: "change-password-req",
-        element: <ReqPasswordChange />
-      },
-      {
         path: "profile",
         element: <AccountWrapper />
       },
@@ -94,10 +88,6 @@ const router = createHashRouter([
       {
         path: "callback",
         element: <AuthCallback />
-      },
-      {
-        path: "change-password",
-        element: <ChangePassword />
       }
     ]
   }
