@@ -103,14 +103,12 @@ export default function CategoryList({
         return categoryLock.string_1;
       case "String-2":
         return categoryLock.string_2;
-      case "String-3":
-        return categoryLock.string_3;
       case "List-1: Indexing":
         return categoryLock.list_1;
       case "List-2: Iterating":
         return categoryLock.list_2;
-      case "List-3: Complex Loop":
-        return categoryLock.list_3;
+      case "Level-3: Complex Problems":
+        return categoryLock.level_3;
       case "Mutation":
         return categoryLock.mutation;
       case "Haystack":
