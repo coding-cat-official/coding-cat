@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, ModalClose, DialogTitle, DialogContent, Select, Option, Stack, Box, Button } from '@mui/joy';
+import { Drawer, ModalClose, DialogTitle, DialogContent, Select, Option, Stack, Box, Button, Typography } from '@mui/joy';
 import CategoryList from '../CategoryList';
 import CustomSearch from '../ProblemSearch';
 import ProblemList from '../ProblemList';
@@ -52,7 +52,8 @@ export default function SidebarDrawer({
         <DialogTitle level="h1" sx={{ fontFamily: '"Silkscreen", monospace', padding: '5px', fontSize: '30pt' }}>
           Coding Cat
         </DialogTitle>
-        <Stack marginRight="5em" direction="row" gap={3} className="problemList-search-filter">
+        <Stack marginRight="5em" alignItems="center" direction="row" gap={3} className="problemList-search-filter">
+          <Typography level="body-md">Use the Arrow Keys to navigate and Enter to select</Typography>
           <Select sx={{ width: '150px', fontWeight: 'normal', fontFamily: 'Silkscreen' }} placeholder="Difficulty" value={difficulty} onChange={(e, newValue) => setDifficulty(newValue || '')}>
             <Option sx={{ fontFamily: 'Silkscreen' }} value="all">All</Option>
             <Option sx={{ fontFamily: 'Silkscreen' }} value="easy">Easy</Option>
