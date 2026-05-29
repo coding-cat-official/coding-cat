@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { Box, Button, FormLabel, Input, Stack, Typography } from '@mui/joy';
-import { Link, Navigate, useOutletContext } from 'react-router-dom';
+import { Navigate, useOutletContext } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 
 /**
@@ -9,9 +9,8 @@ import { Session } from '@supabase/supabase-js';
  */
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -19,7 +18,7 @@ export default function Login() {
   // Clear data on unmount so it doesn't stay in memory
   useEffect(() => {
     return () => {
-      setEmail("");
+      setUsername("");
       setPassword("");
     };
   }, []);
@@ -34,10 +33,15 @@ export default function Login() {
     setSuccess("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    const { error } = username.includes("@")
+    ? await supabase.auth.signInWithPassword({
+        email: username,
+        password: password
+      })
+    : await supabase.auth.signInWithPassword({
+        email: `${username}@coding-cat.internal`,
+        password: password
+      });
 
     if (error) {
       setError(error.message);
@@ -56,11 +60,11 @@ export default function Login() {
           <FormLabel>Email</FormLabel>
           <Input
             className="inputField"
-            type="email"
-            placeholder="Enter your email..."
-            value={email}
+            type="text"
+            placeholder="Enter your username..."
+            value={username}
             required={true}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
           <Input
@@ -76,9 +80,6 @@ export default function Login() {
           {loading ? <span>Loading</span> : <span>Login</span>}
         </Button>
       </form>
-      <Link to="/change-password-req">
-        <Button>Forgot your password?</Button>
-      </Link>
       { !!error && <Typography color="danger">{error}</Typography> }
       { !!success && <Typography color="success">{success}</Typography> }
     </Stack>

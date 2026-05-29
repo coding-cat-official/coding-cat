@@ -371,7 +371,7 @@ export default function App() {
               setActiveProblem, session, isAdmin, refetchProgress: fetchProgress,
               refetchProfile: fetchProfile, activeSession, sessionId, sessionRemainingSeconds,
               sessionDuration, plannedExerciseCount, problemSessionStats, setProblemSessionStats,
-              progress, sessionTimerRunning,
+              progress, sessionTimerRunning, userData
             }}
           />
         </Box>
