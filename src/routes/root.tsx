@@ -18,7 +18,6 @@ import AppHeader from '../components/layout/AppHeader';
 import sortProblems from '../utils/sortProblems';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
-import getBlogCategory from '../utils/blogs/getBlogCategory';
 import { getOrderedBlogPosts } from '../utils/blogs/getOrderedBlogPosts';
 
 export default function App() {
