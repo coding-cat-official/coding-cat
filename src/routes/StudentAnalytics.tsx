@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Stack, Switch, Typography } from "@mui/joy";
+import { Box, Card, Divider, Stack, Switch, Typography } from "@mui/joy";
 import CategoriesBarGraph from "../components/profile/progress/CategoriesBarGraph";
 import HeatMap from "../components/profile/progress/heatmap/HeatMap";
 import ActivityGraph from "../components/profile/progress/ActivityGraph";
@@ -120,9 +120,6 @@ export function StudentAnalytics() {
             <Box sx={studentInfoStyles}>
               <Typography level="title-md" sx={{ color: "#111827" }}>
                 {profileData.username ?? "No Username Found"}
-              </Typography>
-              <Typography sx={{ color: "#4b5563" }}>
-                Student ID: {profileData.student_id ?? "No Student ID Found"}
               </Typography>
               <Typography level="body-sm" sx={{ color: "#6b7280" }}>
                 Last updated: {new Date(profileData.updated_at).toLocaleDateString()}

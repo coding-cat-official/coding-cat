@@ -35,7 +35,7 @@ export default function AdminPage() {
   const links: ModalMetaData[] = [
     {
       title: "View Student Information",
-      desc: "Enter the email/student id of the student you want to a detailed view of",
+      desc: "Enter the username of the student you want to a detailed view of",
       extraNodes: [<SearchBar />],
     },
     {
