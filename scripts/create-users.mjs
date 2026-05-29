@@ -86,6 +86,7 @@ async function main() {
     }
   }
   console.log(`Done. ${successCount}/${count} users created successfully.`);
+  console.log("Note: usernames are not case-sensitive, passwords are")
 }
 
 main();
