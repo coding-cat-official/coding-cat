@@ -33,10 +33,15 @@ export default function Login() {
     setSuccess("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: `${username}@coding-cat.internal`,
-      password: password
-    });
+    const { error } = username.includes("@")
+    ? await supabase.auth.signInWithPassword({
+        email: username,
+        password: password
+      })
+    : await supabase.auth.signInWithPassword({
+        email: `${username}@coding-cat.internal`,
+        password: password
+      });
 
     if (error) {
       setError(error.message);
