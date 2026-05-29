@@ -11,6 +11,7 @@ import OtherStats from "../components/profile/progress/other-stats/OtherStats";
 import { useOutletContext } from "react-router-dom";
 import SessionReflections from "../components/profile/sessions/SessionReflections";
 import useActivityTracker from "../hooks/useActivityTracker";
+import { UserData } from "../types";
 
 /**
  * The `Account` component handles everything related to the profile page.
@@ -18,6 +19,7 @@ import useActivityTracker from "../hooks/useActivityTracker";
  */
 export default function Account({ session }: { session: Session }) {
   const { refetchProfile } = useOutletContext<{ refetchProfile: () => Promise<void> }>();
+  const { userData } = useOutletContext<{ userData: UserData | null }>();
 
   // Change "reflections" into something else
   const [view, setView] = useState<"reflections" | "activity" | "sessions">("reflections");
@@ -52,7 +54,7 @@ export default function Account({ session }: { session: Session }) {
         className="account-wrapper"
       >
         <Stack direction="column" alignItems="center" gap={1}>
-          <UserInfo refetchProfile={refetchProfile} />
+          <UserInfo userData={userData} refetchProfile={refetchProfile} />
         </Stack>
         <Stack direction="column" alignItems="center" gap={1}>
           <Typography level="h2">Contract</Typography>

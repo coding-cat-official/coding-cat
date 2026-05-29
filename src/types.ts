@@ -230,3 +230,8 @@ export interface SessionReflectionRecord {
   pre_session_reflection: FormAnswers | null;
   post_session_reflection: FormAnswers | null;
 }
+
+export interface UserData {
+  name: string;
+  pfp_id: number;
+}
