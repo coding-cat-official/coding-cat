@@ -43,7 +43,7 @@ export default function PasswordProtected({
   order,
   setOrder,
   orderBy,
-  setOrderBy
+  setOrderBy,
 }: ProblemListProps) {
   const [passwordValue, setPasswordValue] = useState("");
   const [error, setError] = useState("");
@@ -51,16 +51,20 @@ export default function PasswordProtected({
 
   const handleClick = async () => {
     //Generate a hash and compare it w/ the user entered password
-    const hashedUserPassword = await hashPassword(passwordValue)
+    const hashedUserPassword = await hashPassword(passwordValue);
 
-    const { data, error } = await supabase.from("settings").select();
+    const { data: actualPassword, error } = await supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "test-password")
+      .single();
 
     if (error) {
       setError("Failed to fetch password. Please try again.");
       return;
     }
 
-    if (hashedUserPassword === data?.[0]?.value) {
+    if (hashedUserPassword === actualPassword.value) {
       handleUnlock();
     } else {
       setError("Incorrect password. Please try again.");
