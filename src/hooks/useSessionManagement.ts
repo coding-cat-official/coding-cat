@@ -76,7 +76,7 @@ export default function useSessionManagement(session: Session | null): UseSessio
       const remainingSeconds = Math.max(0, durationSeconds - elapsedSeconds);
 
       if (remainingSeconds <= 0) {
-        // Timer already passed, but keep the session around so the user can
+        // Timer already passed, but keep the session so the user can
         // still click the button and submit the post-session reflection.
         setActiveSession(true);
         setSessionId(data.id);
@@ -87,7 +87,6 @@ export default function useSessionManagement(session: Session | null): UseSessio
         setSessionTimerRunning(false);
         return;
       }
-
       startSession(data.id, data.planned_duration_minutes, data.exercise_goals, startTime, remainingSeconds);
     },
     [session?.user, startSession],
@@ -115,16 +114,14 @@ export default function useSessionManagement(session: Session | null): UseSessio
       }
       return;
     }
-
     if (activeSession) return;
-
     if (fromPreSession && sessionIdFromState) {
       void restoreIncompleteSession(sessionIdFromState);
       return;
     }
-
     void restoreIncompleteSession();
   }, [activeSession, endSession, location.pathname, location.state, restoreIncompleteSession, session?.user]);
+  
   // Handle session reset when coming back from PostSessionForm
   useEffect(() => {
     if (location.pathname === '/' && activeSession && (location.state as any)?.fromPostSession) {
