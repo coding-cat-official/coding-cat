@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
-
-interface UserData {
-  name: string;
-  pfp_id: number;
-}
+import { UserData } from '../types';
 
 interface UseAuthReturn {
   session: Session | null;

@@ -64,7 +64,16 @@ Once the program is finished:
 - Please, for Eric's sake, make sure you didn't break anything
 
 *Note: This program was primarily made with the intention of making "coding" and "haystack"-type problems.* 
-*If you make mutation problems, the finished problem directory will be placed correctly, **but will be missing the mutation.py files***
+*If you make mutation problems, the finished problem directory will be placed correctly,* **but will be missing the mutation.py files**
+
+
+### Create New Users
+
+- To create new users, ensure you have a service role key in your .env as `SUPABASE_SERVICE_ROLE_KEY`
+  - This can be found right under the Anon key, see "Run Locally" above **THE VALUE IS SECRET, DO NOT SHARE**
+- Run `node scripts/create-users.mjs <numberOfUsers>`
+- The script will print out the new users login credentials
+*Note: As the app no longer uses emails, resetting a password would need to be done manually in SQL.* **Please ask users to be careful and not lose their creds**
 
 
 ### Modify Contract
