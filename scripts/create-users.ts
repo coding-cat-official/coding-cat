@@ -22,6 +22,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 });
 
 const usernameParts = JSON.parse(readFileSync(join(__dirname, "./username-words.json"), "utf-8"));
+const usedUsernames: string[] = [];
 
 function generateAdjAnimalCombo() {
   const adjective = usernameParts.adjectives[
@@ -34,7 +35,18 @@ function generateAdjAnimalCombo() {
   return `${adjective}${animal}`;
 }
 
-async function createUser(username, password) {
+function generateUniqueUsername() {
+  let username;
+
+  do{
+    username = generateAdjAnimalCombo() + Math.floor(Math.random() * 1000);
+  }while(usedUsernames.includes(username));
+  usedUsernames.push(username);
+
+  return username;
+}
+
+async function createUser(username: string, password: string) {
   const email = `${username}@${EMAIL_DOMAIN}`;
 
   const { data, error } = await supabase.auth.admin.createUser({
@@ -77,10 +89,10 @@ async function main() {
   let successCount = 0;
 
   for (let i = 0; i < count; i++) {
-    const username = generateAdjAnimalCombo() + Math.floor(Math.random() * 1000);
+    const username = generateUniqueUsername();
     const password = generateAdjAnimalCombo();
     const ok = await createUser(username, password);
-    if (true) {
+    if (ok) {
       console.log(`User: ${username}\nPass: ${password}\n`);
       successCount++;
     }
