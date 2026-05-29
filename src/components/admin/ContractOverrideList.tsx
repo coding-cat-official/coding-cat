@@ -21,7 +21,7 @@ export default function ContractOverrideList() {
       setProfilesWithOverrides(profiles);
     };
     fetchProfileWithOverrides();
-  });
+  }, []);
 
   const disableOverride = async (profile_id: string) => {
     const { error } = await supabase
