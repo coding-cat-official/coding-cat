@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
 
@@ -18,7 +18,6 @@ interface UseSessionManagementReturn {
 }
 
 export default function useSessionManagement(session: Session | null): UseSessionManagementReturn {
-  const navigate = useNavigate();
   const location = useLocation();
   const sessionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -77,24 +76,21 @@ export default function useSessionManagement(session: Session | null): UseSessio
       const remainingSeconds = Math.max(0, durationSeconds - elapsedSeconds);
 
       if (remainingSeconds <= 0) {
-        await supabase
-          .from('sessions')
-          .update({ end_time: new Date().toISOString() })
-          .eq('id', data.id)
-          .eq('profile_id', session.user.id);
-        endSession();
-        navigate('/post-session', {
-          state: {
-            sessionId: data.id,
-            timerExpired: true,
-          },
-        });
+        // Timer already passed, but keep the session around so the user can
+        // still click the button and submit the post-session reflection.
+        setActiveSession(true);
+        setSessionId(data.id);
+        setSessionDuration(data.planned_duration_minutes);
+        setPlannedExerciseCount(data.exercise_goals);
+        setSessionStartTime(null);
+        setSessionRemainingSeconds(0);
+        setSessionTimerRunning(false);
         return;
       }
 
       startSession(data.id, data.planned_duration_minutes, data.exercise_goals, startTime, remainingSeconds);
     },
-    [endSession, navigate, session?.user, startSession],
+    [session?.user, startSession],
   );
 
   const formatTime = (seconds: number): string => {
@@ -145,26 +141,10 @@ export default function useSessionManagement(session: Session | null): UseSessio
       setSessionRemainingSeconds(remaining);
 
       if (remaining <= 0) {
-        const expiredSessionId = sessionId;
-
         clearInterval(sessionTimerRef.current!);
         setSessionStartTime(null);
         setSessionRemainingSeconds(0);
         setSessionTimerRunning(false);
-        if (expiredSessionId) {
-          supabase
-            .from('sessions')
-            .update({ end_time: new Date().toISOString() })
-            .eq('id', expiredSessionId)
-            // .then(() => {
-            //   navigate('/post-session', {
-            //     state: {
-            //       sessionId: expiredSessionId,
-            //       timerExpired: true,
-            //     }
-            //   });
-            // });
-        }
       }
     }, 1000);
 
