@@ -36,12 +36,18 @@ export default function Account({ session }: { session: Session }) {
   } = useActivityTracker(user);
 
   return (
-    <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
+    <Stack 
+      width="100%" 
+      height="100%"
+      flex={1}
+      alignItems="flex-start"
+      direction="row"
+      className="profile-wrapper"
+    >
       <Stack
         flex={1}
         flexDirection="column"
         alignItems="center"
-        justifyContent="flex-start"
         gap={5}
         className="account-wrapper"
       >
