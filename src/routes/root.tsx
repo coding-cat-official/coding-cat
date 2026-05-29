@@ -232,8 +232,8 @@ export default function App() {
           if (event.key === "Enter") {
             event.preventDefault();
             if (kbSelectedBlog) {
+              handleSelectedProblem(kbSelectedBlog);
               navigate(`/blogs/${kbSelectedBlog}`);
-              setDrawerOpen(false);
             }
           }
         } else {

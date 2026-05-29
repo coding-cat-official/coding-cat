@@ -39,7 +39,7 @@ function BlogListItem({
       to={`/blogs/${blog.meta.blog_slug}`}
       onClick={closeDrawer}
       sx={{
-        ...(blog.meta.blog_slug === kbSelectedBlog && kbFocus === "category" &&
+        ...(blog.meta.blog_slug === kbSelectedBlog && kbFocus === "content" &&
           { backgroundColor: '#FFE293 !important' })
       }}
     >
