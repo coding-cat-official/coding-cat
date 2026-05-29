@@ -5,6 +5,7 @@ import ContractEdit from "./ContractEdit";
 import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
+import { fetchContractPerms } from "../../../utils/contractPerms";
 
 interface ContractProps {
   categoriesData: CategoryData[];
@@ -122,6 +123,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
         setContract={setContract}
         featureMap={featureMap}
         problemCountByCategory={problemCountByCategory}
+        profileData={profileData}
       />
     </>
   );
@@ -136,6 +138,7 @@ interface ContractModalProps {
   onSave: () => Promise<void>;
   featureMap: Record<string, boolean>;
   problemCountByCategory: Record<string, number>;
+  profileData?: StudentRecord;
 }
 
 function ContractModal({
@@ -147,26 +150,25 @@ function ContractModal({
   onSave,
   featureMap,
   problemCountByCategory,
+  profileData
 }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
 
   useEffect(() => {
     const checkIfReadOnly = async () => {
-      const { data: readOnlySetting, error } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "contract-read-only");
-
-      if (error) {
-        throw Error("Contract Read-Only Setting cannot be Defined", error);
-      } else {
-        const readOnlyValue = readOnlySetting?.[0]?.value as string;
-        setIsReadOnly(JSON.parse(readOnlyValue));
+      try {
+        if(profileData && profileData.contract_override === true){
+          setIsReadOnly(false)
+        } else {
+          setIsReadOnly(await fetchContractPerms());
+        }
+      } catch (error) {
+        console.error("Contract read-only setting could not be loaded", error);
       }
     };
     checkIfReadOnly();
-  }, [isReadOnly]);
+  }, []);
 
   /**
    * This function enforces a max and min of submitted values
