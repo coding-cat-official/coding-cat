@@ -25,7 +25,7 @@ export const preSessionQuestions = [
         id: "mood-2",
         text: "How focused are you feeling today on a scale of 1-10? It’s okay to not always feel focused! Keep in mind this rating as you plan today’s study session.",
         type: "radio",
-        options: Array.from({ length: 10}, (_, i) => ({
+        options: Array.from({ length: 10 }, (_, i) => ({
             label: String(i + 1),
             value: String(i + 1)
         })),
@@ -75,8 +75,7 @@ export const preSessionQuestions = [
             { label: "String-1", value: "string-1" },
             { label: "List-2", value: "list-2" },
             { label: "String-2", value: "string-2" },
-            { label: "List-3", value: "list-3" },
-            { label: "String-3", value: "string-3" }
+            { label: "Level-3", value: "level-3" }
         ],
         category: "goals",
         randomizeable: false

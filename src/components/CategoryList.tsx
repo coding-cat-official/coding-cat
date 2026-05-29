@@ -8,6 +8,7 @@ import CategoryLock from "../utils/CategoryLock";
 import CategoryListItems from "./CategoryListItem";
 import BlogMenuButton from "./BlogMenuButton";
 import { getCategoryListOrdered } from "../utils/getCategoryListOrdered";
+import { fetchCategories } from "../utils/TestCategoriesFetch";
 
 export interface CategoryListProps {
   searchedProblems: Problem[];
@@ -15,6 +16,7 @@ export interface CategoryListProps {
   onSelectCategory: (cat: string) => void;
   session: Session | null;
   contractProgress: ContractProgress;
+  kbFocus: string;
   kbSelectedCategory: string | null;
 }
 
@@ -24,10 +26,21 @@ export default function CategoryList({
   onSelectCategory,
   session,
   contractProgress,
+  kbFocus,
   kbSelectedCategory
 }: CategoryListProps) {
   const [error, setError] = useState("");
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [fetchedCategories, setFetchedCategories] = useState<Map<string, boolean>>();
+
+  useEffect(() => {
+    (async () => {
+      const categoryResult = await fetchCategories();
+
+      if (!categoryResult) return;
+      setFetchedCategories(categoryResult)
+    })();
+  }, []);
 
   // List of categories that show up in search results.
   const categories = getCategoryListOrdered(searchedProblems
@@ -80,6 +93,8 @@ export default function CategoryList({
    */
   function mapCategoryToLock(category: string) {
     switch (category) {
+      case "Level 0":
+        return categoryLock.level_0;
       case "Fundamentals":
         return categoryLock.fundamentals;
       case "Logic":
@@ -88,20 +103,18 @@ export default function CategoryList({
         return categoryLock.string_1;
       case "String-2":
         return categoryLock.string_2;
-      case "String-3":
-        return categoryLock.string_3;
       case "List-1: Indexing":
         return categoryLock.list_1;
       case "List-2: Iterating":
         return categoryLock.list_2;
-      case "List-3: Complex Loop":
-        return categoryLock.list_3;
+      case "Level-3: Complex Problems":
+        return categoryLock.level_3;
       case "Mutation":
         return categoryLock.mutation;
       case "Haystack":
         return categoryLock.haystack;
       default:
-        return categoryLock.fundamentals;
+        return categoryLock.level_0;
     }
   }
 
@@ -116,6 +129,7 @@ export default function CategoryList({
           category="blogs"
           activeCategory={activeCategory}
           onSelectCategory={onSelectCategory}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
         />
         <Box>
@@ -130,7 +144,9 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
         <Box>
           <hr />
@@ -144,7 +160,9 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
         <Box>
           <hr />
@@ -158,7 +176,9 @@ export default function CategoryList({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
+          fetchedCategories={fetchedCategories}
         />
       </>
     </List>

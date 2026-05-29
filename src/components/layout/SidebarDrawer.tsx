@@ -5,7 +5,7 @@ import CustomSearch from '../ProblemSearch';
 import ProblemList from '../ProblemList';
 import BlogList from '../BlogList';
 import PasswordProtected from '../../routes/PasswordProtected';
-import { Problem, BlogPost } from '../../types';
+import { Problem } from '../../types';
 import { TEST_CATEGORY_PATTERN } from '../../utils/constants';
 
 interface Props {
@@ -18,13 +18,11 @@ interface Props {
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   searchedProblems: Problem[];
-  searchedBlogs: BlogPost[];
   activeCategory: string | null;
   handleSelectedCategory: (cat: string) => void;
   problemListProps: any;
   blogListProps: any;
-  selectedTab: string;
-  setSelectedTab: React.Dispatch<React.SetStateAction<string>>;
+  kbFocus: string;
   kbSelectedCategory: string | null;
 }
 
@@ -38,13 +36,11 @@ export default function SidebarDrawer({
   query,
   setQuery,
   searchedProblems,
-  searchedBlogs,
   activeCategory,
   handleSelectedCategory,
   problemListProps,
   blogListProps,
-  selectedTab,
-  setSelectedTab,
+  kbFocus,
   kbSelectedCategory
 }: Props) {
   return (
@@ -76,6 +72,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory} 
               session={problemListProps.session} 
               contractProgress={problemListProps.contractProgress} 
+              kbFocus={kbFocus}
               kbSelectedCategory={kbSelectedCategory}
             />
           </Drawer>
@@ -87,6 +84,7 @@ export default function SidebarDrawer({
               onSelectCategory={handleSelectedCategory}
               session={problemListProps.session}
               contractProgress={problemListProps.contractProgress}
+              kbFocus={kbFocus}
               kbSelectedCategory={kbSelectedCategory}
             />
           </Box>
