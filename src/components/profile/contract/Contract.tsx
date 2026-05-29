@@ -168,7 +168,7 @@ function ContractModal({
       }
     };
     checkIfReadOnly();
-  }, []);
+  }, [profileData]);
 
   /**
    * This function enforces a max and min of submitted values
