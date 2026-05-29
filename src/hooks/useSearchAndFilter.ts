@@ -28,7 +28,7 @@ export default function useSearchAndFilter(problems: Problem[]): UseSearchAndFil
   const [query, setQuery] = useState('');
   const [difficulty, setDifficulty] = useState('');
 
-  const [activeCategory, setActiveCategory] = useState<string | null>(() => 'Fundamentals');
+  const [activeCategory, setActiveCategory] = useState<string | null>(() => 'Level 0');
   const [activeProblem, setActiveProblem] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);

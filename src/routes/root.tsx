@@ -338,13 +338,10 @@ export default function App() {
         query={query}
         setQuery={setQuery}
         searchedProblems={searchedProblems}
-        searchedBlogs={searchedBlogs}
         activeCategory={activeCategory}
         handleSelectedCategory={handleSelectedCategory}
         problemListProps={problemListProps}
         blogListProps={blogListProps}
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
         kbFocus={kbFocus}
         kbSelectedCategory={kbSelectedCategory}
       />
