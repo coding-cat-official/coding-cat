@@ -48,7 +48,7 @@ export default function ContractOverrideList() {
               sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
             >
               <Typography>
-                {profile.username}({profile.student_id})
+                {profile.username}
               </Typography>
               <Button onClick={() => disableOverride(profile.profile_id)}> Disable </Button>
             </ListItem>
