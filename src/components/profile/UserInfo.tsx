@@ -1,7 +1,7 @@
 import { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import { Button, FormLabel, Input, Stack, Typography } from "@mui/joy";
+import { Button, Stack, Typography } from "@mui/joy";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
 
@@ -16,8 +16,6 @@ export const ALL_PFPS = [
 
 export default function UserInfo({ refetchProfile }: { refetchProfile: Function }) {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [name, setName] = useState("");
-  const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -41,17 +39,15 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, student_id, pfp_id') 
+        .select('username, pfp_id') 
         .eq('profile_id', user.id)
         .single();
 
       if (!ignore) {
         if (error) {
-          alert(error.message);
+          setError(error.message);
           console.warn(error);
         } else if (data) {
-          setName(data.username ?? "Unnamed User");
-          setId(data.student_id ?? "");
           setPfpFileName(ALL_PFPS[data.pfp_id] ?? 0);
           setPfpArrPos(data.pfp_id ?? 0);
         }
@@ -79,8 +75,6 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
 
     const updates = {
       profile_id: user.id,
-      username: name,
-      student_id: id,
       updated_at: new Date(),
       pfp_id: pfpArrPos
     };
@@ -115,32 +109,25 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
         isUpdating ? 
         <form onSubmit={updateProfile} className="form-widget">
           <Stack direction="column" gap={1} alignItems="center">
-            <Typography level="h2">Edit Profile</Typography>
-            <FormLabel>Profile Picture</FormLabel>
-            <ProfileAvatar 
-              fileName={tempPfp}
-              height={pfpHeight}
-              width={pfpWidth}
-            />
-            <Stack flexDirection="row" gap={0.5}>
-              <Button onClick={() => iteratePfp(-1)}>Prev</Button>
-              <Button onClick={() => iteratePfp(1)}>Next</Button>
+            <Stack flexDirection="row" alignItems="center" gap={0.5}>
+              <Button 
+                onClick={() => iteratePfp(-1)}
+                sx={{
+                  height: "50%"
+                }}
+              >←</Button>
+              <ProfileAvatar 
+                fileName={tempPfp}
+                height={pfpHeight}
+                width={pfpWidth}
+              />
+              <Button 
+                onClick={() => iteratePfp(1)}
+                sx={{
+                  height: "50%"
+                }}
+              >→</Button>
             </Stack>
-            <FormLabel>Name</FormLabel>
-            <Input
-              placeholder="Enter your name..."
-              value={name}
-              required
-              onChange={(e) => setName(e.target.value)}
-            />
-            <FormLabel>Student ID</FormLabel>
-            <Input
-              placeholder="Enter your student ID..."
-              value={id}
-              required
-              onChange={(e) => setId(e.target.value)}
-            />
-
             <Stack direction="row" gap={1}>
               <Button disabled={loading} type="submit">
                 { loading ? 'Loading ...' : 'Update' }
@@ -152,19 +139,16 @@ export default function UserInfo({ refetchProfile }: { refetchProfile: Function 
           </Stack>
         </form> :
         <>
-          <ProfileAvatar 
-            fileName={pfpFileName}
-            height={pfpHeight}
-            width={pfpWidth}
-          />
           <Stack alignItems="center">
-            <Typography level="h2">{name || "Unnamed User"}</Typography>
-            <Typography>{session?.user.email}</Typography>
-            <Typography>#{id}</Typography>
-            <Typography color="success">{success}</Typography>
+            <ProfileAvatar 
+              fileName={pfpFileName}
+              height={pfpHeight}
+              width={pfpWidth}
+            />
             <Button onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
               Edit
             </Button>
+            <Typography color="success">{success}</Typography>
           </Stack>
         </>
       }

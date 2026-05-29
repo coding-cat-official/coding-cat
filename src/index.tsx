@@ -13,7 +13,6 @@ import ErrorPage from './error';
 import { theme } from './theme';
 
 import Login from './routes/Login';
-import Register from './routes/Register';
 import AccountWrapper from './routes/AccountWrapper';
 import MainTutorial from './components/MainTutorial';
 import PreSessionForm from './components/PreSessionForm';
@@ -70,10 +69,6 @@ const router = createHashRouter([
       {
         path: "change-password-req",
         element: <ReqPasswordChange />
-      },
-      {
-        path: "register",
-        element: <Register />
       },
       {
         path: "profile",

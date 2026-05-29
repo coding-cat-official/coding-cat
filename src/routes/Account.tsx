@@ -39,16 +39,20 @@ export default function Account({ session }: { session: Session }) {
     <Stack width="100%" height="100%" direction="row" className="profile-wrapper">
       <Stack
         flex={1}
+        flexDirection="column"
         alignItems="center"
         justifyContent="center"
         gap={5}
         className="account-wrapper"
       >
-        <UserInfo refetchProfile={refetchProfile} />
-         <Stack direction="row" alignItems="center" gap={1}>
-          <Typography level="h2">Contract</Typography>
+        <Stack direction="column" alignItems="center" gap={1}>
+          <Typography level="h2">Profile Picture</Typography>
+          <UserInfo refetchProfile={refetchProfile} />
         </Stack>
-        <Contract categoriesData={categoriesData} />
+        <Stack direction="column" alignItems="center" gap={1}>
+          <Typography level="h2">Contract</Typography>
+          <Contract categoriesData={categoriesData} />
+        </Stack>
       </Stack>
       <Stack marginTop={5} flex={2} gap={2} className="progress-wrapper">
         <Stack direction="row" gap={1}>

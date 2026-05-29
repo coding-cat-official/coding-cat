@@ -9,9 +9,8 @@ import { Session } from '@supabase/supabase-js';
  */
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { session } = useOutletContext<{ session: Session | null }>();
@@ -19,7 +18,7 @@ export default function Login() {
   // Clear data on unmount so it doesn't stay in memory
   useEffect(() => {
     return () => {
-      setEmail("");
+      setUsername("");
       setPassword("");
     };
   }, []);
@@ -35,7 +34,7 @@ export default function Login() {
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
-      email: email,
+      email: `${username}@coding-cat.internal`,
       password: password
     });
 
@@ -56,11 +55,11 @@ export default function Login() {
           <FormLabel>Email</FormLabel>
           <Input
             className="inputField"
-            type="email"
-            placeholder="Enter your email..."
-            value={email}
+            type="text"
+            placeholder="Enter your username..."
+            value={username}
             required={true}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <FormLabel>Password</FormLabel>
           <Input
