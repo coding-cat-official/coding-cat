@@ -24,17 +24,17 @@ export default function App() {
   const navigate = useNavigate();
 
   const { session, userData, isAdmin, isRecoverySession, fetchProfile } = useAuth();
-  
+
   useEffect(() => {
-    if(isRecoverySession){
+    if (isRecoverySession) {
       navigate('/auth/change-password', { replace: true });
     }
   }, [navigate, isRecoverySession]);
 
   const { progress, contractProgress, fetchProgress } = useContractData(session);
   const {
-    activeSession, sessionId, sessionDuration,sessionRemainingSeconds,plannedExerciseCount,
-    sessionTimerRunning, endSession,formatTime, } = useSessionManagement(session);
+    activeSession, sessionId, sessionDuration, sessionRemainingSeconds, plannedExerciseCount,
+    sessionTimerRunning, endSession, formatTime, setActiveSession } = useSessionManagement(session);
 
   const [problemSessionStats, setProblemSessionStats] = useState<Record<string, ProblemSessionStats>>({});
 
@@ -74,6 +74,7 @@ export default function App() {
   const [kbSelectedProblem, setKbSelectedProblem] = useState(activeProblem);
   const [kbSelectedCategory, setKbSelectedCategory] = useState(activeCategory);
   const [kbSelectedBlog, setKbSelectedBlog] = useState("");
+  const [kbFocus, setKbFocus] = useState<"category" | "content">("content");
 
   const [availableTabs, setAvailableTabs] = useState<string[]>([]);
 
@@ -89,6 +90,7 @@ export default function App() {
     session,
     contractProgress,
     progress,
+    kbFocus,
     kbSelectedProblem,
     order,
     setOrder,
@@ -104,6 +106,7 @@ export default function App() {
     selectedCategory: activeCategory,
     activeBlog: activeProblem,
     closeDrawer: () => setDrawerOpen(false),
+    kbFocus,
     kbSelectedBlog
   };
 
@@ -118,8 +121,8 @@ export default function App() {
       .sort((a, b) => a.localeCompare(b));
 
     const specialCategories: string[] = [];
-    if(problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
-    if(problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
+    if (problems.some(p => p.meta.question_type[0] === "haystack")) specialCategories.push("haystack");
+    if (problems.some(p => p.meta.question_type[0] === "mutation")) specialCategories.push("mutation");
     return ['blogs', ...getCategoryListOrdered(categories), ...specialCategories];
   }, [problems]);
 
@@ -127,22 +130,24 @@ export default function App() {
   // TODO: single source of truth for this?
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     // Ctrl + D opens Drawer
-    if(event.ctrlKey && event.key === "d"){
+    if (event.ctrlKey && event.key === "d") {
       event.preventDefault();
+      setKbFocus("content");
       setDrawerOpen(o => !o);
     }
 
-    if(drawerOpen){
+    if (drawerOpen) {
       // left / right opens category list
       // unless the category has tabs, in which case left / right navigates through them
       // if on the leftmost tab, left opens the category list
-      if(event.key === "ArrowLeft"){
-        if(availableTabs.length > 0){
+      if (event.key === "ArrowLeft") {
+        if (availableTabs.length > 0) {
           const currTabIndex = availableTabs.indexOf(selectedTab);
-          if(currTabIndex <= 0){
+          if (currTabIndex <= 0) {
             // on leftmost tab - open category list
             setKbSelectedCategory(activeCategory);
-            setCategoryOpen(true);
+            setKbFocus('category');
+            if(window.innerWidth <= 1024) setCategoryOpen(true);
           } else {
             // go to prev tab
             setSelectedTab(availableTabs[currTabIndex - 1]);
@@ -150,32 +155,34 @@ export default function App() {
         } else {
           // no tabs - open category list directly
           setKbSelectedCategory(activeCategory);
-          setCategoryOpen(true);
+          setKbFocus('category');
+          if(window.innerWidth <= 1024) setCategoryOpen(true);
         }
       }
       if(event.key === "ArrowRight"){
-        if(categoryOpen) {
-          setCategoryOpen(false);
+        if(kbFocus === "category") {
+          setKbFocus("content");
+          if(window.innerWidth <= 1024) setCategoryOpen(false);
         } else if(availableTabs.length > 0) {
           const currTabIndex = availableTabs.indexOf(selectedTab);
-          if(currTabIndex < availableTabs.length - 1) {
+          if (currTabIndex < availableTabs.length - 1) {
             setSelectedTab(availableTabs[currTabIndex + 1]);
           }
           // on rightmost tab — do nothing
         }
       }
 
-      if(categoryOpen){
+      if(kbFocus === "category"){
         // up / down selects category
-        if(event.key === "ArrowUp"){
+        if (event.key === "ArrowUp") {
           event.preventDefault();
           const currentIndex = allCategories.indexOf(kbSelectedCategory ?? "");
-          const prevIndex = currentIndex <= 0 
+          const prevIndex = currentIndex <= 0
             ? allCategories.length - 1
             : currentIndex - 1;
           setKbSelectedCategory(allCategories[prevIndex]);
         }
-        if(event.key === "ArrowDown"){
+        if (event.key === "ArrowDown") {
           event.preventDefault();
           const currentIndex = allCategories.indexOf(kbSelectedCategory ?? "");
           const nextIndex = currentIndex >= allCategories.length - 1
@@ -187,21 +194,24 @@ export default function App() {
         // select category
         if (event.key === "Enter") {
           event.preventDefault();
-          if (kbSelectedCategory) handleSelectedCategory(kbSelectedCategory);
+          if (kbSelectedCategory){
+            handleSelectedCategory(kbSelectedCategory);
+            setKbFocus("content");
+          }
         }
       }
-      else{
-        if(activeCategory === 'blogs'){
+      else {
+        if (activeCategory === 'blogs') {
           // navigating through blog posts
           const blogSlugs = searchedBlogs
             .filter(b => {
               // filters by selectedTab if there are any
-              return availableTabs.length > 0 
+              return availableTabs.length > 0
                 && b.meta.category === selectedTab.toLowerCase();
             })
             .map(b => b.meta.blog_slug);
           // up / down selects blog post
-          if(event.key === "ArrowUp"){
+          if (event.key === "ArrowUp") {
             event.preventDefault();
             const currentIndex = blogSlugs.indexOf(kbSelectedBlog ?? "");
             const prevIndex = currentIndex <= 0
@@ -209,7 +219,7 @@ export default function App() {
               : currentIndex - 1;
             setKbSelectedBlog(blogSlugs[prevIndex]);
           }
-          if(event.key === "ArrowDown"){
+          if (event.key === "ArrowDown") {
             event.preventDefault();
             const currentIndex = blogSlugs.indexOf(kbSelectedBlog ?? "");
             const nextIndex = currentIndex >= blogSlugs.length - 1
@@ -219,11 +229,11 @@ export default function App() {
           }
 
           // select blog post
-          if(event.key === "Enter"){
+          if (event.key === "Enter") {
             event.preventDefault();
-            if(kbSelectedBlog){
+            if (kbSelectedBlog) {
+              handleSelectedProblem(kbSelectedBlog);
               navigate(`/blogs/${kbSelectedBlog}`);
-              setDrawerOpen(false);
             }
           }
         } else {
@@ -240,35 +250,35 @@ export default function App() {
             })
             .filter(p => {
               // filters by selectedTab if there are any
-              if(availableTabs.length > 0){
+              if (availableTabs.length > 0) {
                 return categorizeCategories(p) === selectedTab;
               }
               return p;
             })
             .map(p => p.meta.name);
-          
+
           // up / down selects problem
-          if(event.key === "ArrowUp"){
+          if (event.key === "ArrowUp") {
             event.preventDefault();
             const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
-            const prevIndex = currentIndex <= 0 
-              ? categoryProblems.length - 1 
+            const prevIndex = currentIndex <= 0
+              ? categoryProblems.length - 1
               : currentIndex - 1;
             setKbSelectedProblem(categoryProblems[prevIndex]);
           }
-          if(event.key === "ArrowDown"){
+          if (event.key === "ArrowDown") {
             event.preventDefault();
             const currentIndex = categoryProblems.indexOf(kbSelectedProblem ?? "");
-            const nextIndex = currentIndex >= categoryProblems.length - 1 
+            const nextIndex = currentIndex >= categoryProblems.length - 1
               ? 0
               : currentIndex + 1;
             setKbSelectedProblem(categoryProblems[nextIndex]);
           }
 
           // select new problem
-          if(event.key === "Enter"){
+          if (event.key === "Enter") {
             event.preventDefault();
-            if(kbSelectedProblem){
+            if (kbSelectedProblem) {
               handleSelectedProblem(kbSelectedProblem);
               navigate(`/problems/${kbSelectedProblem}`);
             }
@@ -276,30 +286,30 @@ export default function App() {
         }
       }
     }
-  }, [navigate, kbSelectedProblem, kbSelectedBlog, drawerOpen, categoryOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
+  }, [navigate, kbSelectedProblem, kbSelectedBlog, kbFocus, drawerOpen, allCategories, sortedProblems, searchedBlogs, activeCategory, kbSelectedCategory, handleSelectedCategory, handleSelectedProblem, setDrawerOpen, setCategoryOpen, selectedTab, setSelectedTab, availableTabs]);
 
   // on selecting new category or tab, select first problem / blog available
   useEffect(() => {
-    if(activeCategory === 'blogs'){
+    if (activeCategory === 'blogs') {
       const tabBlogs = searchedBlogs
         .filter(b => {
           return b.meta.category === selectedTab.toLowerCase();
         })
         .map(b => b.meta.blog_slug);
-      
+
       const first = tabBlogs[0] ?? null;
       setKbSelectedBlog(first);
     } else {
       const tabProblems = sortedProblems
         .filter(p => {
           const questionType = p.meta.question_type[0];
-          const cat = questionType === "coding" 
-            ? p.meta.category 
+          const cat = questionType === "coding"
+            ? p.meta.category
             : questionType;
           return cat === activeCategory;
         })
         .filter(p => {
-          if(availableTabs.length > 0) return categorizeCategories(p) === selectedTab;
+          if (availableTabs.length > 0) return categorizeCategories(p) === selectedTab;
           return p;
         })
         .map(p => p.meta.name);
@@ -328,13 +338,11 @@ export default function App() {
         query={query}
         setQuery={setQuery}
         searchedProblems={searchedProblems}
-        searchedBlogs={searchedBlogs}
         activeCategory={activeCategory}
         handleSelectedCategory={handleSelectedCategory}
         problemListProps={problemListProps}
         blogListProps={blogListProps}
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
+        kbFocus={kbFocus}
         kbSelectedCategory={kbSelectedCategory}
       />
 
@@ -352,6 +360,7 @@ export default function App() {
           userData={userData}
           isAdmin={isAdmin}
           signOut={signOut}
+          setActiveSession={setActiveSession}
         />
 
         <AppHeader />

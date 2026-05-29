@@ -33,9 +33,9 @@ categories = [
         "dir_name": "list_2_iterating"    
     },
     { 
-        "display_name": "List-3: Complex Loop",
-        "input_name": "list3",
-        "dir_name": "list_3_complex_loop"
+        "display_name": "Level-3: Complex Problems",
+        "input_name": "level3",
+        "dir_name": "level_3_complex_problems"
     },
     { 
         "display_name": "Logic",

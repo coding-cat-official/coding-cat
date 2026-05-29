@@ -64,7 +64,7 @@ export default class CategoryLock {
       category: "Fundamentals",
       required: {},
       prereqSolved: {},
-    
+
       isUnlocked: () => {
         return true;
       },
@@ -148,24 +148,8 @@ export default class CategoryLock {
     return createLockObject(required, prereqSolved, categoryName);
   }
 
-  get list_3(): Lock {
-    const categoryName = "List-3: Complex Loop";
-
-    const required = {
-      "List-2: Iterating": 0,
-      "String-2": 0
-    };
-
-    const prereqSolved = {
-      "List-2: Iterating": this.solved["List-2: Iterating"],
-      "String-2": this.solved["String-2"]
-    };
-
-    return createLockObject(required, prereqSolved, categoryName);
-  }
-
-  get string_3(): Lock {
-    const categoryName = "String-3";
+  get level_3(): Lock {
+    const categoryName = "Level-3: Complex Problems";
 
     const required = {
       "List-2: Iterating": 0,
