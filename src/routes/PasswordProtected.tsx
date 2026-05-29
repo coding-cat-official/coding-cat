@@ -38,6 +38,7 @@ export default function PasswordProtected({
   session,
   contractProgress,
   progress,
+  kbFocus,
   kbSelectedProblem,
   order,
   setOrder,
@@ -121,6 +122,7 @@ export default function PasswordProtected({
           session={session}
           contractProgress={contractProgress}
           progress={progress}
+          kbFocus={kbFocus}
           kbSelectedProblem={kbSelectedProblem}
           order={order}
           setOrder={setOrder}

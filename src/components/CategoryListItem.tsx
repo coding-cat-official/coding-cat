@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { ListItemButton, Typography } from "@mui/joy";
 import { LockSimple } from "@phosphor-icons/react";
 import { capitalizeString } from "../utils/capitalizeString";
-import { fetchCategories } from "../utils/TestCategoriesFetch";
 
 function CategoryListItem({
   category,
@@ -13,6 +12,7 @@ function CategoryListItem({
   onSelectCategory,
   session,
   contractProgress,
+  kbFocus,
   kbSelectedCategory
 }: any) {
   const itemRef = useRef<HTMLDivElement>(null);
@@ -58,7 +58,7 @@ function CategoryListItem({
         margin: "10px 10px 10px 15px",
         boxShadow: "5px 5px black",
         border: "1px solid black",
-        ...(category === kbSelectedCategory && {
+        ...(category === kbSelectedCategory && kbFocus === "category" && {
           backgroundColor: '#82d078 !important',
         })
       }}
@@ -90,14 +90,14 @@ export default function CategoryListItems({
   onSelectCategory,
   session,
   contractProgress,
-  kbSelectedCategory
+  kbFocus,
+  kbSelectedCategory,
+  fetchedCategories
 }: any) {
   const [controlledCategories, setControlledCategories] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
-      const fetchedCategories = await fetchCategories();
-
       if (!fetchedCategories) return;
 
       // Find the test categories that are toggled false
@@ -109,7 +109,7 @@ export default function CategoryListItems({
 
       setControlledCategories(filteredCategories);
     })();
-  }, [categories]);
+  }, [categories, fetchedCategories]);
 
   return (
     <>
@@ -124,6 +124,7 @@ export default function CategoryListItems({
           onSelectCategory={onSelectCategory}
           session={session}
           contractProgress={contractProgress}
+          kbFocus={kbFocus}
           kbSelectedCategory={kbSelectedCategory}
         />
       ))}

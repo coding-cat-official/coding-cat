@@ -41,7 +41,7 @@ export default function Account({ session }: { session: Session }) {
         flex={1}
         flexDirection="column"
         alignItems="center"
-        justifyContent="center"
+        justifyContent="flex-start"
         gap={5}
         className="account-wrapper"
       >

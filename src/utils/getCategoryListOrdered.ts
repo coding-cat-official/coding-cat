@@ -12,10 +12,9 @@ export function getCategoryListOrdered(categories: string[]): string[] {
     "List-1: Indexing",
     "String-2",
     "List-2: Iterating",
-    "String-3",
-    "List-3: Complex Loop"
+    "Level-3: Complex Problems"
   ];
-  
+
   const knownSet = new Set(orderedCategories);
   const otherCategories = categories.filter((c) => !knownSet.has(c));
 

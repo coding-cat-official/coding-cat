@@ -25,17 +25,18 @@ export default function useActivityTracker(studentData: User | StudentRecord) {
   const [sessionReflections, setSessionReflections] = useState<SessionReflectionRecord[]>([]);
   const [userStartDate, setUserStartDate] = useState<Date>(new Date());
 
+  const profileId = getStudentProfileID(studentData);
+  const createdAt = studentData.created_at;
+
   useEffect(() => {
     async function fetchProgress() {
-      const profile_id = getStudentProfileID(studentData);
-
       // Fetch submission data for a specific user
       const { data: submissions, error } = await supabase
         .from("submissions")
         .select(
           "problem_title, passed_tests, total_tests, problem_category, code, reflection, submitted_at",
         )
-        .eq("profile_id", profile_id)
+        .eq("profile_id", profileId)
         .order("submitted_at", { ascending: false });
 
       if (error) {
@@ -46,7 +47,7 @@ export default function useActivityTracker(studentData: User | StudentRecord) {
       const { data: sessions, error: sessionError } = await supabase
         .from("sessions")
         .select("*")
-        .eq("profile_id", profile_id)
+        .eq("profile_id", profileId)
         .not("post_session_reflection", "is", null)
         .order("start_time", { ascending: false });
 
@@ -71,13 +72,13 @@ export default function useActivityTracker(studentData: User | StudentRecord) {
         .map((r) => r.submitted_at);
 
       setSessionReflections((sessions ?? []) as SessionReflectionRecord[]);
-      setUserStartDate(new Date(studentData.created_at) || new Date());
+      setUserStartDate(new Date(createdAt) || new Date());
       setActivityStamps(all);
       setPassingStamps(pass);
       setCategoriesData(getCompletedProblems(submissions || []));
     }
     fetchProgress();
-  }, [sessionReflections, activityStamps, categoriesData, passingStamps, reflections, studentData]);
+  }, [profileId, createdAt]);
 
   return {
     userStartDate,
