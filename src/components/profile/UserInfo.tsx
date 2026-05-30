@@ -4,7 +4,7 @@ import { supabase } from "../../supabaseClient";
 import { Button, Stack, Typography } from "@mui/joy";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
-import { StudentRecord, UserData } from "../../types";
+import { StudentRecord } from "../../types";
 
 // TODO: maybe get these dynamically?
 export const ALL_PFPS = [

@@ -11,7 +11,7 @@ import OtherStats from "../components/profile/progress/other-stats/OtherStats";
 import { useOutletContext } from "react-router-dom";
 import SessionReflections from "../components/profile/sessions/SessionReflections";
 import useActivityTracker from "../hooks/useActivityTracker";
-import { StudentRecord, UserData } from "../types";
+import { StudentRecord } from "../types";
 
 /**
  * The `Account` component handles everything related to the profile page.
