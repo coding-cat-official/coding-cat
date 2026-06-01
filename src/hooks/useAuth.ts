@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import { type Session } from '@supabase/supabase-js';
-import { UserData } from '../types';
+import { StudentRecord } from '../types';
 
 interface UseAuthReturn {
   session: Session | null;
-  userData: UserData | null;
+  userData: StudentRecord | null;
   isAdmin: boolean;
   isRecoverySession: boolean;
   fetchProfile: () => Promise<void>;
@@ -13,7 +13,7 @@ interface UseAuthReturn {
 
 export default function useAuth(): UseAuthReturn {
   const [session, setSession] = useState<Session | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<StudentRecord | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isRecoverySession, setIsRecoverySession] = useState(false);
 
@@ -71,11 +71,11 @@ export default function useAuth(): UseAuthReturn {
     if (!session) return;
     const { data } = await supabase
       .from('profiles')
-      .select('username, pfp_id')
+      .select()
       .eq('profile_id', session.user.id)
       .single();
     if (data) {
-      setUserData({ name: data.username, pfp_id: data.pfp_id });
+      setUserData({...data});
     }
   }, [session]);
 

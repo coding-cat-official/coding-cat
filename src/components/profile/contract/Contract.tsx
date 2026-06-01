@@ -5,10 +5,11 @@ import ContractEdit from "./ContractEdit";
 import { supabase } from "../../../supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useOutletContext } from "react-router-dom";
+import { fetchContractPerms } from "../../../utils/contractPerms";
 
 interface ContractProps {
   categoriesData: CategoryData[];
-  profileData?: StudentRecord
+  profileData?: StudentRecord;
 }
 
 export default function Contract({ categoriesData, profileData }: ContractProps) {
@@ -25,7 +26,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
   const profileId = profileData?.profile_id ?? session?.user.id;
 
   if (!profileId) {
-     throw Error("Error: No session or profile_id has been defined");
+    throw Error("Error: No session or profile_id has been defined");
   }
 
   // if the categoriesData changes, update the problem count
@@ -122,6 +123,7 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
         setContract={setContract}
         featureMap={featureMap}
         problemCountByCategory={problemCountByCategory}
+        profileData={profileData}
       />
     </>
   );
@@ -136,6 +138,7 @@ interface ContractModalProps {
   onSave: () => Promise<void>;
   featureMap: Record<string, boolean>;
   problemCountByCategory: Record<string, number>;
+  profileData?: StudentRecord;
 }
 
 function ContractModal({
@@ -147,8 +150,25 @@ function ContractModal({
   onSave,
   featureMap,
   problemCountByCategory,
+  profileData
 }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
+  useEffect(() => {
+    const checkIfReadOnly = async () => {
+      try {
+        if(profileData && profileData.contract_override === true){
+          setIsReadOnly(false)
+        } else {
+          setIsReadOnly(await fetchContractPerms());
+        }
+      } catch (error) {
+        console.error("Contract read-only setting could not be loaded", error);
+      }
+    };
+    checkIfReadOnly();
+  }, [profileData]);
 
   /**
    * This function enforces a max and min of submitted values
@@ -234,9 +254,20 @@ function ContractModal({
               </Button>
             </>
           ) : (
-            <Button sx={{ width: "15%" }} onClick={() => setIsUpdating(true)}>
-              Edit
-            </Button>
+            <>
+              {isReadOnly && (
+                <Typography fontWeight="bold" sx={{ mr: 2 }}>
+                  CONTRACT IS SET TO READ-ONLY
+                </Typography>
+              )}
+              <Button
+                sx={{ width: "15%" }}
+                onClick={() => setIsUpdating(true)}
+                disabled={isReadOnly}
+              >
+                Edit
+              </Button>
+            </>
           )}
         </Stack>
       </ModalDialog>

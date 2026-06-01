@@ -5,6 +5,7 @@ import { List as ListIcon } from '@phosphor-icons/react';
 import ProfileAvatar from '../profile/ProfileAvatar';
 import { ALL_PFPS } from '../profile/UserInfo';
 import { Session } from '@supabase/supabase-js';
+import { StudentRecord } from '../../types';
 
 interface Props {
   openDrawer: () => void;
@@ -16,7 +17,7 @@ interface Props {
   sessionRemainingSeconds: number;
   endSession: () => void;
   sessionId: string | null;
-  userData: { name: string; pfp_id: number } | null;
+  userData: StudentRecord | null;
   isAdmin: boolean;
   signOut: () => void;
   setActiveSession: (param: boolean) => void;
@@ -86,7 +87,7 @@ export default function UpperNavBar({
                   ) : (
                     <></>
                   )}
-                  {userData?.name ?? 'Profile'}
+                  {userData?.username ?? 'Profile'}
                 </Stack>
               </Button>
             </Link>

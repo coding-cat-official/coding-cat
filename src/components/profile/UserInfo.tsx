@@ -4,7 +4,7 @@ import { supabase } from "../../supabaseClient";
 import { Button, Stack, Typography } from "@mui/joy";
 import { useOutletContext } from "react-router-dom";
 import ProfileAvatar from "./ProfileAvatar";
-import { UserData } from "../../types";
+import { StudentRecord } from "../../types";
 
 // TODO: maybe get these dynamically?
 export const ALL_PFPS = [
@@ -15,7 +15,7 @@ export const ALL_PFPS = [
   "thumbs-up-pfp.png"
 ]
 
-export default function UserInfo({ userData, refetchProfile }: { userData: UserData | null, refetchProfile: Function }) {
+export default function UserInfo({ userData, refetchProfile }: { userData: StudentRecord | null, refetchProfile: Function }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -146,7 +146,7 @@ export default function UserInfo({ userData, refetchProfile }: { userData: UserD
               height={pfpHeight}
               width={pfpWidth}
             />
-            { userData?.name && <Typography level="h2">{userData.name}</Typography> }
+            { userData?.username && <Typography level="h2">{userData.username}</Typography> }
             <Button onClick={() => { setIsUpdating(true); setSuccess(""); setError(""); }}>
               Edit
             </Button>
