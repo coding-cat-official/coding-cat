@@ -62,13 +62,13 @@ export default function Contract({ categoriesData, profileData }: ContractProps)
         .eq("profile_id", profileId)
         .order("updated_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error(error);
       } else {
-        setContract(data.data as ContractData);
-        setLastUpdated(new Date(data.updated_at));
+        setContract(data?.data as ContractData);
+        setLastUpdated(new Date(data?.updated_at));
       }
     })();
   }, [profileId]);
@@ -150,7 +150,7 @@ function ContractModal({
   onSave,
   featureMap,
   problemCountByCategory,
-  profileData
+  profileData,
 }: ContractModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
@@ -158,8 +158,8 @@ function ContractModal({
   useEffect(() => {
     const checkIfReadOnly = async () => {
       try {
-        if(profileData && profileData.contract_override === true){
-          setIsReadOnly(false)
+        if (profileData && profileData.contract_override === true) {
+          setIsReadOnly(false);
         } else {
           setIsReadOnly(await fetchContractPerms());
         }
