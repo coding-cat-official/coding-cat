@@ -18,6 +18,7 @@ import AppHeader from '../components/layout/AppHeader';
 import sortProblems from '../utils/sortProblems';
 import { categorizeCategories } from '../utils/categorizeCategories';
 import { getCategoryListOrdered } from '../utils/getCategoryListOrdered';
+import { getOrderedBlogPosts } from '../utils/blogs/getOrderedBlogPosts';
 
 export default function App() {
   const problems = useLoaderData() as Problem[];
@@ -203,12 +204,12 @@ export default function App() {
       else {
         if (activeCategory === 'blogs') {
           // navigating through blog posts
-          const blogSlugs = searchedBlogs
+          const blogSlugs = getOrderedBlogPosts(searchedBlogs
             .filter(b => {
               // filters by selectedTab if there are any
               return availableTabs.length > 0
                 && b.meta.category === selectedTab.toLowerCase();
-            })
+            }))
             .map(b => b.meta.blog_slug);
           // up / down selects blog post
           if (event.key === "ArrowUp") {
