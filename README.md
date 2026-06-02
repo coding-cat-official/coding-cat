@@ -75,7 +75,10 @@ Once the program is finished:
 #### Batch Creation
 
 - Run `node scripts/create-users.ts <numberOfUsers>`
-- The script will print out the new users login credentials
+- The script will print out the new users login credentials and create all the corresponding users in the DB
+- Credentials are formatted as such (both are capitalized, but only password is case-sensitive):
+  - Username: `<Adjective><Animal><1-999>`
+  - Password: `<Adjective><Animal>`
 *Note: As the app no longer uses emails, resetting a password would need to be done manually in SQL.* **Please ask new users to be careful and not lose their creds**
 
 #### Custom Creation
