@@ -69,11 +69,23 @@ Once the program is finished:
 
 ### Create New Users
 
-- To create new users, ensure you have a service role key in your .env as `SUPABASE_SERVICE_ROLE_KEY`
+- Regardless of whether you're creating a new batch of users, or a single custom one ensure you have a service role key in your .env as `SUPABASE_SERVICE_ROLE_KEY`
   - This can be found right under the Anon key, see "Run Locally" above **THE VALUE IS SECRET, DO NOT SHARE**
-- Run `node scripts/create-users.mjs <numberOfUsers>`
-- The script will print out the new users login credentials
-*Note: As the app no longer uses emails, resetting a password would need to be done manually in SQL.* **Please ask users to be careful and not lose their creds**
+
+#### Batch Creation
+
+- Run `node scripts/create-users.ts <numberOfUsers>`
+- The script will print out the new users login credentials and create all the corresponding users in the DB
+- Credentials are formatted as such (both are capitalized, but only password is case-sensitive):
+  - Username: `<Adjective><Animal><1-999>`
+  - Password: `<Adjective><Animal>`
+*Note: As the app no longer uses emails, resetting a password would need to be done manually in SQL.* **Please ask new users to be careful and not lose their creds**
+
+#### Custom Creation
+
+- Run `node scripts/create-custom-user.ts`
+- Follow the script instructions to create a user with a custom username and password
+*Note: As the app used to use emails as usernames, all new users are internally referred to as `<username>@coding-cat.internal`, but all previous email accounts will still work.*
 
 
 ### Modify Contract

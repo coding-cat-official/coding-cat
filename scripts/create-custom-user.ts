@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
-import { readFileSync } from "fs";
 import { config } from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import * as readline from 'readline';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: join(__dirname, "../.env.local") });
@@ -20,31 +20,6 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false }
 });
-
-const usernameParts = JSON.parse(readFileSync(join(__dirname, "./username-words.json"), "utf-8"));
-const usedUsernames: string[] = [];
-
-function generateAdjAnimalCombo() {
-  const adjective = usernameParts.adjectives[
-    Math.floor(Math.random() * usernameParts.adjectives.length)
-  ];
-  const animal = usernameParts.animals[
-    Math.floor(Math.random() * usernameParts.animals.length)
-  ];
-  
-  return `${adjective}${animal}`;
-}
-
-function generateUniqueUsername() {
-  let username;
-
-  do{
-    username = generateAdjAnimalCombo() + Math.floor(Math.random() * 1000);
-  }while(usedUsernames.includes(username));
-  usedUsernames.push(username);
-
-  return username;
-}
 
 async function createUser(username: string, password: string) {
   const email = `${username}@${EMAIL_DOMAIN}`;
@@ -76,29 +51,44 @@ async function createUser(username: string, password: string) {
   return true;
 }
 
+/**
+ * @param input the input to be validated
+ * @returns boolean whether the input is alphanumerical
+ */
+function validateInput(input: string){
+  const regex = /^[a-zA-Z0-9]+$/;
+  return regex.test(input);
+}
+
+function getInput(question: string): Promise<string>{
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer: string) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
+}
+
 async function main() {
-  const count = parseInt(process.argv[2]);
-  if (!count || isNaN(count) || count < 1) {
-    console.error("Usage: node create-users.mjs <number_of_users>");
-    console.error("Example: node create-users.mjs 10");
-    process.exit(1);
-  }
+  let username;
+  let password;
+  let valid;
 
-  console.log(`\nCreating ${count} users...\n`);
+  do{
+    username = await getInput("Enter username (only alphanumerical characters): ");
+    password = await getInput("Enter password: ");
 
-  let successCount = 0;
+    valid = validateInput(username) && validateInput(password);
+    if(!valid) console.log("Invalid input. Only alphanumerical characters are allowed.");
+  }while(!valid);
 
-  for (let i = 0; i < count; i++) {
-    const username = generateUniqueUsername();
-    const password = generateAdjAnimalCombo();
-    const ok = await createUser(username, password);
-    if (ok) {
-      console.log(`User: ${username}\nPass: ${password}\n`);
-      successCount++;
-    }
-  }
-  console.log(`Done. ${successCount}/${count} users created successfully.`);
-  console.log("Note: usernames are not case-sensitive, passwords are")
+  const dbOk = await createUser(username, password);
+  if(dbOk) console.log(`Successfully created user ${username}!`)
 }
 
 main();
